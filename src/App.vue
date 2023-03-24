@@ -1,14 +1,15 @@
 <template>
   <el-config-provider namespace="ep">
+    <!-- <BaseHeader />
+    <div style="display: flex">
+      <BaseSide />
+      <div>
+        <img alt="Vue logo" class="element-plus-logo" src="./assets/logo.png" />
+        <HelloWorld msg="Hello Vue 3.0 + Element Plus + Vite" />
+      </div>
+    </div> -->
     <div class="app-container">
       <BaseHeader />
-      <!-- <div style="display: flex">
-        <BaseSide />
-        <div>
-          <img alt="Vue logo" class="element-plus-logo" src="./assets/logo.png" />
-          <HelloWorld msg="Hello Vue 3.0 + Element Plus + Vite" />
-        </div>
-      </div> -->
       <div class="nav-wrapper"></div>
       <div class="four-container">
         <div class="fourBorder border1"></div>
