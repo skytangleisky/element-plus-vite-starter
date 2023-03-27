@@ -186,8 +186,6 @@ body{
 }
 .container{
   width: 100%;
-  margin: 0 auto;
-  padding-top: 100px;
   position: relative;
   &:after{
     content: '';
@@ -230,7 +228,7 @@ body{
     width: 100px;
     position: absolute;
     right: 0;
-    top: 50px;
+    top: 46px;
     margin: 0;
     line-height: 26px;
     font-size: 12px;
@@ -265,16 +263,17 @@ body{
   .classificationButton{
     position: relative;
     background:rgba(0,0,0,0.02);
-    height:44px;
+    height:40px;
     border-radius: 4px;
     display:flex;
     justify-content:center;
     align-items:center;
     flex-direction:row;
     color:black;
-    font-size:20px;
+    font-size:16px;
+    font-family: monospace;
     border:1px solid rgba(0,0,0,0.05);
-    font-weight:100;
+    // font-weight:100;
     user-select:none;
     -webkit-user-drag:none;
     padding-right:8px;
@@ -294,7 +293,7 @@ body{
     margin-left:15px;
     position: relative;
     width: 500px;
-    height: 44px;
+    height: 40px;
     border-top: #17A1FF solid 1px;
     border-right: none;
     border-bottom: #17A1FF solid 1px;
@@ -305,7 +304,7 @@ body{
       border: none;
       padding: 0 80px 0 10px;
       margin: 0;
-      height: 44px;
+      height: 100%;
       width: 410px;
       color: #333;
       font-size: 16px;
@@ -320,7 +319,7 @@ body{
       width: 100%;
       position: absolute;
       left: 0;
-      top: 50px;
+      top: 46px;
       margin: 0;
       line-height: 32px;
       font-size: 14px;
@@ -349,7 +348,7 @@ body{
   }
   .search{
     width: 89px;
-    height: 46px;
+    height: 42px;
     background-color: #17A1FF;
     background-image: url('/src/assets/search.png');
     background-position: center;
@@ -364,5 +363,7 @@ body{
   }
 }
 
-
+.ep-tabs__item{
+	font-size: 12px;
+}
 </style>
