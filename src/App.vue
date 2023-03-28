@@ -1,6 +1,6 @@
 <template>
   <el-config-provider namespace="ep" :locale="locale">
-    <container v-model:value.sync="locale"></container>
+    <container v-model:value="locale"></container>
   </el-config-provider>
 </template>
 <script setup>
@@ -15,6 +15,4 @@ if(localStorage.getItem('language')==='en'){
 }else{
   localStorage.setItem('language','zh-cn')
 }
-
-
 </script>

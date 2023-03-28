@@ -177,13 +177,6 @@ export default{
  * 微信公众号:web-7258
  */
 
-body{
-    padding: 0;
-    margin: 0;
-    font-family: "Microsoft YaHei", "Segoe UI", "Lucida Grande", Helvetica, Arial, sans-serif;
-    font-size: 14px;
-    color: #333;
-}
 .container{
   width: 100%;
   position: relative;
@@ -271,9 +264,8 @@ body{
     flex-direction:row;
     color:black;
     font-size:16px;
-    font-family: monospace;
     border:1px solid rgba(0,0,0,0.05);
-    // font-weight:100;
+    font-family:microsoft yahei;
     user-select:none;
     -webkit-user-drag:none;
     padding-right:8px;
