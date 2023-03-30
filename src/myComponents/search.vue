@@ -1,8 +1,8 @@
 <template>
-  <div class="container">
+  <div class="input_pane">
     <div class="logo" style="display:none;"></div>
-    <div style="display:flex;flex-direction:column">
-      <div style="display:flex">
+    <div style="display:flex;flex-direction:column;width:100%;">
+      <div style="display:flex;justify-content: center;">
         <div class="classificationButton"><div class="classificationPhoto" />{{ t('tl.classification') }}</div>
         <div class="input">
           <input @click.stop type="text" placeholder="共35537张/昨日更新20张的内容" autocomplete="off" id="search-input">
@@ -177,7 +177,8 @@ export default{
  * 微信公众号:web-7258
  */
 
-.container{
+.input_pane{
+  display: flex;
   width: 100%;
   position: relative;
   &:after{
@@ -255,15 +256,15 @@ export default{
   }
   .classificationButton{
     position: relative;
-    background:rgba(0,0,0,0.02);
     height:40px;
     border-radius: 4px;
     display:flex;
     justify-content:center;
     align-items:center;
     flex-direction:row;
-    color:black;
+    color:var(--ep-text-color-primary);
     font-size:16px;
+    background:rgba(0,0,0,0.02);
     border:1px solid rgba(0,0,0,0.05);
     font-family:microsoft yahei;
     user-select:none;
@@ -271,6 +272,8 @@ export default{
     padding-right:8px;
     cursor:pointer;
     &>.classificationPhoto{
+      transform: translateY(-60px);
+      filter: drop-shadow(rgba(0,0,0,0.15) 0 60px);
       pointer-events:none;
       width:20px;
       height:18px;
@@ -357,5 +360,16 @@ export default{
 
 .ep-tabs__item{
 	font-size: 12px;
+}
+</style>
+<style lang="scss">
+.dark .container{
+  .classificationButton{
+    background:rgba(255,255,255,0.02);
+    border:1px solid rgba(255,255,255,0.05);
+    &>.classificationPhoto{
+      filter: drop-shadow(rgba(255,255,255,0.15) 0 60px);
+    }
+  }
 }
 </style>
