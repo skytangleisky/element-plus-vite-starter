@@ -1,19 +1,24 @@
 <template>
   <div class="input_pane">
     <div class="logo" style="display:none;"></div>
-    <div style="display:flex;flex-direction:column;width:100%;">
+    <div style="display:flex;flex-direction:column;width:100%;margin-top:10px;padding:10px 0;">
       <div style="display:flex;justify-content: center;">
         <div class="classificationButton"><div class="classificationPhoto" />{{ t('tl.classification') }}</div>
         <div class="input">
-          <input @click.stop type="text" placeholder="共35537张/昨日更新20张的内容" autocomplete="off" id="search-input">
-          <div @click.stop class="picker">百度</div>
+          <input type="text" placeholder="共35537张/昨日更新20张的内容" autocomplete="off" id="search-input">
+          <div class="picker" tabindex="-1">百度</div>
           <ul class="picker-list">
             <li class="baidu" data-logo="baidu.png">百度</li>
             <li class="sogou" data-logo="sogou.png">搜狗</li>
             <li class="bing" data-logo="bing.png">必应</li>
             <li class="google" data-logo="google.png">谷歌</li>
           </ul>
-          <div class="hot-list"></div>
+          <div @mousedown.stop class="hot-list">
+            <div class="line"></div>
+            <a v-for="(item,key) in list" @mousedown.native="hot_list_mousedown" :href="'https://www.baidu.com/s?ie=utf8&oe=utf8&tn=98010089_dg&ch=11&wd='+t('tl.'+item.name)" target="_blank">
+              <div class="number" :style="'color:'+color[key]">{{ key+1 }}</div><div>{{ item }}</div>
+            </a>
+          </div>
         </div>
         <div class="search"></div>
       </div>
@@ -31,7 +36,20 @@ const { t } = useLocale()
 export default{
   data(){
     return{
+      /* 颜色 */
+      color:['#ff2c00','#ff5a00','#ff8105','#fd9a15','#dfad1c','#6bc211','#3cc71e','#3cbe85','#51b2ef','#53b0ff'],
       activeName:'WebEffects',
+      list:[
+        '网页特效',
+        'jQuery特效',
+        'web前端代码',
+        '图片轮播',
+        '图片切换',
+        '响应式布局',
+        '表单美化',
+        '评论',
+        'QQ表情'
+      ],
       options:[
         {
           name:'WebEffects'
@@ -106,7 +124,7 @@ export default{
 
         /* 设置热门搜索列表 */
         this.els.hotList.html(function () {
-          var str='';
+          var str='<div class="line"></div>';
           $.each(_this.hot.list,function (index,item) {
             str+='<a href="https://www.baidu.com/s?ie=utf8&oe=utf8&tn=98010089_dg&ch=11&wd='+item+'" target="_blank">'
               +'<div class="number" style="color: '+_this.hot.color[index]+'">'+(index+1)+'</div>'
@@ -116,34 +134,28 @@ export default{
           return str;
         });
 
-        /* 注册事件 */
-        /* 搜索类别选择按钮 */
-        this.els.pickerBtn.click(function () {
-          _this.els.hotList.hide();
-          _this.els.pickerList.show();
-        });
         /* 搜索类别选择列表 */
-        this.els.pickerList.on("click",">li",function () {
+        this.els.pickerList.find(">li").mousedown(function(){
           _this.els.logo.css("background-image",("url('/src/assets/"+$(this).data("logo")+"')"));
           _this.els.pickerBtn.html($(this).html())
           _this.searchIndex=$(this).index();
         });
         /* 搜索 输入框 点击*/
-        this.els.input.click(function () {
+        this.els.input.mousedown(function () {
           if(!$(this).val()){
-            _this.els.hotList.show();
+            // _this.els.hotList.show();
           }
         });
         /* 搜索 输入框 输入*/
         this.els.input.on("input",function () {
           if($(this).val()){
-            _this.els.hotList.hide();
+            // _this.els.hotList.hide();
           }
         });
         this.els.input.bind('input propertychange change',function(){
           var a = $(this).val()
           if(a===undefined||a===''){
-            _this.els.hotList.show();
+            // _this.els.hotList.show();
           }
         })
         /* 搜索按钮 */
@@ -151,12 +163,6 @@ export default{
           var searchArr=['百度','搜狗','必应','谷歌'];
           alert(searchArr[_this.searchIndex]+"搜索："+_this.els.input.val());
         });
-        /* 文档 */
-        $(document).click(function () {
-          _this.els.pickerList.hide();
-          _this.els.hotList.hide();
-        });
-        /* 搜索按钮 */
       }
     };
     $(function(){
@@ -164,7 +170,10 @@ export default{
     })
   },
   methods: {
-    handleClick(){}
+    handleClick(){},
+    hot_list_mousedown(e){
+      console.log(e)
+    }
   }
 }
 </script>
@@ -178,6 +187,8 @@ export default{
  */
 
 .input_pane{
+  height:126px;
+  border:1px solid red;
   display: flex;
   width: 100%;
   position: relative;
@@ -197,63 +208,7 @@ export default{
     background-repeat: no-repeat;
     background-size: auto 120px;
     background-image:url('/src/assets/baidu.png')
-  }
-  .picker{
-    width: 40px;
-    padding-right: 30px;
-    position: absolute;
-    top: 0;
-    right: 0;
-    height: 100%;
-    line-height: 44px;
-    cursor: pointer;
-    color: #999;
-    font-size: 12px;
-    text-align: right;
-    background-image: url('/src/assets/down.png');
-    background-position: 50px center;
-    background-repeat: no-repeat;
-    user-select: none;
-  }
-  .picker-list{
-    z-index:999;
-    list-style: none;
-    padding: 5px 0;
-    width: 100px;
-    position: absolute;
-    right: 0;
-    top: 46px;
-    margin: 0;
-    line-height: 26px;
-    font-size: 12px;
-    border-radius: 2px;
-    box-shadow: 0 1px 5px rgba(0,0,0,.2);
-    background-color: #fff;
-    display: none;
-    color:black;
-    &>li{
-      padding-left: 36px;
-      background-position: 10px center;
-      background-repeat: no-repeat;
-      background-size: 16px auto;
-      &:hover{
-        background-color: #ebf1f5;
-        cursor: pointer;
-      }
-      &.baidu{
-        background-image: url('/src/assets/ico_baidu.png')
-      }
-      &.sogou{
-        background-image: url('/src/assets/ico_sogou.png')
-      }
-      &.bing{
-        background-image: url('/src/assets/ico_bing.png')
-      }
-      &.google{
-        background-image: url('/src/assets/ico_google.ico')
-      }
-    }
-  }
+  }  
   .classificationButton{
     position: relative;
     height:40px;
@@ -288,40 +243,126 @@ export default{
     margin-left:15px;
     position: relative;
     width: 500px;
-    height: 40px;
-    border-top: #17A1FF solid 1px;
-    border-right: none;
-    border-bottom: #17A1FF solid 1px;
-    border-left: #17A1FF solid 1px;
-    border-radius: 4px 0 0 4px;
+    height: 42px;
     &>input{
+      box-sizing:border-box;
+      border: #c4c7ce solid 2px;
+      border-right:none;
       outline: none;
-      border: none;
-      padding: 0 80px 0 10px;
+      padding: 0 78px 0 10px;
       margin: 0;
       height: 100%;
-      width: 410px;
+      width: 100%;
       color: #333;
       font-size: 16px;
-      border-radius: 4px 0 0 4px;
+      border-radius: 10px 0 0 10px;
       &::-webkit-input-placeholder{
         color:#999;
       }
+      &:focus{
+        border-radius:10px 0 0 0;
+        border: #17A1FF solid 2px;
+        transition: border 2s;
+        border-right:none;
+        border-bottom:none;
+        padding-bottom:2px;
+      }
     }
-    .hot-list{
-      z-index:999;
-      padding: 10px 0;
-      width: 100%;
+    .picker{
+      width: 40px;
+      padding-right: 30px;
       position: absolute;
-      left: 0;
+      top: 0;
+      right: 0;
+      height: 100%;
+      line-height: 44px;
+      cursor: pointer;
+      color: #999;
+      font-size: 12px;
+      text-align: right;
+      background-image: url('/src/assets/down.png');
+      background-position: 50px center;
+      background-repeat: no-repeat;
+      user-select: none;
+    }
+    .picker-list{
+      z-index:999;
+      list-style: none;
+      padding: 5px 0;
+      width: 100px;
+      position: absolute;
+      right: 0;
       top: 46px;
       margin: 0;
-      line-height: 32px;
-      font-size: 14px;
+      line-height: 26px;
+      font-size: 12px;
       border-radius: 2px;
       box-shadow: 0 1px 5px rgba(0,0,0,.2);
       background-color: #fff;
       display: none;
+      color:black;
+      &>li{
+        padding-left: 36px;
+        background-position: 10px center;
+        background-repeat: no-repeat;
+        background-size: 16px auto;
+        &:hover{
+          background-color: #ebf1f5;
+          cursor: pointer;
+        }
+        &.baidu{
+          background-image: url('/src/assets/ico_baidu.png')
+        }
+        &.sogou{
+          background-image: url('/src/assets/ico_sogou.png')
+        }
+        &.bing{
+          background-image: url('/src/assets/ico_bing.png')
+        }
+        &.google{
+          background-image: url('/src/assets/ico_google.ico')
+        }
+      }
+    }
+    &:has(.picker:focus) .picker-list{
+      display:block;
+    }
+    &:has(input:focus) .picker-list{
+      display:none;
+    }
+    &:has(input:focus) .hot-list{
+      visibility:visible;
+      border: #17A1FF solid 2px;
+      border-top: none;
+      transition: border 2s;
+      .line{
+        background-color:rgba(0,0,0,0.1);
+        transition: background-color 2s;
+      }
+    }
+    .hot-list{
+      .line{
+        height:1px;
+        background-color: transparent;
+        margin:0 auto;
+        width:calc(100% - 20px);
+      }
+      visibility:collapse;
+      box-sizing:border-box;
+      border: #c4c7ce solid 2px;
+      border-top: none;
+      z-index:999;
+      padding: 0 0 10px 0;
+      width: calc(100% + 2px);
+      position: absolute;
+      left: 0;
+      top: 42px;
+      margin: 0;
+      line-height: 32px;
+      font-size: 14px;
+      border-radius: 0 0 10px 10px;
+      // box-shadow: 0 1px 5px rgba(0,0,0,.2);
+      background-color: #fff;
       &>a{
         display: block;
         color: #333;
