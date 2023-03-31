@@ -5,19 +5,33 @@
       <div style="display:flex;justify-content: center;">
         <div class="classificationButton"><div class="classificationPhoto" />{{ t('tl.classification') }}</div>
         <div class="input">
-          <input v-model.sync="inputValue" type="text" placeholder="共35537张/昨日更新20张的内容" autocomplete="off" id="search-input">
+          <input @keydown.enter.native="keydown_enter" v-model.sync="inputValue" type="text" placeholder="共35537张/昨日更新20张的内容" autocomplete="off">
           <div class="picker" tabindex="-1">百度</div>
           <ul class="picker-list">
             <li v-for="(item,key) in searchArr" @mousedown.native="picker_list_click(item)" :class="item.class">{{ item.value }}</li>
           </ul>
           <div @mousedown.stop class="hot-list">
             <div class="line"></div>
-            <div v-for="(item,key) in list" @mousedown.native="hot_list_mousedown(item)" target="_blank">
-              <div class="number" :style="'color:'+color[key]">{{ key+1 }}</div><div>{{ item }}</div>
+            <div class="noData">{{ t("el.table.emptyText") }}</div>
+            <div class="dataItem" v-for="(item,key) in list" @mousedown.native="hot_list_mousedown(item)" target="_blank">
+              <div class="number" :style="'color:'+color[key]">{{ key+1 }}</div>
+              <div style="flex-grow:1;text-align:left;">{{ item }}</div>
+              <Close @mousedown="hot_list_delete_item(key,$event)" class="hot_list_delete_item" style="width:20px;height:20px;color:lightgrey;"></Close>
             </div>
           </div>
         </div>
-        <div class="search"></div>
+        <div @click.native="search_click" class="search" tabindex="-1"></div>
+        <button @click="toggleDark()" class="bg-transparent border-none cursor-pointer" style="">
+          <i inline-flex i="dark:ep-moon ep-sunny" />
+        </button>
+        <el-select @change="languageChange" v-model="lang" class="m-2" placeholder="Select" size="small">
+          <el-option
+            v-for="item in languages"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
       </div>
       <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
         <el-tab-pane v-for="(item,k) in options" :label="t('tl.'+item.name)" :name="item.name">{{ t('tl.'+item.name) }}.</el-tab-pane>
@@ -26,161 +40,99 @@
   </div>
 </template>
 <script setup>
+import { reactive, ref, watch } from 'vue'
+import { toggleDark } from '~/composables';
+import { Close } from '@element-plus/icons-vue'
 import { useLocale } from 'element-plus'
+import zhCn from '../languages/zh-cn.mjs'
+import en from '../languages/en.mjs'
 const { t } = useLocale()
-</script>
-<script>
-export default{
-  data(){
-    return{
-      inputValue:'',
-      color:['#ff2c00','#ff5a00','#ff8105','#fd9a15','#dfad1c','#6bc211','#3cc71e','#3cbe85','#51b2ef','#53b0ff'],
-      activeName:'WebEffects',
-      list:[
-        '网页特效',
-        'jQuery特效',
-        'web前端代码',
-        '图片轮播',
-        '图片切换',
-        '响应式布局',
-        '表单美化',
-        '评论',
-        'QQ表情'
-      ],
-      searchArr:[{class:'baidu',value:'百度'},{class:'sogou',value:'搜狗'},{class:'bing',value:'必应'},{class:'google',value:'谷歌'}],
-      options:[
-        {
-          name:'WebEffects'
-        },
-        {
-          name:'FlushMaterial'
-        },
-        {
-          name:'html5css3'
-        },
-        {
-          name:'WebTemplates'
-        },
-        {
-          name:'WebMaterial'
-        },
-        {
-          name:'WholeSiteSourceCode'
-        },
-        {
-          name:'AnimationCode'
-        },
-        {
-          name:'StyleDesign'
-        }
-      ]
-    }
+import { useSettingStore } from '../stores/setting'
+const setting = useSettingStore()
+const list = reactive([
+  '网页特效',
+  'jQuery特效',
+  'web前端代码',
+  '图片轮播',
+  '图片切换',
+  '响应式布局',
+  '表单美化',
+  '评论',
+  'QQ表情'
+])
+const lang = ref('zh-cn')
+const languages = ref([{value: 'zh-cn',label: '中文',},{value: 'en',label: 'English'}])
+const inputValue = ref('')
+const color = ref(['#ff2c00','#ff5a00','#ff8105','#fd9a15','#dfad1c','#6bc211','#3cc71e','#3cbe85','#51b2ef','#53b0ff'])
+const activeName = 'WebEffects'
+const searchArr = [{class:'baidu',value:'百度'},{class:'sogou',value:'搜狗'},{class:'bing',value:'必应'},{class:'google',value:'谷歌'}]
+const options = [
+  {
+    name:'WebEffects'
   },
-  mounted(){
-    /*
-    * 作者:helang
-    * 邮箱:helang.love@qq.com
-    * jQuery插件库:http://www.jq22.com/mem395541
-    * CSDN博客:https://blog.csdn.net/u013350495
-    * 微信公众号:web-7258
-    */
-
-    /* 搜索 */
-    var helangSearch={
-      /* 元素集 */
-      els:{},
-      /* 搜索类型序号 */
-      searchIndex:0,
-      /* 火热的搜索列表 */
-      hot:{
-        /* 颜色 */
-        color:['#ff2c00','#ff5a00','#ff8105','#fd9a15','#dfad1c','#6bc211','#3cc71e','#3cbe85','#51b2ef','#53b0ff'],
-        /* 列表 */
-        list:[
-          '网页特效',
-          'jQuery特效',
-          'web前端代码',
-          '图片轮播',
-          '图片切换',
-          '响应式布局',
-          '表单美化',
-          '评论',
-          'QQ表情'
-        ]
-      },
-      /* 初始化 */
-      init:function(){
-        var _this=this;
-        this.els={
-          pickerBtn:$(".picker"),
-          pickerList:$(".picker-list"),
-          logo:$(".logo"),
-          hotList:$(".hot-list"),
-          input:$("#search-input"),
-          button:$(".search")
-        };
-
-        /* 设置热门搜索列表 */
-        this.els.hotList.html(function () {
-          var str='<div class="line"></div>';
-          $.each(_this.hot.list,function (index,item) {
-            str+='<a href="https://www.baidu.com/s?ie=utf8&oe=utf8&tn=98010089_dg&ch=11&wd='+item+'" target="_blank">'
-              +'<div class="number" style="color: '+_this.hot.color[index]+'">'+(index+1)+'</div>'
-              +'<div>'+item+'</div>'
-              +'</a>';
-          });
-          return str;
-        });
-
-        /* 搜索类别选择列表 */
-        this.els.pickerList.find(">li").mousedown(function(){
-          _this.els.logo.css("background-image",("url('/src/assets/"+$(this).data("logo")+"')"));
-          _this.els.pickerBtn.html($(this).html())
-          _this.searchIndex=$(this).index();
-        });
-        /* 搜索 输入框 点击*/
-        this.els.input.mousedown(function () {
-          if(!$(this).val()){
-            // _this.els.hotList.show();
-          }
-        });
-        /* 搜索 输入框 输入*/
-        this.els.input.on("input",function () {
-          if($(this).val()){
-            // _this.els.hotList.hide();
-          }
-        });
-        this.els.input.bind('input propertychange change',function(){
-          var a = $(this).val()
-          if(a===undefined||a===''){
-            // _this.els.hotList.show();
-          }
-        })
-        /* 搜索按钮 */
-        this.els.button.click(function () {
-          var searchArr=['百度','搜狗','必应','谷歌'];
-          alert(searchArr[_this.searchIndex]+"搜索："+_this.els.input.val());
-        });
-      }
-    };
-    // $(function(){
-    //   helangSearch.init();
-    // })
+  {
+    name:'FlushMaterial'
   },
-  watch:{
-    inputValue(newVal){
-      console.log(newVal)
-    }
+  {
+    name:'html5css3'
   },
-  methods: {
-    handleClick(){},
-    hot_list_mousedown(item){
-      window.open('https://www.baidu.com/s?ie=utf8&oe=utf8&tn=98010089_dg&ch=11&wd='+item,'_blank');
-    },
-    picker_list_click(item){
-      $('.logo').css("background-image",("url('/src/assets/"+item.class+".png')"));
-      $('.picker').html(item.value)
+  {
+    name:'WebTemplates'
+  },
+  {
+    name:'WebMaterial'
+  },
+  {
+    name:'WholeSiteSourceCode'
+  },
+  {
+    name:'AnimationCode'
+  },
+  {
+    name:'StyleDesign'
+  }
+]
+watch(inputValue,(newVal)=>{
+  console.log(newVal)
+})
+const languageChange = (lang) => {
+  if(lang === 'zh-cn'){
+    setting.changeLanguage(zhCn)
+  }else if(lang === 'en'){
+    setting.changeLanguage(en)
+  }
+}
+const hot_list_delete_item = (key,$event) => {
+  this.list.splice(key,1)
+  $event.preventDefault();
+  $event.stopPropagation();
+}
+const handleClick = () => {
+  console.log('handleClick')
+}
+const keydown_enter = () => {
+  $('.search').focus().click()
+}
+const hot_list_mousedown = item => {
+  this.inputValue=item;
+}
+const picker_list_click = item => {
+  $('.logo').css("background-image",("url('/src/assets/"+item.class+".png')"));
+  $('.picker').html(item.value)
+}
+const search_click = () => {
+  for(let i=0;i<this.list.length;i++){
+    if(this.list[i]==this.inputValue){
+      this.list.splice(i--,1)
     }
+  }
+  if(this.inputValue!==""){
+    this.list.unshift(this.inputValue)
+    if(this.list.length>10){
+      this.list.splice(-1,1)
+    }
+
+    window.open('https://www.baidu.com/s?ie=utf8&oe=utf8&tn=98010089_dg&ch=11&wd='+this.inputValue,'_blank');
   }
 }
 </script>
@@ -193,10 +145,8 @@ export default{
  * 微信公众号:web-7258
  */
 .input_pane{
-  height:126px;
-  border:1px solid red;
   display: flex;
-  width: 100%;
+  width: 80%;
   position: relative;
   &:after{
     content: '';
@@ -259,7 +209,7 @@ export default{
       margin: 0;
       height: 100%;
       width: 100%;
-      color: #333;
+      color: var(--ep-text-color-primary);
       font-size: 16px;
       border-radius: 10px 0 0 10px;
       &::-webkit-input-placeholder{
@@ -306,7 +256,7 @@ export default{
       box-shadow: 0 1px 5px rgba(0,0,0,.2);
       background-color: #fff;
       display: none;
-      color:black;
+      color:var(--ep-text-color-primary);
       &>li{
         padding-left: 36px;
         background-position: 10px center;
@@ -349,9 +299,16 @@ export default{
     .hot-list{
       .line{
         height:1px;
+        padding:0;
         background-color: transparent;
-        margin:0 auto;
+        margin:0 auto 10px auto;
         width:calc(100% - 20px);
+      }
+      &:has(.dataItem) .noData{
+        display:none;
+      }
+      .noData{
+        display:block;
       }
       visibility:collapse;
       box-sizing:border-box;
@@ -370,13 +327,21 @@ export default{
       // box-shadow: 0 1px 5px rgba(0,0,0,.2);
       background-color: #fff;
       &>div{
-        display: block;
-        color: #333;
+        display: flex;
+        flex-direction:row;
+        justify-content:cneter;
+        align-items:center;
         text-decoration: none;
         padding: 0 10px;
         overflow: hidden;
         &:hover{
           background-color: #f3f3f3;
+          .hot_list_delete_item{
+            visibility:visible;
+          }
+        }
+        .hot_list_delete_item{
+          visibility:collapse;
         }
         &>div{
           float: left;
@@ -395,7 +360,8 @@ export default{
     background-image: url('/src/assets/search.png');
     background-position: center;
     background-repeat: no-repeat;
-    border-radius: 0 4px 4px 0;
+    border-radius: 0 10px 10px 0;
+    outline:none;
     cursor: pointer;
     transition:all 0.3s;
     &:hover{
@@ -416,6 +382,39 @@ export default{
     border:1px solid rgba(255,255,255,0.05);
     &>.classificationPhoto{
       filter: drop-shadow(rgba(255,255,255,0.15) 0 60px);
+    }
+  }
+  .input{
+    .hot-list{
+      background:#3b3b3b;
+      &>div:hover{
+        background:#2b2b2b;
+      }
+    }
+    .picker-list{
+      background:#3b3b3b;
+      &>li{
+        padding-left: 36px;
+        background-position: 10px center;
+        background-repeat: no-repeat;
+        background-size: 16px auto;
+        &:hover{
+          background-color: #2b2b2b;
+          cursor: pointer;
+        }
+        &.baidu{
+          background-image: url('/src/assets/ico_baidu.png')
+        }
+        &.sogou{
+          background-image: url('/src/assets/ico_sogou.png')
+        }
+        &.bing{
+          background-image: url('/src/assets/ico_bing.png')
+        }
+        &.google{
+          background-image: url('/src/assets/ico_google.ico')
+        }
+      }
     }
   }
 }

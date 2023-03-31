@@ -2,7 +2,7 @@
   <div class="app-container">
     <!-- <box>{{ t("tl.Success") }}</box> -->
     <search></search>
-    <el-button mb-2 @click="toggle">{{ t('tl.switchLanguage') }}</el-button>
+    Using <a href="https://cn.vuejs.org/" target="_blank">Vue</a> v{{ vueVersion }},<a href="https://element-plus.gitee.io/zh-CN/" target="_blank">Element-plus</a> v{{ elementplusVersion }} and <a href="https://pinia.web3doc.top/" target="_blank">Pinia</a> v{{ piniaVersion }}.
     <el-table mb-1 :data="[]" />
     <el-pagination :total="100" />
     <BaseHeader />
@@ -20,30 +20,11 @@
   </div>
 </template>
 <script setup>
+import { version as piniaVersion } from 'pinia/package.json'
+import { version as vueVersion } from 'vue/package.json'
+import { version as elementplusVersion } from 'element-plus/package.json'
 import { useLocale } from 'element-plus'
-import { computed, ref } from 'vue'
-import zhCn from './languages/zh-cn.mjs'
-import en from './languages/en.mjs'
-let props = defineProps({
-  value:{
-    type:Object,
-    default: en,
-  }
-})
 let { t } = useLocale()
-const emit = defineEmits(["update:value"]);
-const toggle = () => {
-  if(props.value.name==en.name){
-    emit('update:value', zhCn)
-    localStorage.setItem('language',zhCn.name)
-  }else{
-    emit('update:value', en)
-    localStorage.setItem('language',en.name)
-  }
-}
-const handleClick = () => {
-  console.log('click')
-}
 </script>
 <script>
 import RemoteComponent from './myComponents/remoteComponent.vue'
