@@ -5,19 +5,16 @@
       <div style="display:flex;justify-content: center;">
         <div class="classificationButton"><div class="classificationPhoto" />{{ t('tl.classification') }}</div>
         <div class="input">
-          <input type="text" placeholder="共35537张/昨日更新20张的内容" autocomplete="off" id="search-input">
+          <input v-model.sync="inputValue" type="text" placeholder="共35537张/昨日更新20张的内容" autocomplete="off" id="search-input">
           <div class="picker" tabindex="-1">百度</div>
           <ul class="picker-list">
-            <li class="baidu" data-logo="baidu.png">百度</li>
-            <li class="sogou" data-logo="sogou.png">搜狗</li>
-            <li class="bing" data-logo="bing.png">必应</li>
-            <li class="google" data-logo="google.png">谷歌</li>
+            <li v-for="(item,key) in searchArr" @mousedown.native="picker_list_click(item)" :class="item.class">{{ item.value }}</li>
           </ul>
           <div @mousedown.stop class="hot-list">
             <div class="line"></div>
-            <a v-for="(item,key) in list" @mousedown.native="hot_list_mousedown" :href="'https://www.baidu.com/s?ie=utf8&oe=utf8&tn=98010089_dg&ch=11&wd='+t('tl.'+item.name)" target="_blank">
+            <div v-for="(item,key) in list" @mousedown.native="hot_list_mousedown(item)" target="_blank">
               <div class="number" :style="'color:'+color[key]">{{ key+1 }}</div><div>{{ item }}</div>
-            </a>
+            </div>
           </div>
         </div>
         <div class="search"></div>
@@ -36,7 +33,7 @@ const { t } = useLocale()
 export default{
   data(){
     return{
-      /* 颜色 */
+      inputValue:'',
       color:['#ff2c00','#ff5a00','#ff8105','#fd9a15','#dfad1c','#6bc211','#3cc71e','#3cbe85','#51b2ef','#53b0ff'],
       activeName:'WebEffects',
       list:[
@@ -50,6 +47,7 @@ export default{
         '评论',
         'QQ表情'
       ],
+      searchArr:[{class:'baidu',value:'百度'},{class:'sogou',value:'搜狗'},{class:'bing',value:'必应'},{class:'google',value:'谷歌'}],
       options:[
         {
           name:'WebEffects'
@@ -165,14 +163,23 @@ export default{
         });
       }
     };
-    $(function(){
-      helangSearch.init();
-    })
+    // $(function(){
+    //   helangSearch.init();
+    // })
+  },
+  watch:{
+    inputValue(newVal){
+      console.log(newVal)
+    }
   },
   methods: {
     handleClick(){},
-    hot_list_mousedown(e){
-      console.log(e)
+    hot_list_mousedown(item){
+      window.open('https://www.baidu.com/s?ie=utf8&oe=utf8&tn=98010089_dg&ch=11&wd='+item,'_blank');
+    },
+    picker_list_click(item){
+      $('.logo').css("background-image",("url('/src/assets/"+item.class+".png')"));
+      $('.picker').html(item.value)
     }
   }
 }
@@ -185,7 +192,6 @@ export default{
  * CSDN博客:https://blog.csdn.net/u013350495
  * 微信公众号:web-7258
  */
-
 .input_pane{
   height:126px;
   border:1px solid red;
@@ -208,7 +214,7 @@ export default{
     background-repeat: no-repeat;
     background-size: auto 120px;
     background-image:url('/src/assets/baidu.png')
-  }  
+  }
   .classificationButton{
     position: relative;
     height:40px;
@@ -363,7 +369,7 @@ export default{
       border-radius: 0 0 10px 10px;
       // box-shadow: 0 1px 5px rgba(0,0,0,.2);
       background-color: #fff;
-      &>a{
+      &>div{
         display: block;
         color: #333;
         text-decoration: none;
@@ -404,7 +410,7 @@ export default{
 }
 </style>
 <style lang="scss">
-.dark .container{
+.dark .input_pane{
   .classificationButton{
     background:rgba(255,255,255,0.02);
     border:1px solid rgba(255,255,255,0.05);
