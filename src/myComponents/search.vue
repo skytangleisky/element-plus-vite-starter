@@ -56,30 +56,34 @@
     </div>
     <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
       <el-tab-pane v-for="(item,k) in options" :label="t('tl.'+item.name)" :name="item.name">
+        <div v-for="(item,key) in data.result.results">{{ item.uuid }}</div>
       </el-tab-pane>
     </el-tabs>
+    <el-pagination :total="data.result.total" v-model:page-size="page_size" v-model:current-page="current_page" />
   </div>
 </div>
 </template>
 <script setup>
-import { reactive, ref, watch } from 'vue'
+import { reactive, ref, watch, computed } from 'vue'
 import { toggleDark } from '~/composables';
-import {
-  Select,
-  Setting,
-  Close,
-  SwitchButton,
-  ColdDrink,
-  User, } from '@element-plus/icons-vue'
+import { Select, Setting, Close, SwitchButton, ColdDrink, User } from '@element-plus/icons-vue'
 import { useLocale } from 'element-plus'
-import zhCn from '../languages/zh-cn.mjs'
-import en from '../languages/en.mjs'
 const { t } = useLocale()
 import { useSettingStore } from '../stores/setting'
 import { useUserStore } from '../stores/user'
+import { useDataStore } from '../stores/data'
 const setting = useSettingStore()
 const user = useUserStore()
+const data = useDataStore()
 user.info()
+const page_size = ref(10)
+const current_page = ref(1)
+let queryChange = computed(()=>{
+  return {offset:page_size.value*(current_page.value-1),limit:page_size.value}
+})
+watch(queryChange,newVal=>{
+  data.FetchList(newVal)
+},{ immediate: true, deep: true })
 const list = reactive(['网页特效','jQuery特效','web前端代码','图片轮播','图片切换','响应式布局','表单美化','评论','QQ表情'])
 let lang = ref('zh-cn')
 if(setting.locale.name==='en'){
@@ -90,9 +94,8 @@ const inputValue = ref('')
 const color = ref(['#ff2c00','#ff5a00','#ff8105','#fd9a15','#dfad1c','#6bc211','#3cc71e','#3cbe85','#51b2ef','#53b0ff'])
 const activeName = 'All'
 const searchArr = [{class:'baidu',value:'百度'},{class:'sogou',value:'搜狗'},{class:'bing',value:'必应'},{class:'google',value:'谷歌'}]
-const options = [{name:'All'},{name:'WebEffects'},{name:'FlushMaterial'},{name:'html5css3'},{name:'WebTemplates'},{name:'WebMaterial'},{name:'WholeSiteSourceCode'},{name:'AnimationCode'},{name:'StyleDesign'}
-]
-watch(inputValue,(newVal)=>{
+const options = [{name:'All'},{name:'WebEffects'},{name:'FlushMaterial'},{name:'html5css3'},{name:'WebTemplates'},{name:'WebMaterial'},{name:'WholeSiteSourceCode'},{name:'AnimationCode'},{name:'StyleDesign'}]
+watch(inputValue,newVal=>{
   console.log(newVal)
 })
 const languageChange = (lang) => {

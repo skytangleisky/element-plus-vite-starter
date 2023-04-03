@@ -5,7 +5,6 @@
     <search></search>
     Using <a href="https://cn.vuejs.org/" target="_blank">Vue</a> v{{ vueVersion }}, <a href="https://element-plus.gitee.io/zh-CN/" target="_blank">Element-plus</a> v{{ elementplusVersion }} and <a href="https://pinia.web3doc.top/" target="_blank">Pinia</a> v{{ piniaVersion }}.
     <!-- <el-table mb-1 :data="[]" /> -->
-    <el-pagination :total="100" />
     <!-- <BaseHeader /> -->
     <!-- <div style="display: flex">
       <BaseSide />

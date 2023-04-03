@@ -2,15 +2,6 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { login, getInfo,logout } from '../api/login.js'
 
-/**
- * Simulate a login
- */
-function apiLogin(a: string, p: string) {
-  if (a === 'ed' && p === 'ed') return Promise.resolve({ isAdmin: true })
-  if (p === 'ed') return Promise.resolve({ isAdmin: false })
-  return Promise.reject(new Error('invalid credentials'))
-}
-
 export const useUserStore = defineStore({
   id: 'user',
   state: () => ({
@@ -23,35 +14,38 @@ export const useUserStore = defineStore({
 
   actions: {
     logout() {
-      this.$patch({
-        username: '游客',
-        isAdmin: false,
-        avatar: '',
-        logined: false,
-      })
+      this.$reset()
       // we could do other stuff like redirecting the user
     },
     info(){
-      getInfo().then(infoRes=>{
-        this.$patch({
-          logined: true,
-          ...infoRes.data,
-        })
+      getInfo().then((infoRes:any)=>{
+        if(infoRes.code===20000){
+          this.$patch({
+            logined: true,
+            ...infoRes.data,
+          })
+        }else{
+          console.log(infoRes)
+          this.$reset()
+          // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired; 60204: Error;
+        }
       }).catch(()=>{
-        this.$patch({username:'游客',avatar:'',logined:false})
+        this.$reset()
       })
     },
-    Login(data) {
+    Login(data:any) {
       // const res = await login({username:'admin',password:'admin'})
-      login(data).then(loginRes=>{
+      login(data).then((loginRes:any)=>{
         console.log(loginRes)
         if(loginRes.code===20000){
           this.info()
         }else{
+          console.log(loginRes.code)
+          // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired; 60204: Error;
           this.$reset()
         }
       }).catch(()=>{
-        this.$patch({username:'游客',avatar:'',logined:false})
+        this.$reset()
       })
       // const userData = await apiLogin(user, password)
     },
