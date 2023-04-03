@@ -4,9 +4,6 @@
   <div style="display:flex;flex-direction:column;width:100%;margin-top:10px;padding:10px 0;">
     <div style="display:flex;justify-content: center;">
       <div style="position: absolute;left:10px;display: flex;align-items: center;">
-        <button @click="toggleDark()" class="bg-transparent border-none cursor-pointer">
-          <i inline-flex i="dark:ep-moon ep-sunny" />
-        </button>
         <el-select @change="languageChange" v-model="lang" class="m-2" placeholder="Select" size="small">
           <el-option
             v-for="item in languages"
@@ -15,6 +12,9 @@
             :value="item.value"
           />
         </el-select>
+        <button @click="toggleDark()" class="bg-transparent border-none cursor-pointer">
+          <i inline-flex i="dark:ep-moon ep-sunny" />
+        </button>
       </div>
       <div class="classificationButton"><div class="classificationPhoto" />{{ t('tl.classification') }}</div>
       <div class="input">
@@ -43,10 +43,10 @@
             <img :src="user.avatar" style="width:24px;height:24px;border-radius:50%;">
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item @click="login" :icon="Plus">登陆</el-dropdown-item>
-                <el-dropdown-item :icon="CirclePlusFilled">捐赠</el-dropdown-item>
-                <el-dropdown-item :icon="CirclePlus">设置</el-dropdown-item>
-                <el-dropdown-item @click="logout" :icon="Check">退出</el-dropdown-item>
+                <el-dropdown-item v-if="!user.logined" @click="login" :icon="Select">登陆</el-dropdown-item>
+                <el-dropdown-item :icon="ColdDrink">捐赠</el-dropdown-item>
+                <el-dropdown-item :icon="Setting">设置</el-dropdown-item>
+                <el-dropdown-item v-if="user.logined" divided @click="logout" :icon="SwitchButton">退出</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -55,7 +55,8 @@
       </div>
     </div>
     <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
-      <el-tab-pane v-for="(item,k) in options" :label="t('tl.'+item.name)" :name="item.name">{{ t('tl.'+item.name) }}.</el-tab-pane>
+      <el-tab-pane v-for="(item,k) in options" :label="t('tl.'+item.name)" :name="item.name">
+      </el-tab-pane>
     </el-tabs>
   </div>
 </div>
@@ -64,13 +65,12 @@
 import { reactive, ref, watch } from 'vue'
 import { toggleDark } from '~/composables';
 import {
+  Select,
+  Setting,
   Close,
-  User,
-  ArrowDown,
-  Check,
-  CirclePlus,
-  CirclePlusFilled,
-  Plus, } from '@element-plus/icons-vue'
+  SwitchButton,
+  ColdDrink,
+  User, } from '@element-plus/icons-vue'
 import { useLocale } from 'element-plus'
 import zhCn from '../languages/zh-cn.mjs'
 import en from '../languages/en.mjs'
