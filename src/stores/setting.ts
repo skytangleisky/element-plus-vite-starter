@@ -6,15 +6,25 @@ import en from '../languages/en.mjs'
 export const useSettingStore = defineStore({
   id: 'setting',
   state: () => ({
-    locale: zhCn,
+    lang: 'zh-cn',
   }),
+  getters:{
+    locale: state => {
+      if(state.lang==='en'){
+        return en
+      }
+      return zhCn
+    }
+  },
   actions: {
-    changeLanguage(lang: {}) {
+    changeLanguage(lang: string) {
+      console.log(lang)
       this.$patch({
-        locale:lang
+        lang
       })
     }
   },
+  persist: true
 })
 
 if (import.meta.hot) {

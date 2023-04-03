@@ -65,7 +65,7 @@ export default defineConfig({
   server:{
     proxy:{
       '/api':{
-        target:'',//替换的服务端地址
+        target:'http://websocket.tanglei.top',//替换的服务端地址
         changeOrigin:true,//开启代理，允许跨域
         rewrite:path=>path.replace(/^\/api/,'') // 设置重写的路径
       }

@@ -1,27 +1,10 @@
 <template>
-  <div class="input_pane">
-    <div class="logo" style="display:none;"></div>
-    <div style="display:flex;flex-direction:column;width:100%;margin-top:10px;padding:10px 0;">
-      <div style="display:flex;justify-content: center;">
-        <div class="classificationButton"><div class="classificationPhoto" />{{ t('tl.classification') }}</div>
-        <div class="input">
-          <input @keydown.enter.native="keydown_enter" v-model.sync="inputValue" type="text" placeholder="共35537张/昨日更新20张的内容" autocomplete="off">
-          <div class="picker" tabindex="-1">百度</div>
-          <ul class="picker-list">
-            <li v-for="(item,key) in searchArr" @mousedown.native="picker_list_click(item)" :class="item.class">{{ item.value }}</li>
-          </ul>
-          <div @mousedown.stop class="hot-list">
-            <div class="line"></div>
-            <div class="noData">{{ t("el.table.emptyText") }}</div>
-            <div class="dataItem" v-for="(item,key) in list" @mousedown.native="hot_list_mousedown(item)" target="_blank">
-              <div class="number" :style="'color:'+color[key]">{{ key+1 }}</div>
-              <div style="flex-grow:1;text-align:left;">{{ item }}</div>
-              <Close @mousedown="hot_list_delete_item(key,$event)" class="hot_list_delete_item" style="width:20px;height:20px;color:lightgrey;"></Close>
-            </div>
-          </div>
-        </div>
-        <div @click.native="search_click" class="search" tabindex="-1"></div>
-        <button @click="toggleDark()" class="bg-transparent border-none cursor-pointer" style="">
+<div class="input_pane">
+  <div class="logo" style="display:none;"></div>
+  <div style="display:flex;flex-direction:column;width:100%;margin-top:10px;padding:10px 0;">
+    <div style="display:flex;justify-content: center;">
+      <div style="position: absolute;left:10px;display: flex;align-items: center;">
+        <button @click="toggleDark()" class="bg-transparent border-none cursor-pointer">
           <i inline-flex i="dark:ep-moon ep-sunny" />
         </button>
         <el-select @change="languageChange" v-model="lang" class="m-2" placeholder="Select" size="small">
@@ -33,77 +16,96 @@
           />
         </el-select>
       </div>
-      <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
-        <el-tab-pane v-for="(item,k) in options" :label="t('tl.'+item.name)" :name="item.name">{{ t('tl.'+item.name) }}.</el-tab-pane>
-      </el-tabs>
+      <div class="classificationButton"><div class="classificationPhoto" />{{ t('tl.classification') }}</div>
+      <div class="input">
+        <input @keydown.enter.native="keydown_enter" v-model.sync="inputValue" type="text" placeholder="共35537张/昨日更新20张的内容" autocomplete="off">
+        <div class="picker" tabindex="-1">百度</div>
+        <ul class="picker-list">
+          <li v-for="(item,key) in searchArr" @mousedown.native="picker_list_click(item)" :class="item.class">{{ item.value }}</li>
+        </ul>
+        <div @mousedown.stop class="hot-list">
+          <div class="line"></div>
+          <div class="noData">{{ t("el.table.emptyText") }}</div>
+          <div class="dataItem" v-for="(item,key) in list" @mousedown.native="hot_list_mousedown(item)" target="_blank">
+            <div class="number" :style="'color:'+color[key]">{{ key+1 }}</div>
+            <div style="flex-grow:1;text-align:left;">{{ item }}</div>
+            <Close @mousedown="hot_list_delete_item(key,$event)" class="hot_list_delete_item" style="width:20px;height:20px;color:lightgrey;"></Close>
+          </div>
+        </div>
+      </div>
+      <div @click.native="search_click" class="search" tabindex="-1"></div>
+      <div style="position: absolute;right:10px;display: flex;align-items: center;">
+        <div style="display: flex;align-items: center;">
+          <el-dropdown trigger="click" size="small">
+            <el-avatar :size="32" :src="user.avatar">
+              <span class="el-dropdown-link"><User style="width:24px;height:24px;"></User></span>
+            </el-avatar>
+            <img :src="user.avatar" style="width:24px;height:24px;border-radius:50%;">
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="login" :icon="Plus">登陆</el-dropdown-item>
+                <el-dropdown-item :icon="CirclePlusFilled">捐赠</el-dropdown-item>
+                <el-dropdown-item :icon="CirclePlus">设置</el-dropdown-item>
+                <el-dropdown-item @click="logout" :icon="Check">退出</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+          {{ user.username }}
+        </div>
+      </div>
     </div>
+    <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
+      <el-tab-pane v-for="(item,k) in options" :label="t('tl.'+item.name)" :name="item.name">{{ t('tl.'+item.name) }}.</el-tab-pane>
+    </el-tabs>
   </div>
+</div>
 </template>
 <script setup>
 import { reactive, ref, watch } from 'vue'
 import { toggleDark } from '~/composables';
-import { Close } from '@element-plus/icons-vue'
+import {
+  Close,
+  User,
+  ArrowDown,
+  Check,
+  CirclePlus,
+  CirclePlusFilled,
+  Plus, } from '@element-plus/icons-vue'
 import { useLocale } from 'element-plus'
 import zhCn from '../languages/zh-cn.mjs'
 import en from '../languages/en.mjs'
 const { t } = useLocale()
 import { useSettingStore } from '../stores/setting'
+import { useUserStore } from '../stores/user'
 const setting = useSettingStore()
-const list = reactive([
-  '网页特效',
-  'jQuery特效',
-  'web前端代码',
-  '图片轮播',
-  '图片切换',
-  '响应式布局',
-  '表单美化',
-  '评论',
-  'QQ表情'
-])
-const lang = ref('zh-cn')
+const user = useUserStore()
+user.info()
+const list = reactive(['网页特效','jQuery特效','web前端代码','图片轮播','图片切换','响应式布局','表单美化','评论','QQ表情'])
+let lang = ref('zh-cn')
+if(setting.locale.name==='en'){
+  lang = ref('en')
+}
 const languages = ref([{value: 'zh-cn',label: '中文',},{value: 'en',label: 'English'}])
 const inputValue = ref('')
 const color = ref(['#ff2c00','#ff5a00','#ff8105','#fd9a15','#dfad1c','#6bc211','#3cc71e','#3cbe85','#51b2ef','#53b0ff'])
-const activeName = 'WebEffects'
+const activeName = 'All'
 const searchArr = [{class:'baidu',value:'百度'},{class:'sogou',value:'搜狗'},{class:'bing',value:'必应'},{class:'google',value:'谷歌'}]
-const options = [
-  {
-    name:'WebEffects'
-  },
-  {
-    name:'FlushMaterial'
-  },
-  {
-    name:'html5css3'
-  },
-  {
-    name:'WebTemplates'
-  },
-  {
-    name:'WebMaterial'
-  },
-  {
-    name:'WholeSiteSourceCode'
-  },
-  {
-    name:'AnimationCode'
-  },
-  {
-    name:'StyleDesign'
-  }
+const options = [{name:'All'},{name:'WebEffects'},{name:'FlushMaterial'},{name:'html5css3'},{name:'WebTemplates'},{name:'WebMaterial'},{name:'WholeSiteSourceCode'},{name:'AnimationCode'},{name:'StyleDesign'}
 ]
 watch(inputValue,(newVal)=>{
   console.log(newVal)
 })
 const languageChange = (lang) => {
-  if(lang === 'zh-cn'){
-    setting.changeLanguage(zhCn)
-  }else if(lang === 'en'){
-    setting.changeLanguage(en)
-  }
+  setting.changeLanguage(lang)
+}
+const login = ()=>{
+  user.Login({username:'admin',password:'admin'})
+}
+const logout = ()=>{
+  user.Logout()
 }
 const hot_list_delete_item = (key,$event) => {
-  this.list.splice(key,1)
+  list.splice(key,1)
   $event.preventDefault();
   $event.stopPropagation();
 }
@@ -114,25 +116,25 @@ const keydown_enter = () => {
   $('.search').focus().click()
 }
 const hot_list_mousedown = item => {
-  this.inputValue=item;
+  inputValue.value=item;
 }
 const picker_list_click = item => {
   $('.logo').css("background-image",("url('/src/assets/"+item.class+".png')"));
   $('.picker').html(item.value)
 }
 const search_click = () => {
-  for(let i=0;i<this.list.length;i++){
-    if(this.list[i]==this.inputValue){
-      this.list.splice(i--,1)
+  for(let i=0;i<list.length;i++){
+    if(list[i]==inputValue.value){
+      list.splice(i--,1)
     }
   }
-  if(this.inputValue!==""){
-    this.list.unshift(this.inputValue)
-    if(this.list.length>10){
-      this.list.splice(-1,1)
+  if(inputValue.value!==""){
+    list.unshift(inputValue.value)
+    if(list.length>10){
+      list.splice(-1,1)
     }
 
-    window.open('https://www.baidu.com/s?ie=utf8&oe=utf8&tn=98010089_dg&ch=11&wd='+this.inputValue,'_blank');
+    window.open('https://www.baidu.com/s?ie=utf8&oe=utf8&tn=98010089_dg&ch=11&wd='+inputValue.value,'_blank');
   }
 }
 </script>
@@ -146,7 +148,7 @@ const search_click = () => {
  */
 .input_pane{
   display: flex;
-  width: 80%;
+  width: 100%;
   position: relative;
   &:after{
     content: '';
@@ -167,7 +169,7 @@ const search_click = () => {
   }
   .classificationButton{
     position: relative;
-    height:40px;
+    height:38px;
     border-radius: 4px;
     display:flex;
     justify-content:center;
@@ -181,6 +183,7 @@ const search_click = () => {
     user-select:none;
     -webkit-user-drag:none;
     padding-right:8px;
+    overflow: hidden;
     cursor:pointer;
     &>.classificationPhoto{
       transform: translateY(-60px);
@@ -189,7 +192,7 @@ const search_click = () => {
       width:20px;
       height:18px;
       margin:8px;
-      background:url('/src/assets/menu.svg')
+      background:url('/src/assets/menu.svg');
     }
     &:hover{
       background:rgba(0,0,0,0.05);
@@ -198,8 +201,8 @@ const search_click = () => {
   .input{
     margin-left:15px;
     position: relative;
-    width: 500px;
-    height: 42px;
+    width: 400px;
+    height: 40px;
     &>input{
       box-sizing:border-box;
       border: #c4c7ce solid 2px;
@@ -231,7 +234,7 @@ const search_click = () => {
       top: 0;
       right: 0;
       height: 100%;
-      line-height: 44px;
+      line-height: 40px;
       cursor: pointer;
       color: #999;
       font-size: 12px;
@@ -319,7 +322,7 @@ const search_click = () => {
       width: calc(100% + 2px);
       position: absolute;
       left: 0;
-      top: 42px;
+      top: 40px;
       margin: 0;
       line-height: 32px;
       font-size: 14px;
@@ -355,7 +358,7 @@ const search_click = () => {
   }
   .search{
     width: 89px;
-    height: 42px;
+    height: 40px;
     background-color: #17A1FF;
     background-image: url('/src/assets/search.png');
     background-position: center;

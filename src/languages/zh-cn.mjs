@@ -125,6 +125,7 @@ export default {
     }
   },
   tl: {
+    All: "全部",
     classification: "分类",
     switchLanguage: "切换语言",
     Round: "圆润",

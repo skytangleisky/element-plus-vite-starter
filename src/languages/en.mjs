@@ -160,6 +160,7 @@ export default {
     }
   },
   tl: {
+    All: "All",
     classification: "classification",
     switchLanguage: "Switch Language",
     Round: "Round",
