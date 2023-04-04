@@ -1,6 +1,7 @@
 import path from 'path'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { visualizer } from 'rollup-plugin-visualizer'
 
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
@@ -15,6 +16,7 @@ import {
 } from 'unocss'
 
 const pathSrc = path.resolve(__dirname, 'src')
+const lifecycle = process.env.npm_lifecycle_event;
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -61,6 +63,7 @@ export default defineConfig({
         transformerVariantGroup(),
       ]
     }),
+    lifecycle === 'report'? visualizer({ open: true, brotliSize: true, filename: 'report.html' }): null
   ],
   server:{
     proxy:{
@@ -68,6 +71,11 @@ export default defineConfig({
         target:'http://websocket.tanglei.top',//替换的服务端地址
         changeOrigin:true,//开启代理，允许跨域
         rewrite:path=>path.replace(/^\/api/,'') // 设置重写的路径
+      },
+      '/tanglei':{
+        target:'http://tanglei.top:5101',//替换的服务端地址
+        changeOrigin:true,//开启代理，允许跨域
+        rewrite:path=>path.replace(/^\/tanglei/,'') // 设置重写的路径
       }
     }
   }
