@@ -25,7 +25,7 @@ import { version as vueVersion } from 'vue/package.json'
 import { version as elementplusVersion } from 'element-plus/package.json'
 import { useLocale } from 'element-plus'
 let { t } = useLocale()
-import RemoteComponent from './myComponents/remoteComponent.vue'
+// import RemoteComponent from './myComponents/remoteComponent.vue'
 import TestButton from './elementplus/basic/button.vue'
 import TestBorder from './elementplus/basic/border.vue'
 import Box from './myComponents/box.vue'
