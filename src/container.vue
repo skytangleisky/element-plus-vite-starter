@@ -33,22 +33,27 @@ import Search from './myComponents/search.vue'
 </script>
 
 <style lang="scss">
+@media (prefers-color-scheme: light) {
+  /** ... */
+}
+@media (prefers-color-scheme: dark) {
+  /** ... */
+}
+@media (prefers-color-scheme: no-preference) {
+  /** ... */
+}
 body{
   overscroll-behavior: none;
 }
 #app {
   text-align: center;
   color: var(--ep-text-color-primary);
-  min-width: 1200px;
-  width:100vw;
-  height:100vh;
-  overflow: auto;
 }
 .app-container{
-  overflow:auto;
-  width: 100%;
-  height: 100%;
   background-size: cover;
+  box-sizing: border-box;
+  border:1px solid red;
+  min-height: 100vh;
 }
 .nav-wrapper{
   width: 100%;

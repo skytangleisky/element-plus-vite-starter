@@ -3,7 +3,7 @@
   <div class="logo" style="display:none;"></div>
   <div style="display:flex;flex-direction:column;width:100%;margin-top:10px;padding:10px 0;">
     <div style="display:flex;justify-content: center;">
-      <div style="position: absolute;left:10px;display: flex;align-items: center;">
+      <div class="w-30 invisible lg:visible flex items-center left-0 absolute">
         <el-select @change="languageChange" v-model="lang" class="m-2" placeholder="Select" size="small">
           <el-option
             v-for="item in languages"
@@ -16,9 +16,10 @@
           <i inline-flex i="dark:ep-moon ep-sunny" />
         </button>
       </div>
-      <div class="classificationButton"><div class="classificationPhoto" />{{ t('tl.classification') }}</div>
+      <div class="classificationButton invisible md:visible"><div class="classificationPhoto" />{{ t('tl.classification') }}</div>
       <div class="input">
         <input @keydown.enter.native="keydown_enter" v-model.sync="inputValue" type="text" placeholder="共35537张/昨日更新20张的内容" autocomplete="off">
+        <CloseBold class="clear" @click="clear_input"></CloseBold>
         <div class="picker" tabindex="-1">百度</div>
         <ul class="picker-list">
           <li v-for="(item,key) in searchArr" @mousedown.native="picker_list_click(item)" :class="item.class">{{ item.value }}</li>
@@ -34,7 +35,7 @@
         </div>
       </div>
       <div @click.native="search_click" class="search" tabindex="-1"></div>
-      <div style="position: absolute;right:10px;display: flex;align-items: center;">
+      <div class="absolute right-0 flex items-center invisible md:visible">
         <div style="display: flex;align-items: center;">
           <el-dropdown trigger="click" size="small">
             <el-avatar :size="32" :src="user.avatar">
@@ -57,8 +58,8 @@
     <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
       <el-tab-pane v-for="(item,k) in options" :label="t('tl.'+item.name)" :name="item.name">
 
-        <div class="grid grid-flow-row grid-rows-10 grid-cols-4 gap-4 place-items-center">
-          <img v-for="(item,key) in data.result.results" :src="'/tanglei/'+item.product_root+item.product_image">
+        <div class="grid grid-flow-row sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 place-items-center">
+          <img class="w-full h-full" v-for="(item,key) in data.result.results" :src="'/tanglei/'+item.product_root+item.product_image">
         </div>
 
       </el-tab-pane>
@@ -70,7 +71,7 @@
 <script setup>
 import { reactive, ref, watch, computed } from 'vue'
 import { toggleDark } from '~/composables';
-import { Select, Setting, Close, SwitchButton, ColdDrink, User } from '@element-plus/icons-vue'
+import { Select, Setting, Close, SwitchButton, ColdDrink, User, CloseBold } from '@element-plus/icons-vue'
 import { useLocale } from 'element-plus'
 const { t } = useLocale()
 import { useSettingStore } from '../stores/setting'
@@ -110,6 +111,9 @@ const login = ()=>{
 }
 const logout = ()=>{
   user.Logout()
+}
+const clear_input = () => {
+  inputValue.value = ''
 }
 const hot_list_delete_item = (key,$event) => {
   list.splice(key,1)
@@ -215,7 +219,7 @@ const search_click = () => {
       border: #c4c7ce solid 2px;
       border-right:none;
       outline: none;
-      padding: 0 78px 0 10px;
+      padding: 0 32px 0 10px;
       margin: 0;
       height: 100%;
       width: 100%;
@@ -234,7 +238,26 @@ const search_click = () => {
         padding-bottom:2px;
       }
     }
+    &:has(input:not(:placeholder-shown)) .clear{
+      visibility:visible;
+    }
+    .clear{
+      visibility:collapse;
+      position: absolute;
+      width:24px;
+      height:24px;
+      top: 0;
+      right: 5px;
+      height: 100%;
+      line-height: 40px;
+      color: #ddd;
+      cursor:pointer;
+      &:active{
+        color: #ccc;
+      }
+    }
     .picker{
+      display:none;
       width: 40px;
       padding-right: 30px;
       position: absolute;
