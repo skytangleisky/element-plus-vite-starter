@@ -52,7 +52,6 @@ body{
 .app-container{
   background-size: cover;
   box-sizing: border-box;
-  border:1px solid red;
   min-height: 100vh;
 }
 .nav-wrapper{

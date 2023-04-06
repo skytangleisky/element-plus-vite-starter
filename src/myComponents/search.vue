@@ -3,7 +3,7 @@
   <div class="logo" style="display:none;"></div>
   <div style="display:flex;flex-direction:column;width:100%;margin-top:10px;padding:10px 0;">
     <div style="display:flex;justify-content: center;">
-      <div class="w-30 invisible lg:visible flex items-center left-0 absolute">
+      <div class="w-30 hidden lg:flex items-center left-0 absolute">
         <el-select @change="languageChange" v-model="lang" class="m-2" placeholder="Select" size="small">
           <el-option
             v-for="item in languages"
@@ -16,7 +16,7 @@
           <i inline-flex i="dark:ep-moon ep-sunny" />
         </button>
       </div>
-      <div class="classificationButton invisible md:visible"><div class="classificationPhoto" />{{ t('tl.classification') }}</div>
+      <div class="classificationButton hidden md:flex"><div class="classificationPhoto" />{{ t('tl.classification') }}</div>
       <div class="input">
         <input @keydown.enter.native="keydown_enter" v-model.sync="inputValue" type="text" placeholder="共35537张/昨日更新20张的内容" autocomplete="off">
         <CloseBold class="clear" @click="clear_input"></CloseBold>
@@ -35,7 +35,7 @@
         </div>
       </div>
       <div @click.native="search_click" class="search" tabindex="-1"></div>
-      <div class="absolute right-0 flex items-center invisible md:visible">
+      <div class="absolute right-0 items-center hidden lg:flex">
         <div style="display: flex;align-items: center;">
           <el-dropdown trigger="click" size="small">
             <el-avatar :size="32" :src="user.avatar">
@@ -59,7 +59,9 @@
       <el-tab-pane v-for="(item,k) in options" :label="t('tl.'+item.name)" :name="item.name">
 
         <div class="grid grid-flow-row sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 place-items-center">
-          <img class="w-full h-full" v-for="(item,key) in data.result.results" :src="'/tanglei/'+item.product_root+item.product_image">
+          <a v-for="(item,key) in data.result.results" :href="'/tanglei/'+item.product_root+item.product_url" target="_blank">
+            <img class="w-full h-full" :src="'/tanglei/'+item.product_root+item.product_image">
+          </a>
         </div>
 
       </el-tab-pane>
@@ -182,7 +184,6 @@ const search_click = () => {
     position: relative;
     height:38px;
     border-radius: 4px;
-    display:flex;
     justify-content:center;
     align-items:center;
     flex-direction:row;
@@ -194,6 +195,7 @@ const search_click = () => {
     user-select:none;
     -webkit-user-drag:none;
     padding-right:8px;
+    margin-right:15px;
     overflow: hidden;
     cursor:pointer;
     &>.classificationPhoto{
@@ -210,7 +212,6 @@ const search_click = () => {
     }
   }
   .input{
-    margin-left:15px;
     position: relative;
     width: 400px;
     height: 40px;
@@ -388,7 +389,7 @@ const search_click = () => {
     }
   }
   .search{
-    width: 89px;
+    width: 60px;
     height: 40px;
     background-color: #17A1FF;
     background-image: url('/src/assets/search.png');
