@@ -1,7 +1,6 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import pinia from "./stores"
-import './tailwind.css'
 
 // import "~/styles/element/index.scss";
 

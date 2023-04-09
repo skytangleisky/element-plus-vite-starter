@@ -3,7 +3,7 @@
     <!-- <box>{{ t("tl.Success") }}</box> -->
     <div class="nav-wrapper"></div>
     <search></search>
-    Using <a href="https://cn.vuejs.org/" target="_blank">Vue</a> v{{ vueVersion }}, <a href="https://element-plus.gitee.io/zh-CN/" target="_blank">Element-plus</a> v{{ elementplusVersion }}, <a href="https://pinia.web3doc.top/" target="_blank">Pinia</a> v{{ piniaVersion }} and <a href="https://www.tailwindcss.cn/" target="_blank">tailwindcss</a> v{{ tailwindcssVersion }}.
+    Using <a href="https://cn.vuejs.org/" target="_blank">Vue</a> v{{ vueVersion }}, <a href="https://element-plus.gitee.io/zh-CN/" target="_blank">Element-plus</a> v{{ elementplusVersion }} and <a href="https://pinia.web3doc.top/" target="_blank">Pinia</a> v{{ piniaVersion }}.
     <!-- <el-table mb-1 :data="[]" /> -->
     <!-- <BaseHeader /> -->
     <!-- <div style="display: flex">
@@ -19,7 +19,6 @@
   </div>
 </template>
 <script setup>
-import { version as tailwindcssVersion } from 'tailwindcss/package.json'
 import { version as piniaVersion } from 'pinia/package.json'
 import { version as vueVersion } from 'vue/package.json'
 import { version as elementplusVersion } from 'element-plus/package.json'
