@@ -67,7 +67,8 @@ body{
 <style lang="scss">
 .dark{
   .app-container{
-    background: url(assets/newBg.jpg);
+    // background: url(assets/newBg.jpg);
+    // background: #131417;
     background-size: cover;
   }
 }

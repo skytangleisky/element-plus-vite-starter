@@ -58,10 +58,10 @@
     <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
       <el-tab-pane v-for="(item,k) in options" :label="t('tl.'+item.name)" :name="item.name">
 
-        <div class="grid grid-flow-row sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 place-items-center">
-          <a v-for="(item,key) in data.result.results" :href="'/tanglei/'+item.product_root+item.product_url" target="_blank">
-            <img class="w-full h-full" :src="'/tanglei/'+item.product_root+item.product_image">
-          </a>
+        <div class="grid grid-flow-row sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-16 place-items-center p-10">
+          <!-- <a v-for="(item,key) in data.result.results" :href="'/tanglei/'+item.product_root+item.product_url" target="_blank" class="w-full h-full">
+          </a> -->
+          <pen-item v-for="(item,key) in data.result.results" :item="item"></pen-item>
         </div>
 
       </el-tab-pane>
@@ -71,6 +71,7 @@
 </div>
 </template>
 <script setup>
+import penItem from './penItem.vue'
 import { reactive, ref, watch, computed } from 'vue'
 import { toggleDark } from '~/composables';
 import { Select, Setting, Close, SwitchButton, ColdDrink, User, CloseBold } from '@element-plus/icons-vue'
