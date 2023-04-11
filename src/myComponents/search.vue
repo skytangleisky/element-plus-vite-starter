@@ -66,7 +66,7 @@
 
       </el-tab-pane>
     </el-tabs>
-    <el-pagination :total="data.result.total" v-model:page-size="page_size" v-model:current-page="current_page" />
+    <el-pagination :page-sizes="[1, 2, 3, 4, 5, 6]" :total="data.result.total" v-model:page-size="data.page_size" v-model:current-page="data.current_page" layout="total, sizes, prev, pager, next, jumper" />
   </div>
 </div>
 </template>
@@ -87,7 +87,7 @@ user.info()
 const page_size = ref(10)
 const current_page = ref(1)
 let queryChange = computed(()=>{
-  return {offset:page_size.value*(current_page.value-1),limit:page_size.value}
+  return {offset:data.page_size*(data.current_page-1),limit:data.page_size}
 })
 watch(queryChange,newVal=>{
   data.FetchList(newVal)

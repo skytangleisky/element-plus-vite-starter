@@ -7,7 +7,9 @@ export const useDataStore = defineStore({
   state: () => ({
     result:{
       total:0
-    }
+    },
+    page_size:6,
+    current_page:1,
   }),
   actions: {
     FetchList(query:any){
