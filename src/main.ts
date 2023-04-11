@@ -1,6 +1,5 @@
 import { createApp } from "vue";
 import App from "./App.vue";
-import pinia from "./stores"
 
 // import "~/styles/element/index.scss";
 
@@ -19,5 +18,9 @@ import "element-plus/theme-chalk/src/message.scss"
 
 const app = createApp(App);
 // app.use(ElementPlus, { locale });
-app.use(pinia);
-app.mount("#app");
+import router from './router'
+import './permission.ts'
+app.use(router)
+import pinia from "./stores"
+app.use(pinia)
+app.mount("#app")
