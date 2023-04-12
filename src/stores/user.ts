@@ -5,7 +5,7 @@ import { login, getInfo,logout } from '../api/login.js'
 export const useUserStore = defineStore({
   id: 'user',
   state: () => ({
-    username: '游客',
+    username: '',
     isAdmin: true,
     token: '',
     avatar: '',

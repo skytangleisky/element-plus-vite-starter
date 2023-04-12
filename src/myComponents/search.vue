@@ -37,9 +37,10 @@
       <div @click.native="search_click" class="search" tabindex="-1"></div>
       <div class="absolute right-0 items-center hidden lg:flex">
         <div style="display: flex;align-items: center;">
-          <el-dropdown trigger="click" size="small">
+          <div v-show="!user.logined" @click="login" class="QQ_Login_Button"></div>
+          <el-dropdown v-show="user.logined" trigger="click" size="small">
             <el-avatar :size="32" :src="user.avatar">
-              <span class="el-dropdown-link"><User style="width:24px;height:24px;"></User></span>
+              <!-- <span class="el-dropdown-link"><User style="width:24px;height:24px;"></User></span> -->
             </el-avatar>
             <img :src="user.avatar" style="width:24px;height:24px;border-radius:50%;">
             <template #dropdown>
@@ -72,7 +73,7 @@
 </template>
 <script setup>
 import penItem from './penItem.vue'
-import { reactive, ref, watch, computed } from 'vue'
+import { reactive, ref, watch, computed, onMounted } from 'vue'
 import { toggleDark } from '~/composables';
 import { Select, Setting, Close, SwitchButton, ColdDrink, User, CloseBold } from '@element-plus/icons-vue'
 import { useLocale } from 'element-plus'
@@ -83,7 +84,7 @@ import { useDataStore } from '../stores/data'
 const setting = useSettingStore()
 const user = useUserStore()
 const data = useDataStore()
-user.info()
+// user.info()
 const page_size = ref(10)
 const current_page = ref(1)
 let queryChange = computed(()=>{
@@ -110,10 +111,15 @@ const languageChange = (lang) => {
   setting.changeLanguage(lang)
 }
 const login = ()=>{
-  user.Login({username:'admin',password:'admin'})
+  // user.Login({username:'admin',password:'admin'})
+  // QC.Login.showPopup({ appId: "101875878", redirectURI: "http://tanglei.top/qqlogin" });
+  window.open(
+    `https://graph.qq.com/oauth2.0/authorize?response_type=token&client_id=101875878&redirect_uri=http://tanglei.top/qqlogin`,
+    "_blank"
+  );
 }
 const logout = ()=>{
-  user.Logout()
+  QC.Login.signOut();
 }
 const clear_input = () => {
   inputValue.value = ''
@@ -151,8 +157,38 @@ const search_click = () => {
     window.open('https://www.baidu.com/s?ie=utf8&oe=utf8&tn=98010089_dg&ch=11&wd='+inputValue.value,'_blank');
   }
 }
+onMounted(() => {
+  QC.Login(
+    {},
+    function (reqData, opts) {
+      var dom = document.getElementById(opts["btnId"]);
+      QC.Login.getMe(function (openId, accessToken) {
+        console.log(
+          ["当前登录用户的", "openId为：" + openId, "accessToken为：" + accessToken].join(
+            "\n"
+          )
+        );
+        QC.api("get_user_info").success((res) => {
+          console.log(res.data)
+          user.avatar = res.data.figureurl;
+          user.username = res.data.nickname;
+          user.logined = true;
+        });
+      });
+    },
+    function (opts) {
+      console.log("QQ登录 注销成功");
+      user.logout()
+    }
+  );
+});
 </script>
 <style lang="scss">
+.QQ_Login_Button {
+  width: 63px;
+  height: 24px;
+  background: url("/src/assets/Connect_logo_7.png");
+}
 /*
  * 作者:helang
  * 邮箱:helang.love@qq.com
