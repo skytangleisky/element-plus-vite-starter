@@ -37,8 +37,8 @@
       <div @click.native="search_click" class="search" tabindex="-1"></div>
       <div class="absolute right-0 items-center hidden lg:flex">
         <div style="display: flex;align-items: center;">
-          <div v-show="!user.logined" @click="login" class="QQ_Login_Button"></div>
-          <el-dropdown v-show="user.logined" trigger="click" size="small">
+          <div v-if="!user.logined" @click="login" class="QQ_Login_Button"></div>
+          <el-dropdown v-else trigger="click" size="small">
             <el-avatar :size="32" :src="user.avatar">
               <!-- <span class="el-dropdown-link"><User style="width:24px;height:24px;"></User></span> -->
             </el-avatar>
@@ -112,10 +112,10 @@ const languageChange = (lang) => {
 }
 const login = ()=>{
   // user.Login({username:'admin',password:'admin'})
-  // QC.Login.showPopup({ appId: "101875878", redirectURI: "http://tanglei.top/qqlogin" });
+  // QC.Login.showPopup({ appId: "101875878", redirectURI: "http://tanglei.top/qqlogin" }); // 网站前必须要有至少一个标签页，否则登录页面关闭后，网站页面也会跟着关闭（腾讯的bug）
   window.open(
     `https://graph.qq.com/oauth2.0/authorize?response_type=token&client_id=101875878&redirect_uri=http://tanglei.top/qqlogin`,
-    "_blank"
+    "_self"
   );
 }
 const logout = ()=>{
