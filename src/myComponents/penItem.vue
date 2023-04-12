@@ -12,7 +12,7 @@
         title="threejs 实现烟雾特效2.0"
         class="loaded"
       ></iframe> -->
-      <a href="/pen/Go1cF4" class="cover" id="penid_Go1cF4">threejs 实现烟雾特效2.0</a>
+      <a :href="'/tanglei/' + item.product_root + item.product_url" target="_blank" class="cover" id="penid_Go1cF4">threejs 实现烟雾特效2.0</a>
     </div>
     <header class="pen-header">
       <img
@@ -56,6 +56,7 @@
 interface Item {
   product_root: string;
   product_image: string;
+  product_url: string;
 }
 const { item } = defineProps<{
   item: Item;
