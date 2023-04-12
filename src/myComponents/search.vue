@@ -73,7 +73,7 @@
 </template>
 <script setup>
 import penItem from './penItem.vue'
-import { reactive, ref, watch, computed, onMounted } from 'vue'
+import { reactive, ref, watch, computed } from 'vue'
 import { toggleDark } from '~/composables';
 import { Select, Setting, Close, SwitchButton, ColdDrink, User, CloseBold } from '@element-plus/icons-vue'
 import { useLocale } from 'element-plus'
@@ -119,7 +119,7 @@ const login = ()=>{
   );
 }
 const logout = ()=>{
-  QC.Login.signOut();
+  user.logout()
 }
 const clear_input = () => {
   inputValue.value = ''
@@ -157,31 +157,6 @@ const search_click = () => {
     window.open('https://www.baidu.com/s?ie=utf8&oe=utf8&tn=98010089_dg&ch=11&wd='+inputValue.value,'_blank');
   }
 }
-onMounted(() => {
-  QC.Login(
-    {},
-    function (reqData, opts) {
-      var dom = document.getElementById(opts["btnId"]);
-      QC.Login.getMe(function (openId, accessToken) {
-        console.log(
-          ["当前登录用户的", "openId为：" + openId, "accessToken为：" + accessToken].join(
-            "\n"
-          )
-        );
-        QC.api("get_user_info").success((res) => {
-          console.log(res.data)
-          user.avatar = res.data.figureurl;
-          user.username = res.data.nickname;
-          user.logined = true;
-        });
-      });
-    },
-    function (opts) {
-      console.log("QQ登录 注销成功");
-      user.logout()
-    }
-  );
-});
 </script>
 <style lang="scss">
 .QQ_Login_Button {
