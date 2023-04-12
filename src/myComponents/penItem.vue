@@ -3,7 +3,7 @@
   <article class="pen-item">
     <div class="iframe-wrap">
       <img
-        class="w-full h-full"
+        class="absolute w-full h-full top-0 left-0"
         :src="'/tanglei/' + item.product_root + item.product_image"
       />
       <!-- <iframe
