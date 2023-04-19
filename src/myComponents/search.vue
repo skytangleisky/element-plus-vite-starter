@@ -73,7 +73,7 @@
 </template>
 <script setup>
 import penItem from './penItem.vue'
-import { reactive, ref, watch, computed } from 'vue'
+import { reactive, ref, watch, computed, onMounted } from 'vue'
 import { toggleDark } from '~/composables';
 import { Select, Setting, Close, SwitchButton, ColdDrink, User, CloseBold } from '@element-plus/icons-vue'
 import { useLocale } from 'element-plus'
@@ -110,12 +110,14 @@ watch(inputValue,newVal=>{
 const languageChange = (lang) => {
   setting.changeLanguage(lang)
 }
+let tmpWindow;
 const login = ()=>{
   // user.Login({username:'admin',password:'admin'})
-  // QC.Login.showPopup({ appId: "101875878", redirectURI: "http://tanglei.top/qqlogin" }); // 网站前必须要有至少一个标签页，否则登录页面关闭后，网站页面也会跟着关闭（腾讯的bug）
-  window.open(
-    `https://graph.qq.com/oauth2.0/authorize?response_type=token&client_id=101875878&redirect_uri=http://tanglei.top/qqlogin`,
-    "_self"
+  tmpWindow&&tmpWindow.close()
+  tmpWindow = window.open(
+    `/qqAuth/oauth2.0/authorize?response_type=token&client_id=101875878&redirect_uri=http://tanglei.top/qqlogin&state=123456`,
+    "_blank",
+    "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=400, height=400"
   );
 }
 const logout = ()=>{
@@ -157,6 +159,14 @@ const search_click = () => {
     window.open('https://www.baidu.com/s?ie=utf8&oe=utf8&tn=98010089_dg&ch=11&wd='+inputValue.value,'_blank');
   }
 }
+onMounted(()=>{
+  window.auth = data => {
+    console.log(data)
+    user.avatar = data.figureurl;
+    user.username = data.nickname;
+    user.logined = true;
+  }
+})
 </script>
 <style lang="scss">
 .QQ_Login_Button {
