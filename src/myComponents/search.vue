@@ -160,12 +160,15 @@ const search_click = () => {
   }
 }
 onMounted(()=>{
-  window.auth = data => {
-    console.log(data)
-    user.avatar = data.figureurl;
-    user.username = data.nickname;
-    user.logined = true;
-  }
+  window.addEventListener('message', e => {
+    if(e.data.auth){
+      let data = e.data.userData
+      console.log(data)
+      user.avatar = data.figureurl;
+      user.username = data.nickname;
+      user.logined = true;
+    }
+  })
 })
 </script>
 <style lang="scss">

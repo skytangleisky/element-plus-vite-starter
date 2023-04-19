@@ -13,7 +13,7 @@
       if(me.client_id&&me.openid){
         axios.get('/qqAuth/user/get_user_info',{params:{access_token:params.access_token,oauth_consumer_key:me.client_id,openid:me.openid}}).then(res=>{
           if(res.data.ret!=-1){
-            window.opener&&window.opener.auth&&window.opener.auth(res.data)
+            window.opener.postMessage({auth:true,userData:{openid:me.openid,...res.data}},'*')
             window.close()
           }
         })
