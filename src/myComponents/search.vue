@@ -115,9 +115,9 @@ const login = ()=>{
   // user.Login({username:'admin',password:'admin'})
   tmpWindow&&tmpWindow.close()
   tmpWindow = window.open(
-    `/qqAuth/oauth2.0/authorize?response_type=token&client_id=101875878&redirect_uri=http://tanglei.top/qqlogin&state=123456`,
+    `https://graph.qq.com/oauth2.0/authorize?response_type=token&client_id=101875878&redirect_uri=http://tanglei.top/qqlogin&state=123456`,
     "_blank",
-    "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=400, height=400"
+    // "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=400, height=400"
   );
 }
 const logout = ()=>{
