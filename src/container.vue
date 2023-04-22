@@ -3,7 +3,7 @@
     <!-- <box>{{ t("tl.Success") }}</box> -->
     <div class="nav-wrapper"></div>
     <search></search>
-    Using <a href="https://cn.vuejs.org/" target="_blank">Vue</a> v{{ vueVersion }}, <a href="https://element-plus.gitee.io/zh-CN/" target="_blank">Element-plus</a> v{{ elementplusVersion }} and <a href="https://pinia.web3doc.top/" target="_blank">Pinia</a> v{{ piniaVersion }}.
+    Using <a href="https://cn.vuejs.org/" target="_blank">Vue</a> v{{ vueVersion }}, <a href="https://element-plus.gitee.io/zh-CN/" target="_blank">Element-plus</a> v{{ elementplusVersion }}, <a href="https://pinia.web3doc.top/" target="_blank">Pinia</a> v{{ piniaVersion }} and <a href="https://router.vuejs.org/" target="_blank">Vue-router</a> v{{ vueRouterVersion }}.
     <!-- <el-table mb-1 :data="[]" /> -->
     <!-- <BaseHeader /> -->
     <!-- <div style="display: flex">
@@ -22,6 +22,7 @@
 import { version as piniaVersion } from 'pinia/package.json'
 import { version as vueVersion } from 'vue/package.json'
 import { version as elementplusVersion } from 'element-plus/package.json'
+import { version as vueRouterVersion } from 'vue-router/package.json'
 import { useLocale } from 'element-plus'
 let { t } = useLocale()
 // import RemoteComponent from './myComponents/remoteComponent.vue'
