@@ -1,10 +1,12 @@
 <template>
-  <li v-for="(item,index) in list" :key="index">
-    <el-icon v-if="item.left"></el-icon>
-    <span style="flex-grow: 1;display:flex;justify-content: left;">{{ item.name }}</span>
-    <el-icon v-if="item.children"><CaretRight></CaretRight></el-icon>
-    <ol class="absolute flex-col hidden p-0 left-100% top-0" v-if="item.children"><!--二、三、...级菜单-->
-      <submenu :list="item.children"></submenu>
+  <li v-for="(v,k) in item.children" :key="k">
+    <el-icon v-if="item.left">
+      <img src="/src/assets/g.jpg" class="w-full h-full">
+    </el-icon>
+    <span style="flex-grow: 1;display:flex;justify-content: left;">{{ v.name }}</span>
+    <el-icon v-if="v.children"><CaretRight></CaretRight></el-icon>
+    <ol class="absolute flex-col hidden p-0 left-100% top-0" v-if="v.children"><!--二、三、...级菜单-->
+      <submenu :item="v"></submenu>
     </ol>
   </li>
 </template>
@@ -16,11 +18,9 @@
     left?:Boolean;
   }
   type Props = {
-    list?: Item[]
+    item?: Item
   }
-  withDefaults(defineProps<Props>(), {
-    list: () => []
-  })
+  const { item } = defineProps<Props>()
 </script>
 <script lang="ts">
   export default{

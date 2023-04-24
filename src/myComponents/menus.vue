@@ -3,7 +3,7 @@
     <li tabindex="-1" v-for="(item,index) in list" :key="index">
       {{ item.name }}
       <ol class="absolute flex-col p-0 left-0 top-100%" v-if="item.children"><!--一级菜单-->
-        <submenu :list="item.children"></submenu>
+        <submenu :item="item"></submenu>
       </ol>
     </li>
   </ol>
