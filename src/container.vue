@@ -2,6 +2,7 @@
   <div class="app-container">
     <!-- <box>{{ t("tl.Success") }}</box> -->
     <div class="nav-wrapper"></div>
+    <menus></menus>
     <search></search>
     Using <a href="https://cn.vuejs.org/" target="_blank">Vue</a> v{{ vueVersion }}, <a href="https://element-plus.gitee.io/zh-CN/" target="_blank">Element-plus</a> v{{ elementplusVersion }}, <a href="https://pinia.web3doc.top/" target="_blank">Pinia</a> v{{ piniaVersion }} and <a href="https://router.vuejs.org/" target="_blank">Vue-router</a> v{{ vueRouterVersion }}.
     <!-- <el-table mb-1 :data="[]" /> -->
@@ -30,6 +31,7 @@ import TestButton from './elementplus/basic/button.vue'
 import TestBorder from './elementplus/basic/border.vue'
 import Box from './myComponents/box.vue'
 import Search from './myComponents/search.vue'
+import Menus from './myComponents/menus.vue'
 </script>
 
 <style lang="scss">
@@ -70,6 +72,7 @@ body{
   .app-container{
     // background: url(assets/newBg.jpg);
     // background: #131417;
+    background: rgb(30, 31, 28);
     background-size: cover;
   }
 }

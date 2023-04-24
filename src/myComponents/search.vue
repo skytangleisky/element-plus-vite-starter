@@ -1,7 +1,7 @@
 <template>
 <div class="input_pane">
   <div class="logo" style="display:none;"></div>
-  <div style="display:flex;flex-direction:column;width:100%;margin-top:10px;padding:10px 0;">
+  <div style="display:flex;flex-direction:column;width:100%;">
     <div style="display:flex;justify-content: center;">
       <div class="w-30 hidden lg:flex items-center left-0 absolute">
         <el-select @change="languageChange" v-model="lang" class="m-2" placeholder="Select" size="small">
@@ -187,6 +187,7 @@ onMounted(()=>{
 .input_pane{
   display: flex;
   width: 100%;
+  margin-top:1000px;
   position: relative;
   &:after{
     content: '';
