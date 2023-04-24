@@ -54,13 +54,16 @@
 </template>
 <script lang="ts" setup>
 interface Item {
-  product_root: string;
-  product_image: string;
-  product_url: string;
+  product_root?: string;
+  product_image?: string;
+  product_url?: string;
 }
-const { item } = defineProps<{
-  item: Item;
-}>();
+type Props = {
+  item: Item|undefined
+}
+withDefaults(defineProps<Props>(),{
+  item:undefined
+})
 </script>
 <style lang="scss">
 .pen-item {
