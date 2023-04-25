@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     <!-- <box>{{ t("tl.Success") }}</box> -->
-    <div class="nav-wrapper"></div>
-    <menus></menus>
+    <!-- <div class="nav-wrapper"></div> -->
+    <menus :list.sync="undefined"></menus>
     <search></search>
     Using <a href="https://cn.vuejs.org/" target="_blank">Vue</a> v{{ vueVersion }}, <a href="https://element-plus.org/zh-CN" target="_blank">Element-plus</a> v{{ elementplusVersion }}, <a href="https://pinia.web3doc.top/" target="_blank">Pinia</a> v{{ piniaVersion }} and <a href="https://router.vuejs.org/" target="_blank">Vue-router</a> v{{ vueRouterVersion }}.
     <!-- <el-table mb-1 :data="[]" /> -->
@@ -20,6 +20,7 @@
   </div>
 </template>
 <script setup>
+import { ref } from 'vue'
 import { version as piniaVersion } from 'pinia/package.json'
 import { version as vueVersion } from 'vue/package.json'
 import { version as elementplusVersion } from 'element-plus/package.json'
@@ -31,7 +32,35 @@ import TestButton from './elementplus/basic/button.vue'
 import TestBorder from './elementplus/basic/border.vue'
 import Box from './myComponents/box.vue'
 import Search from './myComponents/search.vue'
-import Menus from './myComponents/menus.vue'
+import Menus from './myComponents/menu/index.vue'
+const onClick = (e,item,v,k) => {
+  // item.children.forEach((v,k)=>{
+  //   delete v.leftImgSrc
+  // })
+  // v.leftImgSrc = '/src/assets/checked.svg'
+
+  if(v.leftImgSrc == '/src/assets/checked.svg')
+    v.leftImgSrc = '/src/assets/unchecked.svg'
+  else
+    v.leftImgSrc = '/src/assets/checked.svg'
+}
+const checkClick = (e,item,v,k) => {
+  console.log(v)
+  if(v.leftImgSrc == '/src/assets/checked.svg')
+    v.leftImgSrc = '/src/assets/unchecked.svg'
+  else
+    v.leftImgSrc = '/src/assets/checked.svg'
+}
+const radioClick = (e,item,v,k) => {
+  item.children?.forEach((v,k)=>{
+    delete v.leftImgSrc
+  })
+  v.leftImgSrc = '/src/assets/checked.svg'
+}
+const list = ref([{name:'aaa',left:true,children:[{name:'456',leftImgSrc:'/src/assets/checked.svg',onClick:radioClick},{name:'789',leftImgSrc:'/src/assets/checked.svg',onClick:radioClick}]}])
+setTimeout(()=>{
+  list.value = undefined
+},1000)
 </script>
 
 <style lang="scss">
@@ -72,7 +101,7 @@ body{
   .app-container{
     // background: url(assets/newBg.jpg);
     // background: #131417;
-    background: rgb(30, 31, 28);
+    background: rgb(13, 34, 75);
     background-size: cover;
   }
 }

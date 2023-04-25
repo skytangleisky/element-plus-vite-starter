@@ -67,7 +67,7 @@
 
       </el-tab-pane>
     </el-tabs>
-    <el-pagination :page-sizes="[1, 2, 3, 4, 5, 6]" :total="data.result.total" v-model:page-size="data.page_size" v-model:current-page="data.current_page" layout="total, sizes, prev, pager, next, jumper" />
+    <el-pagination :page-sizes="[1, 2, 3, 4, 5, 6]" :total="data.result.total" v-model:page-size="data.page_size" v-model:current-page="data.current_page" layout="total, sizes, prev, pager, next, jumper" style="overflow:auto;" />
   </div>
 </div>
 </template>
