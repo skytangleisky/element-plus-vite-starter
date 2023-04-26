@@ -26,7 +26,7 @@
     },
     mounted(){
       // this.mapLayer.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',maxLevel:18})
-      this.mapLayer.setSource({url:'http://map1.tanglei.top/{z}/{y}/{x}',maxLevel:18})
+      this.mapLayer.setSource({url:'http://map1.tanglei.top/{z}/{y}/{x}',maxLevel:22})
       this.cvs = this.$refs.canvas
       this.ctx = this.cvs.getContext('2d')
       this.obj.targetL = this.obj.L
@@ -150,30 +150,11 @@
           this.mousemove.targetX=this.mousemove.x
           this.mousemove.targetY=this.mousemove.y
         }
-        let isMac = false
-        if (/(iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent)) {
-          isMac = true;
-        }
         // drawScale(2**obj.L,cvs_scale,pixel2Lat(mousemove.y,obj.imgY,2**obj.L,obj.tileWidth))
         this.newPos = {x:((this.mousemove.x-this.obj.imgX)/(2**this.obj.L))/256 , y:((this.mousemove.y-this.obj.imgY)/(2**this.obj.L))/256}
-        let delta = 1
-        if (event.wheelDelta > 0) {
-          if(isMac){
-            this.obj.targetL+=delta/30
-          }else{
-            this.obj.targetL+=delta
-          }
-          this.obj.targetL=Math.ceil(this.obj.targetL/delta)*delta
-          this.change = 'zoom in'
-        } else {
-          if(isMac){
-            this.obj.targetL-=delta/30
-          }else{
-            this.obj.targetL-=delta
-          }
-          this.obj.targetL=Math.floor(this.obj.targetL/delta)*delta
-          this.change = 'zoom out'
-        }
+        let delta = event.wheelDelta/120
+        this.change = event.wheelDelta>0?'zoom in':'zoom out'
+        this.obj.targetL+=delta
         this.limitScale()
         let period=1
         // if(config.动画){
@@ -187,7 +168,7 @@
           onUpdate: ()=>{
             this.obj.imgX=this.mousemove.x - (2**this.obj.L)*this.newPos.x*256
             this.obj.imgY=this.mousemove.y - (2**this.obj.L)*this.newPos.y*256
-            // 层级.setValue(obj.L.toFixed(2))
+            // 层级.setValue(this.obj.L.toFixed(2))
             localStorage.L=this.obj.L
             localStorage.center=JSON.stringify([pixel2Lng(this.cvs.width/2,this.obj.imgX,2**this.obj.L,this.obj.tileWidth),pixel2Lat(this.cvs.height/2,this.obj.imgY,2**this.obj.L,this.obj.tileWidth)])
             this.limitRegion()
