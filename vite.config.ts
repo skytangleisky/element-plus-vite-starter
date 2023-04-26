@@ -1,6 +1,7 @@
 import path from 'path'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import inject from '@rollup/plugin-inject'
 import { visualizer } from 'rollup-plugin-visualizer'
 
 import Components from 'unplugin-vue-components/vite'
@@ -34,6 +35,11 @@ export default defineConfig({
   },
   plugins: [
     vue(),
+    inject({
+      $: "jquery",
+      jQuery: "jquery",
+      "windows.jQuery": "jquery"
+    }),
     Components({
       // allow auto load markdown components under `./src/components/`
       extensions: ['vue', 'md'],

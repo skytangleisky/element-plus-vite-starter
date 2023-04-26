@@ -75,6 +75,7 @@ setTimeout(()=>{
 }
 body{
   overscroll-behavior: none;
+  background: url(assets/background.jpg);
 }
 #app {
   text-align: center;
