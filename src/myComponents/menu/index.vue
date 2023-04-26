@@ -53,14 +53,14 @@
         align-items: center;
         justify-content: space-between;
         &:hover{
-          background-color: rgba(62, 110, 197, .5);
+          background-color: rgba(62, 110, 197, .9);
           border-radius: 4px;
         }
         &:has(ol:hover){
           background-color: rgba(150, 150, 150, .5);
         }
         &:hover:not(:has(ol:hover)):not(:has(ol)):active{
-          background-color: rgba(62, 110, 197, .9);
+          background-color: rgba(62, 110, 197, .5);
         }
       }
     }
@@ -91,13 +91,13 @@
       background-color: rgba(84, 84, 84, .5);
       li{
         &:hover{
-          background-color: rgba(62, 110, 197,.5);
+          background-color: rgba(62, 110, 197,.9);
         }
         &:has(ol:hover){
           background-color: rgba(84, 84, 84, .5);
         }
         &:hover:not(:has(ol:hover)):not(:has(ol)):active{
-          background-color: rgba(62, 110, 197, .9);
+          background-color: rgba(62, 110, 197, .5);
         }
       }
     }
