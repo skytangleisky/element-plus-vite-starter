@@ -3,8 +3,8 @@
     <!-- <box>{{ t("tl.Success") }}</box> -->
     <!-- <div class="nav-wrapper"></div> -->
     <menus :list.sync="undefined"></menus>
-    <search></search>
-    Using <a href="https://cn.vuejs.org/" target="_blank">Vue</a> v{{ vueVersion }}, <a href="https://element-plus.org/zh-CN" target="_blank">Element-plus</a> v{{ elementplusVersion }}, <a href="https://pinia.web3doc.top/" target="_blank">Pinia</a> v{{ piniaVersion }} and <a href="https://router.vuejs.org/" target="_blank">Vue-router</a> v{{ vueRouterVersion }}.
+    <!-- <search></search> -->
+    <!-- Using <a href="https://cn.vuejs.org/" target="_blank">Vue</a> v{{ vueVersion }}, <a href="https://element-plus.org/zh-CN" target="_blank">Element-plus</a> v{{ elementplusVersion }}, <a href="https://pinia.web3doc.top/" target="_blank">Pinia</a> v{{ piniaVersion }} and <a href="https://router.vuejs.org/" target="_blank">Vue-router</a> v{{ vueRouterVersion }}. -->
     <!-- <el-table mb-1 :data="[]" /> -->
     <!-- <BaseHeader /> -->
     <!-- <div style="display: flex">

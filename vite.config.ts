@@ -72,6 +72,7 @@ export default defineConfig({
     lifecycle === 'report'? visualizer({ open: true, brotliSize: true, filename: 'report.html' }): null
   ],
   server:{
+    host:'0.0.0.0',
     proxy:{
       '/api':{
         target:'http://websocket.tanglei.top',//替换的服务端地址
