@@ -2,7 +2,8 @@
   <div class="app-container">
     <!-- <box>{{ t("tl.Success") }}</box> -->
     <!-- <div class="nav-wrapper"></div> -->
-    <menus :list.sync="undefined"></menus>
+    <my-map></my-map>
+    <menus :list.sync="list"></menus>
     <!-- <search></search> -->
     <!-- Using <a href="https://cn.vuejs.org/" target="_blank">Vue</a> v{{ vueVersion }}, <a href="https://element-plus.org/zh-CN" target="_blank">Element-plus</a> v{{ elementplusVersion }}, <a href="https://pinia.web3doc.top/" target="_blank">Pinia</a> v{{ piniaVersion }} and <a href="https://router.vuejs.org/" target="_blank">Vue-router</a> v{{ vueRouterVersion }}. -->
     <!-- <el-table mb-1 :data="[]" /> -->
@@ -33,6 +34,7 @@ import TestBorder from './elementplus/basic/border.vue'
 import Box from './myComponents/box.vue'
 import Search from './myComponents/search.vue'
 import Menus from './myComponents/menu/index.vue'
+import myMap from './myComponents/map/index.vue'
 const onClick = (e,item,v,k) => {
   // item.children.forEach((v,k)=>{
   //   delete v.leftImgSrc
@@ -57,7 +59,7 @@ const radioClick = (e,item,v,k) => {
   })
   v.leftImgSrc = '/src/assets/checked.svg'
 }
-const list = ref([{name:'aaa',left:true,children:[{name:'456',leftImgSrc:'/src/assets/checked.svg',onClick:radioClick},{name:'789',leftImgSrc:'/src/assets/checked.svg',onClick:radioClick}]}])
+const list = ref([{name:'测试',left:true,children:[{name:'456',leftImgSrc:'/src/assets/checked.svg',onClick:radioClick},{name:'789',leftImgSrc:'/src/assets/checked.svg',onClick:radioClick}]}])
 setTimeout(()=>{
   list.value = undefined
 },1000)

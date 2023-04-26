@@ -1,5 +1,5 @@
 <template>
-  <ol class="menu flex items-center content-center flex-row m-0"><!--导航栏-->
+  <ol class="menu absolute flex items-center content-center flex-row m-0 left-0 top-0"><!--导航栏-->
     <li tabindex="-1" v-for="(item,index) in list" :key="index">
       {{ item.name }}
       <ol class="absolute flex-col left-0 p-0 top-100%" v-if="item.children" :style="'left:' + (item.left?'-1em':'0')"><!--一级菜单-->

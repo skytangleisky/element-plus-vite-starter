@@ -1,0 +1,302 @@
+import Tiles from '../tiles.js'
+import BaseLayer from './baseLayer.js'
+import { tileXY2QuadKey } from '../js/core.js'
+import axios from 'axios'
+export default class MapLayer extends BaseLayer{
+  constructor(){
+    super()
+    this.mapsTiles = []
+    this.平滑 = true
+    this.myTiles = new Tiles()
+    // this.urlTemplate = {url:'/wstdtiles/{z}/user_{z}_{x}_{y}'}
+    // this.urlTemplate = {url:'http://192.168.0.112/wstdtiles/{z}/user_{z}_{x}_{y}'}
+    this.urlTemplate = {}
+    this.跳过 = 0
+    this.effect = false
+    this.限制瓦片 = false
+    this.瓦片网格 = false
+  }
+  setSource(template){
+    this.mapsTiles=[]
+    this.myTiles.clear()
+    this.urlTemplate = template
+  }
+  loadMap(obj,change,rect,callback){
+    obj.tileWidth = this.urlTemplate.tileWidth||256
+    if(change == 'zoom in'){
+      this._LL = Math.floor(obj.L);//放大完成后加载最新层级的图片数据
+      // _LL = Math.ceil(obj.L);//放大时加载图片数据
+    }else{
+      this._LL = Math.floor(obj.L);//缩小时加载图片数据
+      // _LL = Math.ceil(obj.L);//缩小完成后加载最新层级的图片数据+缩小时加载同级进入视线的图片数据
+    }
+    if(this._LL<0)this._LL=0;
+
+    /*显示-∞<lng<+∞,-∞<lat<+∞*/
+    this._X0 = Math.floor((rect.x-obj.imgX)*2**this._LL/2**obj.L/obj.tileWidth);
+    this._X1 = Math.ceil((rect.x+rect.w-obj.imgX)*2**this._LL/2**obj.L/obj.tileWidth);
+    this._Y0 = Math.floor((rect.y-obj.imgY)*2**this._LL/2**obj.L/obj.tileWidth);
+    this._Y1 = Math.ceil((rect.y+rect.h-obj.imgY)*2**this._LL/2**obj.L/obj.tileWidth);
+
+    /*显示-180<lng<180,-85.05112877980659<lat<85.05112877980659*/
+    // this._X0 = Math.max(rect.x,Math.floor(-obj.imgX*2**this._LL/2**obj.L/obj.tileWidth));
+    // this._X1 = Math.min(Math.ceil((rect.w-obj.imgX)*2**this._LL/2**obj.L/obj.tileWidth),2**this._LL);
+    // this._Y0 = Math.max(rect.y,Math.floor(-obj.imgY*2**this._LL/2**obj.L/obj.tileWidth));
+    // this._Y1 = Math.min(Math.ceil((rect.h-obj.imgY)*2**this._LL/2**obj.L/obj.tileWidth),2**this._LL);
+
+
+
+    for(let j=this._Y0;j<this._Y1;j++){
+      for(let i=this._X0;i<this._X1;i++){
+        let mapExist = false;
+        for(let k=this.mapsTiles.length-1;k>=0;k--){
+          if(this.mapsTiles[k]._LL==this._LL&&this.mapsTiles[k].i==i&&this.mapsTiles[k].j==j){
+            mapExist = true;
+            this.mapsTiles.push(this.mapsTiles.splice(k,1)[0]);
+            break;
+          }
+        }
+        if(mapExist){
+          continue;
+        }
+        var cvs = document.createElement('canvas');
+        cvs.setAttribute("width",obj.tileWidth);
+        cvs.setAttribute("height",obj.tileWidth);
+        var ctx = cvs.getContext('2d');
+        this.平滑||(ctx.imageSmoothingEnabled = false);
+        for(let k=0;k<this.mapsTiles.length;k++){
+          let tmp = this.mapsTiles[k]
+          if(change=='zoom in'){
+            if(tmp._LL==this._LL-1&&tmp.i==Math.floor(i/2)&&tmp.j==Math.floor(j/2)&&tmp.cvs){
+              if(i%2==0&&j%2==0){
+                ctx.drawImage(tmp.cvs,
+                0,0,obj.tileWidth/2,obj.tileWidth/2,
+                0,0,obj.tileWidth,obj.tileWidth);
+              }else if((i%2==1||i%2==-1)&&j%2==0){
+                ctx.drawImage(tmp.cvs,
+                obj.tileWidth/2,0,obj.tileWidth/2,obj.tileWidth/2,
+                0,0,obj.tileWidth,obj.tileWidth);
+              }else if(i%2==0&&(j%2==1||j%2==-1)){
+                ctx.drawImage(tmp.cvs,
+                0,obj.tileWidth/2,obj.tileWidth/2,obj.tileWidth/2,
+                0,0,obj.tileWidth,obj.tileWidth);
+              }else if((i%2==1||i%2==-1)&&(j%2==1||j%2==-1)){
+                ctx.drawImage(tmp.cvs,
+                obj.tileWidth/2,obj.tileWidth/2,obj.tileWidth/2,obj.tileWidth/2,
+                0,0,obj.tileWidth,obj.tileWidth);
+              }
+            }
+          }else if(change=='zoom out'){
+            if(tmp._LL==this._LL+1&&Math.floor(tmp.i/2)==i&&Math.floor(tmp.j/2)==j&&tmp.cvs){
+              if(tmp.i%2==0&&tmp.j%2==0){
+                ctx.drawImage(tmp.cvs,
+                0,0,obj.tileWidth,obj.tileWidth,
+                0,0,obj.tileWidth/2,obj.tileWidth/2);
+              }else if((tmp.i%2==1||tmp.i%2==-1)&&tmp.j%2==0){
+                ctx.drawImage(tmp.cvs,
+                0,0,obj.tileWidth,obj.tileWidth,
+                obj.tileWidth/2,0,obj.tileWidth/2,obj.tileWidth/2);
+              }else if(tmp.i%2==0&&(tmp.j%2==1||tmp.j%2==-1)){
+                ctx.drawImage(tmp.cvs,
+                0,0,obj.tileWidth,obj.tileWidth,
+                0,obj.tileWidth/2,obj.tileWidth/2,obj.tileWidth/2);
+              }else if((tmp.i%2==1||tmp.i%2==-1)&&(tmp.j%2==1||tmp.j%2==-1)){
+                ctx.drawImage(tmp.cvs,
+                0,0,obj.tileWidth,obj.tileWidth,
+                obj.tileWidth/2,obj.tileWidth/2,obj.tileWidth/2,obj.tileWidth/2);
+              }
+            }
+          }
+        }
+        let item = {_LL:this._LL,i,j,cvs,_X0:this._X0,_X1:this._X1,_Y0:this._Y0,_Y1:this._Y1,isDrawed:true};
+        this.mapsTiles.push(item);
+        this.load(item,this.mapsTiles,this.urlTemplate.url).then(()=>{
+          // rAF(draw);
+          callback()
+        }).catch((err)=>{
+          // console.log(_LL,j,i,`load field!`)
+          // rAF(draw);
+          callback()
+        });
+      }
+    }
+  }
+  load(item,tiles,url){
+    return new Promise((resolve,reject)=>{
+      if(this._X0<=item.i&&item.i<this._X1&&this._Y0<=item.j&&item.j<this._Y1&&item._LL==this._LL){
+        let x=item.i%2**item._LL>=0?item.i%2**item._LL:item.i%2**item._LL+2**item._LL;
+        let y=item.j%2**item._LL>=0?item.j%2**item._LL:item.j%2**item._LL+2**item._LL;
+        let data = this.myTiles.getTile(item._LL,y,x);
+        if(data){
+          item.cvs = data.cvs;
+          item.isDrawed = data.isDrawed;
+          resolve();
+        }else{
+            /*速度缓慢
+            var error = (err) => {
+              this.Count--;
+              //加载中.setValue(this.Count);
+              if(this.Count==0){
+                this.跳过=0;
+                // 跳过.setValue(this.跳过)
+              }
+              for(let k=0;k<tiles.length;k++){
+                if(tiles[k]._LL==item._LL&&tiles[k].i==item.i&&tiles[k].j==item.j){
+                  tiles.splice(k,1);
+                }
+              }
+              while(this.限制瓦片&&tiles.length>(_X1-_X0)*(_Y1-_Y0)){
+                tiles.shift();
+              }
+              // 瓦片.setValue(tiles.length);
+              reject(err);
+            }
+            fetch(url.replace('{x}',x).replace('{y}',y).replace('{z}',item._LL).replace('{q}',tileXY2QuadKey(item._LL,y,x))).then(res=>{
+              res.blob().then(img=>{
+                createImageBitmap(img).then(bitmap=>{
+                  this.Count--;
+                  //加载中.setValue(this.Count);
+                  if(this.Count==0){
+                    this.跳过=0;
+                    // 跳过.setValue(this.跳过)
+                  }
+                  let ctx = item.cvs.getContext('2d');
+                  ctx.globalCompositeOperation='copy';
+                  ctx.drawImage(
+                    bitmap,
+                    0, 0,
+                    bitmap.width, bitmap.height,
+                    0, 0,
+                    bitmap.width, bitmap.height
+                  );
+                  this.myTiles.addTile(item._LL,y,x,{cvs:item.cvs,isDrawed:true});
+                  while(this.限制瓦片&&tiles.length>(_X1-_X0)*(_Y1-_Y0)){
+                    tiles.shift();
+                  }
+                  // 瓦片.setValue(tiles.length);
+                  resolve();
+                }).catch(err=>{
+                  error()
+                  throw err
+                })
+              }).catch(err=>{
+                error()
+                throw err
+              })
+            }).catch(err=>{
+              error()
+              throw err
+            })
+            this.Count++;
+            //加载中.setValue(this.Count);*/
+
+            let image = new Image();
+            image.onload = ()=>{
+              this.Count--;
+              //加载中.setValue(this.Count);
+              if(this.Count==0){
+                this.跳过=0;
+                // 跳过.setValue(this.跳过)
+              }
+              let ctx = item.cvs.getContext('2d');
+              ctx.globalCompositeOperation='copy';
+              ctx.drawImage(
+                image,
+                0, 0,
+                image.width, image.height,
+                0, 0,
+                image.width, image.height
+              );
+
+              if(this.effect&&!url.match('/map2')){
+                let imgPixels = ctx.getImageData(0, 0, image.width, image.height);
+                for(let y = 0; y < imgPixels.height; y++){
+                  for(let x = 0; x < imgPixels.width; x++){
+                    let i = (y * 4) * imgPixels.width + x * 4;
+                    let avg = Math.floor((imgPixels.data[i] + imgPixels.data[i + 1] + imgPixels.data[i + 2]) / 3);
+                    imgPixels.data[i + 0] = colors[avg][0];
+                    imgPixels.data[i + 1] = colors[avg][1];
+                    imgPixels.data[i + 2] = colors[avg][2];
+                  }
+                }
+                ctx.putImageData(imgPixels, 0, 0, 0, 0, imgPixels.width, imgPixels.height);
+              }
+              this.myTiles.addTile(item._LL,y,x,{cvs:item.cvs,isDrawed:true});
+              while(this.限制瓦片&&tiles.length>(this._X1-this._X0)*(this._Y1-this._Y0)){
+                tiles.shift();
+              }
+              // 瓦片.setValue(tiles.length);
+              resolve();
+
+            }
+            var error = (err) => {
+              this.Count--;
+              //加载中.setValue(this.Count);
+              if(this.Count==0){
+                this.跳过=0;
+                // 跳过.setValue(this.跳过)
+              }
+              for(let k=0;k<tiles.length;k++){
+                if(tiles[k]._LL==item._LL&&tiles[k].i==item.i&&tiles[k].j==item.j){
+                  if(true){
+                    tiles.splice(k,1);
+                  }else{
+                    tiles[k].cvs=0;
+                    this.myTiles.addTile(item._LL,y,x,{cvs:0,isDrawed:false});
+                  }
+                }
+              }
+              while(this.限制瓦片&&tiles.length>(this._X1-this._X0)*(this._Y1-this._Y0)){
+                tiles.shift();
+              }
+              // 瓦片.setValue(tiles.length);
+              reject(err);
+            }
+            image.onerror = err => {
+              error(err)
+            }
+            image.onabort = err => {
+              error(err)
+            }
+            image.crossOrigin = 'anonymous';
+            image.src = url.replaceAll('{x}',x).replaceAll('{y}',y).replaceAll('{z}',item._LL).replace('{q}',tileXY2QuadKey(item._LL,y,x))+(url.indexOf('?')==-1?'?t=':'&t=')+Date.now();//?t=xxx防止浏览器本身的缓存机制
+            this.Count++;
+            //加载中.setValue(this.Count);
+        }
+      }else{
+        for(let k=0;k<tiles.length;k++){
+          if(tiles[k]._LL==item._LL&&tiles[k].i==item.i&&tiles[k].j==item.j){
+            tiles.splice(k,1);
+          }
+        }
+        if(this.Count>0){
+          this.跳过++;
+          // 跳过.setValue(this.跳过)
+          console.log('跳过',this.Count)
+        }
+        reject('?????');
+      }
+    });
+  }
+  delete(callback){
+    if(this.urlTemplate.remove){
+      let deleteData = [];
+      for(let j=this._Y0;j<this._Y1;j++){
+        for(let i=this._X0;i<this._X1;i++){
+          deleteData.push({z:this._LL,y:j,x:i});
+        }
+      }
+      console.log(deleteData)
+      axios.delete(this.urlTemplate.remove+'/',{data:deleteData}).then(res=>{
+        this.myTiles.clear()
+        this.mapsTiles = []
+        console.log('从服务器删除可见地图瓦片成功')
+        callback()
+      })
+    }else{
+      this.myTiles.clear()
+      this.mapsTiles = []
+      callback()
+    }
+  }
+}
