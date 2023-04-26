@@ -35,8 +35,9 @@
       display: inline-flex;
       justify-content: space-between;
       align-items: center;
+      line-height: 100%;
       white-space: nowrap;
-      padding: 0 4px 0 4px;
+      padding: 1px 4px 1px 4px;
       cursor:default;
     }
     &:focus-within li:hover>ol{
