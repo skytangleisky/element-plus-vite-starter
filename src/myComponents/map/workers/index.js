@@ -16,7 +16,7 @@ self.onmessage = e => {
         //   // postMessage({i:args.i,j:args.j,_LL:args._LL,bitmap:0,isDrawed,beginTime:args.beginTime,x:args._i,y:args._j});
         // }
         // delete cvs;
-        self.postMessage({z:e.data.z,y:e.data.y,x:e.data.x,bitmap:bitmapData,isDrawed:true})
+        self.postMessage({z:e.data.z,y:e.data.y,x:e.data.x,i:e.data.i,j:e.data.j,bitmap:bitmapData,isDrawed:true})
       })
     }
   }

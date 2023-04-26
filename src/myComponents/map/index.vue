@@ -4,10 +4,11 @@
 <script>
   import { MapLayer } from './layers'
   import { gsap, Power3 } from 'gsap'
-  import { windowToCanvas, pixel2Lng, pixel2Lat } from './js/core'
+  import { windowToCanvas, pixel2Lng, pixel2Lat, lng2Pixel, lat2Pixel } from './js/core'
   export default{
     data(){
       return{
+        first: true,
         mapLayer:new MapLayer(),
         cvs:undefined,
         ctx:undefined,
@@ -28,24 +29,23 @@
       this.mapLayer.setSource({url:'http://map1.tanglei.top/{z}/{y}/{x}',maxLevel:18})
       this.cvs = this.$refs.canvas
       this.ctx = this.cvs.getContext('2d')
-      // let POINT={lng:113.42165142106768,lat:23.098844381632485}
-      // this.obj.imgX = this.cvs.width/2-this.obj.tileWidth*2**this.obj.L*(POINT.lng+180)/360
-      // this.obj.imgY = this.cvs.height/2-((1-Math.log(Math.tan(POINT.lat*Math.PI/180) + 1/Math.cos(POINT.lat*Math.PI/180))/Math.PI)/2 * this.obj.tileWidth*2**this.obj.L)
-      localStorage.L&&(this.obj.L=Number(localStorage.L))
-      if(localStorage.center){
-        var center = JSON.parse(localStorage.center)
-        this.obj.imgX=this.cvs.width/2-(center[0]+180)/360*this.obj.tileWidth*(2**this.obj.L)
-        // this.obj.imgY=this.cvs.height/2-((1-Math.log(Math.tan(center[1]*Math.PI/180) + 1/Math.cos(center[1]*Math.PI/180))/Math.PI)/2 * this.obj.tileWidth*(2**this.obj.L))
-        this.obj.imgY=this.cvs.height/2-(1-Math.asinh(Math.tan(center[1]*Math.PI/180))/Math.PI)/2*(2**this.obj.L)*this.obj.tileWidth
-        console.log(this.obj.imgX,this.obj.imgY)
-      }
       this.obj.targetL = this.obj.L
-
-
       new ResizeObserver(()=>{
         let rect = this.cvs.getBoundingClientRect()
         this.cvs.width = rect.width
         this.cvs.height = rect.height
+        if(this.first){
+          this.first = false
+          let POINT={lng:113.42165142106768,lat:23.098844381632485}
+          this.obj.imgX = this.cvs.width/2-this.obj.tileWidth*2**this.obj.L*(POINT.lng+180)/360
+          this.obj.imgY=this.cvs.height/2-(1-Math.asinh(Math.tan(POINT.lat*Math.PI/180))/Math.PI)/2*(2**this.obj.L)*this.obj.tileWidth
+          localStorage.L&&(this.obj.L=Number(localStorage.L))
+          if(localStorage.center){
+            var center = JSON.parse(localStorage.center)
+            this.obj.imgX=this.cvs.width/2-(center[0]+180)/360*this.obj.tileWidth*(2**this.obj.L)
+            this.obj.imgY=this.cvs.height/2-(1-Math.asinh(Math.tan(center[1]*Math.PI/180))/Math.PI)/2*(2**this.obj.L)*this.obj.tileWidth
+          }
+        }
         this.loadMap()
       }).observe(this.cvs)
       this.cvs.addEventListener('mousewheel',this.mousewheelFunc);
@@ -110,7 +110,6 @@
               // emitter.emit('mapChange',obj)
               // panel&&panel.setPos(obj.imgX,obj.imgY,2**obj.L)
               // plane&&plane.setPos(obj.imgX,obj.imgY,2**obj.L)
-              console.log(this.obj.imgX,this.obj.imgY)
               localStorage.L=this.obj.L
               localStorage.center=JSON.stringify([pixel2Lng(this.cvs.width/2,this.obj.imgX,2**this.obj.L,this.obj.tileWidth),pixel2Lat(this.cvs.height/2,this.obj.imgY,2**this.obj.L,this.obj.tileWidth)])
             },

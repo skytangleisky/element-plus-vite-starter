@@ -19,7 +19,7 @@ export default class MapLayer extends BaseLayer{
     this.worker = new Worker()
     this.worker.onmessage = event => {
       for(let k=0;k<this.mapsTiles.length;k++){
-        if(this.mapsTiles[k]._LL==event.data.z&&this.mapsTiles[k].i==event.data.x&&this.mapsTiles[k].j==event.data.y){
+        if(this.mapsTiles[k]._LL==event.data.z&&this.mapsTiles[k].i==event.data.i&&this.mapsTiles[k].j==event.data.j){
           if(event.data.isDrawed){
             var cvs2 = document.createElement('canvas');
             cvs2.setAttribute("width",256);
@@ -162,7 +162,7 @@ export default class MapLayer extends BaseLayer{
           resolve();
         }else{
           let src = url.replaceAll('{x}',x).replaceAll('{y}',y).replaceAll('{z}',item._LL).replace('{q}',tileXY2QuadKey(item._LL,y,x))+(url.indexOf('?')==-1?'?t=':'&t=')+Date.now();//?t=xxx防止浏览器本身的缓存机制
-          this.worker.postMessage({z:item._LL,y:y,x:x,url:src})
+          this.worker.postMessage({z:item._LL,y:y,x:x,j:item.j,i:item.i,url:src})
           this.Count++;
           //加载中.setValue(this.Count);
         }
