@@ -33,18 +33,16 @@ export default class MapLayer extends BaseLayer{
     if(this._LL<0)this._LL=0;
 
     /*显示-∞<lng<+∞,-∞<lat<+∞*/
-    this._X0 = Math.floor((rect.x-obj.imgX)*2**this._LL/2**obj.L/obj.tileWidth);
-    this._X1 = Math.ceil((rect.x+rect.w-obj.imgX)*2**this._LL/2**obj.L/obj.tileWidth);
-    this._Y0 = Math.floor((rect.y-obj.imgY)*2**this._LL/2**obj.L/obj.tileWidth);
-    this._Y1 = Math.ceil((rect.y+rect.h-obj.imgY)*2**this._LL/2**obj.L/obj.tileWidth);
+    this._X0 = Math.floor((rect.x-obj.imgX)*(2**this._LL)/(2**obj.L)/obj.tileWidth);
+    this._X1 = Math.ceil((rect.x+rect.w-obj.imgX)*(2**this._LL)/(2**obj.L)/obj.tileWidth);
+    this._Y0 = Math.floor((rect.y-obj.imgY)*(2**this._LL)/(2**obj.L)/obj.tileWidth);
+    this._Y1 = Math.ceil((rect.y+rect.h-obj.imgY)*(2**this._LL)/(2**obj.L)/obj.tileWidth);
 
     /*显示-180<lng<180,-85.05112877980659<lat<85.05112877980659*/
-    // this._X0 = Math.max(rect.x,Math.floor(-obj.imgX*2**this._LL/2**obj.L/obj.tileWidth));
-    // this._X1 = Math.min(Math.ceil((rect.w-obj.imgX)*2**this._LL/2**obj.L/obj.tileWidth),2**this._LL);
-    // this._Y0 = Math.max(rect.y,Math.floor(-obj.imgY*2**this._LL/2**obj.L/obj.tileWidth));
-    // this._Y1 = Math.min(Math.ceil((rect.h-obj.imgY)*2**this._LL/2**obj.L/obj.tileWidth),2**this._LL);
-
-
+    // this._X0 = Math.max(rect.x,Math.floor(-obj.imgX*(2**this._LL)/(2**obj.L)/obj.tileWidth));
+    // this._X1 = Math.min(Math.ceil((rect.w-obj.imgX)*(2**this._LL)/(2**obj.L)/obj.tileWidth),2**this._LL);
+    // this._Y0 = Math.max(rect.y,Math.floor(-obj.imgY*(2**this._LL)/(2**obj.L)/obj.tileWidth));
+    // this._Y1 = Math.min(Math.ceil((rect.h-obj.imgY)*(2**this._LL)/(2**obj.L)/obj.tileWidth),2**this._LL);
 
     for(let j=this._Y0;j<this._Y1;j++){
       for(let i=this._X0;i<this._X1;i++){
@@ -120,6 +118,7 @@ export default class MapLayer extends BaseLayer{
         });
       }
     }
+    callback()
   }
   load(item,tiles,url){
     return new Promise((resolve,reject)=>{
@@ -227,7 +226,6 @@ export default class MapLayer extends BaseLayer{
               }
               // 瓦片.setValue(tiles.length);
               resolve();
-
             }
             var error = (err) => {
               this.Count--;
