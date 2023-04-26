@@ -98,11 +98,12 @@ body{
 </style>
 <style lang="scss">
 .dark{
-  .app-container{
-    // background: url(assets/newBg.jpg);
+  body{
+    // background: url(assets/g.jpg);
+    background: url(assets/newBg.jpg);
     // background: #131417;
-    background: rgb(13, 34, 75);
-    background-size: cover;
+    // background: rgb(13, 34, 75);
+    // background-size: cover;
   }
 }
 </style>

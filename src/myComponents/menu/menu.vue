@@ -7,7 +7,7 @@
     <el-icon v-if="item?.right" style="overflow: hidden;">
       <img v-if="v.children" src="/src/assets/caretRight.svg" class="rightImg w-full h-full">
     </el-icon>
-    <ol class="absolute flex-col hidden p-0 left-100% top--5px" v-if="v.children"><!--二、三、...级菜单-->
+    <ol class="absolute flex-col hidden p-0 left-100% top--4px" v-if="v.children"><!--二、三、...级菜单-->
       <submenu :item.sync="v"></submenu>
     </ol>
   </li>
