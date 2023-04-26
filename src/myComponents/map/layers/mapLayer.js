@@ -2,6 +2,7 @@ import Tiles from '../tiles.js'
 import BaseLayer from './baseLayer.js'
 import { tileXY2QuadKey } from '../js/core.js'
 import axios from 'axios'
+import Worker from '../workers/index.js?worker'
 export default class MapLayer extends BaseLayer{
   constructor(){
     super()
@@ -15,6 +16,34 @@ export default class MapLayer extends BaseLayer{
     this.effect = false
     this.限制瓦片 = false
     this.瓦片网格 = false
+    this.worker = new Worker()
+    this.worker.onmessage = event => {
+      for(let k=0;k<this.mapsTiles.length;k++){
+        if(this.mapsTiles[k]._LL==event.data.z&&this.mapsTiles[k].i==event.data.x&&this.mapsTiles[k].j==event.data.y){
+          if(event.data.isDrawed){
+            var cvs2 = document.createElement('canvas');
+            cvs2.setAttribute("width",256);
+            cvs2.setAttribute("height",256);
+            cvs2.getContext('bitmaprenderer').transferFromImageBitmap(event.data.bitmap);
+            this.mapsTiles[k].cvs = cvs2;
+            this.mapsTiles[k].isDrawed = event.data.isDrawed;
+          }else{
+            this.mapsTiles[k].cvs = 0;
+            this.mapsTiles[k].isDrawed = event.data.isDrawed;
+          }
+          this.myTiles.addTile(this.mapsTiles[k]._LL,event.data.y,event.data.x,{cvs:this.mapsTiles[k].cvs,isDrawed:event.data.isDrawed});
+          // rAF(draw);
+          this.callback()
+        }
+      }
+      while(this.限制瓦片&&this.mapsTiles.length>(this._X1-this._X0)*(this._Y1-this._Y0)){
+        this.mapsTiles.shift();
+      }
+    }
+    this.worker.onerror = e => {
+      throw e
+    }
+    //this.worker.terminate()
   }
   setSource(template){
     this.mapsTiles=[]
@@ -22,6 +51,7 @@ export default class MapLayer extends BaseLayer{
     this.urlTemplate = template
   }
   loadMap(obj,change,rect,callback){
+    this.callback = callback
     obj.tileWidth = this.urlTemplate.tileWidth||256
     if(change == 'zoom in'){
       this._LL = Math.floor(obj.L);//放大完成后加载最新层级的图片数据
@@ -131,135 +161,10 @@ export default class MapLayer extends BaseLayer{
           item.isDrawed = data.isDrawed;
           resolve();
         }else{
-            /*速度缓慢
-            var error = (err) => {
-              this.Count--;
-              //加载中.setValue(this.Count);
-              if(this.Count==0){
-                this.跳过=0;
-                // 跳过.setValue(this.跳过)
-              }
-              for(let k=0;k<tiles.length;k++){
-                if(tiles[k]._LL==item._LL&&tiles[k].i==item.i&&tiles[k].j==item.j){
-                  tiles.splice(k,1);
-                }
-              }
-              while(this.限制瓦片&&tiles.length>(_X1-_X0)*(_Y1-_Y0)){
-                tiles.shift();
-              }
-              // 瓦片.setValue(tiles.length);
-              reject(err);
-            }
-            fetch(url.replace('{x}',x).replace('{y}',y).replace('{z}',item._LL).replace('{q}',tileXY2QuadKey(item._LL,y,x))).then(res=>{
-              res.blob().then(img=>{
-                createImageBitmap(img).then(bitmap=>{
-                  this.Count--;
-                  //加载中.setValue(this.Count);
-                  if(this.Count==0){
-                    this.跳过=0;
-                    // 跳过.setValue(this.跳过)
-                  }
-                  let ctx = item.cvs.getContext('2d');
-                  ctx.globalCompositeOperation='copy';
-                  ctx.drawImage(
-                    bitmap,
-                    0, 0,
-                    bitmap.width, bitmap.height,
-                    0, 0,
-                    bitmap.width, bitmap.height
-                  );
-                  this.myTiles.addTile(item._LL,y,x,{cvs:item.cvs,isDrawed:true});
-                  while(this.限制瓦片&&tiles.length>(_X1-_X0)*(_Y1-_Y0)){
-                    tiles.shift();
-                  }
-                  // 瓦片.setValue(tiles.length);
-                  resolve();
-                }).catch(err=>{
-                  error()
-                  throw err
-                })
-              }).catch(err=>{
-                error()
-                throw err
-              })
-            }).catch(err=>{
-              error()
-              throw err
-            })
-            this.Count++;
-            //加载中.setValue(this.Count);*/
-
-            let image = new Image();
-            image.onload = ()=>{
-              this.Count--;
-              //加载中.setValue(this.Count);
-              if(this.Count==0){
-                this.跳过=0;
-                // 跳过.setValue(this.跳过)
-              }
-              let ctx = item.cvs.getContext('2d');
-              ctx.globalCompositeOperation='copy';
-              ctx.drawImage(
-                image,
-                0, 0,
-                image.width, image.height,
-                0, 0,
-                image.width, image.height
-              );
-
-              if(this.effect&&!url.match('/map2')){
-                let imgPixels = ctx.getImageData(0, 0, image.width, image.height);
-                for(let y = 0; y < imgPixels.height; y++){
-                  for(let x = 0; x < imgPixels.width; x++){
-                    let i = (y * 4) * imgPixels.width + x * 4;
-                    let avg = Math.floor((imgPixels.data[i] + imgPixels.data[i + 1] + imgPixels.data[i + 2]) / 3);
-                    imgPixels.data[i + 0] = colors[avg][0];
-                    imgPixels.data[i + 1] = colors[avg][1];
-                    imgPixels.data[i + 2] = colors[avg][2];
-                  }
-                }
-                ctx.putImageData(imgPixels, 0, 0, 0, 0, imgPixels.width, imgPixels.height);
-              }
-              this.myTiles.addTile(item._LL,y,x,{cvs:item.cvs,isDrawed:true});
-              while(this.限制瓦片&&tiles.length>(this._X1-this._X0)*(this._Y1-this._Y0)){
-                tiles.shift();
-              }
-              // 瓦片.setValue(tiles.length);
-              resolve();
-            }
-            var error = (err) => {
-              this.Count--;
-              //加载中.setValue(this.Count);
-              if(this.Count==0){
-                this.跳过=0;
-                // 跳过.setValue(this.跳过)
-              }
-              for(let k=0;k<tiles.length;k++){
-                if(tiles[k]._LL==item._LL&&tiles[k].i==item.i&&tiles[k].j==item.j){
-                  if(true){
-                    tiles.splice(k,1);
-                  }else{
-                    tiles[k].cvs=0;
-                    this.myTiles.addTile(item._LL,y,x,{cvs:0,isDrawed:false});
-                  }
-                }
-              }
-              while(this.限制瓦片&&tiles.length>(this._X1-this._X0)*(this._Y1-this._Y0)){
-                tiles.shift();
-              }
-              // 瓦片.setValue(tiles.length);
-              reject(err);
-            }
-            image.onerror = err => {
-              error(err)
-            }
-            image.onabort = err => {
-              error(err)
-            }
-            image.crossOrigin = 'anonymous';
-            image.src = url.replaceAll('{x}',x).replaceAll('{y}',y).replaceAll('{z}',item._LL).replace('{q}',tileXY2QuadKey(item._LL,y,x))+(url.indexOf('?')==-1?'?t=':'&t=')+Date.now();//?t=xxx防止浏览器本身的缓存机制
-            this.Count++;
-            //加载中.setValue(this.Count);
+          let src = url.replaceAll('{x}',x).replaceAll('{y}',y).replaceAll('{z}',item._LL).replace('{q}',tileXY2QuadKey(item._LL,y,x))+(url.indexOf('?')==-1?'?t=':'&t=')+Date.now();//?t=xxx防止浏览器本身的缓存机制
+          this.worker.postMessage({z:item._LL,y:y,x:x,url:src})
+          this.Count++;
+          //加载中.setValue(this.Count);
         }
       }else{
         for(let k=0;k<tiles.length;k++){
