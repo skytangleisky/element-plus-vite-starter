@@ -10,7 +10,7 @@
     data(){
       return{
         first: true,
-        // mapLayer:new MapLayer(),
+        mapLayer:new MapLayer(),
         borderLayer:new BorderLayer(),
         cvs:undefined,
         ctx:undefined,
@@ -27,8 +27,8 @@
       }
     },
     mounted(){
-      this.mapLayer?.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',maxLevel:18})
-      // this.mapLayer?.setSource({url:'http://map1.tanglei.top/{z}/{y}/{x}',maxLevel:22})
+      // this.mapLayer?.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',maxLevel:18})
+      this.mapLayer?.setSource({url:'http://map1.tanglei.top/{z}/{y}/{x}',maxLevel:22})
       // this.mapLayer?.setSource({url:'http://tanglei.top:5050/google/terrain/Guangzhou/{z}/{x}/{y}.jpg',maxLevel:15},)
       this.cvs = this.$refs.canvas
       let cvs = this.cvs

@@ -12,7 +12,7 @@
         <submenu :item.sync="v"></submenu>
       </ol>
     </template>
-    <div v-else style="height: 1px;background-color: #ffffff44;width:100%;"/>
+    <div v-else class="devide"/>
   </li>
 </template>
 <script lang="ts" setup>
@@ -36,5 +36,13 @@
   .rightImg{
     filter:drop-shadow(var(--ep-text-color-primary) 0 60px);
     transform: translateY(-60px);
+  }
+  .devide{
+    height: 1px;
+    background-color:#00000044;
+    width:100%;
+  }
+  .dark .devide{
+    background-color:#ffffff44;
   }
 </style>
