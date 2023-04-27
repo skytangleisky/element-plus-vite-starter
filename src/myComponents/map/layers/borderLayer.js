@@ -1,5 +1,6 @@
 import Tiles from '../tiles.js'
 import BaseLayer from './baseLayer.js'
+import Worker from '../workers/border.js?worker'
 export default class BorderLayer extends BaseLayer{
   constructor(){
     super()
@@ -11,7 +12,7 @@ export default class BorderLayer extends BaseLayer{
     this.限制瓦片 = false
     this.瓦片网格 = false
 
-    this.worker = new Worker(window.MAP_BASE_URL+"static/航线/border.js");//一个对象加快访问速度
+    this.worker = new Worker();//一个对象加快访问速度
     this.worker.onmessage = (event)=>{
       // console.log((Date.now()-event.data.beginTime)/1000);
       for(let k=0;k<this.mapsTiles.length;k++){
@@ -50,16 +51,16 @@ export default class BorderLayer extends BaseLayer{
     if(this._LL<0)this._LL=0;
 
     /*显示-∞<lng<+∞,-∞<lat<+∞*/
-    this._X0 = Math.floor(rect.x-obj.imgX*2**this._LL/2**obj.L/obj.tileWidth);
-    this._X1 = Math.ceil((rect.x+rect.w-obj.imgX)*2**this._LL/2**obj.L/obj.tileWidth);
-    this._Y0 = Math.floor(rect.y-obj.imgY*2**this._LL/2**obj.L/obj.tileWidth);
-    this._Y1 = Math.ceil((rect.y+rect.h-obj.imgY)*2**this._LL/2**obj.L/obj.tileWidth);
+    this._X0 = Math.floor(rect.x-obj.imgX*(2**this._LL)/(2**obj.L)/obj.tileWidth);
+    this._X1 = Math.ceil((rect.x+rect.w-obj.imgX)*(2**this._LL)/(2**obj.L)/obj.tileWidth);
+    this._Y0 = Math.floor(rect.y-obj.imgY*(2**this._LL)/(2**obj.L)/obj.tileWidth);
+    this._Y1 = Math.ceil((rect.y+rect.h-obj.imgY)*(2**this._LL)/(2**obj.L)/obj.tileWidth);
 
     /*显示-180<lng<180,-85.05112877980659<lat<85.05112877980659*/
-    // this._X0 = Math.max(rect.x,Math.floor(-obj.imgX*2**this._LL/2**obj.L/obj.tileWidth));
-    // this._X1 = Math.min(Math.ceil((rect.x+rect.w-obj.imgX)*2**this._LL/2**obj.L/obj.tileWidth),2**this._LL);
-    // this._Y0 = Math.max(rect.y,Math.floor(-obj.imgY*2**this._LL/2**obj.L/obj.tileWidth));
-    // this._Y1 = Math.min(Math.ceil((rect.y+rect.h-obj.imgY)*2**this._LL/2**obj.L/obj.tileWidth),2**this._LL);
+    // this._X0 = Math.max(rect.x,Math.floor(-obj.imgX*(2**this._LL)/(2**obj.L)/obj.tileWidth));
+    // this._X1 = Math.min(Math.ceil((rect.w-obj.imgX)*(2**this._LL)/(2**obj.L)/obj.tileWidth),2**this._LL);
+    // this._Y0 = Math.max(rect.y,Math.floor(-obj.imgY*(2**this._LL)/(2**obj.L)/obj.tileWidth));
+    // this._Y1 = Math.min(Math.ceil((rect.h-obj.imgY)*(2**this._LL)/(2**obj.L)/obj.tileWidth),2**this._LL);
 
 
 
@@ -153,6 +154,7 @@ export default class BorderLayer extends BaseLayer{
         }
       }
     }
+    callback()
   }
   load2(item,obj){
     this.worker.postMessage({args:{beginTime:Date.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:obj.tileWidth});//处理这段数据通常需要很长时间。

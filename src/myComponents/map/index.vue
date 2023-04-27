@@ -3,7 +3,7 @@
 </template>
 <script>
   import { defineComponent } from 'vue'
-  import { MapLayer } from './layers'
+  import { MapLayer, BorderLayer } from './layers'
   import { gsap, Power3 } from 'gsap'
   import { windowToCanvas, pixel2Lng, pixel2Lat, lng2Pixel, lat2Pixel } from './js/core'
   export default defineComponent({
@@ -11,6 +11,7 @@
       return{
         first: true,
         mapLayer:new MapLayer(),
+        borderLayer:new BorderLayer(),
         cvs:undefined,
         ctx:undefined,
         obj:{ imgX: 0, imgY:0, L:11, tileWidth:256 },
@@ -63,10 +64,14 @@
         this.ctx.save()
         this.ctx.clearRect(0,0,this.cvs.width,this.cvs.height)
         this.mapLayer.render(this.obj,this.ctx)
+        this.borderLayer?.render(this.obj,this.ctx)
         this.ctx.restore()
       },
       loadMap(){
         this.mapLayer.loadMap(this.obj,this.change,{x:0,y:0,w:this.cvs.width,h:this.cvs.height},()=>{
+          this.draw()
+        })
+        this.borderLayer?.loadMap(this.obj,this.change,{x:0,y:0,w:this.cvs.width,h:this.cvs.height},()=>{
           this.draw()
         })
       },
