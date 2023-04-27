@@ -1,11 +1,12 @@
 <template>
-  <canvas ref="canvas" class="absolute left-0 top-0" style="outline:none;box-sizing: border-box;width:100%;height:100%;"></canvas>
+  <canvas ref="canvas" style="position:absolute;outline:none;left:0;top:0;width:100%;height:100%;"></canvas>
 </template>
 <script>
+  import { defineComponent } from 'vue'
   import { MapLayer } from './layers'
   import { gsap, Power3 } from 'gsap'
   import { windowToCanvas, pixel2Lng, pixel2Lat, lng2Pixel, lat2Pixel } from './js/core'
-  export default{
+  export default defineComponent({
     data(){
       return{
         first: true,
@@ -25,33 +26,37 @@
       }
     },
     mounted(){
-      // this.mapLayer.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',maxLevel:18})
-      this.mapLayer.setSource({url:'http://map1.tanglei.top/{z}/{y}/{x}',maxLevel:22})
+      this.mapLayer.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',maxLevel:18})
+      // this.mapLayer.setSource({url:'http://map1.tanglei.top/{z}/{y}/{x}',maxLevel:22})
+      // this.mapLayer.setSource({url:'http://tanglei.top:5050/google/terrain/Guangzhou/{z}/{x}/{y}.jpg',maxLevel:15},)
       this.cvs = this.$refs.canvas
+      let cvs = this.cvs
       this.ctx = this.cvs.getContext('2d')
       this.obj.targetL = this.obj.L
       new ResizeObserver(()=>{
-        let rect = this.cvs.getBoundingClientRect()
-        this.cvs.width = rect.width
-        this.cvs.height = rect.height
+        let rect = cvs.getBoundingClientRect()
+        cvs.width = rect.width
+        cvs.height = rect.height
+        this.limitScale()
+        this.limitRegion()
         if(this.first){
           this.first = false
           let POINT={lng:113.42165142106768,lat:23.098844381632485}
-          this.obj.imgX = this.cvs.width/2-this.obj.tileWidth*2**this.obj.L*(POINT.lng+180)/360
-          this.obj.imgY=this.cvs.height/2-(1-Math.asinh(Math.tan(POINT.lat*Math.PI/180))/Math.PI)/2*(2**this.obj.L)*this.obj.tileWidth
-          localStorage.L&&(this.obj.L=Number(localStorage.L))
+          this.obj.imgX = cvs.width/2-this.obj.tileWidth*2**this.obj.L*(POINT.lng+180)/360
+          this.obj.imgY=cvs.height/2-(1-Math.asinh(Math.tan(POINT.lat*Math.PI/180))/Math.PI)/2*(2**this.obj.L)*this.obj.tileWidth
+          localStorage.L&&(this.obj.targetL=this.obj.L=Number(localStorage.L))
           if(localStorage.center){
             var center = JSON.parse(localStorage.center)
-            this.obj.imgX=this.cvs.width/2-(center[0]+180)/360*this.obj.tileWidth*(2**this.obj.L)
-            this.obj.imgY=this.cvs.height/2-(1-Math.asinh(Math.tan(center[1]*Math.PI/180))/Math.PI)/2*(2**this.obj.L)*this.obj.tileWidth
+            this.obj.imgX=cvs.width/2-(center[0]+180)/360*this.obj.tileWidth*(2**this.obj.L)
+            this.obj.imgY=cvs.height/2-(1-Math.asinh(Math.tan(center[1]*Math.PI/180))/Math.PI)/2*(2**this.obj.L)*this.obj.tileWidth
           }
         }
         this.loadMap()
-      }).observe(this.cvs)
-      this.cvs.addEventListener('mousewheel',this.mousewheelFunc);
-      this.cvs.addEventListener('mousedown',this.mousedownFunc);
-      document.addEventListener('mouseup',this.mouseupFunc);
-      document.addEventListener('mousemove',this.mousemoveFunc);
+      }).observe(cvs)
+      cvs.addEventListener('mousewheel',this.mousewheelFunc,{passive:true});
+      cvs.addEventListener('mousedown',this.mousedownFunc,{passive:true});
+      document.addEventListener('mouseup',this.mouseupFunc,{passive:true});
+      document.addEventListener('mousemove',this.mousemoveFunc,{passive:true});
     },
     methods:{
       draw(time){
@@ -229,7 +234,7 @@
         // panel&&panel.setPos(obj.imgX,obj.imgY,2**obj.L)
       }
     }
-  }
+  })
 </script>
 <style>
 

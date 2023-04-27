@@ -1,5 +1,5 @@
 <template>
-  <li v-for="(v,k) in item?.children" @click.native="e=>v.onClick&&v.onClick(e,item,k)" :key="k" :style="'pointer-events:'+(v.name?'auto':'none')">
+  <li v-for="(v,k) in item?.children" @click.native="(e:Event)=>v.onClick&&v.onClick(e,item,k)" :key="k" :style="'pointer-events:'+(v.name?'auto':'none')">
     <template v-if="v.name">
       <el-icon v-if="item?.left" style="overflow: hidden;">
         <img v-if="v.leftImgSrc" :src="v.leftImgSrc" class="leftImg w-full h-full">
@@ -23,9 +23,10 @@
   const { item } = defineProps<Props>()
 </script>
 <script lang="ts">
-  export default{
+  import { defineComponent } from 'vue'
+  export default defineComponent({
     name: 'submenu'
-  }
+  })
 </script>
 <style>
   .leftImg{

@@ -1,5 +1,6 @@
 <template>
-  <ol class="menu absolute flex items-center content-center flex-row m-0 left-0 top-0"><!--导航栏-->
+  <ol class="menu absolute flex items-start content-center flex-row m-0 p-0 h-full" style="min-width: 100%;"><!--导航栏-->
+    <my-map></my-map>
     <li tabindex="-1" v-for="(item,index) in list" :key="index">
       {{ item.name }}
       <ol class="absolute flex-col left-0 p-0 top-100%" v-if="item.children" :style="'left:' + (item.left?'-1em':'0')"><!--一级菜单-->
@@ -9,6 +10,7 @@
   </ol>
 </template>
 <script lang="ts" setup>
+  import myMap from '../map/index.vue'
   import { ref, watch } from 'vue'
   import submenu from './menu.vue'
   import menusData from './menusData'

@@ -1,24 +1,21 @@
 <template>
-  <div class="app-container">
-    <!-- <box>{{ t("tl.Success") }}</box> -->
-    <!-- <div class="nav-wrapper"></div> -->
-    <my-map></my-map>
-    <menus :list.sync="list"></menus>
-    <!-- <search></search> -->
-    <!-- Using <a href="https://cn.vuejs.org/" target="_blank">Vue</a> v{{ vueVersion }}, <a href="https://element-plus.org/zh-CN" target="_blank">Element-plus</a> v{{ elementplusVersion }}, <a href="https://pinia.web3doc.top/" target="_blank">Pinia</a> v{{ piniaVersion }} and <a href="https://router.vuejs.org/" target="_blank">Vue-router</a> v{{ vueRouterVersion }}. -->
-    <!-- <el-table mb-1 :data="[]" /> -->
-    <!-- <BaseHeader /> -->
-    <!-- <div style="display: flex">
-      <BaseSide />
-      <div>
-        <img alt="Vue logo" class="element-plus-logo" src="./assets/logo.png" />
-        <HelloWorld msg="Hello Vue 3.0 + Element Plus + Vite" />
-      </div>
-    </div> -->
-    <!-- <test-button></test-button> -->
-    <!-- <test-border></test-border> -->
-    <!-- <remote-component></remote-component> -->
-  </div>
+  <!-- <box>{{ t("tl.Success") }}</box> -->
+  <!-- <div class="nav-wrapper"></div> -->
+  <menus :list.sync="list"></menus>
+  <!-- <search></search> -->
+  <!-- Using <a href="https://cn.vuejs.org/" target="_blank">Vue</a> v{{ vueVersion }}, <a href="https://element-plus.org/zh-CN" target="_blank">Element-plus</a> v{{ elementplusVersion }}, <a href="https://pinia.web3doc.top/" target="_blank">Pinia</a> v{{ piniaVersion }} and <a href="https://router.vuejs.org/" target="_blank">Vue-router</a> v{{ vueRouterVersion }}. -->
+  <!-- <el-table mb-1 :data="[]" /> -->
+  <!-- <BaseHeader /> -->
+  <!-- <div style="display: flex">
+    <BaseSide />
+    <div>
+      <img alt="Vue logo" class="element-plus-logo" src="./assets/logo.png" />
+      <HelloWorld msg="Hello Vue 3.0 + Element Plus + Vite" />
+    </div>
+  </div> -->
+  <!-- <test-button></test-button> -->
+  <!-- <test-border></test-border> -->
+  <!-- <remote-component></remote-component> -->
 </template>
 <script setup>
 import { ref } from 'vue'
@@ -34,7 +31,6 @@ import TestBorder from './elementplus/basic/border.vue'
 import Box from './myComponents/box.vue'
 import Search from './myComponents/search.vue'
 import Menus from './myComponents/menu/index.vue'
-import myMap from './myComponents/map/index.vue'
 const onClick = (e,item,v,k) => {
   // item.children.forEach((v,k)=>{
   //   delete v.leftImgSrc
@@ -75,6 +71,10 @@ setTimeout(()=>{
 @media (prefers-color-scheme: no-preference) {
   /** ... */
 }
+html,body{
+  width:100%;
+  height:100%;
+}
 body{
   overscroll-behavior: none;
   background: url(assets/background.jpg);
@@ -82,11 +82,10 @@ body{
 #app {
   text-align: center;
   color: var(--ep-text-color-primary);
-}
-.app-container{
-  background-size: cover;
   box-sizing: border-box;
-  min-height: 100vh;
+  position: relative;
+  width:100%;
+  height:100%;
 }
 .nav-wrapper{
   width: 100%;
@@ -100,13 +99,11 @@ body{
 }
 </style>
 <style lang="scss">
-.dark{
-  body{
+.dark body{
     // background: url(assets/g.jpg);
     background: url(assets/newBg.jpg);
     // background: #131417;
     // background: rgb(13, 34, 75);
     // background-size: cover;
   }
-}
 </style>
