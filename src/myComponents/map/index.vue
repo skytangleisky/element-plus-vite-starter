@@ -10,7 +10,7 @@
     data(){
       return{
         first: true,
-        mapLayer:new MapLayer(),
+        // mapLayer:new MapLayer(),
         borderLayer:new BorderLayer(),
         cvs:undefined,
         ctx:undefined,
@@ -27,9 +27,9 @@
       }
     },
     mounted(){
-      this.mapLayer.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',maxLevel:18})
-      // this.mapLayer.setSource({url:'http://map1.tanglei.top/{z}/{y}/{x}',maxLevel:22})
-      // this.mapLayer.setSource({url:'http://tanglei.top:5050/google/terrain/Guangzhou/{z}/{x}/{y}.jpg',maxLevel:15},)
+      this.mapLayer?.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',maxLevel:18})
+      // this.mapLayer?.setSource({url:'http://map1.tanglei.top/{z}/{y}/{x}',maxLevel:22})
+      // this.mapLayer?.setSource({url:'http://tanglei.top:5050/google/terrain/Guangzhou/{z}/{x}/{y}.jpg',maxLevel:15},)
       this.cvs = this.$refs.canvas
       let cvs = this.cvs
       this.ctx = this.cvs.getContext('2d')
@@ -63,12 +63,12 @@
       draw(time){
         this.ctx.save()
         this.ctx.clearRect(0,0,this.cvs.width,this.cvs.height)
-        this.mapLayer.render(this.obj,this.ctx)
+        this.mapLayer?.render(this.obj,this.ctx)
         this.borderLayer?.render(this.obj,this.ctx)
         this.ctx.restore()
       },
       loadMap(){
-        this.mapLayer.loadMap(this.obj,this.change,{x:0,y:0,w:this.cvs.width,h:this.cvs.height},()=>{
+        this.mapLayer?.loadMap(this.obj,this.change,{x:0,y:0,w:this.cvs.width,h:this.cvs.height},()=>{
           this.draw()
         })
         this.borderLayer?.loadMap(this.obj,this.change,{x:0,y:0,w:this.cvs.width,h:this.cvs.height},()=>{
@@ -209,10 +209,10 @@
       limitScale(){
         // if(config.限制){
           //下面5行代码是限制地图缩放等级
-          if(this.obj.targetL<Math.max(0,this.mapLayer.urlTemplate.minLevel)){
-            this.obj.targetL=Math.max(0,this.mapLayer.urlTemplate.minLevel)
-          }else if(this.obj.targetL>(this.mapLayer.urlTemplate.maxLevel||21)){
-            this.obj.targetL=this.mapLayer.urlTemplate.maxLevel||21
+          if(this.obj.targetL<Math.max(0,this.mapLayer?.urlTemplate.minLevel)){
+            this.obj.targetL=Math.max(0,this.mapLayer?.urlTemplate.minLevel)
+          }else if(this.obj.targetL>(this.mapLayer?.urlTemplate.maxLevel||21)){
+            this.obj.targetL=this.mapLayer?.urlTemplate.maxLevel||21
           }
           // 下面7行代码是让地图不能缩放得太小，并且最小时地图不能因放大而模糊。
           let tmpL = Math.ceil(Math.log(Math.max(this.cvs.width,this.cvs.height)/this.obj.tileWidth)/Math.log(2))
