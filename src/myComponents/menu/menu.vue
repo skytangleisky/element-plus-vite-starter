@@ -1,5 +1,5 @@
 <template>
-  <li tabindex="-1" v-for="(v,k) in item?.children" @mouseenter="mouseenter" @animationend="(e:any)=>animationend(e)" :key="k" @focusout="focusout" @click.stop="(e:any)=>{v.children||click(e,item,k)}" :style="'pointer-events:'+(v.name?'auto':'none')">
+  <li tabindex="-1" v-for="(v,k) in item?.children" @mouseenter="mouseenter" @animationend="(e:any)=>animationend(e,item,k)" :key="k" @focusout="focusout" @mouseup.stop="(e:any)=>{v.children||mouseup(e,item,k)}" :style="'pointer-events:'+(v.name?'auto':'none')">
     <template v-if="v.name">
       <el-icon v-if="item?.left" style="overflow: hidden;">
         <img v-if="v.leftImgSrc" src="/src/assets/checked.svg" class="leftImg w-full h-full">
@@ -24,12 +24,12 @@
   const mouseenter = (e:any) => {
     e.target.focus()
   }
-  const click = (e:any,item:any,k:any) => {
+  const mouseup = (e:any,item:any,k:any) => {
     $(e.target.closest('li')).addClass('play')
-    item?.children[k].onClick&&item?.children[k].onClick(e,item,k)
   }
-  const animationend = (e:any) => {
+  const animationend = (e:any,item:any,k:any) => {
     $(e.target).removeClass('play')
+    item?.children[k].onClick&&item?.children[k].onClick(e,item,k)
   }
   const focusout = (e:any) => {
     $(e.target).removeClass('play')

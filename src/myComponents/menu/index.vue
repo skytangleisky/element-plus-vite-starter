@@ -90,15 +90,15 @@
           background-color: rgba(62, 110, 197, 1);
           border-radius: 4px;
         }
-        &:focus-within:not(:has(ol:hover)):not(:has(ol)):active{
-          background-color: rgba(62, 110, 197, .5);
-        }
+        // &:focus-within:not(:has(ol:hover)):not(:has(ol)):active{
+        //   background-color: rgba(62, 110, 197, .5);
+        // }
         &:not(:has(ol)).play{
-          animation: identifier 250ms;
+          animation: identifier 50ms;
         }
         @keyframes identifier {
-          0% {background-color: rgba(62, 110, 197, 0)}
-          100% {background-color: rgba(62, 110, 197, 0)}
+          0% {opacity: 0;}
+          100% {opacity: 0;}
         }
       }
     }

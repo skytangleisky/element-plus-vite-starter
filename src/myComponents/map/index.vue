@@ -11,9 +11,9 @@
       return{
         first: true,
         mapLayer:new MapLayer(),
-        borderLayer:new BorderLayer(),
-        pointLayer:new PointLayer(),
-        routeLayer:new RouteLayer(),
+        // borderLayer:new BorderLayer(),
+        // pointLayer:new PointLayer(),
+        // routeLayer:new RouteLayer(),
         cvs:undefined,
         ctx:undefined,
         obj:{ imgX: 0, imgY:0, L:11, tileWidth:256 },
