@@ -9,7 +9,7 @@ function 明亮(e:Event,item:Item,k:number){
   toggleDark(false)
 }
 export default [
-  {name:'暗黑',onClick:暗黑,leftImgSrc:isDark.value?'/src/assets/checked.svg':undefined},
+  {name:'暗黑',onClick:暗黑,leftImgSrc:isDark.value?'checked.svg':undefined},
   {},
-  {name:'明亮',onClick:明亮,leftImgSrc:isDark.value?undefined:'/src/assets/checked.svg'},
+  {name:'明亮',onClick:明亮,leftImgSrc:isDark.value?undefined:'checked.svg'},
 ]

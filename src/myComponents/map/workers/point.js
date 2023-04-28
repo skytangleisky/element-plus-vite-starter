@@ -250,7 +250,6 @@ function draw(args){
             }
             UNITS = vecUnit
             loadStatus = 'loaded'
-            console.log('LOADED')
             test(args);//第一次使用后台返回的数据
             for(let i=0;i<queue.length;i++){
               let args = queue.splice(i--,1)[0]

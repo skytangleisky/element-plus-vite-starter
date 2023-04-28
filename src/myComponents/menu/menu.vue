@@ -2,7 +2,7 @@
   <li tabindex="-1" v-for="(v,k) in item?.children" @mouseenter="mouseenter" @animationend="(e:any)=>animationend(e)" :key="k" @focusout="focusout" @click.stop="(e:any)=>{v.children||click(e,item,k)}" :style="'pointer-events:'+(v.name?'auto':'none')">
     <template v-if="v.name">
       <el-icon v-if="item?.left" style="overflow: hidden;">
-        <img v-if="v.leftImgSrc" :src="v.leftImgSrc" class="leftImg w-full h-full">
+        <img v-if="v.leftImgSrc" src="/src/assets/checked.svg" class="leftImg w-full h-full">
       </el-icon>
       <span style="flex-grow: 1;display:flex;justify-content: left;">{{ v.name }}</span>
       <el-icon v-if="item?.right" style="overflow: hidden;">

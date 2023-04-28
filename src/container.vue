@@ -37,25 +37,25 @@ const onClick = (e,item,v,k) => {
   // })
   // v.leftImgSrc = '/src/assets/checked.svg'
 
-  if(v.leftImgSrc == '/src/assets/checked.svg')
-    v.leftImgSrc = '/src/assets/unchecked.svg'
+  if(v.leftImgSrc == 'checked.svg')
+    delete v.leftImgSrc
   else
-    v.leftImgSrc = '/src/assets/checked.svg'
+    v.leftImgSrc = 'checked.svg'
 }
 const checkClick = (e,item,v,k) => {
   console.log(v)
-  if(v.leftImgSrc == '/src/assets/checked.svg')
-    v.leftImgSrc = '/src/assets/unchecked.svg'
+  if(v.leftImgSrc == 'checked.svg')
+    delete v.leftImgSrc
   else
-    v.leftImgSrc = '/src/assets/checked.svg'
+    v.leftImgSrc = 'checked.svg'
 }
 const radioClick = (e,item,v,k) => {
   item.children?.forEach((v,k)=>{
     delete v.leftImgSrc
   })
-  v.leftImgSrc = '/src/assets/checked.svg'
+  v.leftImgSrc = 'checked.svg'
 }
-const list = ref([{name:'测试',left:true,children:[{name:'456',leftImgSrc:'/src/assets/checked.svg',onClick:radioClick},{name:'789',leftImgSrc:'/src/assets/checked.svg',onClick:radioClick}]}])
+const list = ref([{name:'测试',left:true,children:[{name:'456',leftImgSrc:'checked.svg',onClick:radioClick},{name:'789',leftImgSrc:'checked.svg',onClick:radioClick}]}])
 setTimeout(()=>{
   list.value = undefined
 },1000)
