@@ -1,7 +1,7 @@
 <template>
   <ol class="menu absolute flex items-start content-center flex-row m-0 p-0 h-full" style="min-width: 100%;"><!--导航栏-->
     <my-map></my-map>
-    <li tabindex="-1" v-for="(item,index) in list" :key="index">
+    <li tabindex="-1" v-for="(item,index) in list" :key="index" @mouseenter="mouseenter">
       {{ item.name }}
       <ol class="absolute flex-col left-0 p-0 top-100%" v-if="item.children" :style="'left:' + (item.left?'-1em':'0')"><!--一级菜单-->
         <submenu :item.sync="item"></submenu>
@@ -24,6 +24,11 @@
   watch(props.list,newVal=>{
     console.log('>>>',newVal)
   })
+  const mouseenter = (e:any) => {
+    if($(e.target.parentNode).is(':focus-within')){
+      e.target.focus()
+    }
+  }
 </script>
 <style lang="scss">
   ol{
@@ -33,6 +38,7 @@
     display: none;
     // background: lightgrey;
     li{
+      outline: none;
       position: relative;
       display: inline-flex;
       justify-content: space-between;
@@ -42,29 +48,17 @@
       padding: 1px 4px 1px 4px;
       cursor:default;
     }
+    &:focus-within li:focus-within>ol{
+      display: flex;
+    }
     &:focus-within li:hover>ol{
       display: flex;
     }
   }
   .menu{
     background-color: transparent;
-    &>li:hover{
-      background-color: rgba(150, 150, 150, .5);
-      border-radius: 4px;
-      li{
-        align-items: center;
-        justify-content: space-between;
-        &:hover{
-          background-color: rgba(62, 110, 197, .9);
-          border-radius: 4px;
-        }
-        &:has(ol:hover){
-          background-color: rgba(150, 150, 150, .5);
-        }
-        &:hover:not(:has(ol:hover)):not(:has(ol)):active{
-          background-color: rgba(62, 110, 197, .5);
-        }
-      }
+    &>li{
+      padding:0 8px 0 8px;
     }
     li>ol{
       padding: 4px;
@@ -83,32 +77,29 @@
         backdrop-filter: blur(4px);
       }
     }
-    &>li{
-      padding:0 8px 0 8px;
-    }
-  }
-  .dark .menu{
-    background-color:transparent;
-    &>li:hover{
-      background-color: rgba(84, 84, 84, .5);
+    &>li:focus-within{
+      background-color: rgba(150, 150, 150, .5);
+      border-radius: 4px;
       li{
-        &:hover{
-          background-color: rgba(62, 110, 197,.9);
+        align-items: center;
+        justify-content: space-between;
+        &:focus-within:has(ol){
+          background-color: rgba(150, 150, 150, .5);
         }
-        &:has(ol:hover){
-          background-color: rgba(84, 84, 84, .5);
+        &:focus-within:not(:has(ol:hover)):hover{
+          background-color: rgba(62, 110, 197, 1);
+          border-radius: 4px;
         }
-        &:hover:not(:has(ol:hover)):not(:has(ol)):active{
+        &:focus-within:not(:has(ol:hover)):not(:has(ol)):active{
           background-color: rgba(62, 110, 197, .5);
         }
-      }
-    }
-    li>ol{
-      &::before{
-        content:'';
-        border:1px solid #666;
-        box-shadow: 0 0 4px #000;
-        background-color: rgba(42, 42, 40, .5);
+        &:not(:has(ol)).play{
+          animation: identifier 250ms;
+        }
+        @keyframes identifier {
+          0% {background-color: rgba(62, 110, 197, 0)}
+          100% {background-color: rgba(62, 110, 197, 0)}
+        }
       }
     }
   }

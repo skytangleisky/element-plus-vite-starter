@@ -1,5 +1,5 @@
 <template>
-  <li v-for="(v,k) in item?.children" @click.native="(e:Event)=>v.onClick&&v.onClick(e,item,k)" :key="k" :style="'pointer-events:'+(v.name?'auto':'none')">
+  <li tabindex="-1" v-for="(v,k) in item?.children" @mouseenter="mouseenter" @animationend="(e:any)=>animationend(e)" :key="k" @focusout="focusout" @click.stop="(e:any)=>{v.children||click(e,item,k)}" :style="'pointer-events:'+(v.name?'auto':'none')">
     <template v-if="v.name">
       <el-icon v-if="item?.left" style="overflow: hidden;">
         <img v-if="v.leftImgSrc" :src="v.leftImgSrc" class="leftImg w-full h-full">
@@ -21,6 +21,19 @@
     item?: Item
   }
   const { item } = defineProps<Props>()
+  const mouseenter = (e:any) => {
+    e.target.focus()
+  }
+  const click = (e:any,item:any,k:any) => {
+    $(e.target.closest('li')).addClass('play')
+    item?.children[k].onClick&&item?.children[k].onClick(e,item,k)
+  }
+  const animationend = (e:any) => {
+    $(e.target).removeClass('play')
+  }
+  const focusout = (e:any) => {
+    $(e.target).removeClass('play')
+  }
 </script>
 <script lang="ts">
   import { defineComponent } from 'vue'
