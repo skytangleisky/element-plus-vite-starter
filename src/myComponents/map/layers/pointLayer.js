@@ -1,5 +1,6 @@
 import Tiles from '../tiles.js'
 import BaseLayer from './baseLayer.js'
+import Worker from '../workers/point.js?worker'
 export default class PointLayer extends BaseLayer{
   constructor(){
     super()
@@ -11,7 +12,7 @@ export default class PointLayer extends BaseLayer{
     this.限制瓦片 = false
     this.瓦片网格 = false
 
-    this.worker = new Worker(window.MAP_BASE_URL+"static/航线/point.js");//一个对象加快访问速度
+    this.worker = new Worker();//一个对象加快访问速度
     this.worker.onmessage = (event)=>{
       // console.log((Date.now()-event.data.beginTime)/1000);
       for(let k=0;k<this.mapsTiles.length;k++){

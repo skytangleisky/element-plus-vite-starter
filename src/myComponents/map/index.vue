@@ -3,7 +3,7 @@
 </template>
 <script>
   import { defineComponent } from 'vue'
-  import { MapLayer, BorderLayer } from './layers'
+  import { MapLayer, BorderLayer, PointLayer, RouteLayer } from './layers'
   import { gsap, Power3 } from 'gsap'
   import { windowToCanvas, pixel2Lng, pixel2Lat, lng2Pixel, lat2Pixel } from './js/core'
   export default defineComponent({
@@ -12,6 +12,8 @@
         first: true,
         mapLayer:new MapLayer(),
         borderLayer:new BorderLayer(),
+        pointLayer:new PointLayer(),
+        routeLayer:new RouteLayer(),
         cvs:undefined,
         ctx:undefined,
         obj:{ imgX: 0, imgY:0, L:11, tileWidth:256 },
@@ -65,6 +67,8 @@
         this.ctx.clearRect(0,0,this.cvs.width,this.cvs.height)
         this.mapLayer?.render(this.obj,this.ctx)
         this.borderLayer?.render(this.obj,this.ctx)
+        this.pointLayer?.render(this.obj,this.ctx)
+        this.routeLayer?.render(this.obj,this.ctx)
         this.ctx.restore()
       },
       loadMap(){
@@ -72,6 +76,12 @@
           this.draw()
         })
         this.borderLayer?.loadMap(this.obj,this.change,{x:0,y:0,w:this.cvs.width,h:this.cvs.height},()=>{
+          this.draw()
+        })
+        this.pointLayer?.loadMap(this.obj,this.change,{x:0,y:0,w:this.cvs.width,h:this.cvs.height},()=>{
+          this.draw()
+        })
+        this.routeLayer?.loadMap(this.obj,this.change,{x:0,y:0,w:this.cvs.width,h:this.cvs.height},()=>{
           this.draw()
         })
       },
