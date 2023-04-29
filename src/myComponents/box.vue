@@ -1,5 +1,5 @@
 <template>
-  <div class="four-container">
+  <div v-dialogDrag class="four-container">
     <div class="fourBorder border1"></div>
     <div class="fourBorder border2"></div>
     <div class="fourBorder border3"></div>

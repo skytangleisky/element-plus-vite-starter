@@ -1,5 +1,4 @@
 <template>
-  <!-- <box>{{ t("tl.Success") }}</box> -->
   <!-- <div class="nav-wrapper"></div> -->
   <menus :list.sync="list"></menus>
   <!-- <search></search> -->
@@ -23,12 +22,9 @@ import { version as piniaVersion } from 'pinia/package.json'
 import { version as vueVersion } from 'vue/package.json'
 import { version as elementplusVersion } from 'element-plus/package.json'
 import { version as vueRouterVersion } from 'vue-router/package.json'
-import { useLocale } from 'element-plus'
-let { t } = useLocale()
 // import RemoteComponent from './myComponents/remoteComponent.vue'
 import TestButton from './elementplus/basic/button.vue'
 import TestBorder from './elementplus/basic/border.vue'
-import Box from './myComponents/box.vue'
 import Search from './myComponents/search.vue'
 import Menus from './myComponents/menu/index.vue'
 const onClick = (e,item,v,k) => {

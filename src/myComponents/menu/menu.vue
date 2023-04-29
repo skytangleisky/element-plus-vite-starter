@@ -28,11 +28,15 @@
     $(e.target.closest('li')).addClass('play')
   }
   const animationend = (e:any,item:any,k:any) => {
-    $(e.target).removeClass('play')
-    item?.children[k].onClick&&item?.children[k].onClick(e,item,k)
+    if($(e.target).find('span').html()==item?.children[k].name){
+      $(e.target).removeClass('play')
+      item?.children[k].onClick&&item?.children[k].onClick(e,item,k)
+      $('.mybox').focus()
+      console.log(item?.children[k])
+    }
   }
   const focusout = (e:any) => {
-    $(e.target).removeClass('play')
+    // $(e.target).removeClass('play')
   }
 </script>
 <script lang="ts">

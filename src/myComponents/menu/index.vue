@@ -1,6 +1,7 @@
 <template>
   <ol class="menu absolute flex items-start content-center flex-row m-0 p-0 h-full" style="min-width: 100%;"><!--导航栏-->
     <my-map></my-map>
+    <box tabindex="-1" class="mybox" style="position: absolute;top:100px;">{{ t("tl.Success") }}</box>
     <li tabindex="-1" v-for="(item,index) in list" :key="index" @mouseenter="mouseenter">
       {{ item.name }}
       <ol class="absolute flex-col left-0 p-0 top-100%" v-if="item.children" :style="'left:' + (item.left?'-1em':'0')"><!--一级菜单-->
@@ -10,11 +11,14 @@
   </ol>
 </template>
 <script lang="ts" setup>
+import Box from '../../myComponents/box.vue'
   import myMap from '../map/index.vue'
   import { ref, watch } from 'vue'
   import submenu from './menu.vue'
   import menusData from './menusData'
   import { Item } from './def'
+  import { useLocale } from 'element-plus'
+  let { t } = useLocale()
   type Props = {
     list?: Item[]
   }
@@ -25,7 +29,7 @@
     console.log('>>>',newVal)
   })
   const mouseenter = (e:any) => {
-    if($(e.target.parentNode).is(':focus-within')){
+    if($(e.target.parentNode).is(':has(li:focus-within)')){
       e.target.focus()
     }
   }
@@ -48,10 +52,7 @@
       padding: 1px 4px 1px 4px;
       cursor:default;
     }
-    &:focus-within li:focus-within>ol{
-      display: flex;
-    }
-    &:focus-within li:hover>ol{
+    li:focus-within>ol{
       display: flex;
     }
   }
@@ -94,11 +95,13 @@
         //   background-color: rgba(62, 110, 197, .5);
         // }
         &:not(:has(ol)).play{
-          animation: identifier 50ms;
+          animation: identifier 100ms;
         }
         @keyframes identifier {
           0% {opacity: 0;}
-          100% {opacity: 0;}
+          49% {opacity: 0;}
+          51% {opacity: 1;}
+          100% {opacity: 1;}
         }
       }
     }
