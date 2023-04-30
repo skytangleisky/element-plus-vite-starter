@@ -1,5 +1,5 @@
 <template>
-  <li tabindex="-1" v-for="(v,k) in item?.children" @mouseenter="mouseenter" @animationend="(e:any)=>animationend(e,item,k)" :key="k" @focusout="focusout" @mouseup.stop="(e:any)=>{v.children||mouseup(e,item,k)}" :style="'pointer-events:'+(v.name?'auto':'none')">
+  <li tabindex="-1" v-for="(v,k) in item?.children" @mouseenter="mouseenter" :key="k" @mouseup.stop="(e:any)=>{v.children||mouseup(e,item,k)}" :style="'pointer-events:'+(v.name?'auto':'none')">
     <template v-if="v.name">
       <el-icon v-if="item?.left" style="overflow: hidden;">
         <img v-if="v.leftImgSrc" src="/src/assets/checked.svg" class="leftImg w-full h-full">
@@ -17,6 +17,7 @@
 </template>
 <script lang="ts" setup>
   import { Item } from './def'
+  import { gsap } from 'gsap'
   type Props = {
     item?: Item
   }
@@ -25,18 +26,24 @@
     e.target.focus()
   }
   const mouseup = (e:any,item:any,k:any) => {
-    $(e.target.closest('li')).addClass('play')
-  }
-  const animationend = (e:any,item:any,k:any) => {
-    if($(e.target).find('span').html()==item?.children[k].name){
-      $(e.target).removeClass('play')
-      item?.children[k].onClick&&item?.children[k].onClick(e,item,k)
-      $('.mybox').focus()
-      console.log(item?.children[k])
+    if(e.which==1){
+      $(e.target).closest('li').addClass('play')
+      gsap.killTweensOf($(e.target).closest('li'))
+      gsap.fromTo($(e.target).closest('li'),{
+        opacity:0
+      },
+      {
+        duration:0.05,
+        onComplete(){
+          $(e.target).closest('li').css({opacity:'1'})
+          item?.children[k].onClick&&item?.children[k].onClick(e,item,k)
+          setTimeout(() => {
+            $('.mybox').focus()
+          }, 50);
+          console.log(item?.children[k])
+        }
+      })
     }
-  }
-  const focusout = (e:any) => {
-    // $(e.target).removeClass('play')
   }
 </script>
 <script lang="ts">

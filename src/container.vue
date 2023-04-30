@@ -100,6 +100,6 @@ body{
     background: url(assets/newBg.jpg);
     // background: #131417;
     // background: rgb(13, 34, 75);
-    // background-size: cover;
+    background-size: 100% 100%;
   }
 </style>

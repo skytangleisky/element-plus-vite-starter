@@ -26,8 +26,8 @@ import { gsap, Power0, Power1, Power2, Power3, Power4 } from 'gsap'
 app.use(pinia)
 app.directive('dialogDrag',{
   beforeMount(el, binding, vnode, oldVnode) {
-    let obj
-    const mousemoveFunc = event => {
+    let obj:any
+    const mousemoveFunc = (event:any) => {
       var ev = event || window.event
       posl = { x: ev.clientX, y: ev.clientY }
       var x = posl.x - pos.x; var y = posl.y - pos.y
@@ -51,9 +51,9 @@ app.directive('dialogDrag',{
       document.removeEventListener('mouseup', mouseupFunc)
       el.style.cursor = 'default'
     }
-    var pos, posl
+    var pos:any, posl:any
     window.deep = 1
-    el.addEventListener('mousedown', event => {
+    el.addEventListener('mousedown', (event:any) => {
       el.style['z-index'] = window.deep++
       var ev = event || window.event
       event.stopPropagation()

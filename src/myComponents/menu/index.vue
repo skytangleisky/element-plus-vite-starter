@@ -94,15 +94,13 @@ import Box from '../../myComponents/box.vue'
         // &:focus-within:not(:has(ol:hover)):not(:has(ol)):active{
         //   background-color: rgba(62, 110, 197, .5);
         // }
-        &:not(:has(ol)).play{
-          animation: identifier 100ms;
-        }
-        @keyframes identifier {
-          0% {opacity: 0;}
-          49% {opacity: 0;}
-          51% {opacity: 1;}
-          100% {opacity: 1;}
-        }
+        // &:not(:has(ol)).play{
+        //   animation: identifier 1000ms;
+        // }
+        // @keyframes identifier {
+        //   0% {opacity: 0;}
+        //   100% {opacity: 0;}
+        // }
       }
     }
   }
