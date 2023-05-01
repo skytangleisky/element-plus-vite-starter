@@ -17,6 +17,7 @@ export default class MapLayer extends BaseLayer{
     this.限制瓦片 = false
     this.瓦片网格 = false
     this.worker = new Worker()
+    this.isHide=false
     this.worker.onmessage = event => {
       for(let k=0;k<this.mapsTiles.length;k++){
         if(this.mapsTiles[k]._LL==event.data.z&&this.mapsTiles[k].i==event.data.i&&this.mapsTiles[k].j==event.data.j){
@@ -52,6 +53,11 @@ export default class MapLayer extends BaseLayer{
   }
   loadMap(obj,change,rect,callback){
     this.callback = callback
+    if(this.isHide){
+      this.mapsTiles = []
+      callback()
+      return
+    }
     obj.tileWidth = this.urlTemplate.tileWidth||256
     if(change == 'zoom in'){
       this._LL = Math.floor(obj.L);//放大完成后加载最新层级的图片数据
@@ -201,5 +207,11 @@ export default class MapLayer extends BaseLayer{
       this.mapsTiles = []
       callback()
     }
+  }
+  hide(){
+    this.isHide=true
+  }
+  show(){
+    this.isHide=false
   }
 }

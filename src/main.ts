@@ -17,13 +17,14 @@ import 'uno.css'
 import "element-plus/theme-chalk/src/message.scss"
 
 const app = createApp(App);
+
+import pinia from "./stores"
+app.use(pinia)
 // app.use(ElementPlus, { locale });
 import router from './router'
-import './permission.ts'
 app.use(router)
-import pinia from "./stores"
 import { gsap, Power0, Power1, Power2, Power3, Power4 } from 'gsap'
-app.use(pinia)
+import './permission.ts'
 app.directive('dialogDrag',{
   beforeMount(el, binding, vnode, oldVnode) {
     let obj:any

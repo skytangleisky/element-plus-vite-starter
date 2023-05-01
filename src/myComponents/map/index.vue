@@ -6,6 +6,7 @@
   import { MapLayer, BorderLayer, PointLayer, RouteLayer } from './layers'
   import { gsap, Power3 } from 'gsap'
   import { windowToCanvas, pixel2Lng, pixel2Lat, lng2Pixel, lat2Pixel } from './js/core'
+  import { useSettingStore } from '~/stores/setting'
   export default defineComponent({
     data(){
       return{
@@ -26,12 +27,36 @@
         posl:undefined,
         currentLngLat:undefined,
         newPos:undefined,
+        test:undefined,
       }
     },
+    beforeUnmount(){
+      window.removeEventListener('message',this.test)
+    },
     mounted(){
+      const setting = useSettingStore()
+      console.log(setting.loadmap)
+      this.test = e=>{
+        if(e.data.type=='自定义'&&e.data.obj.name=='瓦片地图'){
+          if(e.data.obj.leftImgSrc){
+            this.mapLayer.show()
+            setting.setloadMap(true)
+          }else{
+            this.mapLayer.hide()
+            setting.setloadMap(false)
+          }
+          this.loadMap()
+        }
+      }
+      window.addEventListener('message',this.test)
       // this.mapLayer?.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',maxLevel:18})
       this.mapLayer?.setSource({url:'http://map1.tanglei.top/{z}/{y}/{x}',maxLevel:22})
       // this.mapLayer?.setSource({url:'http://tanglei.top:5050/google/terrain/Guangzhou/{z}/{x}/{y}.jpg',maxLevel:15},)
+      if(setting.loadmap){
+        this.mapLayer?.show()
+      }else{
+        this.mapLayer?.hide()
+      }
       this.cvs = this.$refs.canvas
       let cvs = this.cvs
       this.ctx = this.cvs.getContext('2d')

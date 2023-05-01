@@ -7,6 +7,7 @@ export const useSettingStore = defineStore({
   id: 'setting',
   state: () => ({
     lang: 'zh-cn',
+    loadmap:true,
   }),
   getters:{
     locale: state => {
@@ -21,6 +22,11 @@ export const useSettingStore = defineStore({
       console.log(lang)
       this.$patch({
         lang
+      })
+    },
+    setloadMap(bool:boolean){
+      this.$patch({
+        loadmap:bool
       })
     }
   },
