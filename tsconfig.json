@@ -16,7 +16,8 @@
       "~/*": ["src/*"]
     },
     "outDir": "dist",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["vite/client", "@webgpu/types"]
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
   "exclude": ["node_modules", "build/**/*"]

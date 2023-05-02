@@ -1,5 +1,6 @@
 <template>
   <canvas ref="canvas" style="position:absolute;outline:none;left:0;top:0;width:100%;height:100%;"></canvas>
+  <canvas ref="webgpu" style="position:absolute;outline:none;left:0;top:0;width:100%;height:100%;pointer-events: none;"></canvas>
 </template>
 <script>
   import { defineComponent } from 'vue'
@@ -7,6 +8,7 @@
   import { gsap, Power3 } from 'gsap'
   import { windowToCanvas, pixel2Lng, pixel2Lat, lng2Pixel, lat2Pixel } from './js/core'
   import { useSettingStore } from '~/stores/setting'
+  import run from '~/webgpu/basicTriangle'
   export default defineComponent({
     data(){
       return{
@@ -34,8 +36,9 @@
       window.removeEventListener('message',this.test)
     },
     mounted(){
+      run(this.$refs.webgpu)
       const setting = useSettingStore()
-      console.log(setting.loadmap)
+      console.log(navigator.gpu)
       this.test = e=>{
         if(e.data.type=='自定义'&&e.data.obj.name=='瓦片地图'){
           if(e.data.obj.leftImgSrc){
