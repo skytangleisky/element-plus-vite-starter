@@ -53,7 +53,7 @@
       }
       window.addEventListener('message',this.test)
       // this.mapLayer?.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',maxLevel:18})
-      this.mapLayer?.setSource({url:'http://map1.tanglei.top/{z}/{y}/{x}',maxLevel:22})
+      this.mapLayer?.setSource({url:'/map1/{z}/{y}/{x}',maxLevel:22})
       // this.mapLayer?.setSource({url:'http://tanglei.top:5050/google/terrain/Guangzhou/{z}/{x}/{y}.jpg',maxLevel:15},)
       if(setting.loadmap){
         this.mapLayer?.show()
