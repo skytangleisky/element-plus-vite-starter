@@ -14,9 +14,9 @@
       return{
         first: true,
         mapLayer:new MapLayer(),
-        // borderLayer:new BorderLayer(),
-        // pointLayer:new PointLayer(),
-        // routeLayer:new RouteLayer(),
+        borderLayer:new BorderLayer(),
+        pointLayer:new PointLayer(),
+        routeLayer:new RouteLayer(),
         cvs:undefined,
         ctx:undefined,
         obj:{ imgX: 0, imgY:0, L:11, tileWidth:256 },
@@ -53,8 +53,9 @@
       }
       window.addEventListener('message',this.test)
       // this.mapLayer?.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',maxLevel:18})
-      this.mapLayer?.setSource({url:'/map1/{z}/{y}/{x}',maxLevel:22})
-      // this.mapLayer?.setSource({url:'http://tanglei.top:5050/google/terrain/Guangzhou/{z}/{x}/{y}.jpg',maxLevel:15},)
+      // this.mapLayer?.setSource({url:'/map1/{z}/{y}/{x}',maxLevel:22})
+      this.mapLayer?.setSource({url:'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}',maxLevel:22})
+      // this.mapLayer?.setSource({url:'/data/google/terrain/Guangzhou/{z}/{x}/{y}.jpg',maxLevel:15},)
       if(setting.loadmap){
         this.mapLayer?.show()
       }else{

@@ -29,7 +29,7 @@ function draw(args){
   }else if(loadStatus=='unload'){
     loadStatus = 'loading'
     var xhr = new XMLHttpRequest()
-    xhr.open('GET','http://tanglei.top:5050/全国县界.json',true)
+    xhr.open('GET','/data/全国县界.json',true)
     xhr.responseType = 'json'
     xhr.send()
     xhr.onreadystatechange = function() {
