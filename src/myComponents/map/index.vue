@@ -8,15 +8,15 @@
   import { gsap, Power3 } from 'gsap'
   import { windowToCanvas, pixel2Lng, pixel2Lat, lng2Pixel, lat2Pixel } from './js/core'
   import { useSettingStore } from '~/stores/setting'
-  import run from '~/webgpu/basicTriangle'
+  import run from '~/webgpu/imageTexture'
   export default defineComponent({
     data(){
       return{
         first: true,
         mapLayer:new MapLayer(),
-        borderLayer:new BorderLayer(),
-        pointLayer:new PointLayer(),
-        routeLayer:new RouteLayer(),
+        // borderLayer:new BorderLayer(),
+        // pointLayer:new PointLayer(),
+        // routeLayer:new RouteLayer(),
         cvs:undefined,
         ctx:undefined,
         obj:{ imgX: 0, imgY:0, L:11, tileWidth:256 },
