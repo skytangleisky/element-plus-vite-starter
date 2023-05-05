@@ -27,7 +27,16 @@ class Tiles{
     this.tiles[z][y][x] = data
   }
   delTile(z,y,x){
-    delete this.tiles.z?.y?.x
+    Object.getOwnPropertyNames(map).length
+    if(this.tiles.hasOwnProperty(z)&&this.tiles[z].hasOwnProperty(y)&&this.tiles[z][y].hasOwnProperty(x)){
+      delete this.tiles[z][y][x]
+    }
+    if(this.tiles.hasOwnProperty(z)&&this.tiles[z].hasOwnProperty(y)&&Object.getOwnPropertyNames(this.tiles[z][y]).length===0){
+      delete this.tiles[z][y]
+    }
+    if(this.tiles.hasOwnProperty(z)&&Object.getOwnPropertyNames(this.tiles[z]).length===0){
+      delete this.tiles[z]
+    }
   }
   getTile(z,y,x){
     if(!this.tiles[z]){

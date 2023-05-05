@@ -14,7 +14,6 @@ export default class MapLayer extends BaseLayer{
     this.urlTemplate = {}
     this.跳过 = 0
     this.effect = false
-    this.限制瓦片 = false
     this.瓦片网格 = false
     this.worker = new Worker()
     this.isHide=false
@@ -37,7 +36,7 @@ export default class MapLayer extends BaseLayer{
           this.callback()
         }
       }
-      while(this.限制瓦片&&this.mapsTiles.length>(this._X1-this._X0)*(this._Y1-this._Y0)){
+      while(this.mapsTiles.length>(this._X1-this._X0)*(this._Y1-this._Y0)){
         this.mapsTiles.shift();
       }
     }
