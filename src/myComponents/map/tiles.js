@@ -5,33 +5,41 @@ import { tileXY2QuadKey,quadKey2TileXY } from './js/core.js';
  */
 class Tiles{
   constructor(){
-    this.tiles=[]
+    this.tiles={}
+    // this.tiles={
+    //   0:{
+    //     0:{
+    //       0:cvs,
+    //       ...
+    //     },
+    //     ...
+    //   },
+    //   ...
+    // }
   }
   addTile(z,y,x,data){
-    let quadKey = tileXY2QuadKey(z,y,x);
-    this.delTile(z,y,x);
-    this.tiles.push({quadKey,data});
+    if(!this.tiles[z]){
+      this.tiles[z] = {}
+    }
+    if(!this.tiles[z][y]){
+      this.tiles[z][y] = {}
+    }
+    this.tiles[z][y][x] = data
   }
   delTile(z,y,x){
-    let quadKey = tileXY2QuadKey(z,y,x);
-    for(let i=0;i<this.tiles.length;i++){
-      if(quadKey==this.tiles[i].quadKey){
-        this.tiles.splice(i,1);
-        break;
-      }
-    }
+    delete this.tiles.z?.y?.x
   }
   getTile(z,y,x){
-    let quadKey = tileXY2QuadKey(z,y,x);
-    for(let i=0;i<this.tiles.length;i++){
-      if(quadKey==this.tiles[i].quadKey){
-        return this.tiles[i].data;
-      }
+    if(!this.tiles[z]){
+      return null
     }
-    return null;
+    if(!this.tiles[z][y]){
+      return null
+    }
+    return this.tiles[z][y][x]
   }
   clear(){
-    this.tiles=[];
+    this.tiles={};
   }
 }
 
