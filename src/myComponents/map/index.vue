@@ -1,6 +1,6 @@
 <template>
   <canvas ref="canvas" style="position:absolute;outline:none;left:0;top:0;width:100%;height:100%;"></canvas>
-  <canvas ref="webgpu" style="position:absolute;outline:none;left:0;top:0;width:100%;height:100%;pointer-events: none;"></canvas>
+  <canvas ref="webgpu" style="position:absolute;outline:none;left:0;top:0;width:100%;height:100%;pointer-events: auto;"></canvas>
 </template>
 <script>
   import { defineComponent } from 'vue'
@@ -9,6 +9,19 @@
   import { windowToCanvas, pixel2Lng, pixel2Lat, lng2Pixel, lat2Pixel } from './js/core'
   import { useSettingStore } from '~/stores/setting'
   import run from '~/webgpu/imageTexture'
+  import {
+  Engine3D,
+  Scene3D,
+  Object3D,
+  Camera3D,
+  ForwardRenderJob,
+  LitMaterial,
+  BoxGeometry,
+  MeshRenderer,
+  DirectLight,
+  HoverCameraController,
+  Color
+} from '@orillusion/core';
   export default defineComponent({
     data(){
       return{
@@ -35,8 +48,57 @@
     beforeUnmount(){
       window.removeEventListener('message',this.test)
     },
-    mounted(){
-      run(this.$refs.webgpu)
+    async mounted(){
+      let canvas = this.$refs.webgpu
+      await Engine3D.init({
+        canvasConfig: {
+          canvas,
+          alpha: true, }
+      });
+      let scene3D = new Scene3D();
+      scene3D.hideSky()
+
+      // 新建摄像机实例
+      let cameraObj = new Object3D();
+      let camera = cameraObj.addComponent(Camera3D);
+      // 根据窗口大小设置摄像机视角
+      camera.perspective(60, window.innerWidth / window.innerHeight, 1, 5000.0);
+      // 设置相机控制器
+      let controller = camera.object3D.addComponent(HoverCameraController);
+      controller.setCamera(0, 0, 15);
+      // 添加相机节点
+      scene3D.addChild(cameraObj);
+
+      // 新建光照
+      let light = new Object3D();
+      // 添加直接光组件
+      let component = light.addComponent(DirectLight);
+      // 调整光照参数
+      light.rotationX = 45;
+      light.rotationY = 30;
+      component.lightColor = new Color(1.0, 0.6, 0.6, 1);
+      component.intensity = 2;
+      // 添加光照对象
+      scene3D.addChild(light);
+
+      // 新建对象
+      const obj= new Object3D();
+      // 为对象添 MeshRenderer
+      let mr = obj.addComponent(MeshRenderer);
+      // 设置几何体
+      mr.geometry = new BoxGeometry(5, 5, 5);
+      // 设置材质
+      mr.material = new LitMaterial();
+
+      scene3D.addChild(obj);
+
+      // 新建前向渲染业务
+      let renderJob = new ForwardRenderJob(scene3D);
+      // 开始渲染
+      Engine3D.startRender(renderJob);
+
+
+      // run(this.$refs.webgpu)
       const setting = useSettingStore()
       console.log(navigator.gpu)
       this.test = e=>{
