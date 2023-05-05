@@ -207,10 +207,4 @@ export default class MapLayer extends BaseLayer{
       callback()
     }
   }
-  hide(){
-    this.isHide=true
-  }
-  show(){
-    this.isHide=false
-  }
 }

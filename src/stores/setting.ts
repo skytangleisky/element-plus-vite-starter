@@ -8,6 +8,8 @@ export const useSettingStore = defineStore({
   state: () => ({
     lang: 'zh-cn',
     loadmap:true,
+    district:false,
+    airline:false,
   }),
   getters:{
     locale: state => {

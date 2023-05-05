@@ -14,9 +14,9 @@
       return{
         first: true,
         mapLayer:new MapLayer(),
-        // borderLayer:new BorderLayer(),
-        // pointLayer:new PointLayer(),
-        // routeLayer:new RouteLayer(),
+        borderLayer:new BorderLayer(),
+        pointLayer:new PointLayer(),
+        routeLayer:new RouteLayer(),
         cvs:undefined,
         ctx:undefined,
         obj:{ imgX: 0, imgY:0, L:11, tileWidth:256 },
@@ -40,15 +40,45 @@
       const setting = useSettingStore()
       console.log(navigator.gpu)
       this.test = e=>{
-        if(e.data.type=='自定义'&&e.data.obj.name=='瓦片地图'){
-          if(e.data.obj.leftImgSrc){
-            this.mapLayer.show()
-            setting.setloadMap(true)
-          }else{
-            this.mapLayer.hide()
-            setting.setloadMap(false)
+        if(e.data.type=='自定义'){
+          if(e.data.obj.name=='瓦片地图'){
+            if(e.data.obj.leftImgSrc){
+              this.mapLayer?.show()
+              setting.setloadMap(true)
+            }else{
+              this.mapLayer?.hide()
+              setting.setloadMap(false)
+            }
+            this.loadMap()
+          }else if(e.data.obj.name=='行政区划'){
+            if(e.data.obj.leftImgSrc){
+              this.borderLayer?.show()
+              setting.district=true
+            }else{
+              this.borderLayer?.hide()
+              setting.district=false
+            }
+            this.loadMap()
+          }else if(e.data.obj.name=='导航台'){
+            if(e.data.obj.leftImgSrc){
+              this.pointLayer?.show()
+              setting.navigation=true
+            }else{
+              this.pointLayer?.hide()
+              setting.navigation=false
+            }
+            this.loadMap()
+          }else if(e.data.obj.name=='航线'){
+            if(e.data.obj.leftImgSrc){
+              this.routeLayer?.show()
+              setting.airline=true
+            }else{
+              this.routeLayer?.hide()
+              setting.airline=false
+            }
+            this.loadMap()
           }
-          this.loadMap()
+
         }
       }
       window.addEventListener('message',this.test)
@@ -60,6 +90,21 @@
         this.mapLayer?.show()
       }else{
         this.mapLayer?.hide()
+      }
+      if(setting.district){
+        this.borderLayer?.show()
+      }else{
+        this.borderLayer?.hide()
+      }
+      if(setting.navigation){
+        this.pointLayer?.show()
+      }else{
+        this.pointLayer?.hide()
+      }
+      if(setting.airline){
+        this.routeLayer?.show()
+      }else{
+        this.routeLayer?.hide()
       }
       this.cvs = this.$refs.canvas
       let cvs = this.cvs

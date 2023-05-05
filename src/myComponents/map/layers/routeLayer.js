@@ -9,8 +9,8 @@ export default class RouteLayer extends BaseLayer{
     this.myTiles = new Tiles()
     this.跳过 = 0
     this.effect = false
-    this.限制瓦片 = false
     this.瓦片网格 = false
+    this.isHide = false
 
     this.worker = new Worker();//一个对象加快访问速度
     this.worker.onmessage = (event)=>{
@@ -33,13 +33,18 @@ export default class RouteLayer extends BaseLayer{
           this.callback()
         }
       }
-      while(this.限制瓦片&&this.mapsTiles.length>(this._X1-this._X0)*(this._Y1-this._Y0)){
+      while(this.mapsTiles.length>(this._X1-this._X0)*(this._Y1-this._Y0)){
         this.mapsTiles.shift();
       }
     }
   }
   loadMap(obj,change,rect,callback){
     this.callback = callback
+    if(this.isHide){
+      this.mapsTiles = []
+      callback()
+      return
+    }
     obj.tileWidth = 256
     if(change == 'zoom in'){
       this._LL = Math.floor(obj.L);//放大完成后加载最新层级的图片数据

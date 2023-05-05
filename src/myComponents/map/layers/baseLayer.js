@@ -40,4 +40,10 @@ export default class BaseLayer{
       }
     }
   }
+  hide(){
+    this.isHide=true
+  }
+  show(){
+    this.isHide=false
+  }
 }
