@@ -22,24 +22,28 @@
     item?: Item
   }
   const { item } = defineProps<Props>()
+  let animation:gsap.core.Tween
   const mouseenter = (e:any) => {
-    e.target.focus()
+    if(!(animation&&animation.isActive())){
+      e.target.focus()
+    }
   }
+  const time = 100
   const mouseup = (e:any,item:any,k:any) => {
     if(e.which==1){
       $(e.target).closest('li').addClass('play')
       gsap.killTweensOf($(e.target).closest('li'))
-      gsap.fromTo($(e.target).closest('li'),{
+      animation = gsap.fromTo($(e.target).closest('li'),{
         opacity:0
       },
       {
-        duration:0.05,
+        duration:time/1000,
         onComplete(){
           $(e.target).closest('li').css({opacity:'1'})
           item?.children[k].onClick&&item?.children[k].onClick(e,item,k)
-          setTimeout(() => {
-            $('.mybox').focus()
-          }, 50);
+          // setTimeout(() => {
+          //   $(e.target).closest('li').trigger('blur')
+          // }, time);
           console.log(item?.children[k])
         }
       })
