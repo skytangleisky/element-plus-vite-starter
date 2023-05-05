@@ -35,13 +35,25 @@ app.directive('dialogDrag',{
       pos = JSON.parse(JSON.stringify(posl))
       obj.targetLeft += x
       obj.targetTop += y
+      obj.targetRight -= x
+      obj.targetBottom -= y
       gsap.to(obj, {
         duration: 1,
         left: obj.targetLeft,
         top: obj.targetTop,
+        right: obj.targetRight,
+        bottom: obj.targetBottom,
         onUpdate: () => {
-          el.style.left = obj.left + 'px'
-          el.style.top = obj.top + 'px'
+          if(el.style.cssText.indexOf('right:')>-1){
+            el.style.right = obj.right + 'px'
+          }else{
+            el.style.left = obj.left + 'px'
+          }
+          if(el.style.cssText.indexOf('bottom:')>-1){
+            el.style.bottom = obj.bottom + 'px'
+          }else{
+            el.style.top = obj.top + 'px'
+          }
         },
         ease: Power4.easeOut
       })
@@ -58,7 +70,17 @@ app.directive('dialogDrag',{
       el.style['z-index'] = window.deep++
       var ev = event || window.event
       event.stopPropagation()
-      obj = { targetLeft: el.offsetLeft, targetTop: el.offsetTop, left: el.offsetLeft, top: el.offsetTop }
+      let rect = el.getBoundingClientRect()
+      let rectParent = el.parentNode.getBoundingClientRect()
+      obj = { 
+        targetLeft: rect.left,
+        targetTop: rect.top,
+        targetRight:rectParent.width - rect.right,
+        targetBottom: rectParent.height - rect.bottom,
+        left: rect.left,
+        top: rect.top,
+        right:rectParent.width - rect.right,
+        bottom:rectParent.height - rect.bottom }
       pos = { x: ev.clientX, y: ev.clientY }
       document.addEventListener('mousemove', mousemoveFunc)
       document.addEventListener('mouseup', mouseupFunc)
