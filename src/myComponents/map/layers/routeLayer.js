@@ -153,6 +153,7 @@ export default class RouteLayer extends BaseLayer{
         }
       }
     }
+    callback()
   }
   load2(item,obj){
     this.worker.postMessage({args:{beginTime:Date.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:obj.tileWidth});//处理这段数据通常需要很长时间。

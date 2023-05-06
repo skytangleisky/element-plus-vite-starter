@@ -9,19 +9,19 @@
   import { windowToCanvas, pixel2Lng, pixel2Lat, lng2Pixel, lat2Pixel } from './js/core'
   import { useSettingStore } from '~/stores/setting'
   import run from '~/webgpu/imageTexture'
-  import {
-    Color,
-    Engine3D,
-    Scene3D,
-    Object3D,
-    Camera3D,
-    ForwardRenderJob,
-    LitMaterial,
-    BoxGeometry,
-    MeshRenderer,
-    DirectLight,
-    HoverCameraController
-  } from '@orillusion/core';
+  // import {
+  //   Color,
+  //   Engine3D,
+  //   Scene3D,
+  //   Object3D,
+  //   Camera3D,
+  //   ForwardRenderJob,
+  //   LitMaterial,
+  //   BoxGeometry,
+  //   MeshRenderer,
+  //   DirectLight,
+  //   HoverCameraController
+  // } from '@orillusion/core';
   export default defineComponent({
     data(){
       return{
