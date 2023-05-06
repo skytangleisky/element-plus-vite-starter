@@ -11,17 +11,17 @@
   import run from '~/webgpu/imageTexture'
   import {
     Color,
-  Engine3D,
-  Scene3D,
-  Object3D,
-  Camera3D,
-  ForwardRenderJob,
-  LitMaterial,
-  BoxGeometry,
-  MeshRenderer,
-  DirectLight,
-  HoverCameraController
-} from '@orillusion/core';
+    Engine3D,
+    Scene3D,
+    Object3D,
+    Camera3D,
+    ForwardRenderJob,
+    LitMaterial,
+    BoxGeometry,
+    MeshRenderer,
+    DirectLight,
+    HoverCameraController
+  } from '@orillusion/core';
   export default defineComponent({
     data(){
       return{
