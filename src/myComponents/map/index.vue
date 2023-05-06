@@ -1,6 +1,6 @@
 <template>
   <canvas ref="canvas" style="position:absolute;outline:none;left:0;top:0;width:100%;height:100%;"></canvas>
-  <canvas ref="webgpu" style="position:absolute;outline:none;left:0;top:0;width:100%;height:100%;pointer-events: auto;"></canvas>
+  <canvas ref="webgpu" style="position:absolute;outline:none;left:0;top:0;width:100%;height:100%;pointer-events: none;"></canvas>
 </template>
 <script>
   import { defineComponent } from 'vue'
@@ -10,6 +10,7 @@
   import { useSettingStore } from '~/stores/setting'
   import run from '~/webgpu/imageTexture'
   import {
+    Color,
   Engine3D,
   Scene3D,
   Object3D,
@@ -19,8 +20,7 @@
   BoxGeometry,
   MeshRenderer,
   DirectLight,
-  HoverCameraController,
-  Color
+  HoverCameraController
 } from '@orillusion/core';
   export default defineComponent({
     data(){
@@ -49,6 +49,7 @@
       window.removeEventListener('message',this.test)
     },
     async mounted(){
+      /*
       let canvas = this.$refs.webgpu
       await Engine3D.init({
         canvasConfig: {
@@ -96,9 +97,9 @@
       let renderJob = new ForwardRenderJob(scene3D);
       // 开始渲染
       Engine3D.startRender(renderJob);
+*/
 
-
-      // run(this.$refs.webgpu)
+      run(this.$refs.webgpu)
       const setting = useSettingStore()
       console.log(navigator.gpu)
       this.test = e=>{
