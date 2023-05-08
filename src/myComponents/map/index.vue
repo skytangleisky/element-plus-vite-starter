@@ -9,22 +9,11 @@
   import { windowToCanvas, pixel2Lng, pixel2Lat, lng2Pixel, lat2Pixel } from './js/core'
   import { useSettingStore } from '~/stores/setting'
   import run from '~/webgpu/imageTexture'
-  import {
-    Color,
-    Engine3D,
-    Scene3D,
-    Object3D,
-    Camera3D,
-    ForwardRenderJob,
-    LitMaterial,
-    BoxGeometry,
-    MeshRenderer,
-    DirectLight,
-    HoverCameraController
-  } from '@orillusion/core';
+  
   export default defineComponent({
     data(){
       return{
+        setting:useSettingStore(),
         first: true,
         mapLayer:new MapLayer(),
         borderLayer:new BorderLayer(),
@@ -42,141 +31,22 @@
         posl:undefined,
         currentLngLat:undefined,
         newPos:undefined,
-        test:undefined,
       }
     },
     beforeUnmount(){
       window.removeEventListener('message',this.test)
     },
     async mounted(){
-      let canvas = this.$refs.webgpu
-      await Engine3D.init({
-        canvasConfig: {
-          canvas,
-          alpha: true,
-        }
-      });
-      let scene3D = new Scene3D();
-      scene3D.hideSky()
-      // scene3D.showSky()
-
-      // 新建摄像机实例
-      let cameraObj = new Object3D();
-      let camera = cameraObj.addComponent(Camera3D);
-      // 根据窗口大小设置摄像机视角
-      camera.perspective(60, window.innerWidth / window.innerHeight, 1, 5000.0);
-      // 设置相机控制器
-      let controller = camera.object3D.addComponent(HoverCameraController);
-      controller.setCamera(0, 0, 15);
-      // 添加相机节点
-      scene3D.addChild(cameraObj);
-
-      // 新建光照
-      let light = new Object3D();
-      // 添加直接光组件
-      let component = light.addComponent(DirectLight);
-      // 调整光照参数
-      light.rotationX = 45;
-      light.rotationY = 30;
-      component.lightColor = new Color(1.0, 0.6, 0.6, 1);
-      component.intensity = 2;
-      // 添加光照对象
-      scene3D.addChild(light);
-      let dragon = await Engine3D.res.loadGltf('https://cdn.orillusion.com/PBR/DragonAttenuation/DragonAttenuation.gltf');
-      // let mr = dragon.addComponent(MeshRenderer)
-      // let mat = new LitMaterial();
-      // mat.cullMode='none'
-      // mr.material = mat
-      scene3D.addChild(dragon);
-      // // 新建对象
-      // const obj= new Object3D();
-      // // 为对象添 MeshRenderer
-      // let mr = obj.addComponent(MeshRenderer);
-      // // 设置几何体
-      // mr.geometry = new BoxGeometry(5, 5, 5);
-      // let mat = new LitMaterial();
-      // mat.cullMode='none'
-      // // 设置材质
-      // mr.material = mat;
-
-      // scene3D.addChild(obj);
-
-      // 新建前向渲染业务
-      let renderJob = new ForwardRenderJob(scene3D);
-      // 开始渲染
-      Engine3D.startRender(renderJob);
+ 
 
 
-      // run(this.$refs.webgpu)
-      const setting = useSettingStore()
-      console.log(navigator.gpu)
-      this.test = e=>{
-        if(e.data.type=='自定义'){
-          if(e.data.obj.name=='瓦片地图'){
-            if(e.data.obj.leftImgSrc){
-              this.mapLayer?.show()
-              setting.setloadMap(true)
-            }else{
-              this.mapLayer?.hide()
-              setting.setloadMap(false)
-            }
-            this.loadMap()
-          }else if(e.data.obj.name=='行政区划'){
-            if(e.data.obj.leftImgSrc){
-              this.borderLayer?.show()
-              setting.district=true
-            }else{
-              this.borderLayer?.hide()
-              setting.district=false
-            }
-            this.loadMap()
-          }else if(e.data.obj.name=='导航台'){
-            if(e.data.obj.leftImgSrc){
-              this.pointLayer?.show()
-              setting.navigation=true
-            }else{
-              this.pointLayer?.hide()
-              setting.navigation=false
-            }
-            this.loadMap()
-          }else if(e.data.obj.name=='航线'){
-            if(e.data.obj.leftImgSrc){
-              this.routeLayer?.show()
-              setting.airline=true
-            }else{
-              this.routeLayer?.hide()
-              setting.airline=false
-            }
-            this.loadMap()
-          }
-
-        }
-      }
+      run(this.$refs.webgpu)
       window.addEventListener('message',this.test)
       // this.mapLayer?.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',maxLevel:18})
       // this.mapLayer?.setSource({url:'/map1/{z}/{y}/{x}',maxLevel:22})
       this.mapLayer?.setSource({url:'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}',maxLevel:22})
       // this.mapLayer?.setSource({url:'/data/google/terrain/Guangzhou/{z}/{x}/{y}.jpg',maxLevel:15},)
-      if(setting.loadmap){
-        this.mapLayer?.show()
-      }else{
-        this.mapLayer?.hide()
-      }
-      if(setting.district){
-        this.borderLayer?.show()
-      }else{
-        this.borderLayer?.hide()
-      }
-      if(setting.navigation){
-        this.pointLayer?.show()
-      }else{
-        this.pointLayer?.hide()
-      }
-      if(setting.airline){
-        this.routeLayer?.show()
-      }else{
-        this.routeLayer?.hide()
-      }
+      this.init()
       this.cvs = this.$refs.canvas
       let cvs = this.cvs
       this.ctx = this.cvs.getContext('2d')
@@ -207,6 +77,69 @@
       document.addEventListener('mousemove',this.mousemoveFunc,{passive:true});
     },
     methods:{
+      init(){
+        if(this.setting.loadmap){
+          this.mapLayer?.show()
+        }else{
+          this.mapLayer?.hide()
+        }
+        if(this.setting.district){
+          this.borderLayer?.show()
+        }else{
+          this.borderLayer?.hide()
+        }
+        if(this.setting.navigation){
+          this.pointLayer?.show()
+        }else{
+          this.pointLayer?.hide()
+        }
+        if(this.setting.airline){
+          this.routeLayer?.show()
+        }else{
+          this.routeLayer?.hide()
+        }
+      },
+      test(e){
+        if(e.data.type=='自定义'){
+          if(e.data.obj.name=='瓦片地图'){
+            if(e.data.obj.leftImgSrc){
+              this.mapLayer?.show()
+              this.setting.setloadMap(true)
+            }else{
+              this.mapLayer?.hide()
+              this.setting.setloadMap(false)
+            }
+            this.loadMap()
+          }else if(e.data.obj.name=='行政区划'){
+            if(e.data.obj.leftImgSrc){
+              this.borderLayer?.show()
+              this.setting.district=true
+            }else{
+              this.borderLayer?.hide()
+              this.setting.district=false
+            }
+            this.loadMap()
+          }else if(e.data.obj.name=='导航台'){
+            if(e.data.obj.leftImgSrc){
+              this.pointLayer?.show()
+              this.setting.navigation=true
+            }else{
+              this.pointLayer?.hide()
+              this.setting.navigation=false
+            }
+            this.loadMap()
+          }else if(e.data.obj.name=='航线'){
+            if(e.data.obj.leftImgSrc){
+              this.routeLayer?.show()
+              this.setting.airline=true
+            }else{
+              this.routeLayer?.hide()
+              this.setting.airline=false
+            }
+            this.loadMap()
+          }
+        }
+      },
       draw(time){
         this.ctx.save()
         this.ctx.clearRect(0,0,this.cvs.width,this.cvs.height)
