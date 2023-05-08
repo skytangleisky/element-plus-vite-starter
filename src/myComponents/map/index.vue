@@ -1,6 +1,6 @@
 <template>
   <canvas ref="canvas" style="position:absolute;outline:none;left:0;top:0;width:100%;height:100%;"></canvas>
-  <canvas ref="webgpu" style="position:absolute;outline:none;left:0;top:0;width:100%;height:100%;pointer-events: none;"></canvas>
+  <canvas ref="webgpu" style="position:absolute;outline:none;left:0;top:0;width:100%;height:100%;pointer-events: auto;"></canvas>
 </template>
 <script>
   import { defineComponent } from 'vue'
@@ -9,19 +9,19 @@
   import { windowToCanvas, pixel2Lng, pixel2Lat, lng2Pixel, lat2Pixel } from './js/core'
   import { useSettingStore } from '~/stores/setting'
   import run from '~/webgpu/imageTexture'
-  // import {
-  //   Color,
-  //   Engine3D,
-  //   Scene3D,
-  //   Object3D,
-  //   Camera3D,
-  //   ForwardRenderJob,
-  //   LitMaterial,
-  //   BoxGeometry,
-  //   MeshRenderer,
-  //   DirectLight,
-  //   HoverCameraController
-  // } from '@orillusion/core';
+  import {
+    Color,
+    Engine3D,
+    Scene3D,
+    Object3D,
+    Camera3D,
+    ForwardRenderJob,
+    LitMaterial,
+    BoxGeometry,
+    MeshRenderer,
+    DirectLight,
+    HoverCameraController
+  } from '@orillusion/core';
   export default defineComponent({
     data(){
       return{
@@ -49,15 +49,16 @@
       window.removeEventListener('message',this.test)
     },
     async mounted(){
-      /*
       let canvas = this.$refs.webgpu
       await Engine3D.init({
         canvasConfig: {
           canvas,
-          alpha: true, }
+          alpha: true,
+        }
       });
       let scene3D = new Scene3D();
       scene3D.hideSky()
+      // scene3D.showSky()
 
       // 新建摄像机实例
       let cameraObj = new Object3D();
@@ -81,25 +82,32 @@
       component.intensity = 2;
       // 添加光照对象
       scene3D.addChild(light);
+      let dragon = await Engine3D.res.loadGltf('https://cdn.orillusion.com/PBR/DragonAttenuation/DragonAttenuation.gltf');
+      // let mr = dragon.addComponent(MeshRenderer)
+      // let mat = new LitMaterial();
+      // mat.cullMode='none'
+      // mr.material = mat
+      scene3D.addChild(dragon);
+      // // 新建对象
+      // const obj= new Object3D();
+      // // 为对象添 MeshRenderer
+      // let mr = obj.addComponent(MeshRenderer);
+      // // 设置几何体
+      // mr.geometry = new BoxGeometry(5, 5, 5);
+      // let mat = new LitMaterial();
+      // mat.cullMode='none'
+      // // 设置材质
+      // mr.material = mat;
 
-      // 新建对象
-      const obj= new Object3D();
-      // 为对象添 MeshRenderer
-      let mr = obj.addComponent(MeshRenderer);
-      // 设置几何体
-      mr.geometry = new BoxGeometry(5, 5, 5);
-      // 设置材质
-      mr.material = new LitMaterial();
-
-      scene3D.addChild(obj);
+      // scene3D.addChild(obj);
 
       // 新建前向渲染业务
       let renderJob = new ForwardRenderJob(scene3D);
       // 开始渲染
       Engine3D.startRender(renderJob);
-*/
 
-      run(this.$refs.webgpu)
+
+      // run(this.$refs.webgpu)
       const setting = useSettingStore()
       console.log(navigator.gpu)
       this.test = e=>{

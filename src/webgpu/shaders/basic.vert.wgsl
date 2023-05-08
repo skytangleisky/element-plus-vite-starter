@@ -14,6 +14,7 @@ fn main(
     var output : VertexOutput;
     output.Position = mvpMatrix * position;
     output.fragUV = uv;
-    output.fragPosition = 0.5 * (position + vec4<f32>(1.0, 1.0, 1.0, 1.0));
+    // output.fragPosition = 0.5 * (position + vec4<f32>(1.0, 1.0, 1.0, 1.0));
+    output.fragPosition = vec4<f32>(1.0, 1.0, 1.0, 1.0);
     return output;
 }

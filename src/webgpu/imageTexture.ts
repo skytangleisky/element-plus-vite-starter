@@ -12,7 +12,7 @@ async function initWebGPU(canvas: HTMLCanvasElement) {
         throw new Error('No Adapter Found')
     const device = await adapter.requestDevice()
     const context = canvas.getContext('webgpu') as GPUCanvasContext
-    const format = navigator.gpu.getPreferredCanvasFormat ? navigator.gpu.getPreferredCanvasFormat() : context.getPreferredFormat(adapter)
+    const format = navigator.gpu.getPreferredCanvasFormat()
     const devicePixelRatio = window.devicePixelRatio || 1
     canvas.width = canvas.clientWidth * devicePixelRatio
     canvas.height = canvas.clientHeight * devicePixelRatio
@@ -65,10 +65,11 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size: {
             ]
         },
         primitive: {
-            topology: 'triangle-list',
+            // topology: 'triangle-list',
+            topology: 'triangle-strip',
             // Culling backfaces pointing away from the camera
-            cullMode: 'back',
-            frontFace: 'ccw'
+            cullMode: 'none',
+            // frontFace: 'ccw'
         },
         // Enable depth testing since we have z-level positions
         // Fragment closest to the camera is rendered in front
@@ -160,7 +161,7 @@ function draw(
     device.queue.submit([commandEncoder.finish()])
 }
 
-export default async function run(canvas) {
+export default async function run(canvas:HTMLCanvasElement) {
     if (!canvas)
         throw new Error('No Canvas')
     const { device, context, format, size } = await initWebGPU(canvas)
@@ -191,9 +192,9 @@ export default async function run(canvas) {
     )
     // Create a sampler with linear filtering for smooth interpolation.
     const sampler = device.createSampler({
-        // addressModeU: 'repeat',
-        // addressModeV: 'repeat',
-        magFilter: 'linear',
+        addressModeU:'clamp-to-edge',
+        addressModeV: 'clamp-to-edge',
+        magFilter: 'nearest',
         minFilter: 'linear'
     })
     const textureGroup = device.createBindGroup({
@@ -214,13 +215,13 @@ export default async function run(canvas) {
     // default state
     let aspect = size.width / size.height
     const position = { x: 0, y: 0, z: -20 }
-    const scale = { x: 1, y: 1, z: 1 }
+    const scale = { x: 1, y: 1, z: 0 }
     const rotation = { x: 0, y: 0, z: 0 }
     // start loop
     function frame() {
         // rotate by time, and update transform matrix
         const now = Date.now() / 1000
-        rotation.x = Math.sin(now)
+        // rotation.x = Math.sin(now)
         rotation.y = Math.cos(now)
         const mvpMatrix = getMvpMatrix(aspect, position, rotation, scale)
         device.queue.writeBuffer(
