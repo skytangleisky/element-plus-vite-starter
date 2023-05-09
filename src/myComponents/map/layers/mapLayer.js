@@ -11,6 +11,7 @@ export default class MapLayer extends BaseLayer{
     this.myTiles = new Tiles()
     // this.urlTemplate = {url:'/wstdtiles/{z}/user_{z}_{x}_{y}'}
     // this.urlTemplate = {url:'http://192.168.0.112/wstdtiles/{z}/user_{z}_{x}_{y}'}
+    this.tileWidth=256
     this.urlTemplate = {}
     this.跳过 = 0
     this.effect = false
@@ -20,6 +21,10 @@ export default class MapLayer extends BaseLayer{
     this.worker.onmessage = event => {
       for(let k=0;k<this.mapsTiles.length;k++){
         if(this.mapsTiles[k]._LL==event.data.z&&this.mapsTiles[k].i==event.data.i&&this.mapsTiles[k].j==event.data.j){
+          if(event.data.bitmap===-1){
+            this.mapsTiles.splice(k--,1)
+            break;
+          }
           if(event.data.isDrawed){
             var cvs2 = document.createElement('canvas');
             cvs2.setAttribute("width",256);
@@ -33,12 +38,20 @@ export default class MapLayer extends BaseLayer{
           }
           this.myTiles.addTile(this.mapsTiles[k]._LL,event.data.y,event.data.x,{cvs:this.mapsTiles[k].cvs,isDrawed:event.data.isDrawed});
           // rAF(draw);
-          this.callback()
         }
       }
-      while(this.mapsTiles.length>(this._X1-this._X0)*(this._Y1-this._Y0)){
-        this.mapsTiles.shift();
+      for(let i=0;i<this.mapsTiles.length;i++){
+        let minX = Math.floor((2**this.mapsTiles[i]._LL*(this._X0+1))/(2**this._LL)-1)
+        let maxX = Math.ceil((2**this.mapsTiles[i]._LL*(this._X1+1))/(2**this._LL)-1)
+        let minY = Math.floor((2**this.mapsTiles[i]._LL*(this._Y0+1))/(2**this._LL)-1)
+        let maxY = Math.ceil((2**this.mapsTiles[i]._LL*(this._Y1+1))/(2**this._LL)-1)
+        if(minX<=this.mapsTiles[i].i&&this.mapsTiles[i].i<=maxX&&minY<=this.mapsTiles[i].j&&this.mapsTiles[i].j<=maxY){
+        }else{
+          this.mapsTiles.splice(i--,1)
+        }
       }
+      // console.log(this.mapsTiles.length)
+      this.callback()
     }
     this.worker.onerror = e => {
       throw e
@@ -57,7 +70,6 @@ export default class MapLayer extends BaseLayer{
       callback()
       return
     }
-    obj.tileWidth = this.urlTemplate.tileWidth||256
     if(change == 'zoom in'){
       this._LL = Math.floor(obj.L);//放大完成后加载最新层级的图片数据
       // _LL = Math.ceil(obj.L);//放大时加载图片数据
@@ -68,16 +80,16 @@ export default class MapLayer extends BaseLayer{
     if(this._LL<0)this._LL=0;
 
     /*显示-∞<lng<+∞,-∞<lat<+∞*/
-    this._X0 = Math.floor((rect.x-obj.imgX)*(2**this._LL)/(2**obj.L)/obj.tileWidth);
-    this._X1 = Math.ceil((rect.x+rect.w-obj.imgX)*(2**this._LL)/(2**obj.L)/obj.tileWidth);
-    this._Y0 = Math.floor((rect.y-obj.imgY)*(2**this._LL)/(2**obj.L)/obj.tileWidth);
-    this._Y1 = Math.ceil((rect.y+rect.h-obj.imgY)*(2**this._LL)/(2**obj.L)/obj.tileWidth);
+    this._X0 = Math.floor((rect.x-obj.imgX)*(2**this._LL)/(2**obj.L)/this.tileWidth);
+    this._X1 = Math.ceil((rect.x+rect.w-obj.imgX)*(2**this._LL)/(2**obj.L)/this.tileWidth);
+    this._Y0 = Math.floor((rect.y-obj.imgY)*(2**this._LL)/(2**obj.L)/this.tileWidth);
+    this._Y1 = Math.ceil((rect.y+rect.h-obj.imgY)*(2**this._LL)/(2**obj.L)/this.tileWidth);
 
     /*显示-180<lng<180,-85.05112877980659<lat<85.05112877980659*/
-    // this._X0 = Math.max(rect.x,Math.floor(-obj.imgX*(2**this._LL)/(2**obj.L)/obj.tileWidth));
-    // this._X1 = Math.min(Math.ceil((rect.w-obj.imgX)*(2**this._LL)/(2**obj.L)/obj.tileWidth),2**this._LL);
-    // this._Y0 = Math.max(rect.y,Math.floor(-obj.imgY*(2**this._LL)/(2**obj.L)/obj.tileWidth));
-    // this._Y1 = Math.min(Math.ceil((rect.h-obj.imgY)*(2**this._LL)/(2**obj.L)/obj.tileWidth),2**this._LL);
+    // this._X0 = Math.max(rect.x,Math.floor(-obj.imgX*(2**this._LL)/(2**obj.L)/this.tileWidth));
+    // this._X1 = Math.min(Math.ceil((rect.w-obj.imgX)*(2**this._LL)/(2**obj.L)/this.tileWidth),2**this._LL);
+    // this._Y0 = Math.max(rect.y,Math.floor(-obj.imgY*(2**this._LL)/(2**obj.L)/this.tileWidth));
+    // this._Y1 = Math.min(Math.ceil((rect.h-obj.imgY)*(2**this._LL)/(2**obj.L)/this.tileWidth),2**this._LL);
 
     for(let j=this._Y0;j<this._Y1;j++){
       for(let i=this._X0;i<this._X1;i++){
@@ -93,8 +105,8 @@ export default class MapLayer extends BaseLayer{
           continue;
         }
         var cvs = document.createElement('canvas');
-        cvs.setAttribute("width",obj.tileWidth);
-        cvs.setAttribute("height",obj.tileWidth);
+        cvs.setAttribute("width",this.tileWidth);
+        cvs.setAttribute("height",this.tileWidth);
         var ctx = cvs.getContext('2d');
         this.平滑||(ctx.imageSmoothingEnabled = false);
         for(let k=0;k<this.mapsTiles.length;k++){
@@ -103,88 +115,77 @@ export default class MapLayer extends BaseLayer{
             if(tmp._LL==this._LL-1&&tmp.i==Math.floor(i/2)&&tmp.j==Math.floor(j/2)&&tmp.cvs){
               if(i%2==0&&j%2==0){
                 ctx.drawImage(tmp.cvs,
-                0,0,obj.tileWidth/2,obj.tileWidth/2,
-                0,0,obj.tileWidth,obj.tileWidth);
+                0,0,this.tileWidth/2,this.tileWidth/2,
+                0,0,this.tileWidth,this.tileWidth);
               }else if((i%2==1||i%2==-1)&&j%2==0){
                 ctx.drawImage(tmp.cvs,
-                obj.tileWidth/2,0,obj.tileWidth/2,obj.tileWidth/2,
-                0,0,obj.tileWidth,obj.tileWidth);
+                this.tileWidth/2,0,this.tileWidth/2,this.tileWidth/2,
+                0,0,this.tileWidth,this.tileWidth);
               }else if(i%2==0&&(j%2==1||j%2==-1)){
                 ctx.drawImage(tmp.cvs,
-                0,obj.tileWidth/2,obj.tileWidth/2,obj.tileWidth/2,
-                0,0,obj.tileWidth,obj.tileWidth);
+                0,this.tileWidth/2,this.tileWidth/2,this.tileWidth/2,
+                0,0,this.tileWidth,this.tileWidth);
               }else if((i%2==1||i%2==-1)&&(j%2==1||j%2==-1)){
                 ctx.drawImage(tmp.cvs,
-                obj.tileWidth/2,obj.tileWidth/2,obj.tileWidth/2,obj.tileWidth/2,
-                0,0,obj.tileWidth,obj.tileWidth);
+                this.tileWidth/2,this.tileWidth/2,this.tileWidth/2,this.tileWidth/2,
+                0,0,this.tileWidth,this.tileWidth);
               }
             }
           }else if(change=='zoom out'){
             if(tmp._LL==this._LL+1&&Math.floor(tmp.i/2)==i&&Math.floor(tmp.j/2)==j&&tmp.cvs){
               if(tmp.i%2==0&&tmp.j%2==0){
                 ctx.drawImage(tmp.cvs,
-                0,0,obj.tileWidth,obj.tileWidth,
-                0,0,obj.tileWidth/2,obj.tileWidth/2);
+                0,0,this.tileWidth,this.tileWidth,
+                0,0,this.tileWidth/2,this.tileWidth/2);
               }else if((tmp.i%2==1||tmp.i%2==-1)&&tmp.j%2==0){
                 ctx.drawImage(tmp.cvs,
-                0,0,obj.tileWidth,obj.tileWidth,
-                obj.tileWidth/2,0,obj.tileWidth/2,obj.tileWidth/2);
+                0,0,this.tileWidth,this.tileWidth,
+                this.tileWidth/2,0,this.tileWidth/2,this.tileWidth/2);
               }else if(tmp.i%2==0&&(tmp.j%2==1||tmp.j%2==-1)){
                 ctx.drawImage(tmp.cvs,
-                0,0,obj.tileWidth,obj.tileWidth,
-                0,obj.tileWidth/2,obj.tileWidth/2,obj.tileWidth/2);
+                0,0,this.tileWidth,this.tileWidth,
+                0,this.tileWidth/2,this.tileWidth/2,this.tileWidth/2);
               }else if((tmp.i%2==1||tmp.i%2==-1)&&(tmp.j%2==1||tmp.j%2==-1)){
                 ctx.drawImage(tmp.cvs,
-                0,0,obj.tileWidth,obj.tileWidth,
-                obj.tileWidth/2,obj.tileWidth/2,obj.tileWidth/2,obj.tileWidth/2);
+                0,0,this.tileWidth,this.tileWidth,
+                this.tileWidth/2,this.tileWidth/2,this.tileWidth/2,this.tileWidth/2);
               }
             }
           }
         }
         let item = {_LL:this._LL,i,j,cvs,_X0:this._X0,_X1:this._X1,_Y0:this._Y0,_Y1:this._Y1,isDrawed:true};
         this.mapsTiles.push(item);
-        this.load(item,this.mapsTiles,this.urlTemplate.url).then(()=>{
-          // rAF(draw);
-          callback()
-        }).catch((err)=>{
-          // console.log(_LL,j,i,`load field!`)
-          // rAF(draw);
-          callback()
-        });
+        this.load(item,this.mapsTiles,this.urlTemplate.url)
       }
     }
     callback()
   }
   load(item,tiles,url){
-    return new Promise((resolve,reject)=>{
-      if(this._X0<=item.i&&item.i<this._X1&&this._Y0<=item.j&&item.j<this._Y1&&item._LL==this._LL){
-        let x=item.i%2**item._LL>=0?item.i%2**item._LL:item.i%2**item._LL+2**item._LL;
-        let y=item.j%2**item._LL>=0?item.j%2**item._LL:item.j%2**item._LL+2**item._LL;
-        let data = this.myTiles.getTile(item._LL,y,x);
-        if(data){
-          item.cvs = data.cvs;
-          item.isDrawed = data.isDrawed;
-          resolve();
-        }else{
-          let src = url.replaceAll('{x}',x).replaceAll('{y}',y).replaceAll('{z}',item._LL).replace('{q}',tileXY2QuadKey(item._LL,y,x))+(url.indexOf('?')==-1?'?t=':'&t=')+Date.now();//?t=xxx防止浏览器本身的缓存机制
-          this.worker.postMessage({z:item._LL,y:y,x:x,j:item.j,i:item.i,url:src})
-          this.Count++;
-          //加载中.setValue(this.Count);
-        }
+    if(this._X0<=item.i&&item.i<this._X1&&this._Y0<=item.j&&item.j<this._Y1&&item._LL==this._LL){
+      let x=item.i%2**item._LL>=0?item.i%2**item._LL:item.i%2**item._LL+2**item._LL;
+      let y=item.j%2**item._LL>=0?item.j%2**item._LL:item.j%2**item._LL+2**item._LL;
+      let data = this.myTiles.getTile(item._LL,y,x);
+      if(data){
+        item.cvs = data.cvs;
+        item.isDrawed = data.isDrawed;
       }else{
-        for(let k=0;k<tiles.length;k++){
-          if(tiles[k]._LL==item._LL&&tiles[k].i==item.i&&tiles[k].j==item.j){
-            tiles.splice(k,1);
-          }
-        }
-        if(this.Count>0){
-          this.跳过++;
-          // 跳过.setValue(this.跳过)
-          console.log('跳过',this.Count)
-        }
-        reject('?????');
+        let src = url.replaceAll('{x}',x).replaceAll('{y}',y).replaceAll('{z}',item._LL).replace('{q}',tileXY2QuadKey(item._LL,y,x))+(url.indexOf('?')==-1?'?t=':'&t=')+Date.now();//?t=xxx防止浏览器本身的缓存机制
+        this.worker.postMessage({z:item._LL,y:y,x:x,j:item.j,i:item.i,url:src})
+        this.Count++;
+        //加载中.setValue(this.Count);
       }
-    });
+    }else{
+      for(let k=0;k<tiles.length;k++){
+        if(tiles[k]._LL==item._LL&&tiles[k].i==item.i&&tiles[k].j==item.j){
+          tiles.splice(k,1);
+        }
+      }
+      if(this.Count>0){
+        this.跳过++;
+        // 跳过.setValue(this.跳过)
+        console.log('跳过',this.Count)
+      }
+    }
   }
   delete(callback){
     if(this.urlTemplate.remove){

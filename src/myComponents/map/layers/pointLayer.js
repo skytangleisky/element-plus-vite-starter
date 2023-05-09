@@ -11,6 +11,7 @@ export default class PointLayer extends BaseLayer{
     this.effect = false
     this.瓦片网格 = false
     this.isHide = false
+    this.tileWidth=256
 
     this.worker = new Worker();//一个对象加快访问速度
     this.worker.onmessage = (event)=>{
@@ -45,7 +46,6 @@ export default class PointLayer extends BaseLayer{
       callback()
       return
     }
-    obj.tileWidth = 256
     if(change == 'zoom in'){
       this._LL = Math.floor(obj.L);//放大完成后加载最新层级的图片数据
       // _LL = Math.ceil(obj.L);//放大时加载图片数据
@@ -56,16 +56,16 @@ export default class PointLayer extends BaseLayer{
     if(this._LL<0)this._LL=0;
 
     /*显示-∞<lng<+∞,-∞<lat<+∞*/
-    this._X0 = Math.floor(rect.x-obj.imgX*2**this._LL/2**obj.L/obj.tileWidth);
-    this._X1 = Math.ceil((rect.x+rect.w-obj.imgX)*2**this._LL/2**obj.L/obj.tileWidth);
-    this._Y0 = Math.floor(rect.y-obj.imgY*2**this._LL/2**obj.L/obj.tileWidth);
-    this._Y1 = Math.ceil((rect.y+rect.h-obj.imgY)*2**this._LL/2**obj.L/obj.tileWidth);
+    this._X0 = Math.floor(rect.x-obj.imgX*2**this._LL/2**obj.L/this.tileWidth);
+    this._X1 = Math.ceil((rect.x+rect.w-obj.imgX)*2**this._LL/2**obj.L/this.tileWidth);
+    this._Y0 = Math.floor(rect.y-obj.imgY*2**this._LL/2**obj.L/this.tileWidth);
+    this._Y1 = Math.ceil((rect.y+rect.h-obj.imgY)*2**this._LL/2**obj.L/this.tileWidth);
 
     /*显示-180<lng<180,-85.05112877980659<lat<85.05112877980659*/
-    // this._X0 = Math.max(rect.x,Math.floor(-obj.imgX*2**this._LL/2**obj.L/obj.tileWidth));
-    // this._X1 = Math.min(Math.ceil((rect.x+rect.w-obj.imgX)*2**this._LL/2**obj.L/obj.tileWidth),2**this._LL);
-    // this._Y0 = Math.max(rect.y,Math.floor(-obj.imgY*2**this._LL/2**obj.L/obj.tileWidth));
-    // this._Y1 = Math.min(Math.ceil((rect.y+rect.h-obj.imgY)*2**this._LL/2**obj.L/obj.tileWidth),2**this._LL);
+    // this._X0 = Math.max(rect.x,Math.floor(-obj.imgX*2**this._LL/2**obj.L/this.tileWidth));
+    // this._X1 = Math.min(Math.ceil((rect.x+rect.w-obj.imgX)*2**this._LL/2**obj.L/this.tileWidth),2**this._LL);
+    // this._Y0 = Math.max(rect.y,Math.floor(-obj.imgY*2**this._LL/2**obj.L/this.tileWidth));
+    // this._Y1 = Math.min(Math.ceil((rect.y+rect.h-obj.imgY)*2**this._LL/2**obj.L/this.tileWidth),2**this._LL);
 
 
 
@@ -84,8 +84,8 @@ export default class PointLayer extends BaseLayer{
         }
 
         var cvs = document.createElement('canvas');
-        cvs.setAttribute("width",obj.tileWidth);
-        cvs.setAttribute("height",obj.tileWidth);
+        cvs.setAttribute("width",this.tileWidth);
+        cvs.setAttribute("height",this.tileWidth);
         var ctx = cvs.getContext('2d');
         this.平滑||(ctx.imageSmoothingEnabled = false);
         let isDrawed = false;
@@ -97,43 +97,43 @@ export default class PointLayer extends BaseLayer{
               isDrawed = tmp.isDrawed
               if(i%2==0&&j%2==0){
                 ctx.drawImage(tmp.cvs,
-                0,0,obj.tileWidth/2,obj.tileWidth/2,
-                0,0,obj.tileWidth,obj.tileWidth);
+                0,0,this.tileWidth/2,this.tileWidth/2,
+                0,0,this.tileWidth,this.tileWidth);
               }else if((i%2==1||i%2==-1)&&j%2==0){
                 ctx.drawImage(tmp.cvs,
-                obj.tileWidth/2,0,obj.tileWidth/2,obj.tileWidth/2,
-                0,0,obj.tileWidth,obj.tileWidth);
+                this.tileWidth/2,0,this.tileWidth/2,this.tileWidth/2,
+                0,0,this.tileWidth,this.tileWidth);
               }else if(i%2==0&&(j%2==1||j%2==-1)){
                 ctx.drawImage(tmp.cvs,
-                0,obj.tileWidth/2,obj.tileWidth/2,obj.tileWidth/2,
-                0,0,obj.tileWidth,obj.tileWidth);
+                0,this.tileWidth/2,this.tileWidth/2,this.tileWidth/2,
+                0,0,this.tileWidth,this.tileWidth);
               }else if((i%2==1||i%2==-1)&&(j%2==1||j%2==-1)){
                 ctx.drawImage(tmp.cvs,
-                obj.tileWidth/2,obj.tileWidth/2,obj.tileWidth/2,obj.tileWidth/2,
-                0,0,obj.tileWidth,obj.tileWidth);
+                this.tileWidth/2,this.tileWidth/2,this.tileWidth/2,this.tileWidth/2,
+                0,0,this.tileWidth,this.tileWidth);
               }
             }
           }else if(change=='zoom out'){
             if(tmp._LL==this._LL+1&&Math.floor(tmp.i/2)==i&&Math.floor(tmp.j/2)==j&&tmp.cvs){
               if(tmp.i%2==0&&tmp.j%2==0){
                 ctx.drawImage(tmp.cvs,
-                0,0,obj.tileWidth,obj.tileWidth,
-                0,0,obj.tileWidth/2,obj.tileWidth/2);
+                0,0,this.tileWidth,this.tileWidth,
+                0,0,this.tileWidth/2,this.tileWidth/2);
                 tmp.isDrawed&&(quadrant[1]=true)
               }else if((tmp.i%2==1||tmp.i%2==-1)&&tmp.j%2==0){
                 ctx.drawImage(tmp.cvs,
-                0,0,obj.tileWidth,obj.tileWidth,
-                obj.tileWidth/2,0,obj.tileWidth/2,obj.tileWidth/2);
+                0,0,this.tileWidth,this.tileWidth,
+                this.tileWidth/2,0,this.tileWidth/2,this.tileWidth/2);
                 tmp.isDrawed&&(quadrant[0]=true)
               }else if(tmp.i%2==0&&(tmp.j%2==1||tmp.j%2==-1)){
                 ctx.drawImage(tmp.cvs,
-                0,0,obj.tileWidth,obj.tileWidth,
-                0,obj.tileWidth/2,obj.tileWidth/2,obj.tileWidth/2);
+                0,0,this.tileWidth,this.tileWidth,
+                0,this.tileWidth/2,this.tileWidth/2,this.tileWidth/2);
                 tmp.isDrawed&&(quadrant[2]=true)
               }else if((tmp.i%2==1||tmp.i%2==-1)&&(tmp.j%2==1||tmp.j%2==-1)){
                 ctx.drawImage(tmp.cvs,
-                0,0,obj.tileWidth,obj.tileWidth,
-                obj.tileWidth/2,obj.tileWidth/2,obj.tileWidth/2,obj.tileWidth/2);
+                0,0,this.tileWidth,this.tileWidth,
+                this.tileWidth/2,this.tileWidth/2,this.tileWidth/2,this.tileWidth/2);
                 tmp.isDrawed&&(quadrant[3]=true)
               }
             }
@@ -162,6 +162,6 @@ export default class PointLayer extends BaseLayer{
     callback()
   }
   load2(item,obj){
-    this.worker.postMessage({args:{beginTime:Date.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:obj.tileWidth});//处理这段数据通常需要很长时间。
+    this.worker.postMessage({args:{beginTime:Date.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:this.tileWidth});//处理这段数据通常需要很长时间。
   }
 }

@@ -2,6 +2,7 @@ self.onmessage = e => {
   var xhr = new XMLHttpRequest()
   xhr.open('GET',e.data.url,true)
   xhr.responseType = 'blob'
+  xhr.timeout=3000
   xhr.send()
   xhr.onreadystatechange = function() {
     let res = 'response' in xhr ? xhr.response : xhr.responseText
@@ -13,7 +14,11 @@ self.onmessage = e => {
       self.postMessage({z:e.data.z,y:e.data.y,x:e.data.x,i:e.data.i,j:e.data.j,bitmap:0,isDrawed:false})
     }
   }
-  xhr.onerror = function(e){
+  xhr.onerror = function(error){
+    self.postMessage({z:e.data.z,y:e.data.y,x:e.data.x,i:e.data.i,j:e.data.j,bitmap:-1,isDrawed:false})
+  }
+  xhr.ontimeout = function(){
+    self.postMessage({z:e.data.z,y:e.data.y,x:e.data.x,i:e.data.i,j:e.data.j,bitmap:-1,isDrawed:false})
   }
   // self.close()
 }

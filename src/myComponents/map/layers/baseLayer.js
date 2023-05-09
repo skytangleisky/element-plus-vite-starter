@@ -10,7 +10,7 @@ export default class BaseLayer{
   }
   drawTiles(obj,context,tmp,flag=false){
     if(tmp.cvs&&tmp.isDrawed){
-      let dxy = obj.tileWidth*2**obj.L/2**tmp._LL;
+      let dxy = this.tileWidth*2**obj.L/2**tmp._LL;
       this.平滑||(context.imageSmoothingEnabled = false);
       context.drawImage(
         tmp.cvs,

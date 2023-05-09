@@ -66,8 +66,8 @@
     // run(this.$refs.webgpu)
     window.addEventListener('message',test)
     // this.mapLayer.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',maxLevel:18})
-    // this.mapLayer.setSource({url:'/map1/{z}/{y}/{x}',maxLevel:22})
-    mapLayer.setSource({url:'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}',maxLevel:22})
+    // mapLayer.setSource({url:'/map1/{z}/{y}/{x}',maxLevel:22})
+    mapLayer.setSource({url:'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}',maxLevel:22})
     // this.mapLayer.setSource({url:'/data/google/terrain/Guangzhou/{z}/{x}/{y}.jpg',maxLevel:15},)
     init()
     new ResizeObserver(()=>{
@@ -233,7 +233,7 @@
     let tmp = windowToCanvas(event.clientX, event.clientY,cvs)
     mousemove = {x:tmp.x,y:tmp.y,targetX:tmp.x,targetY:tmp.y}
     pos = mousemove
-    newPos = {x:((mousemove.x-obj.imgX)/2**obj.L)/256 , y:((mousemove.y-obj.imgY)/2**obj.L)/256}
+    newPos = {x:((mousemove.x-obj.imgX)/2**obj.L)/tileWidth , y:((mousemove.y-obj.imgY)/2**obj.L)/tileWidth}
   }
   const mousemoveFunc = (evt:MouseEvent) => {
     let move = windowToCanvas(evt.clientX, evt.clientY,cvs)
@@ -263,8 +263,8 @@
         x:mousemove.targetX,
         y:mousemove.targetY,
         onUpdate: ()=>{
-          obj.imgX=mousemove.x - (2**obj.L)*newPos.x*256
-          obj.imgY=mousemove.y - (2**obj.L)*newPos.y*256
+          obj.imgX=mousemove.x - (2**obj.L)*newPos.x*tileWidth
+          obj.imgY=mousemove.y - (2**obj.L)*newPos.y*tileWidth
           limitRegion()
           loadMap()
           // emitter.emit('mapChange',obj)
@@ -296,7 +296,7 @@
       mousemove = {x:tmp.x,y:tmp.y,targetX:tmp.x,targetY:tmp.y}
     }
     // drawScale(2**obj.L,cvs_scale,pixel2Lat(mousemove.y,obj.imgY,2**obj.L,tileWidth))
-    newPos = {x:((mousemove.x-obj.imgX)/(2**obj.L))/256 , y:((mousemove.y-obj.imgY)/(2**obj.L))/256}
+    newPos = {x:((mousemove.x-obj.imgX)/(2**obj.L))/tileWidth , y:((mousemove.y-obj.imgY)/(2**obj.L))/tileWidth}
     let delta = event.deltaY/120
     change = event.deltaY>0?'zoom out':'zoom in'
     obj.targetL-=delta
@@ -311,8 +311,8 @@
       duration:period,
       L: obj.targetL,
       onUpdate: ()=>{
-        obj.imgX=mousemove.x - (2**obj.L)*newPos.x*256
-        obj.imgY=mousemove.y - (2**obj.L)*newPos.y*256
+        obj.imgX=mousemove.x - (2**obj.L)*newPos.x*tileWidth
+        obj.imgY=mousemove.y - (2**obj.L)*newPos.y*tileWidth
         // 层级.setValue(this.obj.L.toFixed(2))
         localStorage.L=obj.L
         localStorage.center=JSON.stringify([pixel2Lng(cvs.width/2,obj.imgX,2**obj.L,tileWidth),pixel2Lat(cvs.height/2,obj.imgY,2**obj.L,tileWidth)])
