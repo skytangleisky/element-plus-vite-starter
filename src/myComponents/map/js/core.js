@@ -33,11 +33,11 @@ export function pixel2Lat(y,imgY,imgScale,TileWidth){
   return Math.atan(Math.sinh(Math.PI * (1 - 2 * (y-imgY) / imgScale/TileWidth)))*180/Math.PI;
 }
 export function windowToCanvas(x,y,canvas) {
-  var box = canvas.getBoundingClientRect();
+  var box = canvas.getBoundingClientRect()
   return {
     x: (x - box.left)/box.width*canvas.width,
     y: (y - box.top)/box.height*canvas.height,
-  };
+  }
 }
 var bezier3func = function(uu,controlP){
   var partX0 = controlP[0].x * uu * uu * uu;

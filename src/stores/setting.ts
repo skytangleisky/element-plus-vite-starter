@@ -10,6 +10,7 @@ export const useSettingStore = defineStore({
     loadmap:true,
     district:false,
     airline:false,
+    navigation:false,
   }),
   getters:{
     locale: state => {
