@@ -1,6 +1,6 @@
 <template>
   <canvas ref="canvas" style="position:absolute;outline:none;left:0;top:0;width:100%;height:100%;"></canvas>
-  <canvas ref="webgpu" style="position:absolute;outline:none;left:0;top:0;width:100%;height:100%;pointer-events: none;"></canvas>
+  <canvas ref="webgpu" style="position:absolute;outline:none;left:0;top:0;width:100%;height:100%;pointer-events: none ;"></canvas>
 </template>
 <script lang="ts" setup>
   import { onBeforeUnmount, onMounted, ref } from 'vue'
@@ -9,7 +9,7 @@
   import { windowToCanvas, pixel2Lng, pixel2Lat, lng2Pixel, lat2Pixel } from './js/core'
   import { useSettingStore } from '~/stores/setting'
   import run from '~/webgpu/imageTexture'
-  // import { Engine3D, Scene3D, Object3D, Camera3D, DirectLight, HoverCameraController, Color, View3D, AtmosphericComponent } from "@orillusion/core"
+  import { Engine3D, Scene3D, Object3D, Camera3D, DirectLight, HoverCameraController, Color, View3D, AtmosphericComponent } from "@orillusion/core"
   const setting = useSettingStore()
   let first = true
   const mapLayer = new MapLayer()
@@ -17,6 +17,7 @@
   const pointLayer = new PointLayer()
   const routeLayer = new RouteLayer()
   let canvas = ref(null)
+  let webgpu = ref(null)
   let cvs:HTMLCanvasElement
   let ctx:CanvasRenderingContext2D
   interface Struct{
@@ -62,13 +63,14 @@
     }else{
       throw new Error('invalid ctx')
     }
-    // this.demo()
-    // run(this.$refs.webgpu)
+    // demo()
+    if(webgpu.value)
+      run(webgpu.value)
     window.addEventListener('message',test)
-    // this.mapLayer.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',maxLevel:18})
-    // mapLayer.setSource({url:'/map1/{z}/{y}/{x}',maxLevel:22})
-    mapLayer.setSource({url:'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}',maxLevel:22})
-    // this.mapLayer.setSource({url:'/data/google/terrain/Guangzhou/{z}/{x}/{y}.jpg',maxLevel:15},)
+    // this.mapLayer.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'})
+    // mapLayer.setSource({url:'/map1/{z}/{y}/{x}'})
+    mapLayer.setSource({url:'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}'})
+    // this.mapLayer.setSource({url:'/data/google/terrain/Guangzhou/{z}/{x}/{y}.jpg'},)
     init()
     new ResizeObserver(()=>{
       let rect = cvs.getBoundingClientRect()
@@ -78,14 +80,14 @@
       limitRegion()
       if(first){
         first = false
-        let POINT={lng:113.42165142106768,lat:23.098844381632485}
+        let POINT = {lng:113.42165142106768,lat:23.098844381632485}
         obj.imgX = cvs.width/2-tileWidth*2**obj.L*(POINT.lng+180)/360
-        obj.imgY=cvs.height/2-(1-Math.asinh(Math.tan(POINT.lat*Math.PI/180))/Math.PI)/2*(2**obj.L)*tileWidth
+        obj.imgY = cvs.height/2-(1-Math.asinh(Math.tan(POINT.lat*Math.PI/180))/Math.PI)/2*(2**obj.L)*tileWidth
         localStorage.L&&(obj.targetL=obj.L=Number(localStorage.L))
         if(localStorage.center){
           var center = JSON.parse(localStorage.center)
-          obj.imgX=cvs.width/2-(center[0]+180)/360*tileWidth*(2**obj.L)
-          obj.imgY=cvs.height/2-(1-Math.asinh(Math.tan(center[1]*Math.PI/180))/Math.PI)/2*(2**obj.L)*tileWidth
+          obj.imgX = cvs.width/2-(center[0]+180)/360*tileWidth*(2**obj.L)
+          obj.imgY = cvs.height/2-(1-Math.asinh(Math.tan(center[1]*Math.PI/180))/Math.PI)/2*(2**obj.L)*tileWidth
         }
       }
       loadMap()
@@ -98,47 +100,53 @@
   onBeforeUnmount(()=>{
     window.removeEventListener('message',test)
   })
-  // const demo = async() =>{
-  //   // initializa engine
-  //   await Engine3D.init();
-  //   // create new scene as root node
-  //   let scene3D = new Scene3D();
-	// // add an Atmospheric sky enviroment
-	// let sky = scene3D.addComponent(AtmosphericComponent);
-  // sky.enable=false
-	// sky.sunY = 0.6;
-  //   // create camera
-  //   let cameraObj = new Object3D();
-  //   let camera = cameraObj.addComponent(Camera3D);
-  //   // adjust camera view
-  //   camera.perspective(60, Engine3D.aspect, 1, 5000.0);
-  //   // set camera controller
-  //   let controller = cameraObj.addComponent(HoverCameraController);
-  //   controller.setCamera(0, -20, 15);
-  //   // add camera node
-  //   scene3D.addChild(cameraObj);
-  //   // create light
-  //   let light = new Object3D();
-  //   // add direct light component
-  //   let component = light.addComponent(DirectLight);
-  //   // adjust lighting
-  //   light.rotationX = 45;
-  //   light.rotationY = 30;
-  //   component.lightColor = new Color(1.0, 1.0, 1.0, 1.0);
-  //   component.intensity = 1;
-  //   // add light object
-  //   scene3D.addChild(light);
+  const demo = async() =>{
+    if(webgpu.value==null)
+      throw new Error('invalid webgpu')
+    // initializa engine
+    await Engine3D.init({
+      canvasConfig:{
+        canvas: webgpu.value
+      }
+    });
+    // create new scene as root node
+    let scene3D = new Scene3D();
+    // add an Atmospheric sky enviroment
+    let sky = scene3D.addComponent(AtmosphericComponent);
+    sky.enable=false
+    sky.sunY = 0.6;
+    // create camera
+    let cameraObj = new Object3D();
+    let camera = cameraObj.addComponent(Camera3D);
+    // adjust camera view
+    camera.perspective(60, Engine3D.aspect, 1, 5000.0);
+    // set camera controller
+    let controller = cameraObj.addComponent(HoverCameraController);
+    controller.setCamera(0, -20, 15);
+    // add camera node
+    scene3D.addChild(cameraObj);
+    // create light
+    let light = new Object3D();
+    // add direct light component
+    let component = light.addComponent(DirectLight);
+    // adjust lighting
+    light.rotationX = 45;
+    light.rotationY = 30;
+    component.lightColor = new Color(1.0, 1.0, 1.0, 1.0);
+    component.intensity = 1;
+    // add light object
+    scene3D.addChild(light);
 
-  //   let dragon = await Engine3D.res.loadGltf('https://cdn.orillusion.com/PBR/DragonAttenuation/DragonAttenuation.gltf');
-  //   scene3D.addChild(dragon);
+    let dragon = await Engine3D.res.loadGltf('https://cdn.orillusion.com/PBR/DragonAttenuation/DragonAttenuation.gltf');
+    scene3D.addChild(dragon);
 
-	// // create a view with target scene and camera
-	// let view = new View3D();
-	// view.scene = scene3D;
-	// view.camera = camera;
-	// // start render
-	// Engine3D.startRenderView(view);
-  // }
+    // create a view with target scene and camera
+    let view = new View3D();
+    view.scene = scene3D;
+    view.camera = camera;
+    // start render
+    Engine3D.startRenderView(view);
+  }
   const init = () => {
     if(setting.loadmap){
       mapLayer.show()
