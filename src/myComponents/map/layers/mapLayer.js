@@ -16,7 +16,7 @@ export default class MapLayer extends BaseLayer{
     this.urlTemplate = {}
     this.跳过 = 0
     this.effect = false
-    this.瓦片网格 = true
+    this.瓦片网格 = false
     this.worker = new Worker()
     this.isHide=false
     this.worker.onmessage = event => {
@@ -34,7 +34,7 @@ export default class MapLayer extends BaseLayer{
             cvs2.getContext('bitmaprenderer').transferFromImageBitmap(event.data.bitmap);
             this.mapsTiles[k].cvs = cvs2;
             this.mapsTiles[k].isDrawed = event.data.isDrawed;
-            console.log(this.Count)
+            // console.log(this.Count)
           }else{
             this.mapsTiles[k].cvs = 0;
             this.mapsTiles[k].isDrawed = event.data.isDrawed;
@@ -176,10 +176,9 @@ export default class MapLayer extends BaseLayer{
           let src = url.replaceAll('{x}',x).replaceAll('{y}',y).replaceAll('{z}',item._LL).replace('{q}',tileXY2QuadKey(item._LL,y,x))+(url.indexOf('?')==-1?'?t=':'&t=')+Date.now();//?t=xxx防止浏览器本身的缓存机制
           this.worker.postMessage({z:item._LL,y:y,x:x,j:item.j,i:item.i,url:src})
           this.Count++;
-          console.log('加载中',this.Count)
-          //加载中.setValue(this.Count);
+          // console.log('加载中',this.Count)
         }
-      }else{
+      }else{//删除跳过的瓦片
         for(let k=0;k<tiles.length;k++){
           if(tiles[k]._LL==item._LL&&tiles[k].i==item.i&&tiles[k].j==item.j){
             tiles.splice(k,1);
