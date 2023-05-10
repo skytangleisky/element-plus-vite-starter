@@ -11,14 +11,16 @@ export default class MapLayer extends BaseLayer{
     this.myTiles = new Tiles()
     // this.urlTemplate = {url:'/wstdtiles/{z}/user_{z}_{x}_{y}'}
     // this.urlTemplate = {url:'http://192.168.0.112/wstdtiles/{z}/user_{z}_{x}_{y}'}
+    this.Count=0
     this.tileWidth=256
     this.urlTemplate = {}
     this.跳过 = 0
     this.effect = false
-    this.瓦片网格 = false
+    this.瓦片网格 = true
     this.worker = new Worker()
     this.isHide=false
     this.worker.onmessage = event => {
+      this.Count--
       for(let k=0;k<this.mapsTiles.length;k++){
         if(this.mapsTiles[k]._LL==event.data.z&&this.mapsTiles[k].i==event.data.i&&this.mapsTiles[k].j==event.data.j){
           if(event.data.bitmap===-1){
@@ -32,6 +34,7 @@ export default class MapLayer extends BaseLayer{
             cvs2.getContext('bitmaprenderer').transferFromImageBitmap(event.data.bitmap);
             this.mapsTiles[k].cvs = cvs2;
             this.mapsTiles[k].isDrawed = event.data.isDrawed;
+            console.log(this.Count)
           }else{
             this.mapsTiles[k].cvs = 0;
             this.mapsTiles[k].isDrawed = event.data.isDrawed;
@@ -161,31 +164,29 @@ export default class MapLayer extends BaseLayer{
     callback()
   }
   load(item,tiles,url){
-    if(this._X0<=item.i&&item.i<this._X1&&this._Y0<=item.j&&item.j<this._Y1&&item._LL==this._LL){
-      let x=item.i%2**item._LL>=0?item.i%2**item._LL:item.i%2**item._LL+2**item._LL;
-      let y=item.j%2**item._LL>=0?item.j%2**item._LL:item.j%2**item._LL+2**item._LL;
-      let data = this.myTiles.getTile(item._LL,y,x);
-      if(data){
-        item.cvs = data.cvs;
-        item.isDrawed = data.isDrawed;
+    setTimeout(()=>{
+      if(this._X0<=item.i&&item.i<this._X1&&this._Y0<=item.j&&item.j<this._Y1&&item._LL==this._LL){
+        let x=item.i%2**item._LL>=0?item.i%2**item._LL:item.i%2**item._LL+2**item._LL;
+        let y=item.j%2**item._LL>=0?item.j%2**item._LL:item.j%2**item._LL+2**item._LL;
+        let data = this.myTiles.getTile(item._LL,y,x);
+        if(data){
+          item.cvs = data.cvs;
+          item.isDrawed = data.isDrawed;
+        }else{
+          let src = url.replaceAll('{x}',x).replaceAll('{y}',y).replaceAll('{z}',item._LL).replace('{q}',tileXY2QuadKey(item._LL,y,x))+(url.indexOf('?')==-1?'?t=':'&t=')+Date.now();//?t=xxx防止浏览器本身的缓存机制
+          this.worker.postMessage({z:item._LL,y:y,x:x,j:item.j,i:item.i,url:src})
+          this.Count++;
+          console.log('加载中',this.Count)
+          //加载中.setValue(this.Count);
+        }
       }else{
-        let src = url.replaceAll('{x}',x).replaceAll('{y}',y).replaceAll('{z}',item._LL).replace('{q}',tileXY2QuadKey(item._LL,y,x))+(url.indexOf('?')==-1?'?t=':'&t=')+Date.now();//?t=xxx防止浏览器本身的缓存机制
-        this.worker.postMessage({z:item._LL,y:y,x:x,j:item.j,i:item.i,url:src})
-        this.Count++;
-        //加载中.setValue(this.Count);
-      }
-    }else{
-      for(let k=0;k<tiles.length;k++){
-        if(tiles[k]._LL==item._LL&&tiles[k].i==item.i&&tiles[k].j==item.j){
-          tiles.splice(k,1);
+        for(let k=0;k<tiles.length;k++){
+          if(tiles[k]._LL==item._LL&&tiles[k].i==item.i&&tiles[k].j==item.j){
+            tiles.splice(k,1);
+          }
         }
       }
-      if(this.Count>0){
-        this.跳过++;
-        // 跳过.setValue(this.跳过)
-        console.log('跳过',this.Count)
-      }
-    }
+    },0)
   }
   delete(callback){
     if(this.urlTemplate.remove){
