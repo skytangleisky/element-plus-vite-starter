@@ -305,7 +305,7 @@
     }
     // drawScale(2**obj.L,cvs_scale,pixel2Lat(mousemove.y,obj.imgY,2**obj.L,tileWidth))
     newPos = {x:((mousemove.x-obj.imgX)/(2**obj.L))/tileWidth , y:((mousemove.y-obj.imgY)/(2**obj.L))/tileWidth}
-    console.log(event.wheelDeltaY)
+    // console.log(event.wheelDeltaY)
     let delta = event.wheelDeltaY/120
     change = event.wheelDeltaY>0?'zoom in':'zoom out'
     obj.targetL+=delta

@@ -181,6 +181,7 @@ export default class MapLayer extends BaseLayer{
       }else{//删除跳过的瓦片
         for(let k=0;k<tiles.length;k++){
           if(tiles[k]._LL==item._LL&&tiles[k].i==item.i&&tiles[k].j==item.j){
+            // console.log('地图跳过')
             tiles.splice(k,1);
           }
         }

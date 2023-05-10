@@ -149,14 +149,25 @@ export default class RouteLayer extends BaseLayer{
           }else{
             this.mapsTiles.push(item);
             // this.load2(i,j,this._LL,this._X0,this._Y0,this._X1,this._Y1,obj)
-            this.load2({_LL:this._LL,i,j,_X0:this._X0,_X1:this._X1,_Y0:this._Y0,_Y1:this._Y1,isDrawed:true},obj)
+            this.load2({_LL:this._LL,i,j,_X0:this._X0,_X1:this._X1,_Y0:this._Y0,_Y1:this._Y1,isDrawed:true},this.mapsTiles,obj)
           }
         }
       }
     }
     callback()
   }
-  load2(item,obj){
-    this.worker.postMessage({args:{beginTime:Date.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:this.tileWidth});//处理这段数据通常需要很长时间。
+  load2(item,tiles,obj){
+    setTimeout(()=>{
+      if(this._X0<=item.i&&item.i<this._X1&&this._Y0<=item.j&&item.j<this._Y1&&item._LL==this._LL){
+        this.worker.postMessage({args:{beginTime:Date.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:this.tileWidth});//处理这段数据通常需要很长时间。
+      }else{//删除跳过的瓦片
+        for(let k=0;k<tiles.length;k++){
+          if(tiles[k]._LL==item._LL&&tiles[k].i==item.i&&tiles[k].j==item.j){
+            // console.log('航线跳过')
+            tiles.splice(k,1);
+          }
+        }
+      }
+    },0)
   }
 }
