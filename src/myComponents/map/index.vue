@@ -305,9 +305,10 @@
     }
     // drawScale(2**obj.L,cvs_scale,pixel2Lat(mousemove.y,obj.imgY,2**obj.L,tileWidth))
     newPos = {x:((mousemove.x-obj.imgX)/(2**obj.L))/tileWidth , y:((mousemove.y-obj.imgY)/(2**obj.L))/tileWidth}
-    let delta = event.deltaY/120
-    change = event.deltaY>0?'zoom out':'zoom in'
-    obj.targetL-=delta
+    // console.log(event)
+    let delta = event.wheelDeltaY/120
+    change = event.wheelDeltaY>0?'zoom in':'zoom out'
+    obj.targetL+=delta
     limitScale()
     let period=1
     // if(config.动画){

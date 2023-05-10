@@ -15,7 +15,7 @@ export default class BorderLayer extends BaseLayer{
 
     this.worker = new Worker();//一个对象加快访问速度
     this.worker.onmessage = (event)=>{
-      console.log((Date.now()-event.data.beginTime)/1000);
+      // console.log((Date.now()-event.data.beginTime)/1000);
       for(let k=0;k<this.mapsTiles.length;k++){
         if(this.mapsTiles[k]._LL==event.data._LL&&this.mapsTiles[k].i==event.data.i&&this.mapsTiles[k].j==event.data.j){
           if(event.data.isDrawed){
