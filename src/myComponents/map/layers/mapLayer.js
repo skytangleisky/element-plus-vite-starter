@@ -2,7 +2,7 @@ import Tiles from '../tiles.js'
 import BaseLayer from './baseLayer.js'
 import { tileXY2QuadKey } from '../js/core.js'
 import axios from 'axios'
-import Worker from '../workers/index.js?worker'
+import Worker from '../workers/map.js?worker'
 export default class MapLayer extends BaseLayer{
   constructor(){
     super()

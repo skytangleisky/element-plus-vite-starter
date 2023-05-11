@@ -335,18 +335,16 @@
     })
   }
   const limitRegion = () => {
-    // if(config.限制){
-      // if(this.obj.imgX>0){
-      //   this.obj.imgX=0
-      // }else if(this.obj.imgX<canvas.width-this.tileWidth*2**this.obj.L){
-      //   this.obj.imgX = (canvas.width-this.tileWidth*2**this.obj.L)
-      // }
-      if(obj.imgY>0){
-        obj.imgY=0
-      }else if(obj.imgY<cvs.height-tileWidth*2**obj.L){
-        obj.imgY = (cvs.height-tileWidth*2**obj.L)
-      }
+    // if(obj.imgX>0){
+    //   obj.imgX=0
+    // }else if(obj.imgX<cvs.width-tileWidth*2**obj.L){
+    //   obj.imgX = (cvs.width-tileWidth*2**obj.L)
     // }
+    if(obj.imgY>0){
+      obj.imgY=0
+    }else if(obj.imgY<cvs.height-tileWidth*2**obj.L){
+      obj.imgY = (cvs.height-tileWidth*2**obj.L)
+    }
     // plane&&plane.setPos(obj.imgX,obj.imgY,2**obj.L)
     // panel&&panel.setPos(obj.imgX,obj.imgY,2**obj.L)
   }

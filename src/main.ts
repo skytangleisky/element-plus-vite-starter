@@ -72,7 +72,7 @@ app.directive('dialogDrag',{
       event.stopPropagation()
       let rect = el.getBoundingClientRect()
       let rectParent = el.parentNode.getBoundingClientRect()
-      obj = { 
+      obj = {
         targetLeft: rect.left,
         targetTop: rect.top,
         targetRight:rectParent.width - rect.right,
