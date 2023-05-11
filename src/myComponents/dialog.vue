@@ -1,5 +1,5 @@
 <template>
-  <div v-dialogDrag class="dragDialog absolute w-300px h-200px bg-red dark:bg-indigo" style="left:0px;top:0px;">
+  <div v-dialogDrag class="dragDialog absolute w-300px h-200px" style="left:0px;top:20px;">
     <input @mousedown.sotp.native class="operation_filter" placeholder="请输入ID、简码或作业点名称">
     <el-button type="default">北京延庆</el-button>
     <el-button type="default">还原</el-button>
@@ -36,6 +36,8 @@
   width: 100%;
   color: var(--ep-text-color-primary);
   font-size: 16px;
+  outline: none;
+
   // &::-webkit-input-placeholder{
   //   color:#999;
   // }
@@ -47,5 +49,12 @@
   //   border-bottom:none;
   //   padding-bottom:2px;
   // }
+}
+.dragDialog{
+  border-radius:10px;
+  padding:1rem 1.5rem;
+}
+.dark .dragDialog{
+  background:rgba(0,0,0,0.24);
 }
 </style>

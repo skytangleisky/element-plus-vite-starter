@@ -65,9 +65,9 @@ app.directive('dialogDrag',{
       el.style.cursor = 'default'
     }
     var pos:any, posl:any
-    window.deep = 1
+    // window.deep = 1
     el.addEventListener('mousedown', (event:any) => {
-      el.style['z-index'] = window.deep++
+      // el.style['z-index'] = window.deep++
       var ev = event || window.event
       event.stopPropagation()
       let rect = el.getBoundingClientRect()
