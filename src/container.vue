@@ -53,7 +53,8 @@ html{
 }
 body{
   overscroll-behavior: none;
-  background: url(assets/background.jpg);
+  // background: url(assets/background.jpg);
+  background: linear-gradient(136.36deg,#3390c4 4.86%,#1d1252 94.85%);
 }
 #app {
   text-align: center;

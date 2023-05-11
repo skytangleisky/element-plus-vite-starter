@@ -68,9 +68,10 @@
       run(webgpu.value)
     window.addEventListener('message',test)
     // this.mapLayer.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'})
-    // mapLayer.setSource({url:'/map1/{z}/{y}/{x}'})
-    // mapLayer.setSource({url:'https://tanglei.site/{z}/{y}/{x}'})
-    mapLayer.setSource({url:'http://127.0.0.1:8008/{z}/{y}/{x}'})
+    // mapLayer.setSource({url:'http://127.0.0.1:8008/{z}/{y}/{x}.jpg'})//nginx
+    // mapLayer.setSource({url:'http://127.0.0.1:8001/{z}/{y}/{x}'})//nodejs
+    mapLayer.setSource({url:'https://tanglei.site?z={z}&y={y}&x={x}'})//nps->nodejs
+    // mapLayer.setSource({url:'/map1/{z}/{y}/{x}'})//proxy->nps->nodejs
     // mapLayer.setSource({url:'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}'})
     // this.mapLayer.setSource({url:'/data/google/terrain/Guangzhou/{z}/{x}/{y}.jpg'},)
     init()
