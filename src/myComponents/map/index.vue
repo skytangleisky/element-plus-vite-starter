@@ -87,12 +87,12 @@
         let POINT = {lng:113.42165142106768,lat:23.098844381632485}
         obj.imgX = cvs.width/2-tileWidth*2**obj.L*(POINT.lng+180)/360
         obj.imgY = cvs.height/2-(1-Math.asinh(Math.tan(POINT.lat*Math.PI/180))/Math.PI)/2*(2**obj.L)*tileWidth
-        localStorage.L&&(obj.targetL=obj.L=Number(localStorage.L))
-        if(localStorage.center){
-          var center = JSON.parse(localStorage.center)
-          obj.imgX = cvs.width/2-(center[0]+180)/360*tileWidth*(2**obj.L)
-          obj.imgY = cvs.height/2-(1-Math.asinh(Math.tan(center[1]*Math.PI/180))/Math.PI)/2*(2**obj.L)*tileWidth
-        }
+      }
+      localStorage.L&&(obj.targetL=obj.L=Number(localStorage.L))
+      if(localStorage.center){
+        var center = JSON.parse(localStorage.center)
+        obj.imgX = cvs.width/2-(center[0]+180)/360*tileWidth*(2**obj.L)
+        obj.imgY = cvs.height/2-(1-Math.asinh(Math.tan(center[1]*Math.PI/180))/Math.PI)/2*(2**obj.L)*tileWidth
       }
       loadMap()
     }).observe(cvs)
