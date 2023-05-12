@@ -79,6 +79,7 @@
       let rect = cvs.getBoundingClientRect()
       cvs.width = rect.width
       cvs.height = rect.height
+      draw(Date.now())
       limitScale()
       limitRegion()
       if(first){

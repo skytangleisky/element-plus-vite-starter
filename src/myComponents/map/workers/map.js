@@ -2,7 +2,7 @@ self.onmessage = e => {
   var xhr = new XMLHttpRequest()
   xhr.open('GET',e.data.url,true)
   xhr.responseType = 'blob'
-  xhr.timeout=5000
+  // xhr.timeout=10000
   xhr.send()
   xhr.onreadystatechange = function() {
     if(xhr.readyState===4){
