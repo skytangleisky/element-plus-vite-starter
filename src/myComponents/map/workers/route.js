@@ -173,13 +173,13 @@ function test(args){
           x:(lng2Pixel(line[j+1].lng) - imgX)/imgScale*Math.pow(2,args._LL) - args._i*TileWidth,
           y:(lat2Pixel(line[j+1].lat) - imgY)/imgScale*Math.pow(2,args._LL) - args._j*TileWidth
         }
-        if((pt1.x<-args.ctx.lineWidth&&pt2.x<-args.ctx.lineWidth)
-          ||(pt1.x>TileWidth+args.ctx.lineWidth&&pt2.x>TileWidth+args.ctx.lineWidth)
-          ||(pt1.y<-args.ctx.lineWidth&&pt2.y<-args.ctx.lineWidth)
-          ||(pt1.y>TileWidth+args.ctx.lineWidth&&pt2.y>TileWidth+args.ctx.lineWidth)){
+        let width = args.ctx.measureText(text).width;
+        if((pt1.x<-args.ctx.lineWidth-width&&pt2.x<-args.ctx.lineWidth-width)
+          ||(pt1.x>TileWidth+args.ctx.lineWidth+width&&pt2.x>TileWidth+args.ctx.lineWidth+width)
+          ||(pt1.y<-args.ctx.lineWidth-width&&pt2.y<-args.ctx.lineWidth-width)
+          ||(pt1.y>TileWidth+args.ctx.lineWidth+width&&pt2.y>TileWidth+args.ctx.lineWidth-width)){
         }else{
           let distance = Math.sqrt((pt2.x-pt1.x)*(pt2.x-pt1.x)+(pt2.y-pt1.y)*(pt2.y-pt1.y));
-          let width = args.ctx.measureText(text).width;
           if(distance<width*3||!text||text==''){
             args.ctx.beginPath();
             args.ctx.moveTo(pt1.x,pt1.y);
@@ -189,16 +189,16 @@ function test(args){
             args.ctx.beginPath();
             args.ctx.moveTo(pt1.x,pt1.y);
             args.ctx.lineTo(pt1.x + (pt2.x-pt1.x)/distance*(distance-width)/2,pt1.y + (pt2.y-pt1.y)/distance*(distance-width)/2);
-            
+
             args.ctx.moveTo(pt2.x,pt2.y);
             args.ctx.lineTo(pt2.x - (pt2.x-pt1.x)/distance*(distance-width)/2,pt2.y - (pt2.y-pt1.y)/distance*(distance-width)/2);
             args.ctx.stroke();
-            
+
             args.ctx.save();
             args.ctx.translate((pt1.x+pt2.x)/2,(pt1.y+pt2.y)/2);
             let radian = Math.atan2(pt2.y-pt1.y,pt2.x-pt1.x);
             args.ctx.rotate(radian);
-            
+
             args.ctx.textBaseline='middle';
             args.ctx.textAlign='center';
             args.ctx.shadowOffsetX=0;
@@ -210,11 +210,11 @@ function test(args){
             args.ctx.fillRect(-width/2,-(width/text.length+8)/2,width,width/text.length+8)
             args.ctx.fillStyle='#000000aa'
             args.ctx.fillText(text,0,0);
-            
+
             args.ctx.shadowBlur = 0;
             args.ctx.shadowOffsetX=0;
             args.ctx.shadowOffsetY=0;
-            
+
             // args.ctx.rotate(-radian);
             // args.ctx.translate(-(pt1.x+pt2.x)/2,-(pt1.y+pt2.y)/2);
             args.ctx.restore();//相当于上面两行代码，但是更精确
@@ -316,27 +316,27 @@ function drawLine(pt1,pt2,text,color,args){
   args.ctx.lineWidth=1;
   let distance = Math.sqrt((pt2.x-pt1.x)*(pt2.x-pt1.x)+(pt2.y-pt1.y)*(pt2.y-pt1.y));
   let width = args.ctx.measureText(text).width;
-  
+
   if(distance>=width*3&&text&&text!=""){
-    
+
     args.ctx.beginPath();
     args.ctx.moveTo(pt1.x,pt1.y);
     args.ctx.lineTo(pt1.x + (pt2.x-pt1.x)/distance*(distance-width)/2,pt1.y + (pt2.y-pt1.y)/distance*(distance-width)/2);
     args.ctx.stroke();
-    
+
     args.ctx.beginPath();
     args.ctx.moveTo(pt2.x,pt2.y);
     args.ctx.lineTo(pt2.x - (pt2.x-pt1.x)/distance*(distance-width)/2,pt2.y - (pt2.y-pt1.y)/distance*(distance-width)/2);
     args.ctx.stroke();
-    
+
     args.ctx.save();
     args.ctx.translate((pt1.x+pt2.x)/2,(pt1.y+pt2.y)/2);
-    
-    
-    
+
+
+
     let radian = Math.atan2(pt2.y-pt1.y,pt2.x-pt1.x);
     args.ctx.rotate(radian);
-    
+
     args.ctx.textBaseline='middle';
     args.ctx.textAlign='center';
     args.ctx.shadowOffsetX=0;
@@ -352,7 +352,7 @@ function drawLine(pt1,pt2,text,color,args){
     args.ctx.shadowBlur = 0;
     args.ctx.shadowOffsetX=0;
     args.ctx.shadowOffsetY=0;
-    
+
     // args.ctx.rotate(-radian);
     // args.ctx.translate(-(pt1.x+pt2.x)/2,-(pt1.y+pt2.y)/2);
     args.ctx.restore();
