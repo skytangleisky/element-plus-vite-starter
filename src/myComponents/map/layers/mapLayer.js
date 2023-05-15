@@ -15,6 +15,7 @@ export default class MapLayer extends BaseLayer{
     this.tileWidth=256
     this.urlTemplate = {}
     this.跳过 = 0
+    this.cache = false
     this.effect = false
     this.瓦片网格 = false
     this.worker = new Worker()
@@ -39,8 +40,7 @@ export default class MapLayer extends BaseLayer{
             this.mapsTiles[k].cvs = 0;
             this.mapsTiles[k].isDrawed = event.data.isDrawed;
           }
-          this.myTiles.addTile(this.mapsTiles[k]._LL,event.data.y,event.data.x,{cvs:this.mapsTiles[k].cvs,isDrawed:event.data.isDrawed});
-          // rAF(draw);
+          this.cache&&this.myTiles.addTile(this.mapsTiles[k]._LL,event.data.y,event.data.x,{cvs:this.mapsTiles[k].cvs,isDrawed:event.data.isDrawed});
         }
       }
       for(let i=0;i<this.mapsTiles.length;i++){
