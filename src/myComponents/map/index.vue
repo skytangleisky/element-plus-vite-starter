@@ -11,7 +11,6 @@
   import run from '~/webgpu/imageTexture'
   import { Engine3D, Scene3D, Object3D, Camera3D, DirectLight, HoverCameraController, Color, View3D, AtmosphericComponent } from "@orillusion/core"
   const setting = useSettingStore()
-  let first = true
   const mapLayer = new MapLayer()
   const borderLayer = new BorderLayer()
   const pointLayer = new PointLayer()
@@ -65,15 +64,15 @@
     }
     // demo()
     if(webgpu.value)
-      run(webgpu.value)
+      // run(webgpu.value)
     window.addEventListener('message',test)
-    // this.mapLayer.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'})
+    // mapLayer.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'})
     // mapLayer.setSource({url:'http://127.0.0.1:8008/{z}/{y}/{x}.jpg'})//nginx
-    // mapLayer.setSource({url:'http://127.0.0.1:8001/{z}/{y}/{x}'})//nodejs
+    // mapLayer.setSource({url:'http://127.0.0.1:8001?z={z}&y={y}&x={x}'})//nodejs
     mapLayer.setSource({url:'https://tanglei.site?z={z}&y={y}&x={x}'})//nps->nodejs
-    // mapLayer.setSource({url:'/map1/{z}/{y}/{x}'})//proxy->nps->nodejs
-    // mapLayer.setSource({url:'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}'})
-    // this.mapLayer.setSource({url:'/data/google/terrain/Guangzhou/{z}/{x}/{y}.jpg'},)
+    // mapLayer.setSource({url:'/map1?z={z}&y={y}&x={x}'})//proxy->nps->nodejs
+    // mapLayer.setSource({url:'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}'})
+    // mapLayer.setSource({url:'/data/google/terrain/Guangzhou/{z}/{x}/{y}.jpg'},)
     init()
     new ResizeObserver(()=>{
       let rect = cvs.getBoundingClientRect()
@@ -82,17 +81,15 @@
       draw(Date.now())
       limitScale()
       limitRegion()
-      if(first){
-        first = false
-        let POINT = {lng:113.42165142106768,lat:23.098844381632485}
-        obj.imgX = cvs.width/2-tileWidth*2**obj.L*(POINT.lng+180)/360
-        obj.imgY = cvs.height/2-(1-Math.asinh(Math.tan(POINT.lat*Math.PI/180))/Math.PI)/2*(2**obj.L)*tileWidth
-      }
       localStorage.L&&(obj.targetL=obj.L=Number(localStorage.L))
       if(localStorage.center){
         var center = JSON.parse(localStorage.center)
         obj.imgX = cvs.width/2-(center[0]+180)/360*tileWidth*(2**obj.L)
         obj.imgY = cvs.height/2-(1-Math.asinh(Math.tan(center[1]*Math.PI/180))/Math.PI)/2*(2**obj.L)*tileWidth
+      }else{
+        let POINT = {lng:113.42165142106768,lat:23.098844381632485}
+        obj.imgX = cvs.width/2-tileWidth*2**obj.L*(POINT.lng+180)/360
+        obj.imgY = cvs.height/2-(1-Math.asinh(Math.tan(POINT.lat*Math.PI/180))/Math.PI)/2*(2**obj.L)*tileWidth
       }
       loadMap()
     }).observe(cvs)
