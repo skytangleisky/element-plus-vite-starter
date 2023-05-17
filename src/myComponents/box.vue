@@ -18,6 +18,8 @@ export default{
   height: 200px;
   position: relative;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
   background: rgba(255, 0, 0, 0.05);
   box-shadow: 1px 1px 16px #ff0000 inset;
   .fourBorder {

@@ -44,7 +44,7 @@
           // setTimeout(() => {
           //   $(e.target).closest('li').trigger('blur')
           // }, time);
-          console.log(item?.children[k])
+          // console.log(item?.children[k])
         }
       })
     }

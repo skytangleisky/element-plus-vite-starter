@@ -41,11 +41,6 @@ export default class PointLayer extends BaseLayer{
   }
   loadMap(obj,change,rect,callback){
     this.callback = callback
-    if(this.isHide){
-      this.mapsTiles = []
-      callback()
-      return
-    }
     if(change == 'zoom in'){
       this._LL = Math.floor(obj.L);//放大完成后加载最新层级的图片数据
       // _LL = Math.ceil(obj.L);//放大时加载图片数据
@@ -159,7 +154,6 @@ export default class PointLayer extends BaseLayer{
         }
       }
     }
-    callback()
   }
   load2(item,tiles,obj){
     setTimeout(()=>{

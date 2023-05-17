@@ -15,7 +15,7 @@ export default class MapLayer extends BaseLayer{
     this.tileWidth=256
     this.urlTemplate = {}
     this.跳过 = 0
-    this.cache = false
+    this.cache = true
     this.effect = false
     this.瓦片网格 = false
     this.worker = new Worker()
@@ -68,11 +68,6 @@ export default class MapLayer extends BaseLayer{
   }
   loadMap(obj,change,rect,callback){
     this.callback = callback
-    if(this.isHide){
-      this.mapsTiles = []
-      callback()
-      return
-    }
     if(change == 'zoom in'){
       this._LL = Math.floor(obj.L);//放大完成后加载最新层级的图片数据
       // _LL = Math.ceil(obj.L);//放大时加载图片数据
@@ -161,7 +156,6 @@ export default class MapLayer extends BaseLayer{
         this.load(item,this.mapsTiles,this.urlTemplate.url)
       }
     }
-    callback()
   }
   load(item,tiles,url){
     setTimeout(()=>{

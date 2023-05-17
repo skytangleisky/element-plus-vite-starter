@@ -1,8 +1,11 @@
+import { onBeforeMount } from 'vue'
 import basicVert from './shaders/basic.vert.wgsl?raw'
 import imageTexture from './shaders/imageTexture.frag.wgsl?raw'
 import * as cube from './util/cube'
 import { getMvpMatrix } from './util/math'
-import textureUrl from '/texture.webp?url'
+// import textureUrl from '/texture.webp?url'
+import textureUrl from '../assets/aircraft.png?url'
+let aid:number
 // initialize webgpu device & config canvas context
 async function initWebGPU(canvas: HTMLCanvasElement) {
     if (!navigator.gpu)
@@ -160,6 +163,9 @@ function draw(
     // webgpu run in a separate process, all the commands will be executed after submit
     device.queue.submit([commandEncoder.finish()])
 }
+export function cancel(){
+    window.cancelAnimationFrame(aid)
+}
 
 export default async function run(canvas:HTMLCanvasElement) {
     if (!canvas)
@@ -194,7 +200,7 @@ export default async function run(canvas:HTMLCanvasElement) {
     const sampler = device.createSampler({
         addressModeU:'clamp-to-edge',
         addressModeV: 'clamp-to-edge',
-        magFilter: 'nearest',
+        magFilter: 'linear',
         minFilter: 'linear'
     })
     const textureGroup = device.createBindGroup({
@@ -214,15 +220,39 @@ export default async function run(canvas:HTMLCanvasElement) {
 
     // default state
     let aspect = size.width / size.height
-    const position = { x: 0, y: 0, z: -20 }
+    const position = { x: 0, y: 0, z: -50 }
     const scale = { x: 1, y: 1, z: 0 }
     const rotation = { x: 0, y: 0, z: 0 }
     // start loop
-    function frame() {
+    let lastTime=0;
+    let fps=0
+    let preTime=performance.now();
+    let vy = 1/100
+    let vx = 1/80
+    function frame(time:number) {
+        fps++
+        if(time-lastTime>=1000){
+            $('#fps').html('FPS:'+fps.toString())
+            fps=0
+            lastTime = time
+        }
+        let deltaTime = time-preTime
+        preTime = time
         // rotate by time, and update transform matrix
-        const now = Date.now() / 1000
+        const now = time / 1000
         // rotation.x = Math.sin(now)
-        rotation.y = Math.cos(now)
+        // rotation.y = Math.cos(now)
+        let deltaX = deltaTime*vx
+        let deltaY = deltaTime*vy
+        position.x+=deltaX
+        position.y+=deltaY
+        if(position.x>20||position.x<-20){
+            vx = -vx
+        }
+        if(position.y>20||position.y<-20){
+            vy = -vy
+        }
+        rotation.z = Math.atan2(-deltaX,deltaY)
         const mvpMatrix = getMvpMatrix(aspect, position, rotation, scale)
         device.queue.writeBuffer(
             pipelineObj.mvpBuffer,
@@ -231,12 +261,14 @@ export default async function run(canvas:HTMLCanvasElement) {
         )
         // then draw
         draw(device, context, pipelineObj, textureGroup)
-        requestAnimationFrame(frame)
+        aid = requestAnimationFrame(frame)
     }
-    frame()
+    frame(performance.now())
+
 
     // re-configure context on resize
     window.addEventListener('resize', () => {
+        console.log('ratio',devicePixelRatio)
         size.width = canvas.width = canvas.clientWidth * devicePixelRatio
         size.height = canvas.height = canvas.clientHeight * devicePixelRatio
         // don't need to recall context.configure() after v104

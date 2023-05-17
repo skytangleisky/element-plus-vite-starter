@@ -56,19 +56,9 @@ const vertex = new Float32Array([
     +1, +1, +1,    1, 0,
     -1, -1, +1,    0, 1,
     +1, -1, +1,    1, 1,
-
-    +1, -1, +1,    0, 1,
-    +1, +1, +1,    0, 0,
-    +3, -1, +1,    1, 1,
-    +3, +1, +1,    1, 0,
-
-    +3, -1, +1,    0, 1,
-    +3, +1, +1,    0, 0,
-    +5, -1, +1,    1, 1,
-    +5, +1, +1,    1, 0,
 ])
 
 // const vertexCount = 36
-const vertexCount = 12
+const vertexCount = 4
 
 export {vertex, vertexCount}

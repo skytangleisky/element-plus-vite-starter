@@ -6,6 +6,7 @@ import { tileXY2QuadKey,quadKey2TileXY } from './js/core.js';
 class Tiles{
   constructor(){
     this.tiles={}
+    this.count=0
     // this.tiles={
     //   0:{
     //     0:{
@@ -18,6 +19,8 @@ class Tiles{
     // }
   }
   addTile(z,y,x,data){
+    this.count++
+    $('#tiles').html('tiles:'+this.count)
     if(!this.tiles[z]){
       this.tiles[z] = {}
     }

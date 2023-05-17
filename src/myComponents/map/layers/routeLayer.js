@@ -41,11 +41,6 @@ export default class RouteLayer extends BaseLayer{
   }
   loadMap(obj,change,rect,callback){
     this.callback = callback
-    if(this.isHide){
-      this.mapsTiles = []
-      callback()
-      return
-    }
     this.tileWidth = 256
     if(change == 'zoom in'){
       this._LL = Math.floor(obj.L);//放大完成后加载最新层级的图片数据
@@ -154,7 +149,6 @@ export default class RouteLayer extends BaseLayer{
         }
       }
     }
-    callback()
   }
   load2(item,tiles,obj){
     setTimeout(()=>{

@@ -8,7 +8,7 @@
   import { gsap, Power3 } from 'gsap'
   import { windowToCanvas, pixel2Lng, pixel2Lat, lng2Pixel, lat2Pixel } from './js/core'
   import { useSettingStore } from '~/stores/setting'
-  import run from '~/webgpu/imageTexture'
+  import run,{ cancel } from '~/webgpu/imageTexture'
   import { Engine3D, Scene3D, Object3D, Camera3D, DirectLight, HoverCameraController, Color, View3D, AtmosphericComponent } from "@orillusion/core"
   const setting = useSettingStore()
   const mapLayer = new MapLayer()
@@ -64,12 +64,14 @@
     }
     // demo()
     if(webgpu.value)
-      // run(webgpu.value)
+      run(webgpu.value)
     window.addEventListener('message',test)
     // mapLayer.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'})
+    // mapLayer.setSource({url:'https://tanglei.site:3210?z={z}&y={y}&x={x}'})//go
+    mapLayer.setSource({url:'https://tanglei.site:444?z={z}&y={y}&x={x}'})//nps+go
     // mapLayer.setSource({url:'http://127.0.0.1:8008/{z}/{y}/{x}.jpg'})//nginx
     // mapLayer.setSource({url:'http://127.0.0.1:8001?z={z}&y={y}&x={x}'})//nodejs
-    mapLayer.setSource({url:'https://tanglei.site?z={z}&y={y}&x={x}'})//nps->nodejs
+    // mapLayer.setSource({url:'https://tanglei.site?z={z}&y={y}&x={x}'})//nps->nodejs
     // mapLayer.setSource({url:'/map1?z={z}&y={y}&x={x}'})//proxy->nps->nodejs
     // mapLayer.setSource({url:'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}'})
     // mapLayer.setSource({url:'/data/google/terrain/Guangzhou/{z}/{x}/{y}.jpg'},)
@@ -78,10 +80,8 @@
       let rect = cvs.getBoundingClientRect()
       cvs.width = rect.width
       cvs.height = rect.height
-      draw(Date.now())
-      limitScale()
-      limitRegion()
       localStorage.L&&(obj.targetL=obj.L=Number(localStorage.L))
+      $('#level').html('Z:'+obj.L.toFixed(2))
       if(localStorage.center){
         var center = JSON.parse(localStorage.center)
         obj.imgX = cvs.width/2-(center[0]+180)/360*tileWidth*(2**obj.L)
@@ -91,7 +91,10 @@
         obj.imgX = cvs.width/2-tileWidth*2**obj.L*(POINT.lng+180)/360
         obj.imgY = cvs.height/2-(1-Math.asinh(Math.tan(POINT.lat*Math.PI/180))/Math.PI)/2*(2**obj.L)*tileWidth
       }
+      limitScale()
+      limitRegion()
       loadMap()
+      draw(performance.now())
     }).observe(cvs)
     cvs.addEventListener('mousewheel',mousewheelFunc,{passive:true});
     cvs.addEventListener('mousedown',mousedownFunc,{passive:true});
@@ -100,6 +103,7 @@
   })
   onBeforeUnmount(()=>{
     window.removeEventListener('message',test)
+    cancel()
   })
   const demo = async() =>{
     if(webgpu.value==null)
@@ -173,6 +177,7 @@
   const test = (e:MessageEvent) => {
     if(e.data.type=='自定义'){
       if(e.data.obj.name=='瓦片地图'){
+        console.log('tile')
         if(e.data.obj.leftImgSrc){
           mapLayer.show()
           setting.setloadMap(true)
@@ -233,6 +238,7 @@
     routeLayer.loadMap(obj,change,{x:0,y:0,w:cvs.width,h:cvs.height},()=>{
       requestAnimationFrame(draw)
     })
+    requestAnimationFrame(draw)
   }
   const mousedownFunc = (event:MouseEvent) => {
     obj.targetL = obj.L
@@ -323,7 +329,7 @@
       onUpdate: ()=>{
         obj.imgX=mousemove.x - (2**obj.L)*newPos.x*tileWidth
         obj.imgY=mousemove.y - (2**obj.L)*newPos.y*tileWidth
-        // 层级.setValue(this.obj.L.toFixed(2))
+        $('#level').html('Z:'+obj.L.toFixed(2))
         localStorage.L=obj.L
         localStorage.center=JSON.stringify([pixel2Lng(cvs.width/2,obj.imgX,2**obj.L,tileWidth),pixel2Lat(cvs.height/2,obj.imgY,2**obj.L,tileWidth)])
         limitRegion()
@@ -364,6 +370,7 @@
     if(obj.L<tmpL){
       obj.L = tmpL
     }
+    localStorage.L = obj.L
   }
 </script>
 <style>
