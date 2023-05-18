@@ -20,6 +20,7 @@ export default class MapLayer extends BaseLayer{
     this.瓦片网格 = false
     this.worker = new Worker()
     this.isHide=false
+    this.NUM=0
     this.worker.onmessage = event => {
       this.Count--
       for(let k=0;k<this.mapsTiles.length;k++){
@@ -41,6 +42,8 @@ export default class MapLayer extends BaseLayer{
             this.mapsTiles[k].isDrawed = event.data.isDrawed;
           }
           this.cache&&this.myTiles.addTile(this.mapsTiles[k]._LL,event.data.y,event.data.x,{cvs:this.mapsTiles[k].cvs,isDrawed:event.data.isDrawed});
+          this.NUM++
+          $('#tiles').html('TILES:'+this.NUM)
         }
       }
       for(let i=0;i<this.mapsTiles.length;i++){

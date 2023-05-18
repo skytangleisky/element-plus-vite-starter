@@ -242,8 +242,10 @@ export default async function run(canvas:HTMLCanvasElement) {
         const now = time / 1000
         // rotation.x = Math.sin(now)
         // rotation.y = Math.cos(now)
-        let deltaX = deltaTime*vx
-        let deltaY = deltaTime*vy
+        // let deltaX = deltaTime*vx
+        // let deltaY = deltaTime*vy
+        let deltaX = deltaTime*vx*Math.sin(now)
+        let deltaY = deltaTime*vy*Math.cos(now)
         position.x+=deltaX
         position.y+=deltaY
         if(position.x>20||position.x<-20){

@@ -68,7 +68,9 @@
     window.addEventListener('message',test)
     // mapLayer.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'})
     // mapLayer.setSource({url:'https://tanglei.site:3210?z={z}&y={y}&x={x}'})//go
-    mapLayer.setSource({url:'https://tanglei.site:444?z={z}&y={y}&x={x}'})//nps+go
+    // mapLayer.setSource({url:'https://tanglei.site:444?z={z}&y={y}&x={x}'})//nps+go
+    mapLayer.setSource({url:'http://tanglei.site:81?z={z}&y={y}&x={x}'})//nps+go
+    // mapLayer.setSource({url:'http://tanglei.site:8847?z={z}&y={y}&x={x}'})//tcp
     // mapLayer.setSource({url:'http://127.0.0.1:8008/{z}/{y}/{x}.jpg'})//nginx
     // mapLayer.setSource({url:'http://127.0.0.1:8001?z={z}&y={y}&x={x}'})//nodejs
     // mapLayer.setSource({url:'https://tanglei.site?z={z}&y={y}&x={x}'})//nps->nodejs

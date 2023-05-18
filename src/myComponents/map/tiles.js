@@ -19,8 +19,6 @@ class Tiles{
     // }
   }
   addTile(z,y,x,data){
-    this.count++
-    $('#tiles').html('tiles:'+this.count)
     if(!this.tiles[z]){
       this.tiles[z] = {}
     }
