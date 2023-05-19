@@ -5,7 +5,7 @@
       <el-col :span="12"><div class="flex justify-between items-center pl-10px">名称<input @mousedown.stop class="operation_filter" style="width:150px;" value="千家店作业点"/></div></el-col>
     </el-row>
     <el-row>
-      <el-col :span="12"><div class="flex justify-between items-center pl-10px">位置<input @mousedown.stop class="operation_filter" style="width:150px;" value="116192700E4043500N"/></div></el-col>
+      <el-col :span="12"><div class="flex justify-between items-center pl-10px">位置<input @mousedown.stop class="operation_filter" style="width:150px;" value="116192700E40413500N"/></div></el-col>
       <el-col :span="12"><div class="flex justify-between items-center pl-10px">审批单位<input @mousedown.stop class="operation_filter" style="width:150px;" value="北空"/></div></el-col>
     </el-row>
     <el-row>

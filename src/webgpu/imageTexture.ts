@@ -225,15 +225,15 @@ export default async function run(canvas:HTMLCanvasElement) {
     const rotation = { x: 0, y: 0, z: 0 }
     // start loop
     let lastTime=0;
-    let fps=0
+    let frame=0
     let preTime=performance.now();
     let vy = 1/100
     let vx = 1/80
-    function frame(time:number) {
-        fps++
-        if(time-lastTime>=1000){
-            $('#fps').html('FPS:'+fps.toString())
-            fps=0
+    function loop(time:number) {
+        frame++
+        if(time-lastTime>1000){
+            $('#fps').html('FPS:'+(frame*1000/(time-lastTime)).toFixed(2))
+            frame=0
             lastTime = time
         }
         let deltaTime = time-preTime
@@ -248,12 +248,12 @@ export default async function run(canvas:HTMLCanvasElement) {
         let deltaY = deltaTime*vy*Math.cos(now)
         position.x+=deltaX
         position.y+=deltaY
-        if(position.x>20||position.x<-20){
-            vx = -vx
-        }
-        if(position.y>20||position.y<-20){
-            vy = -vy
-        }
+        // if(position.x>20||position.x<-20){
+        //     vx = -vx
+        // }
+        // if(position.y>20||position.y<-20){
+        //     vy = -vy
+        // }
         rotation.z = Math.atan2(-deltaX,deltaY)
         const mvpMatrix = getMvpMatrix(aspect, position, rotation, scale)
         device.queue.writeBuffer(
@@ -263,9 +263,9 @@ export default async function run(canvas:HTMLCanvasElement) {
         )
         // then draw
         draw(device, context, pipelineObj, textureGroup)
-        aid = requestAnimationFrame(frame)
+        aid = requestAnimationFrame(loop)
     }
-    frame(performance.now())
+    loop(performance.now())
 
 
     // re-configure context on resize

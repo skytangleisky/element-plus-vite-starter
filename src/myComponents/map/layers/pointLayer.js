@@ -40,6 +40,7 @@ export default class PointLayer extends BaseLayer{
     }
   }
   loadMap(obj,change,rect,callback){
+    if(this.isHide)return
     this.callback = callback
     if(change == 'zoom in'){
       this._LL = Math.floor(obj.L);//放大完成后加载最新层级的图片数据

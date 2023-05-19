@@ -5,8 +5,7 @@ import { tileXY2QuadKey,quadKey2TileXY } from './js/core.js';
  */
 class Tiles{
   constructor(){
-    this.tiles={}
-    this.count=0
+    this.tiles=new Map()
     // this.tiles={
     //   0:{
     //     0:{
@@ -19,37 +18,25 @@ class Tiles{
     // }
   }
   addTile(z,y,x,data){
-    if(!this.tiles[z]){
-      this.tiles[z] = {}
+    if(!this.tiles.get(z)){
+      this.tiles.set(z,new Map())
     }
-    if(!this.tiles[z][y]){
-      this.tiles[z][y] = {}
+    if(!this.tiles.get(z).get(y)){
+      this.tiles.get(z).set(y,new Map())
     }
-    this.tiles[z][y][x] = data
-  }
-  delTile(z,y,x){
-    Object.getOwnPropertyNames(map).length
-    if(this.tiles.hasOwnProperty(z)&&this.tiles[z].hasOwnProperty(y)&&this.tiles[z][y].hasOwnProperty(x)){
-      delete this.tiles[z][y][x]
-    }
-    if(this.tiles.hasOwnProperty(z)&&this.tiles[z].hasOwnProperty(y)&&Object.getOwnPropertyNames(this.tiles[z][y]).length===0){
-      delete this.tiles[z][y]
-    }
-    if(this.tiles.hasOwnProperty(z)&&Object.getOwnPropertyNames(this.tiles[z]).length===0){
-      delete this.tiles[z]
-    }
+    this.tiles.get(z).get(y).set(x,data)
   }
   getTile(z,y,x){
-    if(!this.tiles[z]){
+    if(!this.tiles.get(z)){
       return null
     }
-    if(!this.tiles[z][y]){
+    if(!this.tiles.get(z).get(y)){
       return null
     }
-    return this.tiles[z][y][x]
+    return this.tiles.get(z).get(y).get(x)
   }
   clear(){
-    this.tiles={};
+    this.tiles=new Map();
   }
 }
 

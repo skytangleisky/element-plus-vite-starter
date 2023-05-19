@@ -15,7 +15,7 @@ export default class MapLayer extends BaseLayer{
     this.tileWidth=256
     this.urlTemplate = {}
     this.跳过 = 0
-    this.cache = true
+    this.cache = false
     this.effect = false
     this.瓦片网格 = false
     this.worker = new Worker()
@@ -42,7 +42,7 @@ export default class MapLayer extends BaseLayer{
             this.mapsTiles[k].isDrawed = event.data.isDrawed;
           }
           this.cache&&this.myTiles.addTile(this.mapsTiles[k]._LL,event.data.y,event.data.x,{cvs:this.mapsTiles[k].cvs,isDrawed:event.data.isDrawed});
-          this.NUM++
+          this.cache&&this.NUM++
           $('#tiles').html('TILES:'+this.NUM)
         }
       }
@@ -70,6 +70,7 @@ export default class MapLayer extends BaseLayer{
     this.urlTemplate = template
   }
   loadMap(obj,change,rect,callback){
+    if(this.isHide)return
     this.callback = callback
     if(change == 'zoom in'){
       this._LL = Math.floor(obj.L);//放大完成后加载最新层级的图片数据

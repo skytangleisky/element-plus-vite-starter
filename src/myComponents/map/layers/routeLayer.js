@@ -40,6 +40,7 @@ export default class RouteLayer extends BaseLayer{
     }
   }
   loadMap(obj,change,rect,callback){
+    if(this.isHide)return
     this.callback = callback
     this.tileWidth = 256
     if(change == 'zoom in'){
