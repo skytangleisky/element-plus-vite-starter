@@ -37,6 +37,7 @@
   let isMouseDown:boolean = false
   const minLevel = 0
   const maxLevel = 22
+  const 限制 = true
   let mousemove:Pos
   let tweenWheel:gsap.core.Tween
   let tween:gsap.core.Tween
@@ -346,36 +347,41 @@
       ease:Power3.easeOut
     })
   }
-  const limitRegion = () => {
-    // if(obj.imgX>0){
-    //   obj.imgX=0
-    // }else if(obj.imgX<cvs.width-tileWidth*2**obj.L){
-    //   obj.imgX = (cvs.width-tileWidth*2**obj.L)
-    // }
-    if(obj.imgY>0){
-      obj.imgY=0
-    }else if(obj.imgY<cvs.height-tileWidth*2**obj.L){
-      obj.imgY = (cvs.height-tileWidth*2**obj.L)
+  const limitScale = () => {
+    if(限制){
+      //下面5行代码是限制地图缩放等级
+      if(obj.targetL<Math.max(0,minLevel)){
+        obj.targetL=Math.max(0,minLevel)
+      }else if(obj.targetL>maxLevel){
+        obj.targetL=maxLevel
+      }
+      // 下面7行代码是让地图不能缩放得太小，并且最小时地图不能因放大而模糊。
+      let tmpL = Math.ceil(Math.log(Math.max(cvs.width,cvs.height)/tileWidth)/Math.log(2))
+      if(obj.targetL<tmpL){
+        obj.targetL = tmpL
+      }
+      if(obj.L<tmpL){
+        obj.L = tmpL
+      }
+      localStorage.L = obj.L
     }
+  }
+  const limitRegion = () => {
+    if(限制){
+      // if(obj.imgX>0){
+      //   obj.imgX=0
+      // }else if(obj.imgX<cvs.width-tileWidth*2**obj.L){
+      //   obj.imgX = (cvs.width-tileWidth*2**obj.L)
+      // }
+      if(obj.imgY>0){
+        obj.imgY=0
+      }else if(obj.imgY<cvs.height-tileWidth*2**obj.L){
+        obj.imgY = (cvs.height-tileWidth*2**obj.L)
+      }
+    }
+
     // plane&&plane.setPos(obj.imgX,obj.imgY,2**obj.L)
     // panel&&panel.setPos(obj.imgX,obj.imgY,2**obj.L)
-  }
-  const limitScale = () => {
-    //下面5行代码是限制地图缩放等级
-    if(obj.targetL<Math.max(0,minLevel)){
-      obj.targetL=Math.max(0,minLevel)
-    }else if(obj.targetL>maxLevel){
-      obj.targetL=maxLevel
-    }
-    // 下面7行代码是让地图不能缩放得太小，并且最小时地图不能因放大而模糊。
-    let tmpL = Math.ceil(Math.log(Math.max(cvs.width,cvs.height)/tileWidth)/Math.log(2))
-    if(obj.targetL<tmpL){
-      obj.targetL = tmpL
-    }
-    if(obj.L<tmpL){
-      obj.L = tmpL
-    }
-    localStorage.L = obj.L
   }
 </script>
 <style>

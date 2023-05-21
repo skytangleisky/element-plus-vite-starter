@@ -91,7 +91,7 @@ export default class PointLayer extends BaseLayer{
             if(tmp.i==Math.floor(i/(2**n))&&tmp.j==Math.floor(j/(2**n))&&tmp.cvs){
               ctx.clearRect(0,0,this.tileWidth,this.tileWidth)
               ctx.drawImage(tmp.cvs,
-                this.tileWidth*i/(2**n)%this.tileWidth,this.tileWidth*j/(2**n)%this.tileWidth,
+                Math.abs(this.tileWidth*i/(2**n))%this.tileWidth,Math.abs(this.tileWidth*j/(2**n))%this.tileWidth,
                 this.tileWidth/(2**n),this.tileWidth/(2**n),
                 0,0,this.tileWidth,this.tileWidth,
               );
@@ -99,11 +99,11 @@ export default class PointLayer extends BaseLayer{
           }else if(change=='zoom out'){
             let n = tmp._LL - this._LL
             if(i==Math.floor(tmp.i/(2**n))&&j==Math.floor(tmp.j/(2**n))&&tmp.cvs){
-              ctx.clearRect(this.tileWidth*tmp.i/(2**n)%this.tileWidth,this.tileWidth*tmp.j/(2**n)%this.tileWidth,this.tileWidth/(2**n),this.tileWidth/(2**n))
+              ctx.clearRect(Math.abs(this.tileWidth*tmp.i/(2**n))%this.tileWidth,Math.abs(this.tileWidth*tmp.j/(2**n))%this.tileWidth,this.tileWidth/(2**n),this.tileWidth/(2**n))
               ctx.drawImage(tmp.cvs,
                 0,0,
                 this.tileWidth,this.tileWidth,
-                this.tileWidth*tmp.i/(2**n)%this.tileWidth,this.tileWidth*tmp.j/(2**n)%this.tileWidth,
+                Math.abs(this.tileWidth*tmp.i/(2**n))%this.tileWidth,Math.abs(this.tileWidth*tmp.j/(2**n))%this.tileWidth,
                 this.tileWidth/(2**n),this.tileWidth/(2**n),
               );
             }
