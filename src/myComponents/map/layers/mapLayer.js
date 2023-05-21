@@ -117,15 +117,17 @@ export default class MapLayer extends BaseLayer{
           if(change=='zoom in'){
             let n = this._LL-tmp._LL
             if(tmp.i==Math.floor(i/(2**n))&&tmp.j==Math.floor(j/(2**n))&&tmp.cvs){
+              ctx.clearRect(0,0,this.tileWidth,this.tileWidth)
               ctx.drawImage(tmp.cvs,
                 this.tileWidth*i/(2**n)%this.tileWidth,this.tileWidth*j/(2**n)%this.tileWidth,
                 this.tileWidth/(2**n),this.tileWidth/(2**n),
-                0,0,this.tileWidth,this.tileWidth
+                0,0,this.tileWidth,this.tileWidth,
               );
             }
           }else if(change=='zoom out'){
             let n = tmp._LL - this._LL
             if(i==Math.floor(tmp.i/(2**n))&&j==Math.floor(tmp.j/(2**n))&&tmp.cvs){
+              ctx.clearRect(this.tileWidth*tmp.i/(2**n)%this.tileWidth,this.tileWidth*tmp.j/(2**n)%this.tileWidth,this.tileWidth/(2**n),this.tileWidth/(2**n))
               ctx.drawImage(tmp.cvs,
                 0,0,
                 this.tileWidth,this.tileWidth,
