@@ -82,58 +82,32 @@ export default class BorderLayer extends BaseLayer{
         cvs.setAttribute("height",this.tileWidth);
         var ctx = cvs.getContext('2d');
         this.平滑||(ctx.imageSmoothingEnabled = false);
-        let isDrawed = false;
-        let quadrant = [false,false,false,false]
         for(let k=0;k<this.mapsTiles.length;k++){
           let tmp = this.mapsTiles[k]
           if(change=='zoom in'){
-            if(tmp._LL==this._LL-1&&tmp.i==Math.floor(i/2)&&tmp.j==Math.floor(j/2)&&tmp.cvs){
-              isDrawed = tmp.isDrawed
-              if(i%2==0&&j%2==0){
-                ctx.drawImage(tmp.cvs,
-                0,0,this.tileWidth/2,this.tileWidth/2,
-                0,0,this.tileWidth,this.tileWidth);
-              }else if((i%2==1||i%2==-1)&&j%2==0){
-                ctx.drawImage(tmp.cvs,
-                this.tileWidth/2,0,this.tileWidth/2,this.tileWidth/2,
-                0,0,this.tileWidth,this.tileWidth);
-              }else if(i%2==0&&(j%2==1||j%2==-1)){
-                ctx.drawImage(tmp.cvs,
-                0,this.tileWidth/2,this.tileWidth/2,this.tileWidth/2,
-                0,0,this.tileWidth,this.tileWidth);
-              }else if((i%2==1||i%2==-1)&&(j%2==1||j%2==-1)){
-                ctx.drawImage(tmp.cvs,
-                this.tileWidth/2,this.tileWidth/2,this.tileWidth/2,this.tileWidth/2,
-                0,0,this.tileWidth,this.tileWidth);
-              }
+            let n = this._LL-tmp._LL
+            if(tmp.i==Math.floor(i/(2**n))&&tmp.j==Math.floor(j/(2**n))&&tmp.cvs){
+              ctx.clearRect(0,0,this.tileWidth,this.tileWidth)
+              ctx.drawImage(tmp.cvs,
+                this.tileWidth*i/(2**n)%this.tileWidth,this.tileWidth*j/(2**n)%this.tileWidth,
+                this.tileWidth/(2**n),this.tileWidth/(2**n),
+                0,0,this.tileWidth,this.tileWidth,
+              );
             }
           }else if(change=='zoom out'){
-            if(tmp._LL==this._LL+1&&Math.floor(tmp.i/2)==i&&Math.floor(tmp.j/2)==j&&tmp.cvs){
-              if(tmp.i%2==0&&tmp.j%2==0){
-                ctx.drawImage(tmp.cvs,
-                0,0,this.tileWidth,this.tileWidth,
-                0,0,this.tileWidth/2,this.tileWidth/2);
-                tmp.isDrawed&&(quadrant[1]=true)
-              }else if((tmp.i%2==1||tmp.i%2==-1)&&tmp.j%2==0){
-                ctx.drawImage(tmp.cvs,
-                0,0,this.tileWidth,this.tileWidth,
-                this.tileWidth/2,0,this.tileWidth/2,this.tileWidth/2);
-                tmp.isDrawed&&(quadrant[0]=true)
-              }else if(tmp.i%2==0&&(tmp.j%2==1||tmp.j%2==-1)){
-                ctx.drawImage(tmp.cvs,
-                0,0,this.tileWidth,this.tileWidth,
-                0,this.tileWidth/2,this.tileWidth/2,this.tileWidth/2);
-                tmp.isDrawed&&(quadrant[2]=true)
-              }else if((tmp.i%2==1||tmp.i%2==-1)&&(tmp.j%2==1||tmp.j%2==-1)){
-                ctx.drawImage(tmp.cvs,
-                0,0,this.tileWidth,this.tileWidth,
-                this.tileWidth/2,this.tileWidth/2,this.tileWidth/2,this.tileWidth/2);
-                tmp.isDrawed&&(quadrant[3]=true)
-              }
+            let n = tmp._LL - this._LL
+            if(i==Math.floor(tmp.i/(2**n))&&j==Math.floor(tmp.j/(2**n))&&tmp.cvs){
+              ctx.clearRect(this.tileWidth*tmp.i/(2**n)%this.tileWidth,this.tileWidth*tmp.j/(2**n)%this.tileWidth,this.tileWidth/(2**n),this.tileWidth/(2**n))
+              ctx.drawImage(tmp.cvs,
+                0,0,
+                this.tileWidth,this.tileWidth,
+                this.tileWidth*tmp.i/(2**n)%this.tileWidth,this.tileWidth*tmp.j/(2**n)%this.tileWidth,
+                this.tileWidth/(2**n),this.tileWidth/(2**n),
+              );
             }
           }
         }
-        let item = {_LL:this._LL,i,j,cvs,_X0:this._X0,_X1:this._X1,_Y0:this._Y0,_Y1:this._Y1,isDrawed:isDrawed||quadrant[0]||quadrant[1]||quadrant[2]||quadrant[3]};
+        let item = {_LL:this._LL,i,j,cvs,_X0:this._X0,_X1:this._X1,_Y0:this._Y0,_Y1:this._Y1,isDrawed:true};
 
 
 

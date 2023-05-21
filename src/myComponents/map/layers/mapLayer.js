@@ -15,7 +15,7 @@ export default class MapLayer extends BaseLayer{
     this.tileWidth=256
     this.urlTemplate = {}
     this.跳过 = 0
-    this.cache = false
+    this.cache = true
     this.effect = false
     this.瓦片网格 = false
     this.worker = new Worker()
