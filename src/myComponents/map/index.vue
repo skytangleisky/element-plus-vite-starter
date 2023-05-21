@@ -36,7 +36,7 @@
   let change:undefined|string = undefined
   let isMouseDown:boolean = false
   const minLevel = 0
-  const maxLevel = 20
+  const maxLevel = 22
   let mousemove:Pos
   let tweenWheel:gsap.core.Tween
   let tween:gsap.core.Tween
@@ -62,9 +62,10 @@
     }else{
       throw new Error('invalid ctx')
     }
-    // demo()
+
     if(webgpu.value)
       run(webgpu.value)
+    // demo()
     window.addEventListener('message',test)
     // mapLayer.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'})
     mapLayer.setSource({url:'https://tanglei.site:3210?z={z}&y={y}&x={x}'})//go
@@ -326,6 +327,7 @@
     // }else{
     //   period=0
     // }
+    tweenWheel&&tweenWheel.kill()
     tweenWheel = gsap.to(obj, {
       duration:period,
       L: obj.targetL,

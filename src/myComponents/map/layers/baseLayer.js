@@ -21,6 +21,15 @@ export default class BaseLayer{
         Math.round(obj.imgX+(tmp.i+1)*dxy)-Math.round(obj.imgX+tmp.i*dxy),
         Math.round(obj.imgY+(tmp.j+1)*dxy)-Math.round(obj.imgY+tmp.j*dxy)
       );
+      // context.drawImage(
+      //   tmp.cvs,
+      //   0,0,
+      //   tmp.cvs.width,tmp.cvs.height,
+      //   obj.imgX+tmp.i*dxy,
+      //   obj.imgY+tmp.j*dxy,
+      //   dxy,
+      //   dxy
+      // );
       context.globalCompositeOperation='source-over';
       if(this.瓦片网格&&flag){
         context.font = '12px kaiti';

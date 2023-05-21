@@ -65,6 +65,7 @@ export default class MapLayer extends BaseLayer{
     //this.worker.terminate()
   }
   setSource(template){
+    this.NUM=0
     this.mapsTiles=[]
     this.myTiles.clear()
     this.urlTemplate = template
@@ -74,10 +75,10 @@ export default class MapLayer extends BaseLayer{
     this.callback = callback
     if(change == 'zoom in'){
       this._LL = Math.floor(obj.L);//放大完成后加载最新层级的图片数据
-      // _LL = Math.ceil(obj.L);//放大时加载图片数据
+      // this._LL = Math.ceil(obj.L);//放大时加载图片数据
     }else{
       this._LL = Math.floor(obj.L);//缩小时加载图片数据
-      // _LL = Math.ceil(obj.L);//缩小完成后加载最新层级的图片数据+缩小时加载同级进入视线的图片数据
+      // this._LL = Math.ceil(obj.L);//缩小完成后加载最新层级的图片数据+缩小时加载同级进入视线的图片数据
     }
     if(this._LL<0)this._LL=0;
 
@@ -114,44 +115,23 @@ export default class MapLayer extends BaseLayer{
         for(let k=0;k<this.mapsTiles.length;k++){
           let tmp = this.mapsTiles[k]
           if(change=='zoom in'){
-            if(tmp._LL==this._LL-1&&tmp.i==Math.floor(i/2)&&tmp.j==Math.floor(j/2)&&tmp.cvs){
-              if(i%2==0&&j%2==0){
-                ctx.drawImage(tmp.cvs,
-                0,0,this.tileWidth/2,this.tileWidth/2,
-                0,0,this.tileWidth,this.tileWidth);
-              }else if((i%2==1||i%2==-1)&&j%2==0){
-                ctx.drawImage(tmp.cvs,
-                this.tileWidth/2,0,this.tileWidth/2,this.tileWidth/2,
-                0,0,this.tileWidth,this.tileWidth);
-              }else if(i%2==0&&(j%2==1||j%2==-1)){
-                ctx.drawImage(tmp.cvs,
-                0,this.tileWidth/2,this.tileWidth/2,this.tileWidth/2,
-                0,0,this.tileWidth,this.tileWidth);
-              }else if((i%2==1||i%2==-1)&&(j%2==1||j%2==-1)){
-                ctx.drawImage(tmp.cvs,
-                this.tileWidth/2,this.tileWidth/2,this.tileWidth/2,this.tileWidth/2,
-                0,0,this.tileWidth,this.tileWidth);
-              }
+            let n = this._LL-tmp._LL
+            if(tmp.i==Math.floor(i/(2**n))&&tmp.j==Math.floor(j/(2**n))&&tmp.cvs){
+              ctx.drawImage(tmp.cvs,
+                this.tileWidth*i/(2**n)%this.tileWidth,this.tileWidth*j/(2**n)%this.tileWidth,
+                this.tileWidth/(2**n),this.tileWidth/(2**n),
+                0,0,this.tileWidth,this.tileWidth
+              );
             }
           }else if(change=='zoom out'){
-            if(tmp._LL==this._LL+1&&Math.floor(tmp.i/2)==i&&Math.floor(tmp.j/2)==j&&tmp.cvs){
-              if(tmp.i%2==0&&tmp.j%2==0){
-                ctx.drawImage(tmp.cvs,
-                0,0,this.tileWidth,this.tileWidth,
-                0,0,this.tileWidth/2,this.tileWidth/2);
-              }else if((tmp.i%2==1||tmp.i%2==-1)&&tmp.j%2==0){
-                ctx.drawImage(tmp.cvs,
-                0,0,this.tileWidth,this.tileWidth,
-                this.tileWidth/2,0,this.tileWidth/2,this.tileWidth/2);
-              }else if(tmp.i%2==0&&(tmp.j%2==1||tmp.j%2==-1)){
-                ctx.drawImage(tmp.cvs,
-                0,0,this.tileWidth,this.tileWidth,
-                0,this.tileWidth/2,this.tileWidth/2,this.tileWidth/2);
-              }else if((tmp.i%2==1||tmp.i%2==-1)&&(tmp.j%2==1||tmp.j%2==-1)){
-                ctx.drawImage(tmp.cvs,
-                0,0,this.tileWidth,this.tileWidth,
-                this.tileWidth/2,this.tileWidth/2,this.tileWidth/2,this.tileWidth/2);
-              }
+            let n = tmp._LL - this._LL
+            if(i==Math.floor(tmp.i/(2**n))&&j==Math.floor(tmp.j/(2**n))&&tmp.cvs){
+              ctx.drawImage(tmp.cvs,
+                0,0,
+                this.tileWidth,this.tileWidth,
+                this.tileWidth*tmp.i/(2**n)%this.tileWidth,this.tileWidth*tmp.j/(2**n)%this.tileWidth,
+                this.tileWidth/(2**n),this.tileWidth/(2**n),
+              );
             }
           }
         }
