@@ -1,6 +1,12 @@
 <template>
   <canvas ref="canvas" style="position:absolute;outline:none;left:0;top:0;width:100%;height:100%;"></canvas>
   <canvas ref="webgpu" style="position:absolute;outline:none;left:0;top:0;width:100%;height:100%;pointer-events: none ;"></canvas>
+  <div tabindex="-1" class="tileSelect absolute right-20px top-20px" style="outline: none;">
+    <div :style="'border-radius:50%;border:1px solid grey;background-position:-0px -0px;background-repeat:no-repeat;width:58px;height:58px;'+'background-image:url('+setting.tileUrl.replace('{x}','105').replace('{y}','48').replace('{z}','7')+');'"></div>
+    <div class="tileList">
+      <div v-for="(v,k) in urls" :style="'border:1px solid grey;background-position:-0px -0px;background-repeat:no-repeat;width:50px;height:50px;'+'background-image:url('+v.url.replace('{x}','105').replace('{y}','48').replace('{z}','7')+');'" @click.native="tileSelect(v)"></div>
+    </div>
+  </div>
 </template>
 <script lang="ts" setup>
   import { onBeforeUnmount, onMounted, ref } from 'vue'
@@ -17,6 +23,27 @@
   const routeLayer = new RouteLayer()
   let canvas = ref(null)
   let webgpu = ref(null)
+  const urls = ref([
+    {url:'https://tanglei.site:3210/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}'},
+    {url:'https://tanglei.site:3210/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}'},
+    {url:'https://tanglei.site:3210/maps/vt?lyrs=h&gl=CN&x={x}&y={y}&z={z}'},
+    {url:'https://tanglei.site:3210/maps/vt?lyrs=p&gl=CN&x={x}&y={y}&z={z}'},
+    {url:'https://tanglei.site:3210/maps/vt?lyrs=m&gl=CN&x={x}&y={y}&z={z}'},
+    {url:'https://tanglei.site:3210/maps/vt?lyrs=t&gl=CN&x={x}&y={y}&z={z}'},
+  ])
+  if(setting.tileUrl==''){
+    setting.tileUrl=urls.value[0].url
+  }
+  urls.value.forEach((v,k)=>{
+    if(setting.tileUrl==v.url){
+      mapLayer.setSource(v)
+    }
+  })
+  const tileSelect = (v:any) => {
+    setting.tileUrl = v.url
+    mapLayer.setSource(v)
+    loadMap()
+  }
   let cvs:HTMLCanvasElement
   let ctx:CanvasRenderingContext2D
   interface Struct{
@@ -64,12 +91,12 @@
       throw new Error('invalid ctx')
     }
 
-    if(webgpu.value)
-      run(webgpu.value)
+    // if(webgpu.value)
+    //   run(webgpu.value)
     // demo()
     window.addEventListener('message',test)
-    // mapLayer.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'})
-    mapLayer.setSource({url:'https://tanglei.site:3210?z={z}&y={y}&x={x}'})//go
+    // mapLayer.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}'})
+    // mapLayer.setSource({url:'https://tanglei.site:3210?z={z}&y={y}&x={x}'})//go
     // mapLayer.setSource({url:'https://tanglei.site:444?z={z}&y={y}&x={x}'})//nps+go
     // mapLayer.setSource({url:'https://tanglei.site:6677?z={z}&y={y}&x={x}'})//nps+go
     // mapLayer.setSource({url:'http://tanglei.site:81?z={z}&y={y}&x={x}'})//nps+go
@@ -78,8 +105,8 @@
     // mapLayer.setSource({url:'http://127.0.0.1:8001?z={z}&y={y}&x={x}'})//nodejs
     // mapLayer.setSource({url:'https://tanglei.site?z={z}&y={y}&x={x}'})//nps->nodejs
     // mapLayer.setSource({url:'/map1?z={z}&y={y}&x={x}'})//proxy->nps->nodejs
-    // mapLayer.setSource({url:'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}'})
     // mapLayer.setSource({url:'/data/google/terrain/Guangzhou/{z}/{x}/{y}.jpg'})
+
     init()
     new ResizeObserver(()=>{
       let rect = cvs.getBoundingClientRect()
@@ -384,6 +411,20 @@
     // panel&&panel.setPos(obj.imgX,obj.imgY,2**obj.L)
   }
 </script>
-<style>
+<style lang="scss">
+.tileSelect{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  &>.tileList{
+    background-color: #2b2b2b;
+    padding: 4px;
+    border-radius: 4px;
+    display: none;
+  }
+  &:focus-within>.tileList{
+    display: block;
+  }
+}
 
 </style>

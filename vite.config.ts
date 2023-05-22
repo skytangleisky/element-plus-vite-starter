@@ -6,6 +6,7 @@ import { visualizer } from 'rollup-plugin-visualizer'
 
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import viteCompression from 'vite-plugin-compression'
 
 import Unocss from 'unocss/vite'
 import {
@@ -39,6 +40,10 @@ export default defineConfig({
       $: "jquery",
       jQuery: "jquery",
       "windows.jQuery": "jquery"
+    }),
+    viteCompression({
+      threshold: 1024*512,
+      deleteOriginFile: true,
     }),
     Components({
       // allow auto load markdown components under `./src/components/`

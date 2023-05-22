@@ -1,6 +1,5 @@
 import Tiles from '../tiles.js'
 import BaseLayer from './baseLayer.js'
-import { tileXY2QuadKey } from '../js/core.js'
 import axios from 'axios'
 import Worker from '../workers/map.js?worker'
 export default class MapLayer extends BaseLayer{
@@ -15,7 +14,7 @@ export default class MapLayer extends BaseLayer{
     this.tileWidth=256
     this.urlTemplate = {}
     this.跳过 = 0
-    this.cache = false
+    this.cache = true
     this.effect = false
     this.瓦片网格 = false
     this.worker = new Worker()
@@ -24,15 +23,15 @@ export default class MapLayer extends BaseLayer{
     this.worker.onmessage = event => {
       this.Count--
       for(let k=0;k<this.mapsTiles.length;k++){
-        if(this.mapsTiles[k]._LL==event.data.z&&this.mapsTiles[k].i==event.data.i&&this.mapsTiles[k].j==event.data.j){
+        if(this.mapsTiles[k]._LL==event.data.z&&this.mapsTiles[k].i==event.data.i&&this.mapsTiles[k].j==event.data.j&&this.mapsTiles[k].url==event.data.url){
           if(event.data.bitmap===-1){
             this.mapsTiles.splice(k--,1)
             break;
           }
           if(event.data.isDrawed){
             var cvs2 = document.createElement('canvas');
-            cvs2.setAttribute("width",256);
-            cvs2.setAttribute("height",256);
+            cvs2.width=256
+            cvs2.height=256
             cvs2.getContext('bitmaprenderer').transferFromImageBitmap(event.data.bitmap);
             this.mapsTiles[k].cvs = cvs2;
             this.mapsTiles[k].isDrawed = event.data.isDrawed;
@@ -46,16 +45,7 @@ export default class MapLayer extends BaseLayer{
           $('#tiles').html('TILES:'+this.NUM)
         }
       }
-      for(let i=0;i<this.mapsTiles.length;i++){
-        let minX = Math.floor((2**this.mapsTiles[i]._LL*(this._X0+1))/(2**this._LL)-1)
-        let maxX = Math.ceil((2**this.mapsTiles[i]._LL*(this._X1+1))/(2**this._LL)-1)
-        let minY = Math.floor((2**this.mapsTiles[i]._LL*(this._Y0+1))/(2**this._LL)-1)
-        let maxY = Math.ceil((2**this.mapsTiles[i]._LL*(this._Y1+1))/(2**this._LL)-1)
-        if(minX<=this.mapsTiles[i].i&&this.mapsTiles[i].i<=maxX&&minY<=this.mapsTiles[i].j&&this.mapsTiles[i].j<=maxY){
-        }else{
-          this.mapsTiles.splice(i--,1)
-        }
-      }
+      this.removeOuter()
       // console.log(this.mapsTiles.length)
       this.callback()
     }
@@ -64,11 +54,24 @@ export default class MapLayer extends BaseLayer{
     }
     //this.worker.terminate()
   }
+  removeOuter(){
+    for(let i=0;i<this.mapsTiles.length;i++){
+      let minX = Math.floor((2**this.mapsTiles[i]._LL*(this._X0+1))/(2**this._LL)-1)
+      let maxX = Math.ceil((2**this.mapsTiles[i]._LL*(this._X1+1))/(2**this._LL)-1)
+      let minY = Math.floor((2**this.mapsTiles[i]._LL*(this._Y0+1))/(2**this._LL)-1)
+      let maxY = Math.ceil((2**this.mapsTiles[i]._LL*(this._Y1+1))/(2**this._LL)-1)
+      if(minX<=this.mapsTiles[i].i&&this.mapsTiles[i].i<maxX&&minY<=this.mapsTiles[i].j&&this.mapsTiles[i].j<maxY){
+      }else{
+        this.mapsTiles.splice(i--,1)
+      }
+    }
+  }
   setSource(template){
     this.NUM=0
-    this.mapsTiles=[]
+    // this.mapsTiles=[]
     this.myTiles.clear()
     this.urlTemplate = template
+    this.removeOuter()
   }
   loadMap(obj,change,rect,callback){
     if(this.isHide)return
@@ -98,7 +101,7 @@ export default class MapLayer extends BaseLayer{
       for(let i=this._X0;i<this._X1;i++){
         let mapExist = false;
         for(let k=this.mapsTiles.length-1;k>=0;k--){
-          if(this.mapsTiles[k]._LL==this._LL&&this.mapsTiles[k].i==i&&this.mapsTiles[k].j==j){
+          if(this.mapsTiles[k]._LL==this._LL&&this.mapsTiles[k].i==i&&this.mapsTiles[k].j==j&&this.mapsTiles[k].url==this.urlTemplate.url){
             mapExist = true;
             this.mapsTiles.push(this.mapsTiles.splice(k,1)[0]);
             break;
@@ -124,7 +127,7 @@ export default class MapLayer extends BaseLayer{
                 0,0,this.tileWidth,this.tileWidth,
               );
             }
-          }else if(change=='zoom out'){
+          }else{
             let n = tmp._LL - this._LL
             if(i==Math.floor(tmp.i/(2**n))&&j==Math.floor(tmp.j/(2**n))&&tmp.cvs){
               ctx.clearRect(Math.abs(this.tileWidth*tmp.i/(2**n))%this.tileWidth,Math.abs(this.tileWidth*tmp.j/(2**n))%this.tileWidth,this.tileWidth/(2**n),this.tileWidth/(2**n))
@@ -137,13 +140,13 @@ export default class MapLayer extends BaseLayer{
             }
           }
         }
-        let item = {_LL:this._LL,i,j,cvs,_X0:this._X0,_X1:this._X1,_Y0:this._Y0,_Y1:this._Y1,isDrawed:true};
+        let item = {_LL:this._LL,i,j,cvs,_X0:this._X0,_X1:this._X1,_Y0:this._Y0,_Y1:this._Y1,isDrawed:true,url:this.urlTemplate.url};
         this.mapsTiles.push(item);
-        this.load(item,this.mapsTiles,this.urlTemplate.url)
+        this.load(item,this.mapsTiles)
       }
     }
   }
-  load(item,tiles,url){
+  load(item,tiles){
     setTimeout(()=>{
       if(this._X0<=item.i&&item.i<this._X1&&this._Y0<=item.j&&item.j<this._Y1&&item._LL==this._LL){
         let x=item.i%2**item._LL>=0?item.i%2**item._LL:item.i%2**item._LL+2**item._LL;
@@ -153,8 +156,7 @@ export default class MapLayer extends BaseLayer{
           item.cvs = data.cvs;
           item.isDrawed = data.isDrawed;
         }else{
-          let src = url.replaceAll('{x}',x).replaceAll('{y}',y).replaceAll('{z}',item._LL).replace('{q}',tileXY2QuadKey(item._LL,y,x))+(url.indexOf('?')==-1?'?t=':'&t=')+Date.now();//?t=xxx防止浏览器本身的缓存机制
-          this.worker.postMessage({z:item._LL,y:y,x:x,j:item.j,i:item.i,url:src})
+          this.worker.postMessage({z:item._LL,y:y,x:x,j:item.j,i:item.i,url:item.url})
           this.Count++;
           // console.log('加载中',this.Count)
         }

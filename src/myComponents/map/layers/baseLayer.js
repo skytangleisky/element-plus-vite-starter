@@ -3,7 +3,11 @@ export default class BaseLayer{
   render(obj,context){
     for(let k=Math.max(this.mapsTiles.length - (this._X1-this._X0)*(this._Y1-this._Y0),0);k<this.mapsTiles.length;k++){// map
       let tmp = this.mapsTiles[k]
-      if(tmp._LL==this._LL||(tmp._LL==0&&Math.floor(obj.L)<0)){
+      if(this.urlTemplate&&tmp.url==this.urlTemplate.url){//为地图的情况
+        if(tmp._LL==this._LL||(tmp._LL==0&&Math.floor(obj.L)<0)){
+          this.drawTiles(obj,context,tmp,true);
+        }
+      }else if(tmp._LL==this._LL||(tmp._LL==0&&Math.floor(obj.L)<0)){//非地图的情况
         this.drawTiles(obj,context,tmp,true);
       }
     }

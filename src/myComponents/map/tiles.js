@@ -36,6 +36,7 @@ class Tiles{
     return this.tiles.get(z).get(y).get(x)
   }
   clear(){
+    delete this.tiles
     this.tiles=new Map();
   }
 }
