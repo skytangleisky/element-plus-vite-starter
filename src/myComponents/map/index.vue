@@ -91,8 +91,8 @@
       throw new Error('invalid ctx')
     }
 
-    // if(webgpu.value)
-    //   run(webgpu.value)
+    if(webgpu.value)
+      run(webgpu.value)
     // demo()
     window.addEventListener('message',test)
     // mapLayer.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}'})

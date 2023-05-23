@@ -56,12 +56,11 @@ export default class MapLayer extends BaseLayer{
   }
   removeOuter(){
     for(let i=0;i<this.mapsTiles.length;i++){
-      let minX = Math.floor((2**this.mapsTiles[i]._LL*(this._X0+1))/(2**this._LL)-1)
-      let maxX = Math.ceil((2**this.mapsTiles[i]._LL*(this._X1+1))/(2**this._LL)-1)
-      let minY = Math.floor((2**this.mapsTiles[i]._LL*(this._Y0+1))/(2**this._LL)-1)
-      let maxY = Math.ceil((2**this.mapsTiles[i]._LL*(this._Y1+1))/(2**this._LL)-1)
-      if(minX<=this.mapsTiles[i].i&&this.mapsTiles[i].i<maxX&&minY<=this.mapsTiles[i].j&&this.mapsTiles[i].j<maxY){
-      }else{
+      let minX = Math.floor((2**this.mapsTiles[i]._LL)*this._M0)
+      let maxX = Math.floor((2**this.mapsTiles[i]._LL)*this._M1)
+      let minY = Math.floor((2**this.mapsTiles[i]._LL)*this._N0)
+      let maxY = Math.floor((2**this.mapsTiles[i]._LL)*this._N1)
+      if(this.mapsTiles[i].i<minX||maxX<this.mapsTiles[i].i||this.mapsTiles[i].j<minY||maxY<this.mapsTiles[i].j){
         this.mapsTiles.splice(i--,1)
       }
     }
@@ -76,29 +75,9 @@ export default class MapLayer extends BaseLayer{
   loadMap(obj,change,rect,callback){
     if(this.isHide)return
     this.callback = callback
-    if(change == 'zoom in'){
-      this._LL = Math.floor(obj.L);//放大完成后加载最新层级的图片数据
-      // this._LL = Math.ceil(obj.L);//放大时加载图片数据
-    }else{
-      this._LL = Math.floor(obj.L);//缩小时加载图片数据
-      // this._LL = Math.ceil(obj.L);//缩小完成后加载最新层级的图片数据+缩小时加载同级进入视线的图片数据
-    }
-    if(this._LL<0)this._LL=0;
-
-    /*显示-∞<lng<+∞,-∞<lat<+∞*/
-    this._X0 = Math.floor((rect.x-obj.imgX)*(2**this._LL)/(2**obj.L)/this.tileWidth);
-    this._X1 = Math.ceil((rect.x+rect.w-obj.imgX)*(2**this._LL)/(2**obj.L)/this.tileWidth);
-    this._Y0 = Math.floor((rect.y-obj.imgY)*(2**this._LL)/(2**obj.L)/this.tileWidth);
-    this._Y1 = Math.ceil((rect.y+rect.h-obj.imgY)*(2**this._LL)/(2**obj.L)/this.tileWidth);
-
-    /*显示-180<lng<180,-85.05112877980659<lat<85.05112877980659*/
-    // this._X0 = Math.max(rect.x,Math.floor(-obj.imgX*(2**this._LL)/(2**obj.L)/this.tileWidth));
-    // this._X1 = Math.min(Math.ceil((rect.w-obj.imgX)*(2**this._LL)/(2**obj.L)/this.tileWidth),2**this._LL);
-    // this._Y0 = Math.max(rect.y,Math.floor(-obj.imgY*(2**this._LL)/(2**obj.L)/this.tileWidth));
-    // this._Y1 = Math.min(Math.ceil((rect.h-obj.imgY)*(2**this._LL)/(2**obj.L)/this.tileWidth),2**this._LL);
-
-    for(let j=this._Y0;j<this._Y1;j++){
-      for(let i=this._X0;i<this._X1;i++){
+    this.procBoundary(obj,change,rect)
+    for(let j=this._Y0;j<=this._Y1;j++){
+      for(let i=this._X0;i<=this._X1;i++){
         let mapExist = false;
         for(let k=this.mapsTiles.length-1;k>=0;k--){
           if(this.mapsTiles[k]._LL==this._LL&&this.mapsTiles[k].i==i&&this.mapsTiles[k].j==j&&this.mapsTiles[k].url==this.urlTemplate.url){
@@ -148,7 +127,7 @@ export default class MapLayer extends BaseLayer{
   }
   load(item,tiles){
     setTimeout(()=>{
-      if(this._X0<=item.i&&item.i<this._X1&&this._Y0<=item.j&&item.j<this._Y1&&item._LL==this._LL){
+      if(this._X0<=item.i&&item.i<=this._X1&&this._Y0<=item.j&&item.j<=this._Y1&&item._LL==this._LL){
         let x=item.i%2**item._LL>=0?item.i%2**item._LL:item.i%2**item._LL+2**item._LL;
         let y=item.j%2**item._LL>=0?item.j%2**item._LL:item.j%2**item._LL+2**item._LL;
         let data = this.myTiles.getTile(item._LL,y,x);
@@ -163,7 +142,7 @@ export default class MapLayer extends BaseLayer{
       }else{//删除跳过的瓦片
         for(let k=0;k<tiles.length;k++){
           if(tiles[k]._LL==item._LL&&tiles[k].i==item.i&&tiles[k].j==item.j){
-            // console.log('地图跳过')
+            console.log('地图跳过')
             tiles.splice(k,1);
           }
         }

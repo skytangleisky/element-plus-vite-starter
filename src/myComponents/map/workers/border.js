@@ -21,7 +21,6 @@ function draw(args){
   args._i=args.i%2**args._LL>=0?args.i%2**args._LL:args.i%2**args._LL+2**args._LL;
   args._j=args.j%2**args._LL>=0?args.j%2**args._LL:args.j%2**args._LL+2**args._LL;
 
-
   if(loadStatus=='loaded'){
     test(args);
   }else if(loadStatus=='loading'){
