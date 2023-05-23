@@ -45,7 +45,15 @@ export default class MapLayer extends BaseLayer{
           $('#tiles').html('TILES:'+this.NUM)
         }
       }
-      this.removeOuter()
+      for(let i=0;i<this.mapsTiles.length;i++){
+        let minX = Math.floor((2**this.mapsTiles[i]._LL)*this._M0)
+        let maxX = Math.floor((2**this.mapsTiles[i]._LL)*this._M1)
+        let minY = Math.floor((2**this.mapsTiles[i]._LL)*this._N0)
+        let maxY = Math.floor((2**this.mapsTiles[i]._LL)*this._N1)
+        if(this.mapsTiles[i].i<minX||maxX<this.mapsTiles[i].i||this.mapsTiles[i].j<minY||maxY<this.mapsTiles[i].j){
+          this.mapsTiles.splice(i--,1)
+        }
+      }
       // console.log(this.mapsTiles.length)
       this.callback()
     }
@@ -54,23 +62,16 @@ export default class MapLayer extends BaseLayer{
     }
     //this.worker.terminate()
   }
-  removeOuter(){
-    for(let i=0;i<this.mapsTiles.length;i++){
-      let minX = Math.floor((2**this.mapsTiles[i]._LL)*this._M0)
-      let maxX = Math.floor((2**this.mapsTiles[i]._LL)*this._M1)
-      let minY = Math.floor((2**this.mapsTiles[i]._LL)*this._N0)
-      let maxY = Math.floor((2**this.mapsTiles[i]._LL)*this._N1)
-      if(this.mapsTiles[i].i<minX||maxX<this.mapsTiles[i].i||this.mapsTiles[i].j<minY||maxY<this.mapsTiles[i].j){
-        this.mapsTiles.splice(i--,1)
-      }
-    }
-  }
   setSource(template){
     this.NUM=0
     // this.mapsTiles=[]
     this.myTiles.clear()
     this.urlTemplate = template
-    this.removeOuter()
+    if(this._X0!=undefined&&this._X1!=undefined&&this._Y0!=undefined&&this._Y1!=undefined){
+      while(this.mapsTiles.length>(this._X1-this._X0+1)*(this._Y1-this._Y0+1)){
+        this.mapsTiles.shift();
+      }
+    }
   }
   loadMap(obj,change,rect,callback){
     if(this.isHide)return

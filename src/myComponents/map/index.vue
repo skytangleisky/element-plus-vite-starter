@@ -24,21 +24,29 @@
   let canvas = ref(null)
   let webgpu = ref(null)
   const urls = ref([
-    {url:'https://tanglei.site:3210/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}'},
-    {url:'https://tanglei.site:3210/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}'},
-    {url:'https://tanglei.site:3210/maps/vt?lyrs=h&gl=CN&x={x}&y={y}&z={z}'},
-    {url:'https://tanglei.site:3210/maps/vt?lyrs=p&gl=CN&x={x}&y={y}&z={z}'},
-    {url:'https://tanglei.site:3210/maps/vt?lyrs=m&gl=CN&x={x}&y={y}&z={z}'},
-    {url:'https://tanglei.site:3210/maps/vt?lyrs=t&gl=CN&x={x}&y={y}&z={z}'},
+    {url:'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}'},
+    {url:'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=p&gl=CN&x={x}&y={y}&z={z}'},
+    {url:'https://tanglei.site:6677/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}'},
+    {url:'https://tanglei.site:6677/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}'},
+    {url:'https://tanglei.site:6677/maps/vt?lyrs=h&gl=CN&x={x}&y={y}&z={z}'},
+    {url:'https://tanglei.site:6677/maps/vt?lyrs=p&gl=CN&x={x}&y={y}&z={z}'},
+    {url:'https://tanglei.site:6677/maps/vt?lyrs=m&gl=CN&x={x}&y={y}&z={z}'},
+    {url:'https://tanglei.site:6677/maps/vt?lyrs=t&gl=CN&x={x}&y={y}&z={z}'},
   ])
   if(setting.tileUrl==''){
     setting.tileUrl=urls.value[0].url
   }
+  let has = false
   urls.value.forEach((v,k)=>{
     if(setting.tileUrl==v.url){
       mapLayer.setSource(v)
+      has = true
     }
   })
+  if(!has){
+    setting.tileUrl=urls.value[0].url
+    mapLayer.setSource(urls.value[0])
+  }
   const tileSelect = (v:any) => {
     setting.tileUrl = v.url
     mapLayer.setSource(v)
@@ -348,6 +356,30 @@
     let delta = event.wheelDeltaY/120
     change = event.wheelDeltaY>0?'zoom in':'zoom out'
     obj.targetL+=delta
+
+    if(boundary[1]-boundary[0]>0){
+      let tmpL=0
+      let minX = 0-(boundary[0]+180)/360*tileWidth*(2**tmpL)
+      let maxX = cvs.width-(boundary[1]+180)/360*tileWidth*(2**tmpL)
+      while(minX-maxX<0){
+        tmpL++
+        minX = 0-(boundary[0]+180)/360*tileWidth*(2**tmpL)
+        maxX = cvs.width-(boundary[1]+180)/360*tileWidth*(2**tmpL)
+      }
+      obj.targetL<tmpL&&(obj.targetL=tmpL)
+    }
+    if(boundary[2]-boundary[3]>0){
+      let tmpL=0
+      let minY = 0-(1-Math.asinh(Math.tan(boundary[2]*Math.PI/180))/Math.PI)/2*(2**tmpL)*tileWidth
+      let maxY = cvs.height-(1-Math.asinh(Math.tan(boundary[3]*Math.PI/180))/Math.PI)/2*(2**tmpL)*tileWidth
+      while(minY-maxY<0){
+        tmpL++
+        minY = 0-(1-Math.asinh(Math.tan(boundary[2]*Math.PI/180))/Math.PI)/2*(2**tmpL)*tileWidth
+        maxY = cvs.height-(1-Math.asinh(Math.tan(boundary[3]*Math.PI/180))/Math.PI)/2*(2**tmpL)*tileWidth
+      }
+      obj.targetL<tmpL&&(obj.targetL=tmpL)
+    }
+
     limitScale()
     let period=1
     // if(config.动画){
@@ -362,7 +394,6 @@
       onUpdate: ()=>{
         obj.imgX=mousemove.x - (2**obj.L)*newPos.x*tileWidth
         obj.imgY=mousemove.y - (2**obj.L)*newPos.y*tileWidth
-        $('#level').html('Z:'+obj.L.toFixed(2))
         localStorage.L=obj.L
         localStorage.center=JSON.stringify([pixel2Lng(cvs.width/2,obj.imgX,2**obj.L,tileWidth),pixel2Lat(cvs.height/2,obj.imgY,2**obj.L,tileWidth)])
         limitRegion()
@@ -391,22 +422,51 @@
         obj.L = tmpL
       }
       localStorage.L = obj.L
+      $('#level').html('Z:'+obj.L.toFixed(2))
     }
   }
+  let boundary = [-180,180,Math.atan(Math.sinh(Math.PI))*180/Math.PI,-Math.atan(Math.sinh(Math.PI))*180/Math.PI]
+  boundary = [-180,180,85,0]
   const limitRegion = () => {
     if(限制){
-      // if(obj.imgX>0){
-      //   obj.imgX=0
-      // }else if(obj.imgX<cvs.width-tileWidth*2**obj.L){
-      //   obj.imgX = (cvs.width-tileWidth*2**obj.L)
-      // }
-      if(obj.imgY>0){
-        obj.imgY=0
-      }else if(obj.imgY<cvs.height-tileWidth*2**obj.L){
-        obj.imgY = (cvs.height-tileWidth*2**obj.L)
+      if(boundary[1]-boundary[0]>0){
+        let tmpL=0
+        let minX = 0-(boundary[0]+180)/360*tileWidth*(2**tmpL)
+        let maxX = cvs.width-(boundary[1]+180)/360*tileWidth*(2**tmpL)
+        while(minX-maxX<0){
+          tmpL++
+          minX = 0-(boundary[0]+180)/360*tileWidth*(2**tmpL)
+          maxX = cvs.width-(boundary[1]+180)/360*tileWidth*(2**tmpL)
+        }
+        obj.L<tmpL&&(localStorage.L=obj.L=tmpL)
+        minX = 0-(boundary[0]+180)/360*tileWidth*(2**obj.L)
+        maxX = cvs.width-(boundary[1]+180)/360*tileWidth*(2**obj.L)
+        if(obj.imgX<maxX){
+          obj.imgX = maxX
+        }else if(obj.imgX>minX){
+          obj.imgX=minX
+        }
       }
+      if(boundary[2]-boundary[3]>0){
+        let tmpL=0
+        let minY = 0-(1-Math.asinh(Math.tan(boundary[2]*Math.PI/180))/Math.PI)/2*(2**tmpL)*tileWidth
+        let maxY = cvs.height-(1-Math.asinh(Math.tan(boundary[3]*Math.PI/180))/Math.PI)/2*(2**tmpL)*tileWidth
+        while(minY-maxY<0){
+          tmpL++
+          minY = 0-(1-Math.asinh(Math.tan(boundary[2]*Math.PI/180))/Math.PI)/2*(2**tmpL)*tileWidth
+          maxY = cvs.height-(1-Math.asinh(Math.tan(boundary[3]*Math.PI/180))/Math.PI)/2*(2**tmpL)*tileWidth
+        }
+        obj.L<tmpL&&(localStorage.L=obj.L=tmpL)
+        minY = 0-(1-Math.asinh(Math.tan(boundary[2]*Math.PI/180))/Math.PI)/2*(2**obj.L)*tileWidth
+        maxY = cvs.height-(1-Math.asinh(Math.tan(boundary[3]*Math.PI/180))/Math.PI)/2*(2**obj.L)*tileWidth
+        if(obj.imgY<maxY){
+          obj.imgY = maxY
+        }else if(obj.imgY>minY){
+          obj.imgY=minY
+        }
+      }
+      $('#level').html('Z:'+obj.L.toFixed(2))
     }
-
     // plane&&plane.setPos(obj.imgX,obj.imgY,2**obj.L)
     // panel&&panel.setPos(obj.imgX,obj.imgY,2**obj.L)
   }
