@@ -2,7 +2,7 @@
   <canvas ref="canvas" style="position:absolute;outline:none;left:0;top:0;width:100%;height:100%;"></canvas>
   <canvas ref="webgpu" style="position:absolute;outline:none;left:0;top:0;width:100%;height:100%;pointer-events: none ;"></canvas>
   <div tabindex="-1" class="tileSelect absolute right-20px top-20px" style="outline: none;">
-    <div :style="'border-radius:50%;border:1px solid grey;background-position:-0px -0px;background-repeat:no-repeat;width:58px;height:58px;'+'background-image:url('+setting.tileUrl.replace('{x}','105').replace('{y}','48').replace('{z}','7')+');'"></div>
+    <div :style="'border-radius:50%;border:1px solid grey;background-position:-0px -0px;background-repeat:no-repeat;width:58px;height:58px;'+'background-image:url('+setting.tileUrl.replace('{x}','105').replace('{y}','48').replace('{z}','7')+');'" @click.native="testClick"></div>
     <div class="tileList">
       <div v-for="(v,k) in urls" :style="'border:1px solid grey;background-position:-0px -0px;background-repeat:no-repeat;width:50px;height:50px;'+'background-image:url('+v.url.replace('{x}','105').replace('{y}','48').replace('{z}','7')+');'" @click.native="tileSelect(v)"></div>
     </div>
@@ -12,7 +12,8 @@
   import { onBeforeUnmount, onMounted, ref } from 'vue'
   import { MapLayer, BorderLayer, PointLayer, RouteLayer } from './layers'
   import { gsap, Power3 } from 'gsap'
-  import { windowToCanvas, pixel2Lng, pixel2Lat, lng2Pixel, lat2Pixel } from './js/core'
+  import { windowToCanvas, pixel2Lng, pixel2Lat, lng2Pixel, lat2Pixel, lngLat2Pixel } from './js/core'
+  import { wgs84togcj02 } from './workers/mapUtil'
   import { useSettingStore } from '~/stores/setting'
   import run,{ cancel } from '~/webgpu/imageTexture'
   import { Engine3D, Scene3D, Object3D, Camera3D, DirectLight, HoverCameraController, Color, View3D, AtmosphericComponent } from "@orillusion/core"
@@ -23,15 +24,17 @@
   const routeLayer = new RouteLayer()
   let canvas = ref(null)
   let webgpu = ref(null)
+  // let POINT = {lng:113.42165142106768,lat:23.098844381632485}
+  let POINT = {lng:116.39139324235674,lat:39.90723893689098}
   const urls = ref([
     {url:'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}'},
     {url:'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=p&gl=CN&x={x}&y={y}&z={z}'},
-    {url:'https://tanglei.site:6677/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}'},
-    {url:'https://tanglei.site:6677/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}'},
-    {url:'https://tanglei.site:6677/maps/vt?lyrs=h&gl=CN&x={x}&y={y}&z={z}'},
-    {url:'https://tanglei.site:6677/maps/vt?lyrs=p&gl=CN&x={x}&y={y}&z={z}'},
-    {url:'https://tanglei.site:6677/maps/vt?lyrs=m&gl=CN&x={x}&y={y}&z={z}'},
-    {url:'https://tanglei.site:6677/maps/vt?lyrs=t&gl=CN&x={x}&y={y}&z={z}'},
+    {url:'https://tanglei.site:3210/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}'},
+    {url:'https://tanglei.site:3210/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}'},
+    {url:'https://tanglei.site:3210/maps/vt?lyrs=h&gl=CN&x={x}&y={y}&z={z}'},
+    {url:'https://tanglei.site:3210/maps/vt?lyrs=p&gl=CN&x={x}&y={y}&z={z}'},
+    {url:'https://tanglei.site:3210/maps/vt?lyrs=m&gl=CN&x={x}&y={y}&z={z}'},
+    {url:'https://tanglei.site:3210/maps/vt?lyrs=t&gl=CN&x={x}&y={y}&z={z}'},
   ])
   if(setting.tileUrl==''){
     setting.tileUrl=urls.value[0].url
@@ -68,14 +71,11 @@
   }
   let tileWidth = 256
   const obj:Struct = { imgX: 0, imgY:0, L:11, targetL:11 }
-  let change:undefined|string = undefined
   let isMouseDown:boolean = false
   const minLevel = 0
   const maxLevel = 22
   const 限制 = true
   let mousemove:Pos
-  let tweenWheel:gsap.core.Tween
-  let tween:gsap.core.Tween
   let pos:Pos
   let posl:Pos
   let currentLngLat:{
@@ -85,6 +85,8 @@
   let newPos:{
     x:number
     y:number
+    targetX:number
+    targetY:number
   }
   onMounted(()=>{
     if(canvas.value){
@@ -124,12 +126,11 @@
       $('#level').html('Z:'+obj.L.toFixed(2))
       if(localStorage.center){
         var center = JSON.parse(localStorage.center)
-        obj.imgX = cvs.width/2-(center[0]+180)/360*tileWidth*(2**obj.L)
-        obj.imgY = cvs.height/2-(1-Math.asinh(Math.tan(center[1]*Math.PI/180))/Math.PI)/2*(2**obj.L)*tileWidth
+        obj.imgX = cvs.width/2-(center[0]+180)/360*tileWidth*2**obj.L
+        obj.imgY = cvs.height/2-(1-Math.asinh(Math.tan(center[1]*Math.PI/180))/Math.PI)/2*2**obj.L*tileWidth
       }else{
-        let POINT = {lng:113.42165142106768,lat:23.098844381632485}
         obj.imgX = cvs.width/2-tileWidth*2**obj.L*(POINT.lng+180)/360
-        obj.imgY = cvs.height/2-(1-Math.asinh(Math.tan(POINT.lat*Math.PI/180))/Math.PI)/2*(2**obj.L)*tileWidth
+        obj.imgY = cvs.height/2-(1-Math.asinh(Math.tan(POINT.lat*Math.PI/180))/Math.PI)/2*2**obj.L*tileWidth
       }
       limitScale()
       limitRegion()
@@ -264,31 +265,61 @@
     pointLayer.render(obj,ctx)
     routeLayer.render(obj,ctx)
     ctx.restore()
+
+    ctx.save()
+    ctx.beginPath()
+    ctx.lineWidth=2
+    ctx.translate(cvs.width/2,cvs.height/2)
+    ctx.moveTo(0,-10)
+    ctx.lineTo(0,10)
+    ctx.moveTo(-10,0)
+    ctx.lineTo(10,0)
+    ctx.strokeStyle='red'
+    ctx.stroke()
+    ctx.restore()
+
+
+
+    ctx.save()
+    let convert = wgs84togcj02(POINT.lng,POINT.lat)
+    let position = lngLat2Pixel(convert[0],convert[1],obj.imgX,obj.imgY,2**obj.L,tileWidth)
+    ctx.beginPath()
+    ctx.strokeStyle='red'
+    ctx.lineWidth=2
+    ctx.translate(position.x,position.y)
+    ctx.arc(0,0,10,0,Math.PI*2)
+    ctx.closePath()
+    ctx.stroke()
+    ctx.restore()
   }
   const loadMap = () => {
-    mapLayer.loadMap(obj,change,{x:0,y:0,w:cvs.width,h:cvs.height},()=>{
+    mapLayer.loadMap(obj,{x:0,y:0,w:cvs.width,h:cvs.height},()=>{
       requestAnimationFrame(draw)
     })
-    borderLayer.loadMap(obj,change,{x:0,y:0,w:cvs.width,h:cvs.height},()=>{
+    borderLayer.loadMap(obj,{x:0,y:0,w:cvs.width,h:cvs.height},()=>{
       requestAnimationFrame(draw)
     })
-    pointLayer.loadMap(obj,change,{x:0,y:0,w:cvs.width,h:cvs.height},()=>{
+    pointLayer.loadMap(obj,{x:0,y:0,w:cvs.width,h:cvs.height},()=>{
       requestAnimationFrame(draw)
     })
-    routeLayer.loadMap(obj,change,{x:0,y:0,w:cvs.width,h:cvs.height},()=>{
+    routeLayer.loadMap(obj,{x:0,y:0,w:cvs.width,h:cvs.height},()=>{
       requestAnimationFrame(draw)
     })
     requestAnimationFrame(draw)
   }
   const mousedownFunc = (event:MouseEvent) => {
     obj.targetL = obj.L
-    tween&&tween.kill()
+    gsap.killTweensOf(newPos)
+    gsap.killTweensOf(mousemove)
+    gsap.killTweensOf(obj)
     isMouseDown=true
     // panel&&panel.mousedownFunc(event)
     let tmp = windowToCanvas(event.clientX, event.clientY,cvs)
     mousemove = {x:tmp.x,y:tmp.y,targetX:tmp.x,targetY:tmp.y}
     pos = mousemove
-    newPos = {x:((mousemove.x-obj.imgX)/2**obj.L)/tileWidth , y:((mousemove.y-obj.imgY)/2**obj.L)/tileWidth}
+    let x = (mousemove.x-obj.imgX)/2**obj.L*1000
+    let y = (mousemove.y-obj.imgY)/2**obj.L*1000
+    newPos = {x, y,targetX:x,targetY:y}
   }
   const mousemoveFunc = (evt:MouseEvent) => {
     let move = windowToCanvas(evt.clientX, evt.clientY,cvs)
@@ -302,9 +333,9 @@
     if(isMouseDown){
       let tmp = windowToCanvas(evt.clientX, evt.clientY,cvs)
       posl = {x:tmp.x,y:tmp.y,targetX:tmp.x,targetY:tmp.y}
-      var x = posl.x - pos.x, y = posl.y - pos.y
-      mousemove.targetX += x
-      mousemove.targetY += y
+      var deltaX = posl.x - pos.x, deltaY = posl.y - pos.y
+      mousemove.targetX += deltaX
+      mousemove.targetY += deltaY
       pos = JSON.parse(JSON.stringify(posl))
       let period=1
       // if(config.动画){
@@ -312,14 +343,16 @@
       // }else{
       //   period=0
       // }
-      tween&&tween.kill()
-      tween = gsap.to(mousemove,{
+
+      gsap.killTweensOf(newPos)
+      gsap.killTweensOf(mousemove)
+      gsap.to(mousemove,{
         duration:period,
         x:mousemove.targetX,
         y:mousemove.targetY,
         onUpdate: ()=>{
-          obj.imgX=mousemove.x - (2**obj.L)*newPos.x*tileWidth
-          obj.imgY=mousemove.y - (2**obj.L)*newPos.y*tileWidth
+          obj.imgX=mousemove.x - 2**obj.L*newPos.x/1000
+          obj.imgY=mousemove.y - 2**obj.L*newPos.y/1000
           limitRegion()
           loadMap()
           // emitter.emit('mapChange',obj)
@@ -351,10 +384,11 @@
       mousemove = {x:tmp.x,y:tmp.y,targetX:tmp.x,targetY:tmp.y}
     }
     // drawScale(2**obj.L,cvs_scale,pixel2Lat(mousemove.y,obj.imgY,2**obj.L,tileWidth))
-    newPos = {x:((mousemove.x-obj.imgX)/(2**obj.L))/tileWidth , y:((mousemove.y-obj.imgY)/(2**obj.L))/tileWidth}
+    let x=(mousemove.x-obj.imgX)/2**obj.L*1000
+    let y=(mousemove.y-obj.imgY)/2**obj.L*1000
+    newPos = {x,y,targetX:x,targetY:y}
     // console.log(event.wheelDeltaY)
     let delta = event.wheelDeltaY/120
-    change = event.wheelDeltaY>0?'zoom in':'zoom out'
     obj.targetL+=delta
 
     if(boundary[1]-boundary[0]>0){
@@ -387,13 +421,13 @@
     // }else{
     //   period=0
     // }
-    tweenWheel&&tweenWheel.kill()
-    tweenWheel = gsap.to(obj, {
+    gsap.killTweensOf(obj)
+    gsap.to(obj, {
       duration:period,
       L: obj.targetL,
       onUpdate: ()=>{
-        obj.imgX=mousemove.x - (2**obj.L)*newPos.x*tileWidth
-        obj.imgY=mousemove.y - (2**obj.L)*newPos.y*tileWidth
+        obj.imgX=mousemove.x - 2**obj.L*newPos.x/1000
+        obj.imgY=mousemove.y - 2**obj.L*newPos.y/1000
         localStorage.L=obj.L
         localStorage.center=JSON.stringify([pixel2Lng(cvs.width/2,obj.imgX,2**obj.L,tileWidth),pixel2Lat(cvs.height/2,obj.imgY,2**obj.L,tileWidth)])
         limitRegion()
@@ -426,7 +460,7 @@
     }
   }
   let boundary = [-180,180,Math.atan(Math.sinh(Math.PI))*180/Math.PI,-Math.atan(Math.sinh(Math.PI))*180/Math.PI]
-  boundary = [-180,180,85,0]
+  boundary=[110,120,41,38]
   const limitRegion = () => {
     if(限制){
       if(boundary[1]-boundary[0]>0){
@@ -439,8 +473,8 @@
           maxX = cvs.width-(boundary[1]+180)/360*tileWidth*(2**tmpL)
         }
         obj.L<tmpL&&(localStorage.L=obj.L=tmpL)
-        minX = 0-(boundary[0]+180)/360*tileWidth*(2**obj.L)
-        maxX = cvs.width-(boundary[1]+180)/360*tileWidth*(2**obj.L)
+        minX = 0-(boundary[0]+180)/360*tileWidth*2**obj.L
+        maxX = cvs.width-(boundary[1]+180)/360*tileWidth*2**obj.L
         if(obj.imgX<maxX){
           obj.imgX = maxX
         }else if(obj.imgX>minX){
@@ -457,8 +491,8 @@
           maxY = cvs.height-(1-Math.asinh(Math.tan(boundary[3]*Math.PI/180))/Math.PI)/2*(2**tmpL)*tileWidth
         }
         obj.L<tmpL&&(localStorage.L=obj.L=tmpL)
-        minY = 0-(1-Math.asinh(Math.tan(boundary[2]*Math.PI/180))/Math.PI)/2*(2**obj.L)*tileWidth
-        maxY = cvs.height-(1-Math.asinh(Math.tan(boundary[3]*Math.PI/180))/Math.PI)/2*(2**obj.L)*tileWidth
+        minY = 0-(1-Math.asinh(Math.tan(boundary[2]*Math.PI/180))/Math.PI)/2*2**obj.L*tileWidth
+        maxY = cvs.height-(1-Math.asinh(Math.tan(boundary[3]*Math.PI/180))/Math.PI)/2*2**obj.L*tileWidth
         if(obj.imgY<maxY){
           obj.imgY = maxY
         }else if(obj.imgY>minY){
@@ -469,6 +503,51 @@
     }
     // plane&&plane.setPos(obj.imgX,obj.imgY,2**obj.L)
     // panel&&panel.setPos(obj.imgX,obj.imgY,2**obj.L)
+  }
+  const flyTo = (lng:number,lat:number,targetL:number|undefined=undefined) => {
+    let x = lng2Pixel(lng,obj.imgX,2**obj.L,tileWidth)
+    let y = lat2Pixel(lat,obj.imgY,2**obj.L,tileWidth)
+    mousemove = {x,y,targetX:lng2Pixel(lng,cvs.width/2-(lng+180)/360*tileWidth*(2**obj.targetL),2**obj.targetL,tileWidth),targetY:lat2Pixel(lat,cvs.height/2-(1-Math.asinh(Math.tan(lat*Math.PI/180))/Math.PI)/2*(2**obj.targetL)*tileWidth,2**obj.targetL,tileWidth)}
+    newPos = {x:((cvs.width/2-obj.imgX)/2**obj.L) *1000, y:((cvs.height/2-obj.imgY)/2**obj.L)*1000,targetX:((mousemove.x-obj.imgX)/2**obj.L)*1000, targetY:((mousemove.y-obj.imgY)/2**obj.L)*1000}
+    if(targetL!=undefined){
+      obj.targetL = targetL
+      gsap.killTweensOf(obj)
+      gsap.to(obj, {
+        duration:2,
+        L: obj.targetL,
+        onUpdate: ()=>{
+          obj.imgX=cvs.width/2 - 2**obj.L*newPos.x/1000
+          obj.imgY=cvs.height/2 - 2**obj.L*newPos.y/1000
+          limitScale()
+          localStorage.L=obj.L
+          localStorage.center=JSON.stringify([pixel2Lng(cvs.width/2,obj.imgX,2**obj.L,tileWidth),pixel2Lat(cvs.height/2,obj.imgY,2**obj.L,tileWidth)])
+          limitRegion()
+          loadMap()
+          // emitter.emit('mapChange',obj)
+          // panel&&panel.setPos(obj.imgX,obj.imgY,2**obj.L)
+          // plane&&plane.setPos(obj.imgX,obj.imgY,2**obj.L)
+        },
+        ease:Power3.easeOut
+      })
+    }
+    gsap.killTweensOf(mousemove)
+    gsap.killTweensOf(newPos)
+    gsap.to(newPos, {
+      duration:2,
+      x: newPos.targetX,
+      y: newPos.targetY,
+      onUpdate:()=>{
+        obj.imgX=cvs.width/2 - 2**obj.L*newPos.x/1000
+        obj.imgY=cvs.height/2 - 2**obj.L*newPos.y/1000
+        limitRegion()
+        loadMap()
+      },
+      ease:Power3.easeOut
+    })
+  }
+  const testClick = ()=>{
+    let convert = wgs84togcj02(POINT.lng,POINT.lat)
+    flyTo(convert[0],convert[1],13)
   }
 </script>
 <style lang="scss">

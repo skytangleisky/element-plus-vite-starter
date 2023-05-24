@@ -68,15 +68,17 @@ export default class MapLayer extends BaseLayer{
     this.myTiles.clear()
     this.urlTemplate = template
     if(this._X0!=undefined&&this._X1!=undefined&&this._Y0!=undefined&&this._Y1!=undefined){
-      while(this.mapsTiles.length>(this._X1-this._X0+1)*(this._Y1-this._Y0+1)){
-        this.mapsTiles.shift();
+      for(let i=0;i<this.mapsTiles.length-(this._X1-this._X0+1)*(this._Y1-this._Y0+1);i++){
+        if(this.mapsTiles[i]._LL!=this._LL){
+          this.mapsTiles.splice(i--,1)
+        }
       }
     }
   }
-  loadMap(obj,change,rect,callback){
+  loadMap(obj,rect,callback){
     if(this.isHide)return
     this.callback = callback
-    this.procBoundary(obj,change,rect)
+    this.procBoundary(obj,rect)
     for(let j=this._Y0;j<=this._Y1;j++){
       for(let i=this._X0;i<=this._X1;i++){
         let mapExist = false;
@@ -97,7 +99,7 @@ export default class MapLayer extends BaseLayer{
         this.平滑||(ctx.imageSmoothingEnabled = false);
         for(let k=0;k<this.mapsTiles.length;k++){
           let tmp = this.mapsTiles[k]
-          if(change=='zoom in'){
+          if(this._LL-tmp._LL>0){//zoom in
             let n = this._LL-tmp._LL
             if(tmp.i==Math.floor(i/(2**n))&&tmp.j==Math.floor(j/(2**n))&&tmp.cvs){
               ctx.clearRect(0,0,this.tileWidth,this.tileWidth)
@@ -107,7 +109,7 @@ export default class MapLayer extends BaseLayer{
                 0,0,this.tileWidth,this.tileWidth,
               );
             }
-          }else{
+          }else{//zoom out
             let n = tmp._LL - this._LL
             if(i==Math.floor(tmp.i/(2**n))&&j==Math.floor(tmp.j/(2**n))&&tmp.cvs){
               ctx.clearRect(Math.abs(this.tileWidth*tmp.i/(2**n))%this.tileWidth,Math.abs(this.tileWidth*tmp.j/(2**n))%this.tileWidth,this.tileWidth/(2**n),this.tileWidth/(2**n))

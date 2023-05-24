@@ -1,7 +1,7 @@
 import { tileXY2QuadKey } from '../js/core.js'
 export default class BaseLayer{
-  procBoundary(obj,change,rect){
-    if(change == 'zoom in'){
+  procBoundary(obj,rect){
+    if(obj.targetL>obj.L){
       this._LL = Math.floor(obj.L);//放大完成后加载最新层级的图片数据
       // this._LL = Math.ceil(obj.L);//放大时加载图片数据
     }else{
