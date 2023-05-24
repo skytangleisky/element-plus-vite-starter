@@ -16,6 +16,23 @@
   import { wgs84togcj02 } from './workers/mapUtil'
   import { useSettingStore } from '~/stores/setting'
   import run,{ cancel } from '~/webgpu/imageTexture'
+  import Quadtree, { Rect } from '@timohausmann/quadtree-js'
+  interface Plane extends Rect {
+    name:string
+  }
+  const plane:Plane = {
+    name:'飞机',
+    x:100,
+    y:100,
+    width:100,
+    height:100,
+  }
+  let quadtree = new Quadtree({
+    x:0,
+    y:0,
+    width:800,
+    height:800,
+  })
   import { Engine3D, Scene3D, Object3D, Camera3D, DirectLight, HoverCameraController, Color, View3D, AtmosphericComponent } from "@orillusion/core"
   const setting = useSettingStore()
   const mapLayer = new MapLayer()
@@ -29,7 +46,7 @@
   const urls = ref([
     {url:'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}'},
     {url:'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=p&gl=CN&x={x}&y={y}&z={z}'},
-    {url:'https://tanglei.site:3210/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}'},
+    {url:'https://tanglei.site:6677/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}'},
     {url:'https://tanglei.site:3210/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}'},
     {url:'https://tanglei.site:3210/maps/vt?lyrs=h&gl=CN&x={x}&y={y}&z={z}'},
     {url:'https://tanglei.site:3210/maps/vt?lyrs=p&gl=CN&x={x}&y={y}&z={z}'},
@@ -259,7 +276,7 @@
   }
   const draw = (time:number) => {
     ctx.save()
-    ctx.clearRect(0,0,cvs.width,cvs.height)
+    // ctx.clearRect(0,0,cvs.width,cvs.height)
     mapLayer.render(obj,ctx)
     borderLayer.render(obj,ctx)
     pointLayer.render(obj,ctx)

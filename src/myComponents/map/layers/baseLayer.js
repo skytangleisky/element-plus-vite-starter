@@ -40,8 +40,9 @@ export default class BaseLayer{
     }
   }
   drawTiles(obj,context,tmp,flag=false){
+    let dxy = this.tileWidth*2**obj.L/2**tmp._LL;
+    context.clearRect(Math.round(obj.imgX+tmp.i*dxy),Math.round(obj.imgY+tmp.j*dxy),Math.round(obj.imgX+(tmp.i+1)*dxy)-Math.round(obj.imgX+tmp.i*dxy),Math.round(obj.imgY+(tmp.j+1)*dxy)-Math.round(obj.imgY+tmp.j*dxy))
     if(tmp.cvs&&tmp.isDrawed&&!this.isHide){
-      let dxy = this.tileWidth*2**obj.L/2**tmp._LL;
       this.平滑||(context.imageSmoothingEnabled = false);
       context.drawImage(
         tmp.cvs,
@@ -61,7 +62,6 @@ export default class BaseLayer{
       //   dxy,
       //   dxy
       // );
-      context.globalCompositeOperation='source-over';
       if(this.瓦片网格&&flag){
         context.font = '12px kaiti';
         context.textAlign='center';
@@ -76,7 +76,7 @@ export default class BaseLayer{
         context.fillText(`Q:${tileXY2QuadKey(tmp._LL,tmp.j,tmp.i)}`,obj.imgX + (tmp.i+0.5)*dxy,obj.imgY + (tmp.j+0.5)*dxy);
         context.strokeStyle='#f0f';
         context.shadowBlur = 0;
-        context.strokeRect(obj.imgX + tmp.i*dxy,obj.imgY + tmp.j*dxy,dxy,dxy);
+        context.strokeRect(Math.round(obj.imgX+tmp.i*dxy),Math.round(obj.imgY+tmp.j*dxy),Math.round(obj.imgX+(tmp.i+1)*dxy)-Math.round(obj.imgX+tmp.i*dxy),Math.round(obj.imgY+(tmp.j+1)*dxy)-Math.round(obj.imgY+tmp.j*dxy))
       }
     }
   }
