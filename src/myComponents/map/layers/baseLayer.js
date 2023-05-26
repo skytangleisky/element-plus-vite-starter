@@ -41,7 +41,7 @@ export default class BaseLayer{
   }
   drawTiles(obj,context,tmp,flag=false){
     let dxy = this.tileWidth*2**obj.L/2**tmp._LL;
-    context.clearRect(Math.round(obj.imgX+tmp.i*dxy),Math.round(obj.imgY+tmp.j*dxy),Math.round(obj.imgX+(tmp.i+1)*dxy)-Math.round(obj.imgX+tmp.i*dxy),Math.round(obj.imgY+(tmp.j+1)*dxy)-Math.round(obj.imgY+tmp.j*dxy))
+    // context.clearRect(Math.round(obj.imgX+tmp.i*dxy),Math.round(obj.imgY+tmp.j*dxy),Math.round(obj.imgX+(tmp.i+1)*dxy)-Math.round(obj.imgX+tmp.i*dxy),Math.round(obj.imgY+(tmp.j+1)*dxy)-Math.round(obj.imgY+tmp.j*dxy))
     if(tmp.cvs&&tmp.isDrawed&&!this.isHide){
       this.平滑||(context.imageSmoothingEnabled = false);
       context.drawImage(

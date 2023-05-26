@@ -27,8 +27,18 @@ export default class MapLayer extends BaseLayer{
           if(event.data.bitmap===-1){
             this.mapsTiles.splice(k--,1)
             break;
-          }
-          if(event.data.isDrawed){
+          }else if(event.data.bitmap===0){
+            if(event.data.isDrawed){
+              var cvs2 = document.createElement('canvas');
+              cvs2.width=256
+              cvs2.height=256
+              this.mapsTiles[k].cvs = cvs2;
+              this.mapsTiles[k].isDrawed = event.data.isDrawed;
+            }else{
+              this.mapsTiles[k].cvs = 0;
+              this.mapsTiles[k].isDrawed = event.data.isDrawed;
+            }
+          }else{
             var cvs2 = document.createElement('canvas');
             cvs2.width=256
             cvs2.height=256
@@ -36,9 +46,6 @@ export default class MapLayer extends BaseLayer{
             this.mapsTiles[k].cvs = cvs2;
             this.mapsTiles[k].isDrawed = event.data.isDrawed;
             // console.log(this.Count)
-          }else{
-            this.mapsTiles[k].cvs = 0;
-            this.mapsTiles[k].isDrawed = event.data.isDrawed;
           }
           this.cache&&this.myTiles.addTile(this.mapsTiles[k]._LL,event.data.y,event.data.x,{cvs:this.mapsTiles[k].cvs,isDrawed:event.data.isDrawed});
           this.cache&&this.NUM++

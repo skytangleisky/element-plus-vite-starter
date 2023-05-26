@@ -17,12 +17,11 @@ self.onmessage = e => {
       }else if(xhr.status === 404||xhr.status === 500){
         self.postMessage({url:e.data.url,z:e.data.z,y:e.data.y,x:e.data.x,i:e.data.i,j:e.data.j,bitmap:0,isDrawed:false})
       }else{
-        self.postMessage({url:e.data.url,z:e.data.z,y:e.data.y,x:e.data.x,i:e.data.i,j:e.data.j,bitmap:-1,isDrawed:false})
+        self.postMessage({url:e.data.url,z:e.data.z,y:e.data.y,x:e.data.x,i:e.data.i,j:e.data.j,bitmap:0,isDrawed:true})
       }
     }
   }
   xhr.onerror = function(error){
-    self.postMessage({url:e.data.url,z:e.data.z,y:e.data.y,x:e.data.x,i:e.data.i,j:e.data.j,bitmap:0,isDrawed:false})
   }
   xhr.ontimeout = function(){
     self.postMessage({url:e.data.url,z:e.data.z,y:e.data.y,x:e.data.x,i:e.data.i,j:e.data.j,bitmap:-1,isDrawed:false})

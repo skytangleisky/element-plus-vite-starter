@@ -229,10 +229,12 @@ export default async function run(canvas:HTMLCanvasElement) {
     let preTime=performance.now();
     let vy = 1/100
     let vx = 1/80
+    
     function loop(time:number) {
         frame++
         if(time-lastTime>1000){
             $('#fps').html('FPS:'+(frame*1000/(time-lastTime)).toFixed(2))
+            console.log(frame)
             frame=0
             lastTime = time
         }

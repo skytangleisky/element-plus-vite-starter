@@ -2,13 +2,14 @@
   <ol class="menu absolute flex items-start content-center flex-row m-0 h-full p-0" style="min-width: 100%;overflow: hidden;"><!--导航栏-->
     <my-map></my-map>
     <box style="position: absolute;bottom:0;right:0;">
+      <span id="FPS"></span>
       <span id="fps"></span>
       <span id="level"></span>
       <span id="tiles"></span>
     </box>
-    <my-dialog></my-dialog>
-    <dialog-plan-request class="z-1"></dialog-plan-request>
-    <dialog-prev-request class="z-2"></dialog-prev-request>
+    <!-- <my-dialog></my-dialog> -->
+    <!-- <dialog-plan-request class="z-1"></dialog-plan-request> -->
+    <!-- <dialog-prev-request class="z-2"></dialog-prev-request> -->
     <li tabindex="-1" v-for="(item,index) in list" :key="index" @mouseenter="mouseenter">
       {{ item.name }}
       <ol class="absolute flex-col left-0 p-0 top-100%" v-if="item.children" :style="'left:' + (item.left?'-1em':'0')"><!--一级菜单-->

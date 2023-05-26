@@ -98,6 +98,10 @@ export default defineConfig({
         target:'http://tanglei.top:5050',//替换的服务端地址
         changeOrigin:true,//开启代理，允许跨域
         rewrite:path=>path.replace(/^\/data/,'') // 设置重写的路径
+      },
+      '/ArcGIS':{
+        target:'https://map.geoq.cn',//替换的服务端地址
+        changeOrigin:true,//开启代理，允许跨域
       }
     }
   }
