@@ -31,7 +31,7 @@
   // let POINT = {lng:113.42165142106768,lat:23.098844381632485}
   let POINT = {lng:116.39139324235674,lat:39.90723893689098}
   const urls = ref([
-    {url:'https://webst01.is.autonavi.com/appmaptile?style=10&x={x}&y={y}&z={z}'},
+    {url:'https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'},
     {url:'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}'},
     {url:'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=p&gl=CN&x={x}&y={y}&z={z}'},
     {url:'https://tanglei.site:3210/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}'},
@@ -127,7 +127,6 @@
       let rect = cvs.getBoundingClientRect()
       cvs.width = rect.width
       cvs.height = rect.height
-      console.dir(planeLayer)
       planeLayer.quadtree.bounds = {x:0,y:0,width:cvs.width,height:cvs.height}
       localStorage.L&&(obj.targetL=obj.L=Number(localStorage.L))
       $('#level').html('Z:'+obj.L.toFixed(2))
@@ -153,7 +152,6 @@
     document.addEventListener('mousemove',mousemoveFunc,{passive:true})
   })
   onBeforeUnmount(()=>{
-    console.log('onBeforeUnmount')
     cancelAnimationFrame(aid)
     removeEventListener('message',test)
     cancel()
@@ -272,6 +270,7 @@
   var then = 0
   let frame=0
   let lastTime=0
+  let spend=0
   const loop = (time:number) => {
     aid = requestAnimationFrame(loop)
     if (time - then > interval) {
@@ -279,10 +278,15 @@
       frame++
       if(time-lastTime>1000){
         $('#fps').html('FPS:'+(frame*1000/(time-lastTime)).toFixed(2))
+        $('#spend').html('SPEND:'+spend.toFixed(2)+'ms')
+        $('#occupy').html('OCCUPY:'+(spend/(time-lastTime)*frame*100).toFixed(2)+'%')
         lastTime = time
         frame=0
       }
+      let start = performance.now()
       draw()
+      let end = performance.now()
+      spend = end-start
     }
   }
   const draw = ()=>{
@@ -502,7 +506,7 @@
     }
   }
   let boundary = [-180,180,Math.atan(Math.sinh(Math.PI))*180/Math.PI,-Math.atan(Math.sinh(Math.PI))*180/Math.PI]
-  boundary=[110,120,41,38]
+  // boundary=[110,120,41,38]
   const limitRegion = () => {
     if(限制){
       if(boundary[1]-boundary[0]>0){
@@ -555,7 +559,7 @@
       obj.targetL = targetL
       gsap.killTweensOf(obj)
       gsap.to(obj, {
-        duration:2,
+        duration:5,
         L: obj.targetL,
         onUpdate: ()=>{
           obj.imgX=cvs.width/2 - 2**obj.L*newPos.x/1000
@@ -575,7 +579,7 @@
     gsap.killTweensOf(mousemove)
     gsap.killTweensOf(newPos)
     gsap.to(newPos, {
-      duration:2,
+      duration:5,
       x: newPos.targetX,
       y: newPos.targetY,
       onUpdate:()=>{
