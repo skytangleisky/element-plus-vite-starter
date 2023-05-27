@@ -426,6 +426,7 @@
     }
   }
   const mousewheelFunc = (event:any) => {
+    gsap.killTweensOf(newPos)
     if(!isMouseDown||!mousemove){
       let tmp = windowToCanvas(event.clientX, event.clientY,cvs)
       mousemove = {x:tmp.x,y:tmp.y,targetX:tmp.x,targetY:tmp.y}
@@ -506,7 +507,7 @@
     }
   }
   let boundary = [-180,180,Math.atan(Math.sinh(Math.PI))*180/Math.PI,-Math.atan(Math.sinh(Math.PI))*180/Math.PI]
-  // boundary=[110,120,41,38]
+  boundary=[110,120,41,38]
   const limitRegion = () => {
     if(限制){
       if(boundary[1]-boundary[0]>0){
