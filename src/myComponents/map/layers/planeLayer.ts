@@ -3,6 +3,7 @@ import Quadtree, { Rect } from '@timohausmann/quadtree-js'
 import { mat3, vec2, vec3 } from '~/tools/gl-matrix'
 import { wgs84togcj02 } from '../workers/mapUtil'
 import { lng2Pixel, lat2Pixel } from '../js/core'
+import { eventbus } from '../../../eventbus'
 interface Plane extends Rect {
   name:string,
   vx:number,
