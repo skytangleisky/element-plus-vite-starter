@@ -9,15 +9,13 @@ self.onmessage = e => {
     if(xhr.readyState===4){
       let res = 'response' in xhr ? xhr.response : xhr.responseText
       if(xhr.status === 200) {
-          createImageBitmap(res).then(bitmapData=>{
-            self.postMessage({url:e.data.url,z:e.data.z,y:e.data.y,x:e.data.x,i:e.data.i,j:e.data.j,bitmap:bitmapData,isDrawed:true})
-          }).catch(err=>{
-            self.postMessage({url:e.data.url,z:e.data.z,y:e.data.y,x:e.data.x,i:e.data.i,j:e.data.j,bitmap:-1,isDrawed:false})
-          })
-      }else if(xhr.status === 404||xhr.status === 500){
-        self.postMessage({url:e.data.url,z:e.data.z,y:e.data.y,x:e.data.x,i:e.data.i,j:e.data.j,bitmap:0,isDrawed:false})
+        createImageBitmap(res).then(bitmapData=>{
+          self.postMessage({url:e.data.url,z:e.data.z,y:e.data.y,x:e.data.x,i:e.data.i,j:e.data.j,bitmap:bitmapData,isDrawed:true})
+        }).catch(err=>{
+          console.error(err)
+        })
       }else{
-        self.postMessage({url:e.data.url,z:e.data.z,y:e.data.y,x:e.data.x,i:e.data.i,j:e.data.j,bitmap:0,isDrawed:true})
+        console.error(xhr.status)
       }
     }
   }
