@@ -16,6 +16,7 @@
   import { wgs84togcj02 } from './workers/mapUtil'
   import { useSettingStore } from '~/stores/setting'
   import run,{ cancel } from '~/webgpu/imageTexture'
+  import Windy from './layers/Windy'
 
   let needRedraw = false
   let aid:number
@@ -26,6 +27,7 @@
   const pointLayer = new PointLayer()
   const routeLayer = new RouteLayer()
   const planeLayer = new PlaneLayer()
+  const windy = new Windy()
   let canvas = ref(null)
   let webgpu = ref(null)
   // let POINT = {lng:113.42165142106768,lat:23.098844381632485}
@@ -142,6 +144,7 @@
       limitRegion()
       loadMap()
       needRedraw=true
+      windy.start([[0,0],[cvs.width,cvs.height]],cvs.width,cvs.height,[[pixel2Lng(0,obj.imgX,2**obj.L,256), pixel2Lat(cvs.height,obj.imgY,2**obj.L,256)],[pixel2Lng(cvs.width,obj.imgX,2**obj.L,256), pixel2Lat(0,obj.imgY,2**obj.L,256)]])
       draw()
     }).observe(cvs)
     cvs.addEventListener('mousemove',cvsmousemoveFunc,{passive:true})
@@ -304,7 +307,8 @@
       borderLayer.render(obj,ctx)
       pointLayer.render(obj,ctx)
       routeLayer.render(obj,ctx)
-      planeLayer.render(obj,ctx)
+      // planeLayer.render(obj,ctx)
+      windy.render(obj,ctx)
       ctx.restore()
 
       ctx.save()
@@ -513,7 +517,7 @@
     }
   }
   let boundary = [-180,180,Math.atan(Math.sinh(Math.PI))*180/Math.PI,-Math.atan(Math.sinh(Math.PI))*180/Math.PI]
-  boundary=[110,120,41,38]
+  // boundary=[110,120,41,38]
   const limitRegion = () => {
     if(限制){
       if(boundary[1]-boundary[0]>0){
@@ -599,8 +603,8 @@
     })
   }
   const testClick = ()=>{
-    let convert = wgs84togcj02(POINT.lng,POINT.lat)
-    flyTo(convert[0],convert[1],13)
+    // let convert = wgs84togcj02(POINT.lng,POINT.lat)
+    // flyTo(convert[0],convert[1],13)
   }
 </script>
 <style lang="scss">

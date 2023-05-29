@@ -43,7 +43,7 @@ export default class PlaneLayer{
     this.spirits=Array<Plane>()
     this.getImage()
     let boundary=[110,120,41,38]
-    for(var i=0;i<500;i++) {
+    for(var i=0;i<200;i++) {
       let plane = new Plane()
       plane.name=i.toString()
       plane.vx = this.randMinMax(-2/100,2/100)
