@@ -14,7 +14,7 @@ export default class Plane implements Rect {
   check:boolean
   cvs:HTMLCanvasElement|undefined
   cvs_toolTips:HTMLCanvasElement|undefined
-  showToolTips?:boolean
+  showToolTips:boolean
   rad:number
   lng:number
   lat:number
@@ -72,6 +72,7 @@ export default class Plane implements Rect {
     this.lat=0
     this.overlap=false
     this.lastOverlap=false
+    this.showToolTips=false
     this.event=new Eventbus()
     Object.assign(this,arg)
   }

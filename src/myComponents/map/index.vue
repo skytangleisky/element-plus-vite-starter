@@ -147,8 +147,14 @@
     cvs.addEventListener('mousemove',cvsmousemoveFunc,{passive:true})
     cvs.addEventListener('mouseout',mouseoutFunc,{passive:true})
     cvs.addEventListener('mousewheel',mousewheelFunc,{passive:true})
-    cvs.addEventListener('mousedown',mousedownFunc,{passive:true})
-    document.addEventListener('mouseup',mouseupFunc,{passive:true})
+    cvs.addEventListener('mousedown',(event:MouseEvent)=>{
+      mousedownFunc(event)
+      planeLayer.event.emit('mousedown',event)
+    },{passive:true})
+    document.addEventListener('mouseup',(event:MouseEvent)=>{
+      mouseupFunc(event)
+      planeLayer.event.emit('mouseup',event)
+    },{passive:true})
     document.addEventListener('mousemove',mousemoveFunc,{passive:true})
   })
   onBeforeUnmount(()=>{

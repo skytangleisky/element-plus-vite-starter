@@ -10,7 +10,23 @@ export default class PlaneLayer{
   quadtree:Quadtree
   spirits:Array<Plane>
   preTime:number
+  event:Eventbus
   constructor(){
+    this.event=new Eventbus()
+    this.event.on('mousedown',(event:MouseEvent)=>{
+      this.spirits.forEach(v=>{
+        if(v.overlap){
+          v.event?.emit('mousedown',event)
+        }
+      })
+    })
+    this.event.on('mouseup',(event:MouseEvent)=>{
+      this.spirits.forEach(v=>{
+        if(v.overlap){
+          v.event?.emit('mouseup',event)
+        }
+      })
+    })
     this.isMouseOver=false
     this.myCursor = {
       x:0,
@@ -56,21 +72,22 @@ export default class PlaneLayer{
       let text = `方向角:${angle}°\n速度:${speed}km/h`
       this.drawToolTips(plane.cvs_toolTips.width,plane.cvs_toolTips.height,text,ctx_toolTips)
       plane.event?.on('mouseenter',(plane:Plane)=>{
-        plane.showToolTips=true
+        // plane.showToolTips=true
         console.log('enter')
       })
       plane.event?.on('mouseout',(plane:Plane)=>{
-        plane.showToolTips=false
+        // plane.showToolTips=false
         console.log('out',this)
       })
       plane.event?.on('mousemove',()=>{
         console.log('move',this)
       })
-      plane.event?.on('mousedown',()=>{
-        console.log('down',this)
+      plane.event?.on('mousedown',(event:MouseEvent)=>{
+        plane.showToolTips=!plane.showToolTips
+        console.log('down',plane,event)
       })
-      plane.event?.on('mouseup',()=>{
-        console.log('up',this)
+      plane.event?.on('mouseup',(event:MouseEvent)=>{
+        console.log('up',plane,event)
       })
       plane.event?.on('click',()=>{
         console.log('click',this)
@@ -97,14 +114,14 @@ export default class PlaneLayer{
       ctx.translate(plane.cvs.width/2,plane.cvs.height/2)
       ctx.rotate(plane.rad)
       ctx.drawImage(planeCvs,0,0,planeCvs.width,planeCvs.height,-plane.getW()/2,-plane.getH()/2,plane.getW(),plane.getH())
-      {
-        ctx.fillStyle='#ffffff88'
-        ctx.strokeStyle='white'
-        ctx.lineWidth=1
-        ctx.fillRect(-plane.getW()/2,-plane.getH()/2,plane.getW(),plane.getH())
-        ctx.strokeRect(-plane.getW()/2+ctx.lineWidth/2,-plane.getH()/2+ctx.lineWidth/2,plane.getW()-ctx.lineWidth,plane.getH()-ctx.lineWidth)
-        ctx.stroke()
-      }
+      // {
+      //   ctx.fillStyle='#ffffff88'
+      //   ctx.strokeStyle='white'
+      //   ctx.lineWidth=1
+      //   ctx.fillRect(-plane.getW()/2,-plane.getH()/2,plane.getW(),plane.getH())
+      //   ctx.strokeRect(-plane.getW()/2+ctx.lineWidth/2,-plane.getH()/2+ctx.lineWidth/2,plane.getW()-ctx.lineWidth,plane.getH()-ctx.lineWidth)
+      //   ctx.stroke()
+      // }
       ctx.restore()
     })
   }
@@ -166,12 +183,12 @@ export default class PlaneLayer{
         }
       }
     }
-    this.drawQuadtree(ctx,this.quadtree)
+    // this.drawQuadtree(ctx,this.quadtree)
     this.drawObjects(ctx)
   }
   drawObjects(ctx:any) {
     let 矩形碰撞框 = false
-    let 需要检测 = true
+    let 需要检测 = false
     let intersection = false
     for(var i=0;i<this.spirits.length;i++) {
       let item = this.spirits[i]
