@@ -393,7 +393,7 @@ import { eventbus } from '~/eventbus'
     // panel&&panel.mousedownFunc(event)
     let tmp = windowToCanvas(event.clientX, event.clientY,cvs)
     mousemove = {x:tmp.x,y:tmp.y,targetX:tmp.x,targetY:tmp.y}
-    pos = mousemove
+    posl = mousemove
     let x = (mousemove.x-obj.imgX)/2**obj.L*1000
     let y = (mousemove.y-obj.imgY)/2**obj.L*1000
     newPos = {x, y,targetX:x,targetY:y}
@@ -417,11 +417,11 @@ import { eventbus } from '~/eventbus'
     // panel&&divMask.addEventListener('mousemove',panel.mousemoveFunc,{passive:false})
     if(isMouseDown){
       let tmp = windowToCanvas(evt.clientX, evt.clientY,cvs)
-      posl = {x:tmp.x,y:tmp.y,targetX:tmp.x,targetY:tmp.y}
-      var deltaX = posl.x - pos.x, deltaY = posl.y - pos.y
+      pos = {x:tmp.x,y:tmp.y,targetX:tmp.x,targetY:tmp.y}
+      var deltaX = pos.x - posl.x, deltaY = pos.y - posl.y
       mousemove.targetX += deltaX
       mousemove.targetY += deltaY
-      pos = JSON.parse(JSON.stringify(posl))
+      posl = JSON.parse(JSON.stringify(pos))
       let period=1
       // if(config.动画){
       //   period=1
