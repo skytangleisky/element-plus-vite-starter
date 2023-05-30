@@ -5,21 +5,21 @@ export default class Plane implements Rect {
   name:string
   x: number
   y: number
-  protected w:number
-  protected h:number
+  w:number
+  h:number
   vx:number
   vy:number
   width: number
   height: number
   check:boolean
-  cvs:HTMLCanvasElement|undefined
-  cvs_toolTips:HTMLCanvasElement|undefined
+  cvs:HTMLCanvasElement
+  cvs_toolTips:HTMLCanvasElement
   showToolTips:boolean
   rad:number
   lng:number
   lat:number
   overlap:boolean
-  event?:Eventbus
+  event:Eventbus
   lastOverlap:boolean
   constructor(arg:{}|undefined=undefined){
     /*
@@ -60,13 +60,15 @@ export default class Plane implements Rect {
     this.name=''
     this.x=0
     this.y=0
-    this.w=0
-    this.h=0
+    this.w=32
+    this.h=32
     this.vx=0
     this.vy=0
-    this.width=0
-    this.height=0
+    this.width=32
+    this.height=32
     this.check=false
+    this.cvs=document.createElement('canvas')
+    this.cvs_toolTips=document.createElement('canvas')
     this.rad=0
     this.lng=0
     this.lat=0

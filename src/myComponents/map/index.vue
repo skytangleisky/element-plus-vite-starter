@@ -20,7 +20,8 @@
 
   let needRedraw = false
   let aid:number
-  import { Engine3D, Scene3D, Object3D, Camera3D, DirectLight, HoverCameraController, Color, View3D, AtmosphericComponent } from "@orillusion/core"
+  // import { Engine3D, Scene3D, Object3D, Camera3D, DirectLight, HoverCameraController, Color, View3D, AtmosphericComponent } from "@orillusion/core"
+import { eventbus } from '~/eventbus'
   const setting = useSettingStore()
   const mapLayer = new MapLayer()
   const borderLayer = new BorderLayer()
@@ -159,6 +160,12 @@
       planeLayer.event.emit('mouseup',event)
     },{passive:true})
     document.addEventListener('mousemove',mousemoveFunc,{passive:true})
+
+    eventbus.on('move',(lng:number,lat:number,showToolTips:boolean)=>{
+      if(showToolTips){
+        flyTo(lng,lat)
+      }
+    })
   })
   onBeforeUnmount(()=>{
     cancelAnimationFrame(aid)
@@ -307,7 +314,7 @@
       borderLayer.render(obj,ctx)
       pointLayer.render(obj,ctx)
       routeLayer.render(obj,ctx)
-      // planeLayer.render(obj,ctx)
+      planeLayer.render(obj,ctx)
       windy.render(obj,ctx)
       ctx.restore()
 
@@ -358,9 +365,9 @@
   }
   const mousedownFunc = (event:MouseEvent) => {
     obj.targetL = obj.L
-    gsap.killTweensOf(newPos)
     gsap.killTweensOf(mousemove)
     gsap.killTweensOf(obj)
+    gsap.killTweensOf(newPos)
     isMouseDown=true
     // panel&&panel.mousedownFunc(event)
     let tmp = windowToCanvas(event.clientX, event.clientY,cvs)
@@ -570,7 +577,7 @@
       obj.targetL = targetL
       gsap.killTweensOf(obj)
       gsap.to(obj, {
-        duration:5,
+        duration:10,
         L: obj.targetL,
         onUpdate: ()=>{
           obj.imgX=cvs.width/2 - 2**obj.L*newPos.x/1000
@@ -590,7 +597,7 @@
     gsap.killTweensOf(mousemove)
     gsap.killTweensOf(newPos)
     gsap.to(newPos, {
-      duration:5,
+      duration:10,
       x: newPos.targetX,
       y: newPos.targetY,
       onUpdate:()=>{

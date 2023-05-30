@@ -1,3 +1,4 @@
+import { lat2Pixel, lng2Pixel } from '../js/core.js'
 import windyData from './gfs.js'
 class Field{
   null_wind_vector:[number,number,null]
@@ -13,7 +14,7 @@ class Field{
     this.bounds = bounds
   }
   field(x:number,y:number){
-    var column = this.columns[Math.round(x)];
+    let column = this.columns[Math.round(x)];
     return column && column[Math.round(y)] || this.null_wind_vector;
   }
   // Frees the massive "columns" array for GC. Without this, the array is leaked (in Chrome) each time a new
@@ -22,11 +23,11 @@ class Field{
     this.columns = [];
   }
   randomize = (o:{[key:string]:any})=> {  // UNDONE: this method is terrible
-    var x, y;
-    var safetyNet = 0;
+    let x, y;
+    let safetyNet = 0;
     do {
-        x = Math.round(Math.floor(Math.random() * this.bounds.width) + this.bounds.x);
-        y = Math.round(Math.floor(Math.random() * this.bounds.height) + this.bounds.y)
+      x = Math.round(Math.floor(Math.random() * this.bounds.width) + this.bounds.x);
+      y = Math.round(Math.floor(Math.random() * this.bounds.height) + this.bounds.y)
     } while (this.field(x, y)[2] === null && safetyNet++ < 30);
     o.x = x;
     o.y = y;
@@ -40,7 +41,6 @@ export default class Windy{
   MAX_PARTICLE_AGE:number
   PARTICLE_LINE_WIDTH:number
   PARTICLE_MULTIPLIER:number
-  PARTICLE_REDUCTION:number
   NULL_WIND_VECTOR:[number,number,null]
   pausing:boolean
 
@@ -52,14 +52,20 @@ export default class Windy{
   colorStyles:any
   bounds:any
   canvas:any
+  extent:any
+
+
+  interval:number
+  then:number
   constructor(){
+    this.interval = 1000/10
+    this.then = 0
     this.VELOCITY_SCALE = 0.011;               // scale for wind velocity (completely arbitrary--this value looks nice) // default: 0.011
     this.INTENSITY_SCALE_STEP = 10;            // step size of particle intensity color scale // default:10
     this.MAX_WIND_INTENSITY = 40;              // wind velocity at which particle intensity is maximum (m/s)
     this.MAX_PARTICLE_AGE = 100;                // max number of frames a particle is drawn before regeneration // default: 100
     this.PARTICLE_LINE_WIDTH = 1;              // line width of a drawn particle // default: 1
     this.PARTICLE_MULTIPLIER = 1/300;         // particle count scalar (completely arbitrary--this values looks nice) // default: 1/30
-    this.PARTICLE_REDUCTION = 0.75;            // reduce particle count to this much of normal for mobile devices
     this.NULL_WIND_VECTOR = [NaN, NaN, null];  // singleton for no wind in the form: [u, v, magnitude]
     this.pausing = true
     this.CANDRAW = false
@@ -74,7 +80,7 @@ export default class Windy{
     return [u, v, Math.sqrt(u * u + v * v)];
   }
   createWindBuilder(uComp:{data:[],header:any}|null, vComp:{data:[],header:any}|null) {
-    var uData = uComp?.data, vData = vComp?.data;
+    let uData = uComp?.data, vData = vComp?.data;
     return {
       header: uComp?.header,
       //recipe: recipeFor("wind-" + uComp.header.surface1Value),
@@ -85,7 +91,7 @@ export default class Windy{
     }
   }
   createBuilder(data:any[]) {
-    var uComp = null, vComp = null, scalar = null;
+    let uComp = null, vComp = null, scalar = null;
     data.forEach(record=> {
       switch (record.header.parameterCategory + "," + record.header.parameterNumber) {
         case "2,2":
@@ -101,22 +107,22 @@ export default class Windy{
     return this.createWindBuilder(uComp, vComp);
   }
   buildGrid(data:any, callback:Function) {
-    var builder = this.createBuilder(data);
+    let builder = this.createBuilder(data);
 
-    var header = builder.header;
-    var λ0 = header.lo1, φ0 = header.la1;  // the grid's origin (e.g., 0.0E, 90.0N)
-    var Δλ = header.dx, Δφ = header.dy;    // distance between grid points (e.g., 2.5 deg lon, 2.5 deg lat)
-    var ni = header.nx, nj = header.ny;    // number of grid points W-E and N-S (e.g., 144 x 73)
-    var date = new Date(header.refTime);
+    let header = builder.header;
+    let λ0 = header.lo1, φ0 = header.la1;  // the grid's origin (e.g., 0.0E, 90.0N)
+    let Δλ = header.dx, Δφ = header.dy;    // distance between grid points (e.g., 2.5 deg lon, 2.5 deg lat)
+    let ni = header.nx, nj = header.ny;    // number of grid points W-E and N-S (e.g., 144 x 73)
+    let date = new Date(header.refTime);
     date.setHours(date.getHours() + header.forecastTime);
 
     // Scan mode 0 assumed. Longitude increases from λ0, and latitude decreases from φ0.
     // http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table3-4.shtml
-    var grid:any[] = [], p = 0;
-    var isContinuous = Math.floor(ni * Δλ) >= 360;
-    for (var j = 0; j < nj; j++) {
-      var row = [];
-      for (var i = 0; i < ni; i++, p++) {
+    let grid:any[] = [], p = 0;
+    let isContinuous = Math.floor(ni * Δλ) >= 360;
+    for (let j = 0; j < nj; j++) {
+      let row = [];
+      for (let i = 0; i < ni; i++, p++) {
         row[i] = builder.data(p);
       }
       if (isContinuous) {
@@ -127,19 +133,19 @@ export default class Windy{
     }
 
     let interpolate = (λ:number, φ:number) => {
-      var i = this.floorMod(λ - λ0, 360) / Δλ;  // calculate longitude index in wrapped range [0, 360)
-      var j = (φ0 - φ) / Δφ;                 // calculate latitude index in direction +90 to -90
+      let i = this.floorMod(λ - λ0, 360) / Δλ;  // calculate longitude index in wrapped range [0, 360)
+      let j = (φ0 - φ) / Δφ;                 // calculate latitude index in direction +90 to -90
 
-      var fi = Math.floor(i), ci = fi + 1;
-      var fj = Math.floor(j), cj = fj + 1;
+      let fi = Math.floor(i), ci = fi + 1;
+      let fj = Math.floor(j), cj = fj + 1;
 
-      var row;
+      let row;
       if ((row = grid[fj])) {
-        var g00 = row[fi];
-        var g10 = row[ci];
+        let g00 = row[fi];
+        let g10 = row[ci];
         if (this.isValue(g00) && this.isValue(g10) && (row = grid[cj])) {
-          var g01 = row[fi];
-          var g11 = row[ci];
+          let g01 = row[fi];
+          let g11 = row[ci];
           if (this.isValue(g01) && this.isValue(g11)) {
             // All four points found, so interpolate the value.
             return builder.interpolate(i - fi, j - fj, g00, g10, g01, g11);
@@ -177,9 +183,9 @@ export default class Windy{
    * vector is modified in place and returned by this function.
    */
   distort(projection:{}, λ:number, φ:number, x:number, y:number, scale:number, wind:[number,number], windy:{}) {
-    var u = wind[0] * scale;
-    var v = wind[1] * scale;
-    var d = this.distortion(projection, λ, φ, x, y, windy);
+    let u = wind[0] * scale;
+    let v = wind[1] * scale;
+    let d = this.distortion(projection, λ, φ, x, y, windy);
 
     // Scale distortion vectors by u and v, then add.
     wind[0] = d[0] * u + d[2] * v;
@@ -187,17 +193,17 @@ export default class Windy{
     return wind;
   }
   distortion(projection:{}, λ:number, φ:number, x:number, y:number, windy:{}) {
-    var τ = 2 * Math.PI;
-    var H = Math.pow(10, -5.2);
-    var hλ = λ < 0 ? H : -H;
-    var hφ = φ < 0 ? H : -H;
+    let τ = 2 * Math.PI;
+    let H = Math.pow(10, -5.2);
+    let hλ = λ < 0 ? H : -H;
+    let hφ = φ < 0 ? H : -H;
 
-    var pλ = this.project(φ, λ + hλ,windy);
-    var pφ = this.project(φ + hφ, λ, windy);
+    let pλ = this.project(φ, λ + hλ,windy);
+    let pφ = this.project(φ + hφ, λ, windy);
 
     // Meridian scale factor (see Snyder, equation 4-3), where R = 1. This handles issue where length of 1º λ
     // changes depending on φ. Without this, there is a pinching effect at the poles.
-    var k = Math.cos(φ / 360 * τ);
+    let k = Math.cos(φ / 360 * τ);
     return [
       (pλ[0] - x) / hλ / k,
       (pλ[1] - y) / hλ / k,
@@ -213,12 +219,12 @@ export default class Windy{
     callback( bounds, field );
   }
   buildBounds( bounds:[[number,number],[number,number]], width:number, height:number ) {
-    var upperLeft = bounds[0];
-    var lowerRight = bounds[1];
-    var x = Math.round(upperLeft[0]); //Math.max(Math.floor(upperLeft[0], 0), 0);
-    var y = Math.max(Math.floor(upperLeft[1]), 0);
-    var xMax = Math.min(Math.ceil(lowerRight[0]), width - 1);
-    var yMax = Math.min(Math.ceil(lowerRight[1]), height - 1);
+    let upperLeft = bounds[0];
+    let lowerRight = bounds[1];
+    let x = Math.round(upperLeft[0]); //Math.max(Math.floor(upperLeft[0], 0), 0);
+    let y = Math.max(Math.floor(upperLeft[1]), 0);
+    let xMax = Math.min(Math.ceil(lowerRight[0]), width - 1);
+    let yMax = Math.min(Math.ceil(lowerRight[1]), height - 1);
     this.canvas = document.createElement('canvas')
     this.canvas.width = xMax
     this.canvas.height = yMax
@@ -232,45 +238,45 @@ export default class Windy{
     return ang / (Math.PI/180.0);
   }
   invert(x:number, y:number, windy:{[key:string]:any}){
-    var mapLonDelta = windy.east - windy.west;
-    var worldMapRadius = windy.width / this.rad2deg(mapLonDelta) * 360/(2 * Math.PI);
-    var mapOffsetY = ( worldMapRadius / 2 * Math.log( (1 + Math.sin(windy.south) ) / (1 - Math.sin(windy.south))  ));
-    var equatorY = windy.height + mapOffsetY;
-    var a = (equatorY-y)/worldMapRadius;
+    let mapLonDelta = windy.east - windy.west;
+    let worldMapRadius = windy.width / this.rad2deg(mapLonDelta) * 360/(2 * Math.PI);
+    let mapOffsetY = ( worldMapRadius / 2 * Math.log( (1 + Math.sin(windy.south) ) / (1 - Math.sin(windy.south))  ));
+    let equatorY = windy.height + mapOffsetY;
+    let a = (equatorY-y)/worldMapRadius;
 
-    var lat = 180/Math.PI * (2 * Math.atan(Math.exp(a)) - Math.PI/2);
-    var lon = this.rad2deg(windy.west) + x / windy.width * this.rad2deg(mapLonDelta);
+    let lat = 180/Math.PI * (2 * Math.atan(Math.exp(a)) - Math.PI/2);
+    let lon = this.rad2deg(windy.west) + x / windy.width * this.rad2deg(mapLonDelta);
     return [lon, lat];
   }
   mercY( lat:number ) {
     return Math.log( Math.tan( lat / 2 + Math.PI / 4 ) );
   }
   project( lat:number, lon:number, windy:{[key:string]:any}) { // both in radians, use deg2rad if neccessary
-    var ymin = this.mercY(windy.south);
-    var ymax = this.mercY(windy.north);
-    var xFactor = windy.width / ( windy.east - windy.west );
-    var yFactor = windy.height / ( ymax - ymin );
+    let ymin = this.mercY(windy.south);
+    let ymax = this.mercY(windy.north);
+    let xFactor = windy.width / ( windy.east - windy.west );
+    let yFactor = windy.height / ( ymax - ymin );
 
-    var y = this.mercY( this.deg2rad(lat) );
-    var x = (this.deg2rad(lon) - windy.west) * xFactor;
-    var y = (ymax - y) * yFactor; // y points south
+    let y = this.mercY( this.deg2rad(lat) );
+    let x = (this.deg2rad(lon) - windy.west) * xFactor;
+    y = (ymax - y) * yFactor; // y points south
     return [x, y];
   }
   interpolateField( grid:{[key:string]:any}, bounds:{[key:string]:any}, extent:{}, callback:Function ) {
-    var projection = {};
-    var velocityScale = this.VELOCITY_SCALE;
+    let projection = {};
+    let velocityScale = this.VELOCITY_SCALE;
 
-    var columns:any[] = [];
-    var x = bounds.x;
+    let columns:any[] = [];
+    let x = bounds.x;
 
     let interpolateColumn=(x:number)=>{
-      var column = [];
-      for (var y = bounds.y; y <= bounds.yMax; y += 2) {
-        var coord = this.invert( x, y, extent );
+      let column = [];
+      for (let y = bounds.y; y <= bounds.yMax; y += 2) {
+        let coord = this.invert( x, y, extent );
         if (coord) {
-          var λ = coord[0], φ = coord[1];
+          let λ = coord[0], φ = coord[1];
           if (isFinite(λ)) {
-            var wind = grid.interpolate(λ, φ);
+            let wind = grid.interpolate(λ, φ);
             if (wind) {
               wind = this.distort(projection, λ, φ, x, y, velocityScale, wind, extent);
               column[y+1] = column[y] = wind;
@@ -282,7 +288,7 @@ export default class Windy{
       columns[x+1] = columns[x] = column;
     }
     // let batchInterpolate = () => {
-    //   var start = Date.now();
+    //   let start = Date.now();
     //   while (x < bounds.width) {
     //       interpolateColumn(x);
     //       x += 2;
@@ -314,7 +320,7 @@ export default class Windy{
     let cutHex = (h:string)=> {return (h.charAt(0)=="#") ? h.substring(1,7):h}
 
     let windIntensityColorScale = (step:number, maxWind:number)=>{
-      var result = [
+      let result = [
         /* blue to red*/
         "rgba(" + hexToR('#178be7') + ", " + hexToG('#178be7') + ", " + hexToB('#178be7') + ", " + 1.0 + ")",
         "rgba(" + hexToR('#8888bd') + ", " + hexToG('#8888bd') + ", " + hexToB('#8888bd') + ", " + 1.0 + ")",
@@ -338,8 +344,8 @@ export default class Windy{
         // "rgba(" + hexToR('#ff1edb') + ", " + hexToG('#ff1edb') + ", " + hexToB('#ff1edb') + ", " + 0.5 + ")"
       ]
       /*
-      var result = [];
-      for (var j = 225; j >= 100; j = j - step) {
+      let result = [];
+      for (let j = 225; j >= 100; j = j - step) {
         result.push(asColorStyle(j, j, j, 1));
       }
       */
@@ -349,12 +355,12 @@ export default class Windy{
       return {colorStyles:result,indexFor};
     }
 
-    var { colorStyles, indexFor } = windIntensityColorScale(this.INTENSITY_SCALE_STEP, this.MAX_WIND_INTENSITY);
-    var buckets = colorStyles.map(function():any[] { return []; });
+    let { colorStyles, indexFor } = windIntensityColorScale(this.INTENSITY_SCALE_STEP, this.MAX_WIND_INTENSITY);
+    let buckets = colorStyles.map(function():any[] { return []; });
 
-    var particleCount = Math.round(bounds.width * bounds.height * this.PARTICLE_MULTIPLIER);
-    var particles:any = [];
-    for (var i = 0; i < particleCount; i++) {
+    let particleCount = Math.round(bounds.width * bounds.height * this.PARTICLE_MULTIPLIER);
+    let particles:any = [];
+    for (let i = 0; i < particleCount; i++) {
       particles.push(field.randomize({age: Math.floor(Math.random() * this.MAX_PARTICLE_AGE) + 0}));
     }
 
@@ -374,15 +380,15 @@ export default class Windy{
       if (particle.age > this.MAX_PARTICLE_AGE) {
         this.field.randomize(particle).age = 0;
       }
-      var x = particle.x;
-      var y = particle.y;
-      var v = this.field.field(x, y);  // vector at current position
-      var m = v[2];
+      let x = particle.x;
+      let y = particle.y;
+      let v = this.field.field(x, y);  // vector at current position
+      let m = v[2];
       if (m === null) {
         particle.age = this.MAX_PARTICLE_AGE;  // particle has escaped the grid, never to return...
       }else{
-        var xt = x + v[0];
-        var yt = y + v[1];
+        let xt = x + v[0];
+        let yt = y + v[1];
         if (this.field.field(xt, yt)[2] !== null) {
           // Path from (x,y) to (xt,yt) is visible, so add this particle to the appropriate draw bucket.
           particle.xt = xt;
@@ -397,46 +403,51 @@ export default class Windy{
       particle.age += 1;
     });
   }
-
   render(obj:any,ctx:CanvasRenderingContext2D){
-    if(this.CANDRAW){
-      this.evolve()
-      let g = this.canvas.getContext('2d')
-      g.lineWidth = this.PARTICLE_LINE_WIDTH;
+    let time = performance.now()
+    if (time - this.then > this.interval) {
+      this.interval>0&&(this.then = time - (time - this.then) % this.interval)
+      if(this.CANDRAW){
+        this.evolve()
+        let g = this.canvas.getContext('2d')
+        g.lineWidth = this.PARTICLE_LINE_WIDTH;
 
 
-      g.fillStyle = "rgba(255, 255, 255, 0.9)";
-      // Fade existing particle trails.
-      var prev = g.globalCompositeOperation;
-      g.globalCompositeOperation = "destination-in";
-      g.fillRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height);
-      g.globalCompositeOperation = prev;
+        g.fillStyle = "rgba(255, 255, 255, 0.9)";
+        // Fade existing particle trails.
+        let prev = g.globalCompositeOperation;
+        g.globalCompositeOperation = "destination-in";
+        g.fillRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height);
+        g.globalCompositeOperation = prev;
 
-
-
-      // Draw new particle trails.
-      for(let j=0;j<this.buckets.length;j++){
-        let bucket = this.buckets[j]
-        if (bucket.length > 0) {
-          g.beginPath()
-          g.strokeStyle = this.colorStyles[j]
-          for(let i=0;i<bucket.length;i++){
-            let particle = bucket[i]
-            g.moveTo(particle.x, particle.y)
-            g.lineTo(particle.xt, particle.yt)
-            particle.x = particle.xt
-            particle.y = particle.yt
+        // Draw new particle trails.
+        for(let j=0;j<this.buckets.length;j++){
+          let bucket = this.buckets[j]
+          if (bucket.length > 0) {
+            g.beginPath()
+            g.strokeStyle = this.colorStyles[j]
+            for(let i=0;i<bucket.length;i++){
+              let particle = bucket[i]
+              g.moveTo(particle.x, particle.y)
+              g.lineTo(particle.xt, particle.yt)
+              particle.x = particle.xt
+              particle.y = particle.yt
+            }
+            g.stroke()
           }
-          g.stroke()
         }
       }
-      // let imgData = g.getImageData(this.bounds.x,this.bounds.y,this.bounds.width,this.bounds.height)
-      ctx.drawImage(this.canvas,0,0)
     }
+    let x=lng2Pixel(this.rad2deg(this.extent.west),obj.imgX,2**obj.L,256)
+    let y=lat2Pixel(this.rad2deg(this.extent.north),obj.imgY,2**obj.L,256)
+    let w=lng2Pixel(this.rad2deg(this.extent.east),obj.imgX,2**obj.L,256)-x
+    let h=lat2Pixel(this.rad2deg(this.extent.south),obj.imgY,2**obj.L,256)-y
+    // ctx.drawImage(this.canvas,0,0,this.extent.width,this.extent.height,x,y,this.extent.width,this.extent.height)
+    ctx.drawImage(this.canvas,0,0,this.extent.width,this.extent.height,x,y,w,h)
   }
 
   start( bounds:[[number,number],[number,number]], width:number, height:number, extent:[[number,number],[number,number]] ){
-    var mapBounds = {
+    let mapBounds = {
       south: this.deg2rad(extent[0][1]),
       north: this.deg2rad(extent[1][1]),
       east: this.deg2rad(extent[1][0]),
@@ -444,6 +455,7 @@ export default class Windy{
       width: width,
       height: height
     }
+    this.extent = mapBounds
     // build grid
     this.buildGrid( windyData, (grid:{})=>{
       // interpolateFiel

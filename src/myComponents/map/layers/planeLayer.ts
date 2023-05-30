@@ -16,14 +16,14 @@ export default class PlaneLayer{
     this.event.on('mousedown',(event:MouseEvent)=>{
       this.spirits.forEach(v=>{
         if(v.overlap){
-          v.event?.emit('mousedown',event)
+          v.event.emit('mousedown',event)
         }
       })
     })
     this.event.on('mouseup',(event:MouseEvent)=>{
       this.spirits.forEach(v=>{
         if(v.overlap){
-          v.event?.emit('mouseup',event)
+          v.event.emit('mouseup',event)
         }
       })
     })
@@ -48,13 +48,16 @@ export default class PlaneLayer{
       plane.name=i.toString()
       plane.vx = this.randMinMax(-2/100,2/100)
       plane.vy = this.randMinMax(-1/100,1/100)
+      // plane.vx=0
+      // plane.vy=0
       plane.lng=this.randMinMax(boundary[0],boundary[1])
       plane.lat=this.randMinMax(boundary[3],boundary[2])
       plane.cvs = document.createElement('canvas')
       plane.rad = Math.atan2(-plane.vx,plane.vy)+Math.PI
       // rad=Math.PI/180*30
-      plane.setW(16*2)
-      plane.setH(17*2)
+      plane.w=16*2
+      plane.h=17*2
+      plane.compute_width_height()
       plane.cvs.width=plane.width
       plane.cvs.height=plane.height
       plane.x=this.randMinMax(0, 640)
@@ -65,32 +68,38 @@ export default class PlaneLayer{
       plane.cvs_toolTips.width = 100
       plane.cvs_toolTips.height = 50
       let ctx_toolTips = plane.cvs_toolTips.getContext('2d')
-      if(!ctx_toolTips) throw Error('invalid ctx_toolTips')
+      if(!ctx_toolTips)throw Error('invalid ctx_toolTips')
 
       let angle = (plane.rad/Math.PI*180).toFixed(2)
       let speed = (Math.sqrt(plane.vx**2+plane.vy**2)*40000).toFixed(2)
       let text = `方向角:${angle}°\n速度:${speed}km/h`
       this.drawToolTips(plane.cvs_toolTips.width,plane.cvs_toolTips.height,text,ctx_toolTips)
-      plane.event?.on('mouseenter',(plane:Plane)=>{
+      plane.event.on('mouseenter',(plane:Plane)=>{
         // plane.showToolTips=true
         console.log('enter')
       })
-      plane.event?.on('mouseout',(plane:Plane)=>{
+      plane.event.on('mouseout',(plane:Plane)=>{
         // plane.showToolTips=false
         console.log('out',this)
       })
-      plane.event?.on('mousemove',()=>{
+      plane.event.on('mousemove',()=>{
         console.log('move',this)
       })
-      plane.event?.on('mousedown',(event:MouseEvent)=>{
+      plane.event.on('mousedown',(event:MouseEvent)=>{
+        this.spirits.forEach(v=>{
+          if(v!==plane)
+            v.showToolTips=false
+        })
         plane.showToolTips=!plane.showToolTips
-        console.log('down',plane,event)
       })
-      plane.event?.on('mouseup',(event:MouseEvent)=>{
+      plane.event.on('mouseup',(event:MouseEvent)=>{
         console.log('up',plane,event)
       })
-      plane.event?.on('click',()=>{
+      plane.event.on('click',()=>{
         console.log('click',this)
+      })
+      plane.event.on('move',(lng:number,lat:number,showToolTips:boolean)=>{
+        eventbus.emit('move',lng,lat,showToolTips)
       })
       this.spirits.push(plane)
     }
@@ -107,19 +116,18 @@ export default class PlaneLayer{
     if(!planeCtx)throw Error('invalid planeCtx')
     planeCtx.transferFromImageBitmap(bitmap)
     this.spirits.forEach((plane:Plane)=>{
-      if(!plane.cvs)throw Error('invalid cvs!')
-      let ctx = plane.cvs?.getContext('2d', { willReadFrequently:true })
+      let ctx = plane.cvs.getContext('2d', { willReadFrequently:true })
       if(!ctx)throw Error('invalid ctx!')
       ctx.save()
       ctx.translate(plane.cvs.width/2,plane.cvs.height/2)
       ctx.rotate(plane.rad)
-      ctx.drawImage(planeCvs,0,0,planeCvs.width,planeCvs.height,-plane.getW()/2,-plane.getH()/2,plane.getW(),plane.getH())
+      ctx.drawImage(planeCvs,0,0,planeCvs.width,planeCvs.height,-plane.w/2,-plane.h/2,plane.w,plane.h)
       // {
       //   ctx.fillStyle='#ffffff88'
       //   ctx.strokeStyle='white'
       //   ctx.lineWidth=1
-      //   ctx.fillRect(-plane.getW()/2,-plane.getH()/2,plane.getW(),plane.getH())
-      //   ctx.strokeRect(-plane.getW()/2+ctx.lineWidth/2,-plane.getH()/2+ctx.lineWidth/2,plane.getW()-ctx.lineWidth,plane.getH()-ctx.lineWidth)
+      //   ctx.fillRect(-plane.w/2,-plane.h/2,plane.w,plane.h)
+      //   ctx.strokeRect(-plane.w/2+ctx.lineWidth/2,-plane.h/2+ctx.lineWidth/2,plane.w-ctx.lineWidth,plane.h-ctx.lineWidth)
       //   ctx.stroke()
       // }
       ctx.restore()
@@ -138,8 +146,9 @@ export default class PlaneLayer{
     for(let i=0;i<this.spirits.length;i++) {
       let item = this.spirits[i]
 
-      item.x = lng2Pixel(item.lng,obj.imgX,2**obj.L,256)
-      item.y = lat2Pixel(item.lat,obj.imgY,2**obj.L,256)
+      item.x = lng2Pixel(item.lng,obj.imgX,2**obj.L,256)-item.width/2
+      item.y = lat2Pixel(item.lat,obj.imgY,2**obj.L,256)-item.height/2
+      item.event.emit('move',item.lng,item.lat,item.showToolTips)
 
       item.lng += item.vx*deltaTime/1000;
       item.lat -= item.vy*deltaTime/1000;
@@ -158,7 +167,7 @@ export default class PlaneLayer{
       }
       for(let i=candidates.length-1;i>=0;i--) {
         let candidate = candidates[i]
-        let ctx = candidate.cvs?.getContext('2d')
+        let ctx = candidate.cvs.getContext('2d')
         if(!ctx)throw Error('invalid ctx')
         let imgData = ctx.getImageData(0,0,candidate.width,candidate.height)
         ctx.save()
@@ -183,13 +192,13 @@ export default class PlaneLayer{
         }
       }
     }
-    // this.drawQuadtree(ctx,this.quadtree)
+    this.drawQuadtree(ctx,this.quadtree)
     this.drawObjects(ctx)
   }
   drawObjects(ctx:any) {
-    let 矩形碰撞框 = false
-    let 需要检测 = false
-    let intersection = false
+    let 矩形碰撞框 = true
+    let 需要检测 = true
+    let intersection = true
     for(var i=0;i<this.spirits.length;i++) {
       let item = this.spirits[i]
       ctx.save()
@@ -205,7 +214,7 @@ export default class PlaneLayer{
             ctx.translate(item.width/2,item.height/2)
             ctx.rotate(item.rad)
             ctx.fillStyle = 'rgba(48,255,48,0.5)';
-            ctx.fillRect(-item.getW()/2,-item.getH()/2,item.getW(),item.getH())
+            ctx.fillRect(-item.w/2,-item.h/2,item.w,item.h)
             ctx.restore()
           }
           item.cvs&&ctx.drawImage(item.cvs,0,0,item.cvs.width,item.cvs.height,0,0,item.width,item.height)
@@ -227,14 +236,14 @@ export default class PlaneLayer{
         this.spirits.forEach(v=>{
           if(v!==item&&v.lastOverlap&&!v.overlap){
             v.lastOverlap=false
-            v.event?.emit('mouseout',v)
+            v.event.emit('mouseout',v)
           }
         })
         item.lastOverlap=true
-        item.event?.emit('mouseenter',item)
+        item.event.emit('mouseenter',item)
       }else if(item.lastOverlap&&!item.overlap){
         item.lastOverlap=false
-        item.event?.emit('mouseout',item)
+        item.event.emit('mouseout',item)
       }
     }
   }
