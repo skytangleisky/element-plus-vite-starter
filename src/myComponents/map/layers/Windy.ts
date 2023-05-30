@@ -1,5 +1,5 @@
 import { lat2Pixel, lng2Pixel } from '../js/core.js'
-import windyData from './gfs.js'
+import windyData from './gfs2.js'
 class Field{
   null_wind_vector:[number,number,null]
   columns:any[]
@@ -57,15 +57,17 @@ export default class Windy{
 
   interval:number
   then:number
+  preTime:number
   constructor(){
-    this.interval = 1000/10
+    this.preTime = 0
+    this.interval = 0
     this.then = 0
-    this.VELOCITY_SCALE = 0.011;               // scale for wind velocity (completely arbitrary--this value looks nice) // default: 0.011
+    this.VELOCITY_SCALE = 0.011*4;               // scale for wind velocity (completely arbitrary--this value looks nice) // default: 0.011
     this.INTENSITY_SCALE_STEP = 10;            // step size of particle intensity color scale // default:10
     this.MAX_WIND_INTENSITY = 40;              // wind velocity at which particle intensity is maximum (m/s)
     this.MAX_PARTICLE_AGE = 100;                // max number of frames a particle is drawn before regeneration // default: 100
-    this.PARTICLE_LINE_WIDTH = 1;              // line width of a drawn particle // default: 1
-    this.PARTICLE_MULTIPLIER = 1/300;         // particle count scalar (completely arbitrary--this values looks nice) // default: 1/30
+    this.PARTICLE_LINE_WIDTH = 2;              // line width of a drawn particle // default: 1
+    this.PARTICLE_MULTIPLIER = 1/600;         // particle count scalar (completely arbitrary--this values looks nice) // default: 1/30
     this.NULL_WIND_VECTOR = [NaN, NaN, null];  // singleton for no wind in the form: [u, v, magnitude]
     this.pausing = true
     this.CANDRAW = false
@@ -370,11 +372,15 @@ export default class Windy{
     this.indexFor = indexFor
     this.colorStyles = colorStyles
     this.bounds = bounds
+    this.preTime = performance.now()
     this.CANDRAW = true
   }
 
 
   evolve(){
+    let now = performance.now()
+    let deltaTime = now - this.preTime
+    this.preTime = now
     this.buckets.forEach(function(bucket:any) { bucket.length = 0; });
     this.particles.forEach((particle:any)=>{
       if (particle.age > this.MAX_PARTICLE_AGE) {
@@ -387,8 +393,8 @@ export default class Windy{
       if (m === null) {
         particle.age = this.MAX_PARTICLE_AGE;  // particle has escaped the grid, never to return...
       }else{
-        let xt = x + v[0];
-        let yt = y + v[1];
+        let xt = x + v[0]*deltaTime/1000;
+        let yt = y + v[1]*deltaTime/1000;
         if (this.field.field(xt, yt)[2] !== null) {
           // Path from (x,y) to (xt,yt) is visible, so add this particle to the appropriate draw bucket.
           particle.xt = xt;
@@ -401,7 +407,7 @@ export default class Windy{
         }
       }
       particle.age += 1;
-    });
+    })
   }
   render(obj:any,ctx:CanvasRenderingContext2D){
     let time = performance.now()
@@ -413,7 +419,7 @@ export default class Windy{
         g.lineWidth = this.PARTICLE_LINE_WIDTH;
 
 
-        g.fillStyle = "rgba(255, 255, 255, 0.9)";
+        g.fillStyle = "rgba(255, 255, 255, 0.95)";
         // Fade existing particle trails.
         let prev = g.globalCompositeOperation;
         g.globalCompositeOperation = "destination-in";

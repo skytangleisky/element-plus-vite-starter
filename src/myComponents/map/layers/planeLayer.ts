@@ -14,11 +14,16 @@ export default class PlaneLayer{
   constructor(){
     this.event=new Eventbus()
     this.event.on('mousedown',(event:MouseEvent)=>{
+      let overlap = false
       this.spirits.forEach(v=>{
         if(v.overlap){
+          overlap = true
           v.event.emit('mousedown',event)
         }
       })
+      if(!overlap){
+        eventbus.emit('mousedown',event)
+      }
     })
     this.event.on('mouseup',(event:MouseEvent)=>{
       this.spirits.forEach(v=>{
@@ -43,15 +48,19 @@ export default class PlaneLayer{
     this.spirits=Array<Plane>()
     this.getImage()
     let boundary=[110,120,41,38]
-    for(var i=0;i<200;i++) {
+    let POINT = {lng:116.39139324235674,lat:39.90723893689098}
+    for(var i=0;i<1;i++) {
       let plane = new Plane()
       plane.name=i.toString()
       plane.vx = this.randMinMax(-2/100,2/100)
       plane.vy = this.randMinMax(-1/100,1/100)
-      // plane.vx=0
-      // plane.vy=0
-      plane.lng=this.randMinMax(boundary[0],boundary[1])
-      plane.lat=this.randMinMax(boundary[3],boundary[2])
+      plane.vx=0
+      plane.vy=0
+      // plane.lng=this.randMinMax(boundary[0],boundary[1])
+      // plane.lat=this.randMinMax(boundary[3],boundary[2])
+      let convert = wgs84togcj02(POINT.lng,POINT.lat)
+      plane.lng=convert[0]
+      plane.lat=convert[1]
       plane.cvs = document.createElement('canvas')
       plane.rad = Math.atan2(-plane.vx,plane.vy)+Math.PI
       // rad=Math.PI/180*30
@@ -99,7 +108,9 @@ export default class PlaneLayer{
         console.log('click',this)
       })
       plane.event.on('move',(lng:number,lat:number,showToolTips:boolean)=>{
-        eventbus.emit('move',lng,lat,showToolTips)
+        if(showToolTips){
+          eventbus.emit('move',lng,lat,showToolTips)
+        }
       })
       this.spirits.push(plane)
     }

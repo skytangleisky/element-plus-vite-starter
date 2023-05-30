@@ -1,6 +1,7 @@
 <template>
-  <ol class="menu absolute flex items-start content-center flex-row m-0 h-full p-0" style="min-width: 100%;overflow: hidden;"><!--导航栏-->
+  <ol class="menu relative flex items-start content-center flex-row m-0 h-full p-0" style="overflow: hidden;"><!--导航栏-->
     <my-map></my-map>
+    <slot></slot>
     <box style="position: absolute;bottom:0;right:0;">
       <span id="fps"></span>
       <span id="spend"></span>

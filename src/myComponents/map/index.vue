@@ -7,11 +7,12 @@
       <div v-for="(v,k) in urls" :style="'border:1px solid grey;background-position:-0px -0px;background-repeat:no-repeat;width:50px;height:50px;'+'background-image:url('+v.url.replace('{x}','105').replace('{y}','48').replace('{z}','7')+');'" @click.native="tileSelect(v)"></div>
     </div>
   </div>
+  <div ref="map_mask" class="map_mask"></div>
 </template>
 <script lang="ts" setup>
   import { onBeforeUnmount, onMounted, ref } from 'vue'
   import { MapLayer, BorderLayer, PointLayer, RouteLayer, PlaneLayer } from './layers'
-  import { gsap, Power3 } from 'gsap'
+  import { gsap, Power3, Linear } from 'gsap'
   import { windowToCanvas, pixel2Lng, pixel2Lat, lng2Pixel, lat2Pixel, lngLat2Pixel } from './js/core'
   import { wgs84togcj02 } from './workers/mapUtil'
   import { useSettingStore } from '~/stores/setting'
@@ -31,6 +32,7 @@ import { eventbus } from '~/eventbus'
   const windy = new Windy()
   let canvas = ref(null)
   let webgpu = ref(null)
+  let map_mask = ref(null)
   // let POINT = {lng:113.42165142106768,lat:23.098844381632485}
   let POINT = {lng:116.39139324235674,lat:39.90723893689098}
   const urls = ref([
@@ -110,7 +112,6 @@ import { eventbus } from '~/eventbus'
       throw new Error('invalid ctx')
     }
 
-
     // if(webgpu.value)
     //   run(webgpu.value)
     // demo()
@@ -138,28 +139,38 @@ import { eventbus } from '~/eventbus'
         obj.imgX = cvs.width/2-(center[0]+180)/360*tileWidth*2**obj.L
         obj.imgY = cvs.height/2-(1-Math.asinh(Math.tan(center[1]*Math.PI/180))/Math.PI)/2*2**obj.L*tileWidth
       }else{
-        obj.imgX = cvs.width/2-tileWidth*2**obj.L*(POINT.lng+180)/360
-        obj.imgY = cvs.height/2-(1-Math.asinh(Math.tan(POINT.lat*Math.PI/180))/Math.PI)/2*2**obj.L*tileWidth
+        let convert = wgs84togcj02(POINT.lng,POINT.lat)
+        obj.imgX = cvs.width/2-tileWidth*2**obj.L*(convert[0]+180)/360
+        obj.imgY = cvs.height/2-(1-Math.asinh(Math.tan(convert[1]*Math.PI/180))/Math.PI)/2*2**obj.L*tileWidth
       }
       limitScale()
       limitRegion()
       loadMap()
       needRedraw=true
-      windy.start([[0,0],[cvs.width,cvs.height]],cvs.width,cvs.height,[[pixel2Lng(0,obj.imgX,2**obj.L,256), pixel2Lat(cvs.height,obj.imgY,2**obj.L,256)],[pixel2Lng(cvs.width,obj.imgX,2**obj.L,256), pixel2Lat(0,obj.imgY,2**obj.L,256)]])
+      // windy.start([[0,0],[cvs.width,cvs.height]],cvs.width,cvs.height,[[pixel2Lng(0,obj.imgX,2**obj.L,256), pixel2Lat(cvs.height,obj.imgY,2**obj.L,256)],[pixel2Lng(cvs.width,obj.imgX,2**obj.L,256), pixel2Lat(0,obj.imgY,2**obj.L,256)]])
       draw()
     }).observe(cvs)
     cvs.addEventListener('mousemove',cvsmousemoveFunc,{passive:true})
     cvs.addEventListener('mouseout',mouseoutFunc,{passive:true})
     cvs.addEventListener('mousewheel',mousewheelFunc,{passive:true})
-    cvs.addEventListener('mousedown',(event:MouseEvent)=>{
+    eventbus.on('mousedown',(event:MouseEvent)=>{
+      mask.style.display='block'
       mousedownFunc(event)
+    })
+    if(map_mask.value==null){
+      throw Error('invalid map_mask')
+    }
+    let mask:HTMLDivElement = map_mask.value
+    cvs.addEventListener('mousedown',(event:MouseEvent)=>{
       planeLayer.event.emit('mousedown',event)
     },{passive:true})
     document.addEventListener('mouseup',(event:MouseEvent)=>{
+      mask.style.display='none'
       mouseupFunc(event)
       planeLayer.event.emit('mouseup',event)
     },{passive:true})
     document.addEventListener('mousemove',mousemoveFunc,{passive:true})
+    document.addEventListener('mousewheel',mousewheelFunc,{passive:true})
 
     eventbus.on('move',(lng:number,lat:number,showToolTips:boolean)=>{
       if(showToolTips){
@@ -314,8 +325,8 @@ import { eventbus } from '~/eventbus'
       borderLayer.render(obj,ctx)
       pointLayer.render(obj,ctx)
       routeLayer.render(obj,ctx)
+      // windy.render(obj,ctx)
       planeLayer.render(obj,ctx)
-      windy.render(obj,ctx)
       ctx.restore()
 
       ctx.save()
@@ -343,6 +354,16 @@ import { eventbus } from '~/eventbus'
       ctx.closePath()
       ctx.stroke()
       ctx.restore()
+      if(newPos){
+        ctx.save()
+        let x = newPos.x/1000*2**obj.L+obj.imgX
+        let y = newPos.y/1000*2**obj.L+obj.imgY
+        ctx.fillStyle='yellow'
+        ctx.beginPath()
+        ctx.arc(x,y,3,0,Math.PI*2)
+        ctx.fill()
+        ctx.restore()
+      }
     }
   }
   const loadMap = () => {
@@ -364,10 +385,10 @@ import { eventbus } from '~/eventbus'
     planeLayer.isMouseOver = false
   }
   const mousedownFunc = (event:MouseEvent) => {
-    obj.targetL = obj.L
     gsap.killTweensOf(mousemove)
     gsap.killTweensOf(obj)
     gsap.killTweensOf(newPos)
+    obj.targetL = obj.L
     isMouseDown=true
     // panel&&panel.mousedownFunc(event)
     let tmp = windowToCanvas(event.clientX, event.clientY,cvs)
@@ -424,6 +445,9 @@ import { eventbus } from '~/eventbus'
           // plane&&plane.setPos(obj.imgX,obj.imgY,2**obj.L)
           localStorage.L=obj.L
           localStorage.center=JSON.stringify([pixel2Lng(cvs.width/2,obj.imgX,2**obj.L,tileWidth),pixel2Lat(cvs.height/2,obj.imgY,2**obj.L,tileWidth)])
+        },
+        onComplete(){
+          // windy.start([[0,0],[cvs.width,cvs.height]],cvs.width,cvs.height,[[pixel2Lng(0,obj.imgX,2**obj.L,256), pixel2Lat(cvs.height,obj.imgY,2**obj.L,256)],[pixel2Lng(cvs.width,obj.imgX,2**obj.L,256), pixel2Lat(0,obj.imgY,2**obj.L,256)]])
         },
         ease:Power3.easeOut
       })
@@ -500,6 +524,9 @@ import { eventbus } from '~/eventbus'
         // panel&&panel.setPos(obj.imgX,obj.imgY,2**obj.L)
         // plane&&plane.setPos(obj.imgX,obj.imgY,2**obj.L)
       },
+      onComplete(){
+        // windy.start([[0,0],[cvs.width,cvs.height]],cvs.width,cvs.height,[[pixel2Lng(0,obj.imgX,2**obj.L,256), pixel2Lat(cvs.height,obj.imgY,2**obj.L,256)],[pixel2Lng(cvs.width,obj.imgX,2**obj.L,256), pixel2Lat(0,obj.imgY,2**obj.L,256)]])
+      },
       ease:Power3.easeOut
     })
   }
@@ -524,7 +551,7 @@ import { eventbus } from '~/eventbus'
     }
   }
   let boundary = [-180,180,Math.atan(Math.sinh(Math.PI))*180/Math.PI,-Math.atan(Math.sinh(Math.PI))*180/Math.PI]
-  // boundary=[110,120,41,38]
+  boundary=[109,121,42,37]
   const limitRegion = () => {
     if(限制){
       if(boundary[1]-boundary[0]>0){
@@ -577,7 +604,7 @@ import { eventbus } from '~/eventbus'
       obj.targetL = targetL
       gsap.killTweensOf(obj)
       gsap.to(obj, {
-        duration:10,
+        duration:5,
         L: obj.targetL,
         onUpdate: ()=>{
           obj.imgX=cvs.width/2 - 2**obj.L*newPos.x/1000
@@ -597,7 +624,7 @@ import { eventbus } from '~/eventbus'
     gsap.killTweensOf(mousemove)
     gsap.killTweensOf(newPos)
     gsap.to(newPos, {
-      duration:10,
+      duration:5,
       x: newPos.targetX,
       y: newPos.targetY,
       onUpdate:()=>{
@@ -606,7 +633,7 @@ import { eventbus } from '~/eventbus'
         limitRegion()
         loadMap()
       },
-      ease:Power3.easeOut
+      ease:Linear.easeNone
     })
   }
   const testClick = ()=>{
@@ -629,5 +656,13 @@ import { eventbus } from '~/eventbus'
     display: block;
   }
 }
-
+.map_mask{
+  display:none;
+  background-color: #ff000055;
+  position:absolute;
+  left:0;
+  top:0;
+  width: 100%;
+  height:100%;
+}
 </style>
