@@ -172,7 +172,7 @@ import { eventbus } from '~/eventbus'
     document.addEventListener('mousemove',mousemoveFunc,{passive:true})
     document.addEventListener('mousewheel',mousewheelFunc,{passive:true})
 
-    eventbus.on('move',(lng:number,lat:number,showToolTips:boolean)=>{
+    eventbus.on('move',(lng:number,lat:number)=>{
       flyTo(lng,lat,{duration:0})
     })
   })
@@ -594,17 +594,18 @@ import { eventbus } from '~/eventbus'
     // panel&&panel.setPos(obj.imgX,obj.imgY,2**obj.L)
   }
   const flyTo = (lng:number,lat:number,option:{targetL?:number;duration?:number}|undefined=undefined) => {
+
     Object.assign(mousemove,{
-      x:lng2Pixel(lng,obj.imgX,2**obj.L,tileWidth),
-      y:lat2Pixel(lat,obj.imgY,2**obj.L,tileWidth),
-      targetX:lng2Pixel(lng,cvs.width/2-(lng+180)/360*tileWidth*(2**obj.targetL),2**obj.targetL,tileWidth),
-      targetY:lat2Pixel(lat,cvs.height/2-(1-Math.asinh(Math.tan(lat*Math.PI/180))/Math.PI)/2*(2**obj.targetL)*tileWidth,2**obj.targetL,tileWidth)
+      // x:lng2Pixel(lng,cvs.width/2-(lng+180)/360*tileWidth*(2**obj.targetL),2**obj.targetL,tileWidth),
+      // y:lat2Pixel(lat,cvs.height/2-(1-Math.asinh(Math.tan(lat*Math.PI/180))/Math.PI)/2*(2**obj.targetL)*tileWidth,2**obj.targetL,tileWidth),
+      targetX:lng2Pixel(lng,obj.imgX,2**obj.L,tileWidth),
+      targetY:lat2Pixel(lat,obj.imgY,2**obj.L,tileWidth)
     })
     Object.assign(newPos,{
-      // x:((cvs.width/2-obj.imgX)/((2**obj.L)*tileWidth)),
-      // y:((cvs.height/2-obj.imgY)/((2**obj.L)*tileWidth)),
-      targetX:((mousemove.x-obj.imgX)/((2**obj.L)*tileWidth)),
-      targetY:((mousemove.y-obj.imgY)/((2**obj.L)*tileWidth))
+      x:((cvs.width/2-obj.imgX)/((2**obj.L)*tileWidth)),
+      y:((cvs.height/2-obj.imgY)/((2**obj.L)*tileWidth)),
+      targetX:((mousemove.targetX-obj.imgX)/((2**obj.L)*tileWidth)),
+      targetY:((mousemove.targetY-obj.imgY)/((2**obj.L)*tileWidth))
     })
     if(option&&option.targetL!=undefined){
       obj.targetL = option.targetL
@@ -646,8 +647,8 @@ import { eventbus } from '~/eventbus'
     })
   }
   const testClick = ()=>{
-    // let convert = wgs84togcj02(POINT.lng,POINT.lat)
-    // flyTo(convert[0],convert[1],13)
+    let convert = wgs84togcj02(POINT.lng,POINT.lat)
+    flyTo(convert[0],convert[1],{targetL:10})
   }
 </script>
 <style lang="scss">

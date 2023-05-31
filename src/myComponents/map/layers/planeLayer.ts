@@ -1,7 +1,7 @@
 import textureUrl from '../../../assets/aircraft.png?url'
 import Quadtree, { Rect } from '@timohausmann/quadtree-js'
 import { wgs84togcj02 } from '../workers/mapUtil'
-import { lng2Pixel, lat2Pixel, pixel2Lng, pixel2Lat } from '../js/core'
+import { lng2Pixel, lat2Pixel, pixel2Lng, pixel2Lat, pixel2LngLat } from '../js/core'
 import Eventbus,{ eventbus } from '../../../eventbus'
 import Plane from './Plane'
 export default class PlaneLayer{
@@ -155,19 +155,15 @@ export default class PlaneLayer{
     this.quadtree.clear()
     for(let i=0;i<this.spirits.length;i++) {
       let item = this.spirits[i]
-
-      let x = lng2Pixel(item.lng,obj.imgX,2**obj.L,256)-item.width/2
-      let y = lat2Pixel(item.lat,obj.imgY,2**obj.L,256)-item.height/2
-      item.x=x
-      item.y=y
+      item.x = lng2Pixel(item.lng,obj.imgX,2**obj.L,256)-item.width/2
+      item.y = lat2Pixel(item.lat,obj.imgY,2**obj.L,256)-item.height/2
       if(item.showToolTips){
+        console.log(item.x,item.y)
         item.event.emit('move',item.lng,item.lat)
       }
-      x += item.vx*deltaTime
-      y += item.vy*deltaTime
+      item.lng += item.vx*deltaTime/1000;
+      item.lat -= item.vy*deltaTime/1000;
 
-      item.lng = pixel2Lng(x+item.width/2,obj.imgX,2**obj.L,256)
-      item.lat = pixel2Lat(y+item.height/2,obj.imgY,2**obj.L,256)
       item.check = false
       item.overlap = false
       this.quadtree.insert(item);
