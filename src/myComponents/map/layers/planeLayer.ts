@@ -1,7 +1,7 @@
 import textureUrl from '../../../assets/aircraft.png?url'
 import Quadtree, { Rect } from '@timohausmann/quadtree-js'
 import { wgs84togcj02 } from '../workers/mapUtil'
-import { lng2Pixel, lat2Pixel } from '../js/core'
+import { lng2Pixel, lat2Pixel, pixel2Lng, pixel2Lat } from '../js/core'
 import Eventbus,{ eventbus } from '../../../eventbus'
 import Plane from './Plane'
 export default class PlaneLayer{
@@ -28,7 +28,7 @@ export default class PlaneLayer{
     this.event.on('mouseup',(event:MouseEvent)=>{
       this.spirits.forEach(v=>{
         if(v.overlap){
-          v.event.emit('mouseup',event)
+          // v.event.emit('mouseup',event)
         }
       })
     })
@@ -48,19 +48,19 @@ export default class PlaneLayer{
     this.spirits=Array<Plane>()
     this.getImage()
     let boundary=[110,120,41,38]
-    let POINT = {lng:116.39139324235674,lat:39.90723893689098}
-    for(var i=0;i<1;i++) {
+    // let POINT = {lng:116.39139324235674,lat:39.90723893689098}
+    for(var i=0;i<200;i++) {
       let plane = new Plane()
       plane.name=i.toString()
       plane.vx = this.randMinMax(-2/100,2/100)
       plane.vy = this.randMinMax(-1/100,1/100)
-      plane.vx=0
-      plane.vy=0
-      // plane.lng=this.randMinMax(boundary[0],boundary[1])
-      // plane.lat=this.randMinMax(boundary[3],boundary[2])
-      let convert = wgs84togcj02(POINT.lng,POINT.lat)
-      plane.lng=convert[0]
-      plane.lat=convert[1]
+      // plane.vx=0
+      // plane.vy=0
+      plane.lng=this.randMinMax(boundary[0],boundary[1])
+      plane.lat=this.randMinMax(boundary[3],boundary[2])
+      // let convert = wgs84togcj02(POINT.lng,POINT.lat)
+      // plane.lng=convert[0]
+      // plane.lat=convert[1]
       plane.cvs = document.createElement('canvas')
       plane.rad = Math.atan2(-plane.vx,plane.vy)+Math.PI
       // rad=Math.PI/180*30
@@ -85,11 +85,11 @@ export default class PlaneLayer{
       this.drawToolTips(plane.cvs_toolTips.width,plane.cvs_toolTips.height,text,ctx_toolTips)
       plane.event.on('mouseenter',(plane:Plane)=>{
         // plane.showToolTips=true
-        console.log('enter')
+        // console.log('enter')
       })
       plane.event.on('mouseout',(plane:Plane)=>{
         // plane.showToolTips=false
-        console.log('out',this)
+        // console.log('out',this)
       })
       plane.event.on('mousemove',()=>{
         console.log('move',this)
@@ -102,15 +102,13 @@ export default class PlaneLayer{
         plane.showToolTips=!plane.showToolTips
       })
       plane.event.on('mouseup',(event:MouseEvent)=>{
-        console.log('up',plane,event)
+        // console.log('up',plane,event)
       })
       plane.event.on('click',()=>{
         console.log('click',this)
       })
-      plane.event.on('move',(lng:number,lat:number,showToolTips:boolean)=>{
-        if(showToolTips){
-          eventbus.emit('move',lng,lat,showToolTips)
-        }
+      plane.event.on('move',(lng:number,lat:number)=>{
+        eventbus.emit('move',lng,lat)
       })
       this.spirits.push(plane)
     }
@@ -143,6 +141,7 @@ export default class PlaneLayer{
       // }
       ctx.restore()
     })
+    this.preTime=performance.now()
   }
   randMinMax(min:number, max:number, round:boolean|undefined=undefined):number{
     let val = min + (Math.random() * (max - min));
@@ -157,12 +156,18 @@ export default class PlaneLayer{
     for(let i=0;i<this.spirits.length;i++) {
       let item = this.spirits[i]
 
-      item.x = lng2Pixel(item.lng,obj.imgX,2**obj.L,256)-item.width/2
-      item.y = lat2Pixel(item.lat,obj.imgY,2**obj.L,256)-item.height/2
-      item.event.emit('move',item.lng,item.lat,item.showToolTips)
+      let x = lng2Pixel(item.lng,obj.imgX,2**obj.L,256)-item.width/2
+      let y = lat2Pixel(item.lat,obj.imgY,2**obj.L,256)-item.height/2
+      item.x=x
+      item.y=y
+      if(item.showToolTips){
+        item.event.emit('move',item.lng,item.lat)
+      }
+      x += item.vx*deltaTime
+      y += item.vy*deltaTime
 
-      item.lng += item.vx*deltaTime/1000;
-      item.lat -= item.vy*deltaTime/1000;
+      item.lng = pixel2Lng(x+item.width/2,obj.imgX,2**obj.L,256)
+      item.lat = pixel2Lat(y+item.height/2,obj.imgY,2**obj.L,256)
       item.check = false
       item.overlap = false
       this.quadtree.insert(item);
@@ -207,9 +212,9 @@ export default class PlaneLayer{
     this.drawObjects(ctx)
   }
   drawObjects(ctx:any) {
-    let 矩形碰撞框 = true
-    let 需要检测 = true
-    let intersection = true
+    let 矩形碰撞框 = false
+    let 需要检测 = false
+    let intersection = false
     for(var i=0;i<this.spirits.length;i++) {
       let item = this.spirits[i]
       ctx.save()

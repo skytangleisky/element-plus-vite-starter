@@ -86,9 +86,9 @@ import { eventbus } from '~/eventbus'
   const minLevel = 0
   const maxLevel = 22
   const 限制 = true
-  let mousemove:Pos
-  let pos:Pos
-  let posl:Pos
+  let mousemove:Pos={x:0,y:0,targetX:0,targetY:0}
+  let pos:Pos={x:0,y:0,targetX:0,targetY:0}
+  let posl:Pos={x:0,y:0,targetX:0,targetY:0}
   let currentLngLat:{
     lng:number
     lat:number
@@ -98,7 +98,7 @@ import { eventbus } from '~/eventbus'
     y:number
     targetX:number
     targetY:number
-  }
+  }={x:0,y:0,targetX:0,targetY:0}
   onMounted(async()=>{
     if(canvas.value){
       cvs = canvas.value
@@ -147,7 +147,7 @@ import { eventbus } from '~/eventbus'
       limitRegion()
       loadMap()
       needRedraw=true
-      // windy.start([[0,0],[cvs.width,cvs.height]],cvs.width,cvs.height,[[pixel2Lng(0,obj.imgX,2**obj.L,256), pixel2Lat(cvs.height,obj.imgY,2**obj.L,256)],[pixel2Lng(cvs.width,obj.imgX,2**obj.L,256), pixel2Lat(0,obj.imgY,2**obj.L,256)]])
+      windy.start([[0,0],[cvs.width,cvs.height]],cvs.width,cvs.height,[[pixel2Lng(0,obj.imgX,2**obj.L,256), pixel2Lat(cvs.height,obj.imgY,2**obj.L,256)],[pixel2Lng(cvs.width,obj.imgX,2**obj.L,256), pixel2Lat(0,obj.imgY,2**obj.L,256)]])
       draw()
     }).observe(cvs)
     cvs.addEventListener('mousemove',cvsmousemoveFunc,{passive:true})
@@ -173,9 +173,7 @@ import { eventbus } from '~/eventbus'
     document.addEventListener('mousewheel',mousewheelFunc,{passive:true})
 
     eventbus.on('move',(lng:number,lat:number,showToolTips:boolean)=>{
-      if(showToolTips){
-        flyTo(lng,lat)
-      }
+      flyTo(lng,lat,{duration:0})
     })
   })
   onBeforeUnmount(()=>{
@@ -356,8 +354,8 @@ import { eventbus } from '~/eventbus'
       ctx.restore()
       if(newPos){
         ctx.save()
-        let x = newPos.x/1000*2**obj.L+obj.imgX
-        let y = newPos.y/1000*2**obj.L+obj.imgY
+        let x = newPos.x*tileWidth*2**obj.L+obj.imgX
+        let y = newPos.y*tileWidth*2**obj.L+obj.imgY
         ctx.fillStyle='yellow'
         ctx.beginPath()
         ctx.arc(x,y,3,0,Math.PI*2)
@@ -392,11 +390,11 @@ import { eventbus } from '~/eventbus'
     isMouseDown=true
     // panel&&panel.mousedownFunc(event)
     let tmp = windowToCanvas(event.clientX, event.clientY,cvs)
-    mousemove = {x:tmp.x,y:tmp.y,targetX:tmp.x,targetY:tmp.y}
-    posl = mousemove
-    let x = (mousemove.x-obj.imgX)/2**obj.L*1000
-    let y = (mousemove.y-obj.imgY)/2**obj.L*1000
-    newPos = {x, y,targetX:x,targetY:y}
+    Object.assign(mousemove,{x:tmp.x,y:tmp.y,targetX:tmp.x,targetY:tmp.y})
+    Object.assign(posl,mousemove)
+    let x = (mousemove.x-obj.imgX)/((2**obj.L)*tileWidth)
+    let y = (mousemove.y-obj.imgY)/((2**obj.L)*tileWidth)
+    Object.assign(newPos,{x, y,targetX:x,targetY:y})
   }
   const cvsmousemoveFunc = (evt:MouseEvent) => {
     planeLayer.isMouseOver=true
@@ -436,8 +434,8 @@ import { eventbus } from '~/eventbus'
         x:mousemove.targetX,
         y:mousemove.targetY,
         onUpdate: ()=>{
-          obj.imgX=mousemove.x - 2**obj.L*newPos.x/1000
-          obj.imgY=mousemove.y - 2**obj.L*newPos.y/1000
+          obj.imgX=mousemove.x - newPos.x*tileWidth*2**obj.L
+          obj.imgY=mousemove.y - newPos.y*tileWidth*2**obj.L
           limitRegion()
           loadMap()
           // emitter.emit('mapChange',obj)
@@ -470,12 +468,12 @@ import { eventbus } from '~/eventbus'
     gsap.killTweensOf(newPos)
     if(!isMouseDown||!mousemove){
       let tmp = windowToCanvas(event.clientX, event.clientY,cvs)
-      mousemove = {x:tmp.x,y:tmp.y,targetX:tmp.x,targetY:tmp.y}
+      Object.assign(mousemove,{x:tmp.x,y:tmp.y,targetX:tmp.x,targetY:tmp.y})
     }
     // drawScale(2**obj.L,cvs_scale,pixel2Lat(mousemove.y,obj.imgY,2**obj.L,tileWidth))
-    let x=(mousemove.x-obj.imgX)/2**obj.L*1000
-    let y=(mousemove.y-obj.imgY)/2**obj.L*1000
-    newPos = {x,y,targetX:x,targetY:y}
+    let x=(mousemove.x-obj.imgX)/((2**obj.L)*tileWidth)
+    let y=(mousemove.y-obj.imgY)/((2**obj.L)*tileWidth)
+    Object.assign(newPos,{x,y,targetX:x,targetY:y})
     // console.log(event.wheelDeltaY)
     let delta = event.wheelDeltaY/120
     obj.targetL+=delta
@@ -514,8 +512,8 @@ import { eventbus } from '~/eventbus'
       duration:period,
       L: obj.targetL,
       onUpdate: ()=>{
-        obj.imgX=mousemove.x - 2**obj.L*newPos.x/1000
-        obj.imgY=mousemove.y - 2**obj.L*newPos.y/1000
+        obj.imgX=mousemove.x - newPos.x*tileWidth*2**obj.L
+        obj.imgY=mousemove.y - newPos.y*tileWidth*2**obj.L
         localStorage.L=obj.L
         localStorage.center=JSON.stringify([pixel2Lng(cvs.width/2,obj.imgX,2**obj.L,tileWidth),pixel2Lat(cvs.height/2,obj.imgY,2**obj.L,tileWidth)])
         limitRegion()
@@ -551,7 +549,7 @@ import { eventbus } from '~/eventbus'
     }
   }
   let boundary = [-180,180,Math.atan(Math.sinh(Math.PI))*180/Math.PI,-Math.atan(Math.sinh(Math.PI))*180/Math.PI]
-  boundary=[109,121,42,37]
+  // boundary=[109,121,42,37]
   const limitRegion = () => {
     if(限制){
       if(boundary[1]-boundary[0]>0){
@@ -595,20 +593,28 @@ import { eventbus } from '~/eventbus'
     // plane&&plane.setPos(obj.imgX,obj.imgY,2**obj.L)
     // panel&&panel.setPos(obj.imgX,obj.imgY,2**obj.L)
   }
-  const flyTo = (lng:number,lat:number,targetL:number|undefined=undefined) => {
-    let x = lng2Pixel(lng,obj.imgX,2**obj.L,tileWidth)
-    let y = lat2Pixel(lat,obj.imgY,2**obj.L,tileWidth)
-    mousemove = {x,y,targetX:lng2Pixel(lng,cvs.width/2-(lng+180)/360*tileWidth*(2**obj.targetL),2**obj.targetL,tileWidth),targetY:lat2Pixel(lat,cvs.height/2-(1-Math.asinh(Math.tan(lat*Math.PI/180))/Math.PI)/2*(2**obj.targetL)*tileWidth,2**obj.targetL,tileWidth)}
-    newPos = {x:((cvs.width/2-obj.imgX)/2**obj.L) *1000, y:((cvs.height/2-obj.imgY)/2**obj.L)*1000,targetX:((mousemove.x-obj.imgX)/2**obj.L)*1000, targetY:((mousemove.y-obj.imgY)/2**obj.L)*1000}
-    if(targetL!=undefined){
-      obj.targetL = targetL
+  const flyTo = (lng:number,lat:number,option:{targetL?:number;duration?:number}|undefined=undefined) => {
+    Object.assign(mousemove,{
+      x:lng2Pixel(lng,obj.imgX,2**obj.L,tileWidth),
+      y:lat2Pixel(lat,obj.imgY,2**obj.L,tileWidth),
+      targetX:lng2Pixel(lng,cvs.width/2-(lng+180)/360*tileWidth*(2**obj.targetL),2**obj.targetL,tileWidth),
+      targetY:lat2Pixel(lat,cvs.height/2-(1-Math.asinh(Math.tan(lat*Math.PI/180))/Math.PI)/2*(2**obj.targetL)*tileWidth,2**obj.targetL,tileWidth)
+    })
+    Object.assign(newPos,{
+      // x:((cvs.width/2-obj.imgX)/((2**obj.L)*tileWidth)),
+      // y:((cvs.height/2-obj.imgY)/((2**obj.L)*tileWidth)),
+      targetX:((mousemove.x-obj.imgX)/((2**obj.L)*tileWidth)),
+      targetY:((mousemove.y-obj.imgY)/((2**obj.L)*tileWidth))
+    })
+    if(option&&option.targetL!=undefined){
+      obj.targetL = option.targetL
       gsap.killTweensOf(obj)
       gsap.to(obj, {
-        duration:5,
+        duration:option?(option.duration!==undefined?option.duration:2):2,
         L: obj.targetL,
         onUpdate: ()=>{
-          obj.imgX=cvs.width/2 - 2**obj.L*newPos.x/1000
-          obj.imgY=cvs.height/2 - 2**obj.L*newPos.y/1000
+          obj.imgX=cvs.width/2 - newPos.x*tileWidth*2**obj.L
+          obj.imgY=cvs.height/2 - newPos.y*tileWidth*2**obj.L
           limitScale()
           localStorage.L=obj.L
           localStorage.center=JSON.stringify([pixel2Lng(cvs.width/2,obj.imgX,2**obj.L,tileWidth),pixel2Lat(cvs.height/2,obj.imgY,2**obj.L,tileWidth)])
@@ -624,16 +630,19 @@ import { eventbus } from '~/eventbus'
     gsap.killTweensOf(mousemove)
     gsap.killTweensOf(newPos)
     gsap.to(newPos, {
-      duration:5,
+      duration:option?(option.duration!==undefined?option.duration:2):2,
       x: newPos.targetX,
       y: newPos.targetY,
       onUpdate:()=>{
-        obj.imgX=cvs.width/2 - 2**obj.L*newPos.x/1000
-        obj.imgY=cvs.height/2 - 2**obj.L*newPos.y/1000
+        obj.imgX=cvs.width/2 - newPos.x*tileWidth*2**obj.L
+        obj.imgY=cvs.height/2 - newPos.y*tileWidth*2**obj.L
+        mousemove.x = obj.imgX + newPos.x*tileWidth*2**obj.L
+        mousemove.y = obj.imgY + newPos.y*tileWidth*2**obj.L
+        localStorage.center=JSON.stringify([pixel2Lng(cvs.width/2,obj.imgX,2**obj.L,tileWidth),pixel2Lat(cvs.height/2,obj.imgY,2**obj.L,tileWidth)])
         limitRegion()
         loadMap()
       },
-      ease:Linear.easeNone
+      ease:Power3.easeOut
     })
   }
   const testClick = ()=>{
@@ -658,7 +667,7 @@ import { eventbus } from '~/eventbus'
 }
 .map_mask{
   display:none;
-  background-color: #ff000055;
+  background-color: #ff000011;
   position:absolute;
   left:0;
   top:0;
