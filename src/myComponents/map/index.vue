@@ -93,6 +93,7 @@ import { eventbus } from '~/eventbus'
     lng:number
     lat:number
   }
+  const precision=10e10
   let newPos:{
     x:number
     y:number
@@ -173,7 +174,7 @@ import { eventbus } from '~/eventbus'
     document.addEventListener('mousewheel',mousewheelFunc,{passive:true})
 
     eventbus.on('move',(lng:number,lat:number)=>{
-      flyTo(lng,lat,{duration:0})
+      flyTo(lng,lat)
     })
   })
   onBeforeUnmount(()=>{
@@ -327,41 +328,41 @@ import { eventbus } from '~/eventbus'
       planeLayer.render(obj,ctx)
       ctx.restore()
 
-      ctx.save()
-      ctx.beginPath()
-      ctx.lineWidth=2
-      ctx.translate(cvs.width/2,cvs.height/2)
-      ctx.moveTo(0,-20)
-      ctx.lineTo(0,20)
-      ctx.moveTo(-20,0)
-      ctx.lineTo(20,0)
-      ctx.strokeStyle='red'
-      ctx.stroke()
-      ctx.restore()
+      // ctx.save()
+      // ctx.beginPath()
+      // ctx.lineWidth=2
+      // ctx.translate(cvs.width/2,cvs.height/2)
+      // ctx.moveTo(0,-20)
+      // ctx.lineTo(0,20)
+      // ctx.moveTo(-20,0)
+      // ctx.lineTo(20,0)
+      // ctx.strokeStyle='red'
+      // ctx.stroke()
+      // ctx.restore()
 
 
 
-      ctx.save()
-      let convert = wgs84togcj02(POINT.lng,POINT.lat)
-      let position = lngLat2Pixel(convert[0],convert[1],obj.imgX,obj.imgY,2**obj.L,tileWidth)
-      ctx.beginPath()
-      ctx.strokeStyle='red'
-      ctx.lineWidth=2
-      ctx.translate(position.x,position.y)
-      ctx.arc(0,0,20,0,Math.PI*2)
-      ctx.closePath()
-      ctx.stroke()
-      ctx.restore()
-      if(newPos){
-        ctx.save()
-        let x = newPos.x*tileWidth*2**obj.L+obj.imgX
-        let y = newPos.y*tileWidth*2**obj.L+obj.imgY
-        ctx.fillStyle='yellow'
-        ctx.beginPath()
-        ctx.arc(x,y,3,0,Math.PI*2)
-        ctx.fill()
-        ctx.restore()
-      }
+      // ctx.save()
+      // let convert = wgs84togcj02(POINT.lng,POINT.lat)
+      // let position = lngLat2Pixel(convert[0],convert[1],obj.imgX,obj.imgY,2**obj.L,tileWidth)
+      // ctx.beginPath()
+      // ctx.strokeStyle='red'
+      // ctx.lineWidth=2
+      // ctx.translate(position.x,position.y)
+      // ctx.arc(0,0,20,0,Math.PI*2)
+      // ctx.closePath()
+      // ctx.stroke()
+      // ctx.restore()
+      // if(newPos){
+      //   ctx.save()
+      //   let x = newPos.x*tileWidth*2**obj.L/precision+obj.imgX
+      //   let y = newPos.y*tileWidth*2**obj.L/precision+obj.imgY
+      //   ctx.fillStyle='yellow'
+      //   ctx.beginPath()
+      //   ctx.arc(x,y,3,0,Math.PI*2)
+      //   ctx.fill()
+      //   ctx.restore()
+      // }
     }
   }
   const loadMap = () => {
@@ -392,8 +393,8 @@ import { eventbus } from '~/eventbus'
     let tmp = windowToCanvas(event.clientX, event.clientY,cvs)
     Object.assign(mousemove,{x:tmp.x,y:tmp.y,targetX:tmp.x,targetY:tmp.y})
     Object.assign(posl,mousemove)
-    let x = (mousemove.x-obj.imgX)/((2**obj.L)*tileWidth)
-    let y = (mousemove.y-obj.imgY)/((2**obj.L)*tileWidth)
+    let x = (mousemove.x-obj.imgX)*precision/((2**obj.L)*tileWidth)
+    let y = (mousemove.y-obj.imgY)*precision/((2**obj.L)*tileWidth)
     Object.assign(newPos,{x, y,targetX:x,targetY:y})
   }
   const cvsmousemoveFunc = (evt:MouseEvent) => {
@@ -434,8 +435,8 @@ import { eventbus } from '~/eventbus'
         x:mousemove.targetX,
         y:mousemove.targetY,
         onUpdate: ()=>{
-          obj.imgX=mousemove.x - newPos.x*tileWidth*2**obj.L
-          obj.imgY=mousemove.y - newPos.y*tileWidth*2**obj.L
+          obj.imgX=mousemove.x - newPos.x*tileWidth*2**obj.L/precision
+          obj.imgY=mousemove.y - newPos.y*tileWidth*2**obj.L/precision
           limitRegion()
           loadMap()
           // emitter.emit('mapChange',obj)
@@ -471,8 +472,8 @@ import { eventbus } from '~/eventbus'
       Object.assign(mousemove,{x:tmp.x,y:tmp.y,targetX:tmp.x,targetY:tmp.y})
     }
     // drawScale(2**obj.L,cvs_scale,pixel2Lat(mousemove.y,obj.imgY,2**obj.L,tileWidth))
-    let x=(mousemove.x-obj.imgX)/((2**obj.L)*tileWidth)
-    let y=(mousemove.y-obj.imgY)/((2**obj.L)*tileWidth)
+    let x=(mousemove.x-obj.imgX)*precision/((2**obj.L)*tileWidth)
+    let y=(mousemove.y-obj.imgY)*precision/((2**obj.L)*tileWidth)
     Object.assign(newPos,{x,y,targetX:x,targetY:y})
     // console.log(event.wheelDeltaY)
     let delta = event.wheelDeltaY/120
@@ -512,8 +513,8 @@ import { eventbus } from '~/eventbus'
       duration:period,
       L: obj.targetL,
       onUpdate: ()=>{
-        obj.imgX=mousemove.x - newPos.x*tileWidth*2**obj.L
-        obj.imgY=mousemove.y - newPos.y*tileWidth*2**obj.L
+        obj.imgX=mousemove.x - newPos.x*tileWidth*2**obj.L/precision
+        obj.imgY=mousemove.y - newPos.y*tileWidth*2**obj.L/precision
         localStorage.L=obj.L
         localStorage.center=JSON.stringify([pixel2Lng(cvs.width/2,obj.imgX,2**obj.L,tileWidth),pixel2Lat(cvs.height/2,obj.imgY,2**obj.L,tileWidth)])
         limitRegion()
@@ -601,21 +602,27 @@ import { eventbus } from '~/eventbus'
       targetX:lng2Pixel(lng,obj.imgX,2**obj.L,tileWidth),
       targetY:lat2Pixel(lat,obj.imgY,2**obj.L,tileWidth)
     })
+    // Object.assign(newPos,{
+    //   x:((cvs.width/2-obj.imgX)*precision/((2**obj.L)*tileWidth)),
+    //   y:((cvs.height/2-obj.imgY)*precision/((2**obj.L)*tileWidth)),
+    //   targetX:((mousemove.targetX-obj.imgX)*precision/((2**obj.L)*tileWidth)),
+    //   targetY:((mousemove.targetY-obj.imgY)*precision/((2**obj.L)*tileWidth))
+    // })
     Object.assign(newPos,{
-      x:((cvs.width/2-obj.imgX)/((2**obj.L)*tileWidth)),
-      y:((cvs.height/2-obj.imgY)/((2**obj.L)*tileWidth)),
-      targetX:((mousemove.targetX-obj.imgX)/((2**obj.L)*tileWidth)),
-      targetY:((mousemove.targetY-obj.imgY)/((2**obj.L)*tileWidth))
+      x:((cvs.width/2-obj.imgX)*precision/((2**obj.L)*tileWidth)),
+      y:((cvs.height/2-obj.imgY)*precision/((2**obj.L)*tileWidth)),
+      targetX:((mousemove.targetX-obj.imgX)*precision/((2**obj.L)*tileWidth)),
+      targetY:((mousemove.targetY-obj.imgY)*precision/((2**obj.L)*tileWidth))
     })
     if(option&&option.targetL!=undefined){
       obj.targetL = option.targetL
       gsap.killTweensOf(obj)
       gsap.to(obj, {
-        duration:option?(option.duration!==undefined?option.duration:2):2,
+        duration:option?(option.duration!==undefined?option.duration:0):0,
         L: obj.targetL,
         onUpdate: ()=>{
-          obj.imgX=cvs.width/2 - newPos.x*tileWidth*2**obj.L
-          obj.imgY=cvs.height/2 - newPos.y*tileWidth*2**obj.L
+          obj.imgX=cvs.width/2 - newPos.x*tileWidth*2**obj.L/precision
+          obj.imgY=cvs.height/2 - newPos.y*tileWidth*2**obj.L/precision
           limitScale()
           localStorage.L=obj.L
           localStorage.center=JSON.stringify([pixel2Lng(cvs.width/2,obj.imgX,2**obj.L,tileWidth),pixel2Lat(cvs.height/2,obj.imgY,2**obj.L,tileWidth)])
@@ -631,14 +638,15 @@ import { eventbus } from '~/eventbus'
     gsap.killTweensOf(mousemove)
     gsap.killTweensOf(newPos)
     gsap.to(newPos, {
-      duration:option?(option.duration!==undefined?option.duration:2):2,
+      duration:option?(option.duration!==undefined?option.duration:0):0,
       x: newPos.targetX,
       y: newPos.targetY,
       onUpdate:()=>{
-        obj.imgX=cvs.width/2 - newPos.x*tileWidth*2**obj.L
-        obj.imgY=cvs.height/2 - newPos.y*tileWidth*2**obj.L
-        mousemove.x = obj.imgX + newPos.x*tileWidth*2**obj.L
-        mousemove.y = obj.imgY + newPos.y*tileWidth*2**obj.L
+        obj.imgX=cvs.width/2 - newPos.x*tileWidth*2**obj.L/precision
+        obj.imgY=cvs.height/2 - newPos.y*tileWidth*2**obj.L/precision
+        mousemove.x = obj.imgX + newPos.x*tileWidth*2**obj.L/precision
+        mousemove.y = obj.imgY + newPos.y*tileWidth*2**obj.L/precision
+        localStorage.L=obj.L
         localStorage.center=JSON.stringify([pixel2Lng(cvs.width/2,obj.imgX,2**obj.L,tileWidth),pixel2Lat(cvs.height/2,obj.imgY,2**obj.L,tileWidth)])
         limitRegion()
         loadMap()
@@ -648,7 +656,7 @@ import { eventbus } from '~/eventbus'
   }
   const testClick = ()=>{
     let convert = wgs84togcj02(POINT.lng,POINT.lat)
-    flyTo(convert[0],convert[1],{targetL:10})
+    flyTo(convert[0],convert[1],{targetL:10,duration:5})
   }
 </script>
 <style lang="scss">

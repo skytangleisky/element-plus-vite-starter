@@ -155,12 +155,11 @@ export default class PlaneLayer{
     this.quadtree.clear()
     for(let i=0;i<this.spirits.length;i++) {
       let item = this.spirits[i]
-      item.x = lng2Pixel(item.lng,obj.imgX,2**obj.L,256)-item.width/2
-      item.y = lat2Pixel(item.lat,obj.imgY,2**obj.L,256)-item.height/2
       if(item.showToolTips){
-        console.log(item.x,item.y)
         item.event.emit('move',item.lng,item.lat)
       }
+      item.x = lng2Pixel(item.lng,obj.imgX,2**obj.L,256)-item.width/2
+      item.y = lat2Pixel(item.lat,obj.imgY,2**obj.L,256)-item.height/2
       item.lng += item.vx*deltaTime/1000;
       item.lat -= item.vy*deltaTime/1000;
 
@@ -204,7 +203,7 @@ export default class PlaneLayer{
         }
       }
     }
-    this.drawQuadtree(ctx,this.quadtree)
+    // this.drawQuadtree(ctx,this.quadtree)
     this.drawObjects(ctx)
   }
   drawObjects(ctx:any) {
