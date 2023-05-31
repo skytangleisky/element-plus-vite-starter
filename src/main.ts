@@ -73,14 +73,15 @@ app.directive('dialogDrag',{
       let rect = el.getBoundingClientRect()
       let rectParent = el.parentNode.getBoundingClientRect()
       obj = {
-        targetLeft: rect.left,
-        targetTop: rect.top,
-        targetRight:rectParent.width - rect.right,
-        targetBottom: rectParent.height - rect.bottom,
-        left: rect.left,
-        top: rect.top,
-        right:rectParent.width - rect.right,
-        bottom:rectParent.height - rect.bottom }
+        targetLeft: rect.left-rectParent.left,
+        targetTop: rect.top-rectParent.top,
+        left: rect.left-rectParent.left,
+        top: rect.top-rectParent.top,
+        targetRight:rectParent.width - rect.right+rectParent.left,
+        targetBottom: rectParent.height - rect.bottom+rectParent.top,
+        right:rectParent.width - rect.right+rectParent.left,
+        bottom:rectParent.height - rect.bottom+rectParent.top
+      }
       pos = { x: ev.clientX, y: ev.clientY }
       document.addEventListener('mousemove', mousemoveFunc)
       document.addEventListener('mouseup', mouseupFunc)

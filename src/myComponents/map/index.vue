@@ -171,7 +171,7 @@ import { eventbus } from '~/eventbus'
       planeLayer.event.emit('mouseup',event)
     },{passive:true})
     document.addEventListener('mousemove',mousemoveFunc,{passive:true})
-    document.addEventListener('mousewheel',mousewheelFunc,{passive:true})
+    mask.addEventListener('mousewheel',mousewheelFunc,{passive:true})
 
     eventbus.on('move',(lng:number,lat:number)=>{
       flyTo(lng,lat)
@@ -470,6 +470,9 @@ import { eventbus } from '~/eventbus'
     if(!isMouseDown||!mousemove){
       let tmp = windowToCanvas(event.clientX, event.clientY,cvs)
       Object.assign(mousemove,{x:tmp.x,y:tmp.y,targetX:tmp.x,targetY:tmp.y})
+    }
+    if(!isMouseDown){
+      gsap.killTweensOf(mousemove)
     }
     // drawScale(2**obj.L,cvs_scale,pixel2Lat(mousemove.y,obj.imgY,2**obj.L,tileWidth))
     let x=(mousemove.x-obj.imgX)*precision/((2**obj.L)*tileWidth)
