@@ -1,10 +1,11 @@
-import textureUrl from '../../../assets/aircraft.png?url'
+import textureUrl from '../../../assets/rocket-sharp.png?url'
 import Quadtree, { Rect } from '@timohausmann/quadtree-js'
 import { wgs84togcj02 } from '../workers/mapUtil'
 import { lng2Pixel, lat2Pixel, pixel2Lng, pixel2Lat, pixel2LngLat } from '../js/core'
 import Eventbus,{ eventbus } from '../../../eventbus'
 import Plane from './Plane'
-export default class PlaneLayer{
+import { translate } from './../../../tools/gl-matrix/quat2';
+export default class StationLayer{
   isMouseOver:Boolean
   myCursor:Rect
   quadtree:Quadtree
@@ -50,13 +51,13 @@ export default class PlaneLayer{
     this.getImage()
     let boundary=[110,120,41,38]
     // let POINT = {lng:116.39139324235674,lat:39.90723893689098}
-    for(var i=0;i<20;i++) {
+    for(var i=0;i<2;i++) {
       let plane = new Plane()
       plane.name=i.toString()
       plane.vx = this.randMinMax(-2/100,2/100)
       plane.vy = this.randMinMax(-1/100,1/100)
-      // plane.vx=0
-      // plane.vy=0
+      plane.vx=0
+      plane.vy=0
       plane.lng=this.randMinMax(boundary[0],boundary[1])
       plane.lat=this.randMinMax(boundary[3],boundary[2])
       // let convert = wgs84togcj02(POINT.lng,POINT.lat)
@@ -64,9 +65,9 @@ export default class PlaneLayer{
       // plane.lat=convert[1]
       plane.cvs = document.createElement('canvas')
       plane.rad = Math.atan2(-plane.vx,plane.vy)+Math.PI
-      // rad=Math.PI/180*30
-      plane.w=16*2
-      plane.h=17*2
+      plane.rad=Math.PI/180*(-45)
+      plane.w=24
+      plane.h=24
       plane.compute_width_height()
       plane.cvs.width=plane.width
       plane.cvs.height=plane.height
@@ -74,20 +75,27 @@ export default class PlaneLayer{
       plane.y=this.randMinMax(0, 480)
       // plane.x=100+i*10
       // plane.y=100+i*10
+      plane.showToolTips=true
       plane.cvs_toolTips = document.createElement('canvas')
       plane.cvs_toolTips.width = 100
-      plane.cvs_toolTips.height = 50
+      plane.cvs_toolTips.height = 100
       let ctx_toolTips = plane.cvs_toolTips.getContext('2d')
       if(!ctx_toolTips)throw Error('invalid ctx_toolTips')
 
-      let angle = (plane.rad/Math.PI*180).toFixed(2)
-      let speed = (Math.sqrt(plane.vx**2+plane.vy**2)*40000).toFixed(2)
-      let text = `方向角:${angle}°\n速度:${speed}km/h`
-      this.drawToolTips(plane.cvs_toolTips.width,plane.cvs_toolTips.height,text,ctx_toolTips)
-      plane.event.on('enter',(plane:Plane)=>{
-        // plane.showToolTips=true
-        console.log('enter',plane)
-      })
+      ctx_toolTips.save()
+      ctx_toolTips.beginPath()
+      ctx_toolTips.fillStyle = 'blue'
+      ctx_toolTips.fillRect(0,0,plane.cvs_toolTips.width,plane.cvs_toolTips.height)
+      ctx_toolTips.restore()
+
+      // let angle = (plane.rad/Math.PI*180).toFixed(2)
+      // let speed = (Math.sqrt(plane.vx**2+plane.vy**2)*40000).toFixed(2)
+      // let text = `方向角:${angle}°\n速度:${speed}km/h`
+      // this.drawToolTips(plane.cvs_toolTips.width,plane.cvs_toolTips.height,text,ctx_toolTips)
+      // plane.event.on('enter',(plane:Plane)=>{
+      //   // plane.showToolTips=true
+      //   console.log('enter',plane)
+      // })
       plane.event.on('exit',(plane:Plane)=>{
         // plane.showToolTips=false
         console.log('exit',plane)
@@ -118,7 +126,7 @@ export default class PlaneLayer{
         console.log('click',this)
       })
       plane.event.on('move',(lng:number,lat:number)=>{
-        eventbus.emit('move',lng,lat)
+        // eventbus.emit('move',lng,lat)
       })
       this.spirits.push(plane)
     }
@@ -139,11 +147,11 @@ export default class PlaneLayer{
       if(!ctx)throw Error('invalid ctx!')
       let preCompositeOperation = ctx.globalCompositeOperation
       ctx.save()
-      // {
-      //   ctx.fillStyle='red'
-      //   ctx.fillRect(0,0,planeCvs.width,planeCvs.height)
-      //   ctx.globalCompositeOperation='destination-in'
-      // }
+      {
+        ctx.fillStyle='red'
+        ctx.fillRect(0,0,planeCvs.width,planeCvs.height)
+        ctx.globalCompositeOperation='destination-in'
+      }
       ctx.translate(plane.cvs.width/2,plane.cvs.height/2)
       ctx.rotate(plane.rad)
       ctx.drawImage(planeCvs,0,0,planeCvs.width,planeCvs.height,-plane.w/2,-plane.h/2,plane.w,plane.h)
@@ -245,19 +253,19 @@ export default class PlaneLayer{
             ctx.fillRect(-item.w/2,-item.h/2,item.w,item.h)
             ctx.restore()
           }
+          item.showToolTips&&item.cvs_toolTips&&ctx.drawImage(item.cvs_toolTips,0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,-item.cvs_toolTips.width/2+item.width/2,-item.cvs_toolTips.height/2+item.height/2,item.cvs_toolTips.width,item.cvs_toolTips.height)
           item.cvs&&ctx.drawImage(item.cvs,0,0,item.cvs.width,item.cvs.height,0,0,item.width,item.height)
-          item.showToolTips&&item.cvs_toolTips&&ctx.drawImage(item.cvs_toolTips,0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,-item.cvs_toolTips.width/2+item.width/2,-item.cvs_toolTips.height,item.cvs_toolTips.width,item.cvs_toolTips.height)
         }else{
           if(需要检测){
             ctx.fillStyle = 'rgba(48,255,48,0.5)';
             ctx.fillRect(0, 0, item.width, item.height);
           }
+          item.cvs_toolTips&&item.showToolTips&&ctx.drawImage(item.cvs_toolTips,0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,-item.cvs_toolTips.width/2+item.width/2,-item.cvs_toolTips.height/2+item.height/2,item.cvs_toolTips.width,item.cvs_toolTips.height)
           item.cvs&&ctx.drawImage(item.cvs,0,0,item.cvs.width,item.cvs.height,0,0,item.width,item.height)
-          item.cvs_toolTips&&item.showToolTips&&ctx.drawImage(item.cvs_toolTips,0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,-item.cvs_toolTips.width/2+item.width/2,-item.cvs_toolTips.height,item.cvs_toolTips.width,item.cvs_toolTips.height)
         }
       } else {
+        item.cvs_toolTips&&item.showToolTips&&ctx.drawImage(item.cvs_toolTips,0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,-item.cvs_toolTips.width/2+item.width/2,-item.cvs_toolTips.height/2+item.height/2,item.cvs_toolTips.width,item.cvs_toolTips.height)
         item.cvs&&ctx.drawImage(item.cvs,0,0,item.cvs.width,item.cvs.height,0,0,item.width,item.height)
-        item.cvs_toolTips&&item.showToolTips&&ctx.drawImage(item.cvs_toolTips,0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,-item.cvs_toolTips.width/2+item.width/2,-item.cvs_toolTips.height,item.cvs_toolTips.width,item.cvs_toolTips.height)
       }
       ctx.restore()
       if(!item.lastOverlap&&item.overlap){

@@ -21,6 +21,7 @@ export default class Plane implements Rect {
   overlap:boolean
   event:Eventbus
   lastOverlap:boolean
+  isMouseDown:boolean
   constructor(arg:{}|undefined=undefined){
     /*
     let position = {x:10,y:0}
@@ -74,6 +75,7 @@ export default class Plane implements Rect {
     this.lat=0
     this.overlap=false
     this.lastOverlap=false
+    this.isMouseDown=false
     this.showToolTips=false
     this.event=new Eventbus()
     Object.assign(this,arg)

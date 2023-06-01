@@ -7,6 +7,7 @@ export function GetDistance( lng1, lat1,  lng2, lat2 ){
     s = s * 6378.137 * 1000;// EARTH_RADIUS;
     return s;
 }
+
 export function lngLat2Pixel(lng,lat,imgX,imgY,imgScale,TileWidth){
   return{
     x:lng2Pixel(lng,imgX,imgScale,TileWidth),

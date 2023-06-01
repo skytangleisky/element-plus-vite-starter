@@ -11,7 +11,7 @@
 </template>
 <script lang="ts" setup>
   import { onBeforeUnmount, onMounted, ref } from 'vue'
-  import { MapLayer, BorderLayer, PointLayer, RouteLayer, PlaneLayer } from './layers'
+  import { MapLayer, BorderLayer, PointLayer, RouteLayer, PlaneLayer, StationLayer } from './layers'
   import { gsap, Power3, Linear } from 'gsap'
   import { windowToCanvas, pixel2Lng, pixel2Lat, lng2Pixel, lat2Pixel, lngLat2Pixel } from './js/core'
   import { wgs84togcj02 } from './workers/mapUtil'
@@ -29,6 +29,7 @@ import { eventbus } from '~/eventbus'
   const pointLayer = new PointLayer()
   const routeLayer = new RouteLayer()
   const planeLayer = new PlaneLayer()
+  const stationLayer = new StationLayer()
   const windy = new Windy()
   let canvas = ref(null)
   let webgpu = ref(null)
@@ -133,6 +134,7 @@ import { eventbus } from '~/eventbus'
       cvs.width = rect.width
       cvs.height = rect.height
       planeLayer.quadtree.bounds = {x:0,y:0,width:cvs.width,height:cvs.height}
+      stationLayer.quadtree.bounds = {x:0,y:0,width:cvs.width,height:cvs.height}
       localStorage.L&&(obj.targetL=obj.L=Number(localStorage.L))
       $('#level').html('Z:'+obj.L.toFixed(2))
       if(localStorage.center){
@@ -164,17 +166,19 @@ import { eventbus } from '~/eventbus'
     let mask:HTMLDivElement = map_mask.value
     cvs.addEventListener('mousedown',(event:MouseEvent)=>{
       planeLayer.event.emit('mousedown',event)
+      stationLayer.event.emit('mousedown',event)
     },{passive:true})
     document.addEventListener('mouseup',(event:MouseEvent)=>{
       mask.style.display='none'
       mouseupFunc(event)
       planeLayer.event.emit('mouseup',event)
+      stationLayer.event.emit('mouseup',event)
     },{passive:true})
     document.addEventListener('mousemove',mousemoveFunc,{passive:true})
     mask.addEventListener('mousewheel',mousewheelFunc,{passive:true})
 
     eventbus.on('move',(lng:number,lat:number)=>{
-      flyTo(lng,lat)
+      flyTo(lng,lat,{duration:5})
     })
   })
   onBeforeUnmount(()=>{
@@ -326,6 +330,7 @@ import { eventbus } from '~/eventbus'
       routeLayer.render(obj,ctx)
       // windy.render(obj,ctx)
       planeLayer.render(obj,ctx)
+      stationLayer.render(obj,ctx)
       ctx.restore()
 
       // ctx.save()
@@ -382,6 +387,7 @@ import { eventbus } from '~/eventbus'
   }
   const mouseoutFunc = (event:any) => {
     planeLayer.isMouseOver = false
+    stationLayer.isMouseOver = false
   }
   const mousedownFunc = (event:MouseEvent) => {
     gsap.killTweensOf(mousemove)
@@ -399,6 +405,7 @@ import { eventbus } from '~/eventbus'
   }
   const cvsmousemoveFunc = (evt:MouseEvent) => {
     planeLayer.isMouseOver=true
+    stationLayer.isMouseOver=true
   }
   const mousemoveFunc = (evt:MouseEvent) => {
     let move = windowToCanvas(evt.clientX, evt.clientY,cvs)
@@ -409,6 +416,10 @@ import { eventbus } from '~/eventbus'
     if(planeLayer&&planeLayer.myCursor){
       planeLayer.myCursor.x = move.x - (planeLayer.myCursor.width/2);
       planeLayer.myCursor.y = move.y - (planeLayer.myCursor.height/2);
+    }
+    if(stationLayer&&stationLayer.myCursor){
+      stationLayer.myCursor.x = move.x - (stationLayer.myCursor.width/2);
+      stationLayer.myCursor.y = move.y - (stationLayer.myCursor.height/2);
     }
 
     // drawScale(2**obj.L,cvs_scale,pixel2Lat(move.y,obj.imgY,2**obj.L,tileWidth))
@@ -678,9 +689,9 @@ import { eventbus } from '~/eventbus'
   }
 }
 .map_mask{
-  display:none;
+  position:fixed;
+  display:block;
   background-color: #ff000011;
-  position:absolute;
   left:0;
   top:0;
   width: 100%;

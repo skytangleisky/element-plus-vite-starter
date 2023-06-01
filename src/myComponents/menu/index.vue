@@ -14,7 +14,7 @@
     <dialog-prev-request class="z-2"></dialog-prev-request>
     <li tabindex="-1" v-for="(item,index) in list" :key="index" @mouseenter="mouseenter">
       {{ item.name }}
-      <ol class="absolute flex-col left-0 p-0 top-100%" v-if="item.children" :style="'left:' + (item.left?'-1em':'0')"><!--一级菜单-->
+      <ol class="absolute flex-col left-0 p-0 top-100% z-99999" v-if="item.children" :style="'left:' + (item.left?'-1em':'0')"><!--一级菜单-->
         <submenu :item.sync="item"></submenu>
       </ol>
     </li>

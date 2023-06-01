@@ -24,7 +24,8 @@ app.use(pinia)
 import router from './router'
 app.use(router)
 import { gsap, Power0, Power1, Power2, Power3, Power4 } from 'gsap'
-import './permission.ts'
+import './permission'
+localStorage.setItem('z-index','1')
 app.directive('dialogDrag',{
   beforeMount(el, binding, vnode, oldVnode) {
     let obj:any
@@ -65,9 +66,10 @@ app.directive('dialogDrag',{
       el.style.cursor = 'default'
     }
     var pos:any, posl:any
-    // window.deep = 1
     el.addEventListener('mousedown', (event:any) => {
-      // el.style['z-index'] = window.deep++
+      let z = localStorage.getItem('z-index')
+      el.style['z-index']=z
+      localStorage.setItem('z-index',(Number(z)+1).toString())
       var ev = event || window.event
       event.stopPropagation()
       let rect = el.getBoundingClientRect()
