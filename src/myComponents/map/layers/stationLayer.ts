@@ -1,7 +1,7 @@
 import textureUrl from '../../../assets/rocket-sharp.png?url'
 import Quadtree, { Rect } from '@timohausmann/quadtree-js'
 import { wgs84togcj02 } from '../workers/mapUtil'
-import { lng2Pixel, lat2Pixel, pixel2Lng, pixel2Lat, pixel2LngLat } from '../js/core'
+import { lng2Pixel, lat2Pixel, pixel2Lng, pixel2Lat, pixel2LngLat, XY2Pixel } from '../js/core'
 import Eventbus,{ eventbus } from '../../../eventbus'
 import Plane from './Plane'
 import { translate } from './../../../tools/gl-matrix/quat2';
@@ -51,7 +51,7 @@ export default class StationLayer{
     this.getImage()
     let boundary=[110,120,41,38]
     // let POINT = {lng:116.39139324235674,lat:39.90723893689098}
-    for(var i=0;i<2;i++) {
+    for(var i=0;i<1;i++) {
       let plane = new Plane()
       plane.name=i.toString()
       plane.vx = this.randMinMax(-2/100,2/100)
@@ -60,6 +60,9 @@ export default class StationLayer{
       plane.vy=0
       plane.lng=this.randMinMax(boundary[0],boundary[1])
       plane.lat=this.randMinMax(boundary[3],boundary[2])
+
+      plane.lng=120
+      plane.lat=30
       // let convert = wgs84togcj02(POINT.lng,POINT.lat)
       // plane.lng=convert[0]
       // plane.lat=convert[1]
@@ -84,7 +87,7 @@ export default class StationLayer{
 
       ctx_toolTips.save()
       ctx_toolTips.beginPath()
-      ctx_toolTips.fillStyle = 'blue'
+      ctx_toolTips.fillStyle = '#0000ff55'
       ctx_toolTips.fillRect(0,0,plane.cvs_toolTips.width,plane.cvs_toolTips.height)
       ctx_toolTips.restore()
 
@@ -229,9 +232,9 @@ export default class StationLayer{
       ctx.fillRect(this.myCursor.x, this.myCursor.y, this.myCursor.width, this.myCursor.height);
     }
     // this.drawQuadtree(ctx,this.quadtree)
-    this.drawObjects(ctx)
+    this.drawObjects(obj,ctx)
   }
-  drawObjects(ctx:any) {
+  drawObjects(obj:any,ctx:CanvasRenderingContext2D) {
     let 矩形碰撞框 = false
     let 需要检测 = false
     let intersection = false
@@ -253,21 +256,30 @@ export default class StationLayer{
             ctx.fillRect(-item.w/2,-item.h/2,item.w,item.h)
             ctx.restore()
           }
-          item.showToolTips&&item.cvs_toolTips&&ctx.drawImage(item.cvs_toolTips,0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,-item.cvs_toolTips.width/2+item.width/2,-item.cvs_toolTips.height/2+item.height/2,item.cvs_toolTips.width,item.cvs_toolTips.height)
-          item.cvs&&ctx.drawImage(item.cvs,0,0,item.cvs.width,item.cvs.height,0,0,item.width,item.height)
+          this.drawStation(obj,ctx,item)
         }else{
           if(需要检测){
             ctx.fillStyle = 'rgba(48,255,48,0.5)';
             ctx.fillRect(0, 0, item.width, item.height);
           }
-          item.cvs_toolTips&&item.showToolTips&&ctx.drawImage(item.cvs_toolTips,0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,-item.cvs_toolTips.width/2+item.width/2,-item.cvs_toolTips.height/2+item.height/2,item.cvs_toolTips.width,item.cvs_toolTips.height)
-          item.cvs&&ctx.drawImage(item.cvs,0,0,item.cvs.width,item.cvs.height,0,0,item.width,item.height)
+          this.drawStation(obj,ctx,item)
         }
       } else {
-        item.cvs_toolTips&&item.showToolTips&&ctx.drawImage(item.cvs_toolTips,0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,-item.cvs_toolTips.width/2+item.width/2,-item.cvs_toolTips.height/2+item.height/2,item.cvs_toolTips.width,item.cvs_toolTips.height)
-        item.cvs&&ctx.drawImage(item.cvs,0,0,item.cvs.width,item.cvs.height,0,0,item.width,item.height)
+        this.drawStation(obj,ctx,item)
       }
       ctx.restore()
+      const N = 6
+      let xy1 = XY2Pixel(-1000000*N,1000000*N,item.lng,item.lat,obj.imgX,obj.imgY,2**obj.L,256)
+      let xy2 = XY2Pixel(1000000*N,-1000000*N,item.lng,item.lat,obj.imgX,obj.imgY,2**obj.L,256)
+      let xy = XY2Pixel(0,0,item.lng,item.lat,obj.imgX,obj.imgY,2**obj.L,256)
+      let w = xy2.x-xy1.x
+      let h = xy2.y-xy1.y
+      item.cvs_toolTips&&item.showToolTips&&ctx.drawImage(
+        item.cvs_toolTips,
+        0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,
+        xy1.x,xy1.y,w,h
+      )
+      ctx.fillRect(xy.x,xy.y,10,10)
       if(!item.lastOverlap&&item.overlap){
         this.spirits.forEach(v=>{
           if(v!==item&&v.lastOverlap&&!v.overlap){
@@ -282,6 +294,9 @@ export default class StationLayer{
         item.event.emit('exit',item)
       }
     }
+  }
+  drawStation(obj:any,ctx:CanvasRenderingContext2D,item:Plane){
+    item.cvs&&ctx.drawImage(item.cvs,0,0,item.cvs.width,item.cvs.height,0,0,item.width,item.height)
   }
   drawToolTips(width:number,height:number,text:string,ctx:CanvasRenderingContext2D){
     let radius=4

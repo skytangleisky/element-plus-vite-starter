@@ -1,10 +1,11 @@
+const EARTH_RADIUS = 6378.137 * 1000
 export function GetDistance( lng1, lat1,  lng2, lat2 ){
     var radLat1 = lat1*Math.PI / 180.0;
     var radLat2 = lat2*Math.PI / 180.0;
     var a = radLat1 - radLat2;
     var  b = lng1*Math.PI / 180.0 - lng2*Math.PI / 180.0;
     var s = 2 * Math.asin(Math.sqrt(Math.sin(a/2)**2 + Math.cos(radLat1)*Math.cos(radLat2)*Math.sin(b/2)**2));
-    s = s * 6378.137 * 1000;// EARTH_RADIUS;
+    s = s * EARTH_RADIUS;
     return s;
 }
 
@@ -24,13 +25,34 @@ export function lng2Pixel(lng,imgX,imgScale,TileWidth){
   return imgX + TileWidth*imgScale*(lng+180)/360;
 }
 export function lat2Pixel(lat,imgY,imgScale,TileWidth){
-  return imgY + (1-Math.log(Math.tan(lat*Math.PI/180) + 1/Math.cos(lat*Math.PI/180))/Math.PI)/2 * TileWidth*imgScale;
+  return imgY+(1-Math.asinh(Math.tan(lat*Math.PI/180))/Math.PI)/2*TileWidth*imgScale
+  // return imgY + (1-Math.log(Math.tan(lat*Math.PI/180) + 1/Math.cos(lat*Math.PI/180))/Math.PI)/2 * TileWidth*imgScale;
 }
 export function pixel2Lng(x,imgX,imgScale,TileWidth){
   return (x-imgX)/imgScale/TileWidth*360.0-180;
 }
 export function pixel2Lat(y,imgY,imgScale,TileWidth){
   return Math.atan(Math.sinh(Math.PI * (1 - 2 * (y-imgY) / imgScale/TileWidth)))*180/Math.PI;
+}
+export function lngLat2XY(lng,lat,lng0,lat0){
+  return {
+    x:2 * Math.PI * EARTH_RADIUS * (lng-lng0)/360,
+    y:2 * Math.PI * EARTH_RADIUS * (lat-lat0)/360,
+  }
+}
+export function XY2LngLat(x,y,lng0,lat0){
+  return {
+    lng: x * 360/(2 * Math.PI * EARTH_RADIUS) + lng0,
+    lat: y * 360/(2 * Math.PI * EARTH_RADIUS) + lat0,
+  }
+}
+export function XY2Pixel(x,y,lng0,lat0,imgX,imgY,imgScale,TileWidth){
+  let lngLat = XY2LngLat(x,y,lng0,lat0)
+  return lngLat2Pixel(lngLat.lng,lngLat.lat,imgX,imgY,imgScale,TileWidth)
+}
+export function pixel2XY(x,y,lng0,lat0,imgX,imgY,imgScale,TileWidth){
+  let {lng,lat} = pixel2LngLat(x,y,imgX,imgY,imgScale,TileWidth)
+  return lngLat2XY(lng,lat,lng0,lat0)
 }
 export function windowToCanvas(x,y,canvas) {
   var box = canvas.getBoundingClientRect()

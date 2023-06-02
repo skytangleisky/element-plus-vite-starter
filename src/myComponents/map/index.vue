@@ -333,41 +333,41 @@ import { eventbus } from '~/eventbus'
       stationLayer.render(obj,ctx)
       ctx.restore()
 
-      // ctx.save()
-      // ctx.beginPath()
-      // ctx.lineWidth=2
-      // ctx.translate(cvs.width/2,cvs.height/2)
-      // ctx.moveTo(0,-20)
-      // ctx.lineTo(0,20)
-      // ctx.moveTo(-20,0)
-      // ctx.lineTo(20,0)
-      // ctx.strokeStyle='red'
-      // ctx.stroke()
-      // ctx.restore()
+      ctx.save()
+      ctx.beginPath()
+      ctx.lineWidth=2
+      ctx.translate(cvs.width/2,cvs.height/2)
+      ctx.moveTo(0,-20)
+      ctx.lineTo(0,20)
+      ctx.moveTo(-20,0)
+      ctx.lineTo(20,0)
+      ctx.strokeStyle='red'
+      ctx.stroke()
+      ctx.restore()
 
 
 
-      // ctx.save()
-      // let convert = wgs84togcj02(POINT.lng,POINT.lat)
-      // let position = lngLat2Pixel(convert[0],convert[1],obj.imgX,obj.imgY,2**obj.L,tileWidth)
-      // ctx.beginPath()
-      // ctx.strokeStyle='red'
-      // ctx.lineWidth=2
-      // ctx.translate(position.x,position.y)
-      // ctx.arc(0,0,20,0,Math.PI*2)
-      // ctx.closePath()
-      // ctx.stroke()
-      // ctx.restore()
-      // if(newPos){
-      //   ctx.save()
-      //   let x = newPos.x*tileWidth*2**obj.L/precision+obj.imgX
-      //   let y = newPos.y*tileWidth*2**obj.L/precision+obj.imgY
-      //   ctx.fillStyle='yellow'
-      //   ctx.beginPath()
-      //   ctx.arc(x,y,3,0,Math.PI*2)
-      //   ctx.fill()
-      //   ctx.restore()
-      // }
+      ctx.save()
+      let convert = wgs84togcj02(POINT.lng,POINT.lat)
+      let position = lngLat2Pixel(convert[0],convert[1],obj.imgX,obj.imgY,2**obj.L,tileWidth)
+      ctx.beginPath()
+      ctx.strokeStyle='red'
+      ctx.lineWidth=2
+      ctx.translate(position.x,position.y)
+      ctx.arc(0,0,20,0,Math.PI*2)
+      ctx.closePath()
+      ctx.stroke()
+      ctx.restore()
+      if(newPos){
+        ctx.save()
+        let x = newPos.x*tileWidth*2**obj.L/precision+obj.imgX
+        let y = newPos.y*tileWidth*2**obj.L/precision+obj.imgY
+        ctx.fillStyle='yellow'
+        ctx.beginPath()
+        ctx.arc(x,y,3,0,Math.PI*2)
+        ctx.fill()
+        ctx.restore()
+      }
     }
   }
   const loadMap = () => {
