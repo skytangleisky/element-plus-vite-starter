@@ -1,12 +1,10 @@
 const EARTH_RADIUS = 6378.137 * 1000
-export function GetDistance( lng1, lat1,  lng2, lat2 ){
-    var radLat1 = lat1*Math.PI / 180.0;
-    var radLat2 = lat2*Math.PI / 180.0;
-    var a = radLat1 - radLat2;
-    var  b = lng1*Math.PI / 180.0 - lng2*Math.PI / 180.0;
-    var s = 2 * Math.asin(Math.sqrt(Math.sin(a/2)**2 + Math.cos(radLat1)*Math.cos(radLat2)*Math.sin(b/2)**2));
-    s = s * EARTH_RADIUS;
-    return s;
+export function getDistance( lng1, lat1,  lng2, lat2 ){
+  var radLat1 = lat1*Math.PI / 180.0
+  var radLat2 = lat2*Math.PI / 180.0
+  var radLng1 = lng1*Math.PI / 180.0
+  var radLng2 = lng2*Math.PI / 180.0
+  return 2 * Math.asin(Math.sqrt(Math.sin((radLat1-radLat2)/2)**2 + Math.cos(radLat1)*Math.cos(radLat2)*Math.sin((radLng1-radLng2)/2)**2)) * EARTH_RADIUS
 }
 
 export function lngLat2Pixel(lng,lat,imgX,imgY,imgScale,TileWidth){
@@ -25,14 +23,18 @@ export function lng2Pixel(lng,imgX,imgScale,TileWidth){
   return imgX + TileWidth*imgScale*(lng+180)/360;
 }
 export function lat2Pixel(lat,imgY,imgScale,TileWidth){
-  return imgY+(1-Math.asinh(Math.tan(lat*Math.PI/180))/Math.PI)/2*TileWidth*imgScale
+  let sin = Math.sin(lat * Math.PI / 180)
+  return imgY + (0.5 - Math.log((1 + sin) / (1 - sin))/2 / (2 * Math.PI)) * TileWidth * imgScale
+  // return imgY+(1-Math.asinh(Math.tan(lat*Math.PI/180))/Math.PI)/2*TileWidth*imgScale
   // return imgY + (1-Math.log(Math.tan(lat*Math.PI/180) + 1/Math.cos(lat*Math.PI/180))/Math.PI)/2 * TileWidth*imgScale;
 }
 export function pixel2Lng(x,imgX,imgScale,TileWidth){
   return (x-imgX)/imgScale/TileWidth*360.0-180;
 }
 export function pixel2Lat(y,imgY,imgScale,TileWidth){
-  return Math.atan(Math.sinh(Math.PI * (1 - 2 * (y-imgY) / imgScale/TileWidth)))*180/Math.PI;
+  let A = Math.exp((0.5 - (y - imgY)/(TileWidth * imgScale))*(4*Math.PI))
+  return Math.asin((A-1)/(A+1))*180/Math.PI
+  // return Math.atan(Math.sinh(Math.PI * (1 - 2 * (y-imgY) / imgScale/TileWidth)))*180/Math.PI;
 }
 export function lngLat2XY(lng,lat,lng0,lat0){
   return {

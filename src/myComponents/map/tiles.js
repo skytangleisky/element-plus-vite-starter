@@ -6,6 +6,7 @@ import { tileXY2QuadKey,quadKey2TileXY } from './js/core.js';
 class Tiles{
   constructor(){
     this.tiles=new Map()
+    this.Count=0
     // this.tiles={
     //   0:{
     //     0:{
@@ -18,6 +19,7 @@ class Tiles{
     // }
   }
   addTile(z,y,x,data){
+    this.Count++
     if(!this.tiles.get(z)){
       this.tiles.set(z,new Map())
     }
@@ -37,7 +39,8 @@ class Tiles{
   }
   clear(){
     delete this.tiles
-    this.tiles=new Map();
+    this.tiles=new Map()
+    this.Count=0
   }
 }
 

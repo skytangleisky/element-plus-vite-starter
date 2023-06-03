@@ -1,7 +1,7 @@
 import textureUrl from '../../../assets/rocket-sharp.png?url'
 import Quadtree, { Rect } from '@timohausmann/quadtree-js'
 import { wgs84togcj02 } from '../workers/mapUtil'
-import { lng2Pixel, lat2Pixel, pixel2Lng, pixel2Lat, pixel2LngLat, XY2Pixel } from '../js/core'
+import { lng2Pixel, lat2Pixel, pixel2Lng, pixel2Lat, pixel2LngLat, XY2Pixel, lngLat2Pixel, getDistance } from '../js/core'
 import Eventbus,{ eventbus } from '../../../eventbus'
 import Plane from './Plane'
 import { translate } from './../../../tools/gl-matrix/quat2';
@@ -51,7 +51,7 @@ export default class StationLayer{
     this.getImage()
     let boundary=[110,120,41,38]
     // let POINT = {lng:116.39139324235674,lat:39.90723893689098}
-    for(var i=0;i<1;i++) {
+    for(var i=0;i<200;i++) {
       let plane = new Plane()
       plane.name=i.toString()
       plane.vx = this.randMinMax(-2/100,2/100)
@@ -61,8 +61,8 @@ export default class StationLayer{
       plane.lng=this.randMinMax(boundary[0],boundary[1])
       plane.lat=this.randMinMax(boundary[3],boundary[2])
 
-      plane.lng=120
-      plane.lat=30
+      // plane.lng=120
+      // plane.lat=30
       // let convert = wgs84togcj02(POINT.lng,POINT.lat)
       // plane.lng=convert[0]
       // plane.lat=convert[1]
@@ -80,15 +80,18 @@ export default class StationLayer{
       // plane.y=100+i*10
       plane.showToolTips=true
       plane.cvs_toolTips = document.createElement('canvas')
-      plane.cvs_toolTips.width = 100
-      plane.cvs_toolTips.height = 100
+      plane.cvs_toolTips.width = 200
+      plane.cvs_toolTips.height = 200
       let ctx_toolTips = plane.cvs_toolTips.getContext('2d')
       if(!ctx_toolTips)throw Error('invalid ctx_toolTips')
 
       ctx_toolTips.save()
       ctx_toolTips.beginPath()
-      ctx_toolTips.fillStyle = '#0000ff55'
-      ctx_toolTips.fillRect(0,0,plane.cvs_toolTips.width,plane.cvs_toolTips.height)
+      ctx_toolTips.fillStyle = '#0000ff88'
+      ctx_toolTips.translate(plane.cvs_toolTips.width/2,plane.cvs_toolTips.height/2)
+      ctx_toolTips.arc(0,0,plane.cvs_toolTips.width/2-ctx_toolTips.lineWidth,0,Math.PI*2)
+      ctx_toolTips.stroke()
+      ctx_toolTips.fill()
       ctx_toolTips.restore()
 
       // let angle = (plane.rad/Math.PI*180).toFixed(2)
@@ -268,18 +271,37 @@ export default class StationLayer{
         this.drawStation(obj,ctx,item)
       }
       ctx.restore()
-      const N = 6
-      let xy1 = XY2Pixel(-1000000*N,1000000*N,item.lng,item.lat,obj.imgX,obj.imgY,2**obj.L,256)
-      let xy2 = XY2Pixel(1000000*N,-1000000*N,item.lng,item.lat,obj.imgX,obj.imgY,2**obj.L,256)
-      let xy = XY2Pixel(0,0,item.lng,item.lat,obj.imgX,obj.imgY,2**obj.L,256)
-      let w = xy2.x-xy1.x
-      let h = xy2.y-xy1.y
+      let pixel = lngLat2Pixel(item.lng,item.lat,obj.imgX,obj.imgY,2**obj.L,256)
+      let R = pixel.y - lat2Pixel(item.lat + 50/6378137*180/Math.PI,obj.imgY,2**obj.L,256)
+
+      let pt1 = pixel2LngLat(pixel.x-R,pixel.y-R,obj.imgX,obj.imgY,2**obj.L,256)
+      let pt2 = pixel2LngLat(pixel.x+R,pixel.y-R,obj.imgX,obj.imgY,2**obj.L,256)
+      let pt3 = pixel2LngLat(pixel.x+R,pixel.y+R,obj.imgX,obj.imgY,2**obj.L,256)
+      let pt4 = pixel2LngLat(pixel.x-R,pixel.y+R,obj.imgX,obj.imgY,2**obj.L,256)
+      let d1 = getDistance(pt1.lng,pt1.lat,item.lng,item.lat)
+      let d2 = getDistance(pt2.lng,pt2.lat,item.lng,item.lat)
+      let d3 = getDistance(pt3.lng,pt3.lat,item.lng,item.lat)
+      let d4 = getDistance(pt4.lng,pt4.lat,item.lng,item.lat)
+
+
+      // console.log(d1,d2,d3,d4,getDistance(item.lng,item.lat + 50/6378137*180/Math.PI,item.lng,item.lat))
+      // console.log(getDistance(pt1.lng,item.lat,item.lng,item.lat))
+      // console.log(getDistance(pt2.lng,item.lat,item.lng,item.lat))
+
+      ctx.beginPath()
+      ctx.strokeStyle='red'
+      ctx.moveTo(pixel.x-R,pixel.y-R)
+      ctx.lineTo(pixel.x+R,pixel.y-R)
+      ctx.lineTo(pixel.x+R,pixel.y+R)
+      ctx.lineTo(pixel.x-R,pixel.y+R)
+      ctx.closePath()
+      ctx.stroke()
+
       item.cvs_toolTips&&item.showToolTips&&ctx.drawImage(
         item.cvs_toolTips,
         0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,
-        xy1.x,xy1.y,w,h
+        pixel.x-R,pixel.y-R,2*R,2*R
       )
-      ctx.fillRect(xy.x,xy.y,10,10)
       if(!item.lastOverlap&&item.overlap){
         this.spirits.forEach(v=>{
           if(v!==item&&v.lastOverlap&&!v.overlap){

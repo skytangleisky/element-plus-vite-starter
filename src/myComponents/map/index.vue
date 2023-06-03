@@ -178,7 +178,7 @@ import { eventbus } from '~/eventbus'
     mask.addEventListener('mousewheel',mousewheelFunc,{passive:true})
 
     eventbus.on('move',(lng:number,lat:number)=>{
-      flyTo(lng,lat,{duration:5})
+      flyTo(lng,lat,{duration:0})
     })
   })
   onBeforeUnmount(()=>{

@@ -61,6 +61,10 @@ export default class MapLayer extends BaseLayer{
           this.mapsTiles.splice(i--,1)
         }
       }
+      if(this.myTiles.Count>10000){
+        this.myTiles.clear()
+        this.NUM=0
+      }
       // console.log(this.mapsTiles.length)
       this.callback()
     }
