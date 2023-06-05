@@ -50,8 +50,8 @@ export default class StationLayer{
     this.spirits=Array<Plane>()
     this.getImage()
     let boundary=[110,120,41,38]
-    // let POINT = {lng:116.39139324235674,lat:39.90723893689098}
-    for(var i=0;i<200;i++) {
+    let POINT = {lng:116.39139324235674,lat:39.90723893689098}
+    for(var i=0;i<1;i++) {
       let plane = new Plane()
       plane.name=i.toString()
       plane.vx = this.randMinMax(-2/100,2/100)
@@ -60,12 +60,11 @@ export default class StationLayer{
       plane.vy=0
       plane.lng=this.randMinMax(boundary[0],boundary[1])
       plane.lat=this.randMinMax(boundary[3],boundary[2])
-
       // plane.lng=120
       // plane.lat=30
-      // let convert = wgs84togcj02(POINT.lng,POINT.lat)
-      // plane.lng=convert[0]
-      // plane.lat=convert[1]
+      let convert = wgs84togcj02(POINT.lng,POINT.lat)
+      plane.lng=convert[0]
+      plane.lat=convert[1]
       plane.cvs = document.createElement('canvas')
       plane.rad = Math.atan2(-plane.vx,plane.vy)+Math.PI
       plane.rad=Math.PI/180*(-45)
@@ -271,37 +270,46 @@ export default class StationLayer{
         this.drawStation(obj,ctx,item)
       }
       ctx.restore()
-      let pixel = lngLat2Pixel(item.lng,item.lat,obj.imgX,obj.imgY,2**obj.L,256)
-      let R = pixel.y - lat2Pixel(item.lat + 50/6378137*180/Math.PI,obj.imgY,2**obj.L,256)
 
-      let pt1 = pixel2LngLat(pixel.x-R,pixel.y-R,obj.imgX,obj.imgY,2**obj.L,256)
-      let pt2 = pixel2LngLat(pixel.x+R,pixel.y-R,obj.imgX,obj.imgY,2**obj.L,256)
-      let pt3 = pixel2LngLat(pixel.x+R,pixel.y+R,obj.imgX,obj.imgY,2**obj.L,256)
-      let pt4 = pixel2LngLat(pixel.x-R,pixel.y+R,obj.imgX,obj.imgY,2**obj.L,256)
+
+      let pixel = lngLat2Pixel(item.lng,item.lat,obj.imgX,obj.imgY,2**obj.L,256)
+      let R = 500000
+      let pt1 = {lng:item.lng-2*Math.asin(Math.sin(R/6378137/2)/Math.cos(item.lat/180*Math.PI + R/6378137))*180/Math.PI,lat:item.lat + R/6378137*180/Math.PI}
+      let pt2 = {lng:item.lng+2*Math.asin(Math.sin(R/6378137/2)/Math.cos(item.lat/180*Math.PI + R/6378137))*180/Math.PI,lat:item.lat + R/6378137*180/Math.PI}
+      let pt3 = {lng:item.lng+2*Math.asin(Math.sin(R/6378137/2)/Math.cos(item.lat/180*Math.PI - R/6378137))*180/Math.PI,lat:item.lat - R/6378137*180/Math.PI}
+      let pt4 = {lng:item.lng-2*Math.asin(Math.sin(R/6378137/2)/Math.cos(item.lat/180*Math.PI - R/6378137))*180/Math.PI,lat:item.lat - R/6378137*180/Math.PI}
       let d1 = getDistance(pt1.lng,pt1.lat,item.lng,item.lat)
       let d2 = getDistance(pt2.lng,pt2.lat,item.lng,item.lat)
       let d3 = getDistance(pt3.lng,pt3.lat,item.lng,item.lat)
       let d4 = getDistance(pt4.lng,pt4.lat,item.lng,item.lat)
+      console.log(d1,d2,d3,d4)
 
-
-      // console.log(d1,d2,d3,d4,getDistance(item.lng,item.lat + 50/6378137*180/Math.PI,item.lng,item.lat))
-      // console.log(getDistance(pt1.lng,item.lat,item.lng,item.lat))
-      // console.log(getDistance(pt2.lng,item.lat,item.lng,item.lat))
-
+      console.log(getDistance(item.lng,item.lat+R/6378137*180/Math.PI,item.lng,item.lat))
+      console.log(getDistance(item.lng,item.lat-R/6378137*180/Math.PI,item.lng,item.lat))
+      let point1 = lngLat2Pixel(pt1.lng,pt1.lat,obj.imgX,obj.imgY,2**obj.L,256)
+      let point2 = lngLat2Pixel(pt2.lng,pt2.lat,obj.imgX,obj.imgY,2**obj.L,256)
+      let point3 = lngLat2Pixel(pt3.lng,pt3.lat,obj.imgX,obj.imgY,2**obj.L,256)
+      let point4 = lngLat2Pixel(pt4.lng,pt4.lat,obj.imgX,obj.imgY,2**obj.L,256)
       ctx.beginPath()
       ctx.strokeStyle='red'
-      ctx.moveTo(pixel.x-R,pixel.y-R)
-      ctx.lineTo(pixel.x+R,pixel.y-R)
-      ctx.lineTo(pixel.x+R,pixel.y+R)
-      ctx.lineTo(pixel.x-R,pixel.y+R)
+      ctx.moveTo(point1.x,point1.y)
+      ctx.lineTo(point2.x,point2.y)
+      ctx.lineTo(point3.x,point3.y)
+      ctx.lineTo(point4.x,point4.y)
       ctx.closePath()
       ctx.stroke()
+      ctx.beginPath()
+      ctx.moveTo(point1.x,point1.y)
+      ctx.lineTo(point3.x,point3.y)
+      ctx.moveTo(point2.x,point2.y)
+      ctx.lineTo(point4.x,point4.y)
+      ctx.stroke()
 
-      item.cvs_toolTips&&item.showToolTips&&ctx.drawImage(
-        item.cvs_toolTips,
-        0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,
-        pixel.x-R,pixel.y-R,2*R,2*R
-      )
+      // item.cvs_toolTips&&item.showToolTips&&ctx.drawImage(
+      //   item.cvs_toolTips,
+      //   0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,
+      //   pixel.x-R,pixel.y-R,2*R,2*R
+      // )
       if(!item.lastOverlap&&item.overlap){
         this.spirits.forEach(v=>{
           if(v!==item&&v.lastOverlap&&!v.overlap){
