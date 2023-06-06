@@ -1,6 +1,7 @@
 import Tiles from '../tiles.js'
 import BaseLayer from './baseLayer.js'
-import Worker from '../workers/border.js?worker'
+import Task from './task'
+import { eventbus } from '~/eventbus/index.ts'
 export default class BorderLayer extends BaseLayer{
   constructor(){
     super()
@@ -12,9 +13,7 @@ export default class BorderLayer extends BaseLayer{
     this.effect = false
     this.瓦片网格 = false
     this.isHide=false
-
-    this.worker = new Worker();//一个对象加快访问速度
-    this.worker.onmessage = (event)=>{
+    eventbus.on('onmessage',event=>{
       // console.log((Date.now()-event.data.beginTime)/1000);
       for(let k=0;k<this.mapsTiles.length;k++){
         if(this.mapsTiles[k]._LL==event.data._LL&&this.mapsTiles[k].i==event.data.i&&this.mapsTiles[k].j==event.data.j){
@@ -37,7 +36,8 @@ export default class BorderLayer extends BaseLayer{
       while(this.mapsTiles.length>(this._X1-this._X0+1)*(this._Y1-this._Y0+1)){
         this.mapsTiles.shift();
       }
-    }
+    })
+    this.task = new Task(10)
   }
   loadMap(obj,rect,callback){
     if(this.isHide)return
@@ -108,7 +108,7 @@ export default class BorderLayer extends BaseLayer{
   load2(item,tiles,obj){
     setTimeout(()=>{
       if(this._X0<=item.i&&item.i<=this._X1&&this._Y0<=item.j&&item.j<=this._Y1&&item._LL==this._LL){
-        this.worker.postMessage({args:{beginTime:Date.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:this.tileWidth});//处理这段数据通常需要很长时间。
+        this.task.addTask({args:{beginTime:Date.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:this.tileWidth})
       }else{//删除跳过的瓦片
         for(let k=0;k<tiles.length;k++){
           if(tiles[k]._LL==item._LL&&tiles[k].i==item.i&&tiles[k].j==item.j){

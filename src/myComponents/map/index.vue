@@ -565,6 +565,7 @@ import { eventbus } from '~/eventbus'
   }
   let boundary = [-180,180,Math.atan(Math.sinh(Math.PI))*180/Math.PI,-Math.atan(Math.sinh(Math.PI))*180/Math.PI]
   // boundary=[109,121,42,37]
+  boundary=[0,0,Math.atan(Math.sinh(Math.PI))*180/Math.PI,-Math.atan(Math.sinh(Math.PI))*180/Math.PI]
   const limitRegion = () => {
     if(限制){
       if(boundary[1]-boundary[0]>0){
@@ -691,10 +692,11 @@ import { eventbus } from '~/eventbus'
 .map_mask{
   position:fixed;
   display:block;
-  background-color: #ff000011;
+  background-color: #ff000001;
   left:0;
   top:0;
   width: 100%;
   height:100%;
+  z-index:999999;
 }
 </style>

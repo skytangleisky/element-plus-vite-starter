@@ -282,10 +282,10 @@ export default class StationLayer{
       let d2 = getDistance(pt2.lng,pt2.lat,item.lng,item.lat)
       let d3 = getDistance(pt3.lng,pt3.lat,item.lng,item.lat)
       let d4 = getDistance(pt4.lng,pt4.lat,item.lng,item.lat)
-      console.log(d1,d2,d3,d4)
+      // console.log(d1,d2,d3,d4)
 
-      console.log(getDistance(item.lng,item.lat+R/6378137*180/Math.PI,item.lng,item.lat))
-      console.log(getDistance(item.lng,item.lat-R/6378137*180/Math.PI,item.lng,item.lat))
+      // console.log(getDistance(item.lng,item.lat+R/6378137*180/Math.PI,item.lng,item.lat))
+      // console.log(getDistance(item.lng,item.lat-R/6378137*180/Math.PI,item.lng,item.lat))
       let point1 = lngLat2Pixel(pt1.lng,pt1.lat,obj.imgX,obj.imgY,2**obj.L,256)
       let point2 = lngLat2Pixel(pt2.lng,pt2.lat,obj.imgX,obj.imgY,2**obj.L,256)
       let point3 = lngLat2Pixel(pt3.lng,pt3.lat,obj.imgX,obj.imgY,2**obj.L,256)
