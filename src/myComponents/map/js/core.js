@@ -33,25 +33,25 @@ export function pixel2Lng(x,imgX,imgScale,TileWidth){
 export function pixel2Lat(y,imgY,imgScale,TileWidth){
   return Math.atan(Math.sinh(Math.PI - (y - imgY)/(TileWidth * imgScale)*(2 * Math.PI)))/Math.PI*180
 }
-export function lngLat2XY(lng,lat,lng0,lat0){
+export function lngLat2XY(lng,lat){
   return {
-    x:2 * Math.PI * EARTH_RADIUS * (lng-lng0)/360,
-    y:2 * Math.PI * EARTH_RADIUS * (lat-lat0)/360,
+    x: EARTH_RADIUS * lng / 180 * Math.PI,
+    y: EARTH_RADIUS * Math.asinh(Math.tan(lat/180*Math.PI)),
   }
 }
-export function XY2LngLat(x,y,lng0,lat0){
+export function XY2LngLat(x,y){
   return {
-    lng: x * 360/(2 * Math.PI * EARTH_RADIUS) + lng0,
-    lat: y * 360/(2 * Math.PI * EARTH_RADIUS) + lat0,
+    lng: x / EARTH_RADIUS / Math.PI * 180,
+    lat: Math.atan(Math.sinh(y/EARTH_RADIUS)) / Math.PI * 180,
   }
 }
-export function XY2Pixel(x,y,lng0,lat0,imgX,imgY,imgScale,TileWidth){
-  let lngLat = XY2LngLat(x,y,lng0,lat0)
+export function XY2Pixel(x,y,imgX,imgY,imgScale,TileWidth){
+  let lngLat = XY2LngLat(x,y)
   return lngLat2Pixel(lngLat.lng,lngLat.lat,imgX,imgY,imgScale,TileWidth)
 }
-export function pixel2XY(x,y,lng0,lat0,imgX,imgY,imgScale,TileWidth){
+export function pixel2XY(x,y,imgX,imgY,imgScale,TileWidth){
   let {lng,lat} = pixel2LngLat(x,y,imgX,imgY,imgScale,TileWidth)
-  return lngLat2XY(lng,lat,lng0,lat0)
+  return lngLat2XY(lng,lat)
 }
 export function windowToCanvas(x,y,canvas) {
   var box = canvas.getBoundingClientRect()
