@@ -153,8 +153,8 @@ import { eventbus } from '~/eventbus'
       windy.start([[0,0],[cvs.width,cvs.height]],cvs.width,cvs.height,[[pixel2Lng(0,obj.imgX,2**obj.L,256), pixel2Lat(cvs.height,obj.imgY,2**obj.L,256)],[pixel2Lng(cvs.width,obj.imgX,2**obj.L,256), pixel2Lat(0,obj.imgY,2**obj.L,256)]])
       draw()
     }).observe(cvs)
-    cvs.addEventListener('mousemove',cvsmousemoveFunc,{passive:true})
     cvs.addEventListener('mouseout',mouseoutFunc,{passive:true})
+    cvs.addEventListener('mouseenter',mouseenterFunc,{passive:true})
     cvs.addEventListener('mousewheel',mousewheelFunc,{passive:true})
     eventbus.on('mousedown',(event:MouseEvent)=>{
       mask.style.display='block'
@@ -176,6 +176,8 @@ import { eventbus } from '~/eventbus'
     },{passive:true})
     document.addEventListener('mousemove',mousemoveFunc,{passive:true})
     mask.addEventListener('mousewheel',mousewheelFunc,{passive:true})
+    mask.addEventListener('mouseenter',mouseenterFunc,{passive:true})
+
 
     eventbus.on('move',(lng:number,lat:number)=>{
       flyTo(lng,lat,{duration:0})
@@ -389,6 +391,10 @@ import { eventbus } from '~/eventbus'
     planeLayer.isMouseOver = false
     stationLayer.isMouseOver = false
   }
+  const mouseenterFunc = (event:any) => {
+    planeLayer.isMouseOver = true
+    stationLayer.isMouseOver = true
+  }
   const mousedownFunc = (event:MouseEvent) => {
     gsap.killTweensOf(mousemove)
     gsap.killTweensOf(obj)
@@ -402,10 +408,6 @@ import { eventbus } from '~/eventbus'
     let x = (mousemove.x-obj.imgX)*precision/((2**obj.L)*tileWidth)
     let y = (mousemove.y-obj.imgY)*precision/((2**obj.L)*tileWidth)
     Object.assign(newPos,{x, y,targetX:x,targetY:y})
-  }
-  const cvsmousemoveFunc = (evt:MouseEvent) => {
-    planeLayer.isMouseOver=true
-    stationLayer.isMouseOver=true
   }
   const mousemoveFunc = (evt:MouseEvent) => {
     let move = windowToCanvas(evt.clientX, evt.clientY,cvs)
