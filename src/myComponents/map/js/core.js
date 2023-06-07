@@ -1,12 +1,13 @@
 const EARTH_RADIUS = 6378.137 * 1000
 export function getDistance( lng1, lat1,  lng2, lat2 ){
-  var radLat1 = lat1*Math.PI / 180.0
-  var radLat2 = lat2*Math.PI / 180.0
-  var radLng1 = lng1*Math.PI / 180.0
-  var radLng2 = lng2*Math.PI / 180.0
-  return 2 * Math.asin(Math.sqrt(Math.sin((radLat1-radLat2)/2)**2 + Math.cos(radLat1)*Math.cos(radLat2)*(Math.sin((radLng1-radLng2)/2)**2))) * EARTH_RADIUS
-// 2*Math.asin(Math.sin(d/EARTH_RADIUS/2)/Math.cos(radLat1))
-
+  // var radLng1 = lng1*Math.PI / 180.0
+  // var radLat1 = lat1*Math.PI / 180.0
+  // var radLng2 = lng2*Math.PI / 180.0
+  // var radLat2 = lat2*Math.PI / 180.0
+  // return 2 * Math.asin(Math.sqrt(Math.sin((radLat1-radLat2)/2)**2 + Math.cos(radLat1)*Math.cos(radLat2)*(Math.sin((radLng1-radLng2)/2)**2))) * EARTH_RADIUS
+  let xy1 = lngLat2XY(lng1,lat1)
+  let xy2 = lngLat2XY(lng2,lat2)
+  return Math.sqrt((xy2.x-xy1.x)**2+(xy2.y-xy1.y)**2)
 }
 
 export function lngLat2Pixel(lng,lat,imgX,imgY,imgScale,TileWidth){
