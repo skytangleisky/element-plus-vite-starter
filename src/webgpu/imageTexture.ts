@@ -285,5 +285,5 @@ export default async function run(canvas:HTMLCanvasElement) {
         pipelineObj.depthView = pipelineObj.depthTexture.createView()
         // update aspect
         aspect = size.width / size.height
-    })
+    },{passive:true})
 }

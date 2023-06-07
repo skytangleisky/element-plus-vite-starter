@@ -24,11 +24,11 @@
       <el-col :span="12"><div class="flex justify-between items-center pl-10px">开始时间<input @mousedown.stop class="operation_filter" style="width:150px;" value="17:11"/></div></el-col>
       <el-col :span="12"><div class="flex justify-between items-center pl-10px">作业时长<input @mousedown.stop class="operation_filter" style="width:150px;" value="1分钟"/></div></el-col>
     </el-row>
-      <div class="flex flex-row justify-between items-center pl-10px mt-0.5rem mb-0.5rem">
-        <el-button @mousedown.stop type="default">网络上报</el-button>
-        <el-button @mousedown.stop type="default">电话上报</el-button>
-        <el-button @mousedown.stop type="default">取消</el-button>
-      </div>
+    <div class="flex flex-row justify-between items-center pl-10px mt-0.5rem mb-0.5rem">
+      <el-button @mousedown.stop type="default">网络上报</el-button>
+      <el-button @mousedown.stop type="default">电话上报</el-button>
+      <el-button @mousedown.stop type="default">取消</el-button>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>

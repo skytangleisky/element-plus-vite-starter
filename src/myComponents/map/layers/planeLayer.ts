@@ -77,7 +77,7 @@ export default class PlaneLayer{
       plane.cvs_toolTips = document.createElement('canvas')
       plane.cvs_toolTips.width = 100
       plane.cvs_toolTips.height = 50
-      let ctx_toolTips = plane.cvs_toolTips.getContext('2d')
+      let ctx_toolTips = plane.cvs_toolTips.getContext('2d',{willReadFrequently:true})
       if(!ctx_toolTips)throw Error('invalid ctx_toolTips')
 
       let angle = (plane.rad/Math.PI*180).toFixed(2)
@@ -193,7 +193,7 @@ export default class PlaneLayer{
       }
       for(let i=candidates.length-1;i>=0;i--) {
         let candidate = candidates[i]
-        let ctx = candidate.cvs.getContext('2d')
+        let ctx = candidate.cvs.getContext('2d',{willReadFrequently:true})
         if(!ctx)throw Error('invalid ctx')
         let imgData = ctx.getImageData(0,0,candidate.width,candidate.height)
         ctx.save()

@@ -85,9 +85,9 @@ app.directive('dialogDrag',{
         bottom:rectParent.height - rect.bottom+rectParent.top
       }
       pos = { x: ev.clientX, y: ev.clientY }
-      document.addEventListener('mousemove', mousemoveFunc)
-      document.addEventListener('mouseup', mouseupFunc)
-    })
+      document.addEventListener('mousemove', mousemoveFunc,{passive:true})
+      document.addEventListener('mouseup', mouseupFunc,{passive:true})
+    },{passive:true})
   }
 })
 app.mount("#app")

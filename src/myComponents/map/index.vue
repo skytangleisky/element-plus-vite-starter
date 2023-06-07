@@ -423,7 +423,6 @@ import { eventbus } from '~/eventbus'
       stationLayer.myCursor.x = move.x - (stationLayer.myCursor.width/2);
       stationLayer.myCursor.y = move.y - (stationLayer.myCursor.height/2);
     }
-
     // drawScale(2**obj.L,cvs_scale,pixel2Lat(move.y,obj.imgY,2**obj.L,tileWidth))
     // this.drawCurrentLngLat()
     // panel&&divMask.addEventListener('mousemove',panel.mousemoveFunc,{passive:false})

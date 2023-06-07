@@ -1,4 +1,5 @@
-import Worker from './worker.js?worker'
+// import Worker from './worker.js?worker'
+import url from './worker.js?url'
 import { eventbus } from '~/eventbus'
 export default class Task{
   workers:Array<{
@@ -10,7 +11,7 @@ export default class Task{
     this.queue = []
     this.workers = []
     for(let i=0;i<poolSize;i++){
-      let worker = new Worker()
+      let worker = new Worker(url,{type: 'module',name:i.toString()})
       worker.onmessage = event => {
         this.workers.forEach(v=>v.worker===worker&&(v.busy=false))
         this.process()
@@ -29,7 +30,7 @@ export default class Task{
   process(){
     this.workers.forEach(item => {
       if(!item.busy){
-        let arg = this.queue.pop()
+        let arg = this.queue.shift()
         if(arg){
           item.busy=true
           item.worker.postMessage(arg)

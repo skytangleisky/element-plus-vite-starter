@@ -24,14 +24,14 @@
       <el-col :span="12"><div class="flex justify-between items-center pl-10px">水平角<input @mousedown.stop class="operation_filter" style="width:150px;" value="0～10"/></div></el-col>
       <el-col :span="12"><div class="flex justify-between items-center pl-10px">俯仰角<input @mousedown.stop class="operation_filter" style="width:150px;" value="0～30"/></div></el-col>
     </el-row>
-      <div class="flex flex-row justify-between items-center pl-10px mt-0.5rem mb-0.5rem">
-        <el-button @mousedown.stop type="default">发送</el-button>
-        <el-button @mousedown.stop type="default">取消</el-button>
-      </div>
+    <div class="flex flex-row justify-between items-center pl-10px mt-0.5rem mb-0.5rem">
+      <el-button @mousedown.stop type="default">发送</el-button>
+      <el-button @mousedown.stop type="default">取消</el-button>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref,reactive } from 'vue'
 const num1 = ref(10)
 const num2 = ref(8000)
 const num3 = ref(290)

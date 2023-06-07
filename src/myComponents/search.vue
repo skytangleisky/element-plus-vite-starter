@@ -168,7 +168,7 @@ onMounted(()=>{
       user.username = data.nickname;
       user.logined = true;
     }
-  })
+  },{passive:true})
 })
 </script>
 <style lang="scss">
