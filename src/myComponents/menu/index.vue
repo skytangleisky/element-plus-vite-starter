@@ -8,6 +8,18 @@
       <span id="occupy"></span>
       <span id="level"></span>
       <span id="tiles"></span>
+      <span>Framerate(FPS)<span>{{ data.fps }}</span></span>
+      <span>Draw call<span>{{ data.drawCall }}</span></span>
+      <span>Frame time(ms)<span>{{ data.frameTime }}</span></span>
+      <span>Period time(ms)<span>{{ data.periodTime }}</span></span>
+      <span>Occupy(%)<span>{{ data.occupy }}</span></span>
+      <span>Instance Count<span>{{ data.instanceCount }}</span></span>
+      <span>Triangle <span>{{ data.triangle }}</span></span>
+      <span>Game Logic(ms)<span>{{ data.gameLogic }}</span></span>
+      <span>Physics(ms)<span>{{ data.physics }}</span></span>
+      <span>Renderer(ms)<span>{{ data.renderer }}</span></span>
+      <span>GFX Texture Mem (M)<span>{{ data.texture }}</span></span>
+      <span>GFX Buffer Mem (M)<span>{{ data.buffer }}</span></span>
     </box>
     <my-dialog></my-dialog>
     <dialog-plan-request class="z-1"></dialog-plan-request>
@@ -21,9 +33,10 @@
   </ol>
 </template>
 <script lang="ts" setup>
+  import { eventbus } from '~/eventbus'
   import Box from '../../myComponents/box.vue'
   import myMap from '../map/index.vue'
-  import { ref, watch } from 'vue'
+  import { ref, watch, onMounted, onBeforeUnmount, reactive } from 'vue'
   import submenu from './menu.vue'
   import menusData from './menusData'
   import { Item } from './def'
@@ -46,6 +59,29 @@
       e.target.focus()
     }
   }
+  const data = reactive({
+    fps:'X',
+    drawCall:'X',
+    frameTime:'X',
+    periodTime:'X',
+    occupy:'X',
+    instanceCount:'X',
+    triangle:'X',
+    gameLogic:'X',
+    physics:'X',
+    renderer:'X',
+    texture:'X',
+    buffer:'X',
+  })
+  let procInfo = (info:any)=>{
+    Object.assign(data,info)
+  }
+  onMounted(()=>{
+    eventbus.on('systemInfo',procInfo)
+  })
+  onBeforeUnmount(()=>{
+    eventbus.off('systemInfo',procInfo)
+  })
 </script>
 <style lang="scss">
   ol{

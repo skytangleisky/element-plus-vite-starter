@@ -309,9 +309,10 @@ import { eventbus } from '~/eventbus'
       interval>0&&(then = time - (time - then) % interval)
       frame++
       if(time-lastTime>1000){
-        $('#fps').html('FPS:'+(frame*1000/(time-lastTime)).toFixed(2))
-        $('#spend').html('SPEND:'+spend.toFixed(2)+'ms')
-        $('#occupy').html('OCCUPY:'+(spend/(time-lastTime)*frame*100).toFixed(2)+'%')
+        eventbus.emit('systemInfo',{'fps':(frame*1000/(time-lastTime)).toFixed(2)})
+        eventbus.emit('systemInfo',{'frameTime':spend.toFixed(2)+'ms'})
+        eventbus.emit('systemInfo',{'occupy':(spend/(time-lastTime)*frame*100).toFixed(2)+'%'})
+        eventbus.emit('systemInfo',{'periodTime':((time-lastTime)/frame).toFixed(2)+'ms'})
         lastTime = time
         frame=0
       }
