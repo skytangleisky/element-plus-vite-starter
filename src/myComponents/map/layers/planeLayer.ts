@@ -50,11 +50,11 @@ export default class PlaneLayer{
     this.getImage()
     let boundary=[110,120,41,38]
     // let POINT = {lng:116.39139324235674,lat:39.90723893689098}
-    for(var i=0;i<20;i++) {
+    for(var i=0;i<2000;i++) {
       let plane = new Plane()
       plane.name=i.toString()
-      plane.vx = this.randMinMax(-2/100,2/100)
-      plane.vy = this.randMinMax(-1/100,1/100)
+      plane.vx = this.randMinMax(-300,300)
+      plane.vy = this.randMinMax(-300,300)
       // plane.vx=0
       // plane.vy=0
       plane.lng=this.randMinMax(boundary[0],boundary[1])
@@ -81,7 +81,8 @@ export default class PlaneLayer{
       if(!ctx_toolTips)throw Error('invalid ctx_toolTips')
 
       let angle = (plane.rad/Math.PI*180).toFixed(2)
-      let speed = (Math.sqrt(plane.vx**2+plane.vy**2)*40000).toFixed(2)
+      let speed = (Math.sqrt(plane.vx**2+plane.vy**2)*3.6).toFixed(2)
+
       let text = `方向角:${angle}°\n速度:${speed}km/h`
       this.drawToolTips(plane.cvs_toolTips.width,plane.cvs_toolTips.height,text,ctx_toolTips)
       plane.event.on('enter',(plane:Plane)=>{
@@ -177,8 +178,10 @@ export default class PlaneLayer{
       }
       item.x = lng2Pixel(item.lng,obj.imgX,2**obj.L,256)-item.width/2
       item.y = lat2Pixel(item.lat,obj.imgY,2**obj.L,256)-item.height/2
-      item.lng += item.vx*deltaTime/1000;
-      item.lat -= item.vy*deltaTime/1000;
+      item.lng = pixel2Lng(item.x+item.vx*deltaTime/1000/(2*Math.PI*6378137)*2**obj.L*256+item.width/2,obj.imgX,2**obj.L,256)
+      item.lat = pixel2Lat(item.y+item.vy*deltaTime/1000/(2*Math.PI*6378137)*2**obj.L*256+item.height/2,obj.imgY,2**obj.L,256)
+      // item.lng += item.vx*deltaTime/1000;
+      // item.lat -= item.vy*deltaTime/1000;
 
       item.check = false
       item.overlap = false
