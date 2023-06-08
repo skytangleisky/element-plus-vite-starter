@@ -50,7 +50,7 @@ export default class PlaneLayer{
     this.getImage()
     let boundary=[110,120,41,38]
     // let POINT = {lng:116.39139324235674,lat:39.90723893689098}
-    for(var i=0;i<2000;i++) {
+    for(var i=0;i<20;i++) {
       let plane = new Plane()
       plane.name=i.toString()
       plane.vx = this.randMinMax(-300,300)
