@@ -136,7 +136,7 @@ import { eventbus } from '~/eventbus'
       planeLayer.quadtree.bounds = {x:0,y:0,width:cvs.width,height:cvs.height}
       stationLayer.quadtree.bounds = {x:0,y:0,width:cvs.width,height:cvs.height}
       localStorage.L&&(obj.targetL=obj.L=Number(localStorage.L))
-      $('#level').html('Z:'+obj.L.toFixed(2))
+      eventbus.emit('systemInfo',{level:obj.L.toFixed(2)})
       if(localStorage.center){
         var center = JSON.parse(localStorage.center)
         obj.imgX = cvs.width/2-(center[0]+180)/360*tileWidth*2**obj.L
@@ -562,7 +562,7 @@ import { eventbus } from '~/eventbus'
         obj.L = tmpL
       }
       localStorage.L = obj.L
-      $('#level').html('Z:'+obj.L.toFixed(2))
+      eventbus.emit('systemInfo',{level:obj.L.toFixed(2)})
     }
   }
   let boundary = [-180,180,Math.atan(Math.sinh(Math.PI))*180/Math.PI,-Math.atan(Math.sinh(Math.PI))*180/Math.PI]
@@ -606,7 +606,7 @@ import { eventbus } from '~/eventbus'
           obj.imgY=minY
         }
       }
-      $('#level').html('Z:'+obj.L.toFixed(2))
+      eventbus.emit('systemInfo',{level:obj.L.toFixed(2)})
     }
     // plane&&plane.setPos(obj.imgX,obj.imgY,2**obj.L)
     // panel&&panel.setPos(obj.imgX,obj.imgY,2**obj.L)

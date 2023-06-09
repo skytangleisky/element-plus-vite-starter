@@ -60,7 +60,7 @@ export default{
 }
 .dark{
   .four-container {
-    background: rgba(75, 139, 247, 0.05);
+    background: rgba(75, 139, 247, 0.25);
     box-shadow: 1px 1px 16px #7ccef4 inset;
     .fourBorder {
       position: absolute;

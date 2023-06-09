@@ -3,11 +3,8 @@
     <my-map></my-map>
     <slot></slot>
     <box class="info-box" right bottom>
-      <span id="fps"></span>
-      <span id="spend"></span>
-      <span id="occupy"></span>
-      <span id="level"></span>
-      <span id="tiles"></span>
+      <span>Level<span>{{ data.level }}</span></span>
+      <span>Tiles<span>{{ data.tiles }}</span></span>
       <span>Framerate(FPS)<span>{{ data.fps }}</span></span>
       <span>Draw call<span>{{ data.drawCall }}</span></span>
       <span>Frame time(ms)<span>{{ data.frameTime }}</span></span>
@@ -72,6 +69,7 @@
     renderer:'X',
     texture:'X',
     buffer:'X',
+    tiles:'X',
   })
   let procInfo = (info:any)=>{
     Object.assign(data,info)

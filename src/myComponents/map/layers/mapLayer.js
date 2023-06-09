@@ -2,6 +2,7 @@ import Tiles from '../tiles.js'
 import BaseLayer from './baseLayer.js'
 import axios from 'axios'
 import Worker from '../workers/map.js?worker'
+import { eventbus } from '~/eventbus'
 export default class MapLayer extends BaseLayer{
   constructor(){
     super()
@@ -49,7 +50,7 @@ export default class MapLayer extends BaseLayer{
           }
           this.cache&&this.myTiles.addTile(this.mapsTiles[k]._LL,event.data.y,event.data.x,{cvs:this.mapsTiles[k].cvs,isDrawed:event.data.isDrawed});
           this.cache&&this.NUM++
-          $('#tiles').html('TILES:'+this.NUM)
+          eventbus.emit('systemInfo',{tiles:this.NUM.toString()})
         }
       }
       for(let i=0;i<this.mapsTiles.length;i++){
