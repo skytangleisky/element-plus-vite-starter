@@ -123,7 +123,7 @@ function draw(args){
     MaxLat=-90;
     loadStatus='loading'
     var xhr = new XMLHttpRequest()
-    xhr.open('GET','/data/导航台.map',true)
+    xhr.open('GET','https://tanglei.top:5050/导航台.map',true)
     xhr.responseType = 'arraybuffer'
     xhr.send()
     xhr.onreadystatechange = function() {

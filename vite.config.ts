@@ -89,16 +89,6 @@ export default defineConfig({
         changeOrigin:true,//开启代理，允许跨域
         rewrite:path=>path.replace(/^\/qqAuth/,'') // 设置重写的路径
       },
-      '/map1':{
-        target:'http://map1.tanglei.top',//替换的服务端地址
-        changeOrigin:true,//开启代理，允许跨域
-        rewrite:path=>path.replace(/^\/map1/,'') // 设置重写的路径
-      },
-      '/data':{
-        target:'http://tanglei.top:5050',//替换的服务端地址
-        changeOrigin:true,//开启代理，允许跨域
-        rewrite:path=>path.replace(/^\/data/,'') // 设置重写的路径
-      },
       '/ArcGIS':{
         target:'https://map.geoq.cn',//替换的服务端地址
         changeOrigin:true,//开启代理，允许跨域
