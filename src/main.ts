@@ -45,12 +45,12 @@ app.directive('dialogDrag',{
         right: obj.targetRight,
         bottom: obj.targetBottom,
         onUpdate: () => {
-          if(el.style.cssText.indexOf('right:')>-1){
+          if(el.hasAttribute('right')){
             el.style.right = obj.right + 'px'
           }else{
             el.style.left = obj.left + 'px'
           }
-          if(el.style.cssText.indexOf('bottom:')>-1){
+          if(el.hasAttribute('bottom')){
             el.style.bottom = obj.bottom + 'px'
           }else{
             el.style.top = obj.top + 'px'

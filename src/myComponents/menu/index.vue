@@ -2,7 +2,7 @@
   <ol class="menu relative flex items-start content-center flex-row m-0 h-full p-0" style="overflow: hidden;"><!--导航栏-->
     <my-map></my-map>
     <slot></slot>
-    <box style="position: absolute;bottom:0;right:0;">
+    <box class="info-box" right bottom>
       <span id="fps"></span>
       <span id="spend"></span>
       <span id="occupy"></span>
@@ -84,6 +84,9 @@
   })
 </script>
 <style lang="scss">
+  .info-box{
+    position: absolute;right:0;bottom:0;
+  }
   ol{
     user-select: none;
     list-style: none;

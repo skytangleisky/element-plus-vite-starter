@@ -1,4 +1,4 @@
-import { mat4, vec3 } from 'gl-matrix'
+import { mat4, vec3 } from '~/tools/gl-matrix'
 
 // return mvp matrix from given aspect, position, rotation, scale
 function getMvpMatrix(
