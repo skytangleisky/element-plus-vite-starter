@@ -40,7 +40,7 @@ function getModelViewMatrix(
     return modelViewMatrix as Float32Array
 }
 
-const center = vec3.fromValues(0,0,0)
+const center = vec3.fromValues(0,0,-1)
 const up = vec3.fromValues(0,1,0)
 
 function getProjectionMatrix(
@@ -49,7 +49,7 @@ function getProjectionMatrix(
     near:number = 0.1,
     far:number = 100.0,
     position = {x:0, y:0, z:0}
-){  
+){  near = 32
     // create cameraview
     const cameraView = mat4.create()
     const eye = vec3.fromValues(position.x, position.y, position.z)

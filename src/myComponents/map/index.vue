@@ -153,7 +153,7 @@ import { eventbus } from '~/eventbus'
       windy.start([[0,0],[cvs.width,cvs.height]],cvs.width,cvs.height,[[pixel2Lng(0,obj.imgX,2**obj.L,256), pixel2Lat(cvs.height,obj.imgY,2**obj.L,256)],[pixel2Lng(cvs.width,obj.imgX,2**obj.L,256), pixel2Lat(0,obj.imgY,2**obj.L,256)]])
       draw()
     }).observe(cvs)
-    cvs.addEventListener('mouseout',mouseoutFunc,{passive:true})
+    cvs.addEventListener('mouseleave',mouseleaveFunc,{passive:true})
     cvs.addEventListener('mouseenter',mouseenterFunc,{passive:true})
     cvs.addEventListener('mousewheel',mousewheelFunc,{passive:true})
     eventbus.on('mousedown',(event:MouseEvent)=>{
@@ -388,11 +388,13 @@ import { eventbus } from '~/eventbus'
     })
     needRedraw = true
   }
-  const mouseoutFunc = (event:any) => {
+  const mouseleaveFunc = (event:any) => {
+    console.log('leave')
     planeLayer.isMouseOver = false
     stationLayer.isMouseOver = false
   }
   const mouseenterFunc = (event:any) => {
+    console.log('enter')
     planeLayer.isMouseOver = true
     stationLayer.isMouseOver = true
   }

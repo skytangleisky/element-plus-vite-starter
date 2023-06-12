@@ -1,21 +1,20 @@
-import { onBeforeMount } from 'vue'
-import basicVert from './shaders/basic.vert.wgsl?raw'
-import imageTexture from './shaders/imageTexture.frag.wgsl?raw'
+import basicInstanced from './shaders/basic.instanced.vert.wgsl?raw'
+import positionFrag from './shaders/position.frag.wgsl?raw'
 import * as cube from './util/cube'
 import { getMvpMatrix } from './util/math'
-// import textureUrl from '/texture.webp?url'
 import textureUrl from '../assets/aircraft.png?url'
 let aid:number
+
 // initialize webgpu device & config canvas context
 async function initWebGPU(canvas: HTMLCanvasElement) {
-    if (!navigator.gpu)
+    if(!navigator.gpu)
         throw new Error('Not Support WebGPU')
     const adapter = await navigator.gpu.requestAdapter()
     if (!adapter)
         throw new Error('No Adapter Found')
     const device = await adapter.requestDevice()
     const context = canvas.getContext('webgpu') as GPUCanvasContext
-    const format = navigator.gpu.getPreferredCanvasFormat()
+    const format = navigator.gpu.getPreferredCanvasFormat ? navigator.gpu.getPreferredCanvasFormat() : context.getPreferredFormat(adapter)
     const devicePixelRatio = window.devicePixelRatio || 1
     canvas.width = canvas.clientWidth * devicePixelRatio
     canvas.height = canvas.clientHeight * devicePixelRatio
@@ -25,17 +24,17 @@ async function initWebGPU(canvas: HTMLCanvasElement) {
         // prevent chrome warning after v102
         alphaMode: 'premultiplied'
     })
-    return { device, context, format, size }
+    return {device, context, format, size}
 }
 
 // create pipiline & buffers
-async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size: { width: number, height: number }) {
+async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{width:number, height:number}) {
     const pipeline = await device.createRenderPipelineAsync({
         label: 'Basic Pipline',
         layout: 'auto',
         vertex: {
             module: device.createShaderModule({
-                code: basicVert,
+                code: basicInstanced,
             }),
             entryPoint: 'main',
             buffers: [{
@@ -45,20 +44,20 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size: {
                         // position
                         shaderLocation: 0,
                         offset: 0,
-                        format: 'float32x3'
+                        format: 'float32x3',
                     },
                     {
                         // uv
                         shaderLocation: 1,
                         offset: 3 * 4,
-                        format: 'float32x2'
+                        format: 'float32x2',
                     }
                 ]
             }]
         },
         fragment: {
             module: device.createShaderModule({
-                code: imageTexture,
+                code: positionFrag,
             }),
             entryPoint: 'main',
             targets: [
@@ -68,42 +67,41 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size: {
             ]
         },
         primitive: {
-            // topology: 'triangle-list',
             topology: 'triangle-strip',
             // Culling backfaces pointing away from the camera
-            cullMode: 'none',
-            // frontFace: 'ccw'
+            cullMode: 'none'
         },
         // Enable depth testing since we have z-level positions
         // Fragment closest to the camera is rendered in front
         depthStencil: {
             depthWriteEnabled: true,
             depthCompare: 'less',
-            format: 'depth24plus'
+            format: 'depth24plus',
         }
     } as GPURenderPipelineDescriptor)
     // create depthTexture for renderPass
     const depthTexture = device.createTexture({
         size, format: 'depth24plus',
-        usage: GPUTextureUsage.RENDER_ATTACHMENT
+        usage: GPUTextureUsage.RENDER_ATTACHMENT,
     })
     const depthView = depthTexture.createView()
+
     // create vertex buffer
     const vertexBuffer = device.createBuffer({
         label: 'GPUBuffer store vertex',
         size: cube.vertex.byteLength,
-        usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
+        usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
     })
     device.queue.writeBuffer(vertexBuffer, 0, cube.vertex)
-    // create a mvp matrix buffer
+    // create a 4x4xNUM STORAGE buffer to store matrix
     const mvpBuffer = device.createBuffer({
-        label: 'GPUBuffer store 4x4 matrix',
-        size: 4 * 4 * 4, // 4 x 4 x float32
-        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+        label: 'GPUBuffer store n*4x4 matrix',
+        size: 4 * 4 * 4 * NUM, // 4 x 4 x float32 x NUM
+        usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST
     })
-    // create a uniform group contains matrix
-    const uniformGroup = device.createBindGroup({
-        label: 'Uniform Group with Matrix',
+    // create a uniform group for Matrix
+    const group = device.createBindGroup({
+        label: 'Uniform Group with matrix',
         layout: pipeline.getBindGroupLayout(0),
         entries: [
             {
@@ -115,23 +113,22 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size: {
         ]
     })
     // return all vars
-    return { pipeline, vertexBuffer, mvpBuffer, uniformGroup, depthTexture, depthView }
+    return {pipeline, vertexBuffer, mvpBuffer, group, depthTexture, depthView}
 }
 
 // create & submit device commands
 function draw(
-    device: GPUDevice,
+    device: GPUDevice, 
     context: GPUCanvasContext,
     pipelineObj: {
-        pipeline: GPURenderPipeline
-        vertexBuffer: GPUBuffer
-        mvpBuffer: GPUBuffer
-        uniformGroup: GPUBindGroup
+        pipeline: GPURenderPipeline,
+        vertexBuffer: GPUBuffer,
+        mvpBuffer: GPUBuffer,
+        group: GPUBindGroup,
         depthView: GPUTextureView
     },
     textureGroup: GPUBindGroup
 ) {
-    // start encoder
     const commandEncoder = device.createCommandEncoder()
     const renderPassDescriptor: GPURenderPassDescriptor = {
         colorAttachments: [
@@ -151,14 +148,15 @@ function draw(
     }
     const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor)
     passEncoder.setPipeline(pipelineObj.pipeline)
-    // set uniformGroup
-    passEncoder.setBindGroup(0, pipelineObj.uniformGroup)
-    // set textureGroup
-    passEncoder.setBindGroup(1, textureGroup)
     // set vertex
     passEncoder.setVertexBuffer(0, pipelineObj.vertexBuffer)
-    // draw vertex count of cube
-    passEncoder.draw(cube.vertexCount)
+    {
+        // draw NUM cubes in one draw()
+        passEncoder.setBindGroup(0, pipelineObj.group)
+        // set textureGroup
+        passEncoder.setBindGroup(1, textureGroup)
+        passEncoder.draw(cube.vertexCount, NUM)
+    }
     passEncoder.end()
     // webgpu run in a separate process, all the commands will be executed after submit
     device.queue.submit([commandEncoder.finish()])
@@ -166,12 +164,28 @@ function draw(
 export function cancel(){
     window.cancelAnimationFrame(aid)
 }
-
-export default async function run(canvas:HTMLCanvasElement) {
+// total objects
+const NUM = 10
+export default async function run(canvas:HTMLCanvasElement){
+    
     if (!canvas)
         throw new Error('No Canvas')
-    const { device, context, format, size } = await initWebGPU(canvas)
+    
+    const {device, context, format, size} = await initWebGPU(canvas)
     const pipelineObj = await initPipeline(device, format, size)
+    // create objects
+    let aspect = size.width / size.height
+    const scene:any[] = []
+    const mvpBuffer = new Float32Array(NUM * 4 * 4)
+    for(let i = 0; i < NUM; i++){
+        // craete simple object
+        const position = {x: Math.random() * 40 - 20, y: Math.random() * 40 - 20, z:  - 50 /*- Math.random()*50*/}
+        const rotation = {x: 0, y: 0, z: 0}
+        const scale = {x:1, y:1, z:1}
+        scene.push({position, rotation, scale})
+    }
+
+
 
     // fetch an image and upload to GPUTexture
     const res = await fetch(textureUrl)
@@ -198,8 +212,8 @@ export default async function run(canvas:HTMLCanvasElement) {
     )
     // Create a sampler with linear filtering for smooth interpolation.
     const sampler = device.createSampler({
-        addressModeU:'clamp-to-edge',
-        addressModeV: 'clamp-to-edge',
+        // addressModeU: 'repeat',
+        // addressModeV: 'repeat',
         magFilter: 'linear',
         minFilter: 'linear'
     })
@@ -217,62 +231,33 @@ export default async function run(canvas:HTMLCanvasElement) {
             }
         ]
     })
-
-    // default state
-    let aspect = size.width / size.height
-    const position = { x: 0, y: 0, z: -50 }
-    const scale = { x: 1, y: 1, z: 0 }
-    const rotation = { x: 0, y: 0, z: 0 }
     // start loop
-    let lastTime=0;
-    let frame=0
-    let preTime=performance.now();
-    let vy = 1/100
-    let vx = 1/80
-    
-    function loop(time:number) {
-        frame++
-        if(time-lastTime>1000){
-            // $('#fps').html('FPS:'+(frame*1000/(time-lastTime)).toFixed(2))
-            console.log(frame)
-            frame=0
-            lastTime = time
+    function frame(){
+        // update rotation for each object
+        for(let i = 0; i < scene.length - 1; i++){
+            const obj = scene[i]
+            const now = Date.now() / 1000
+            // obj.rotation.x = Math.sin(now + i)
+            // obj.rotation.y = Math.cos(now + i)
+            const mvpMatrix = getMvpMatrix(aspect, obj.position, obj.rotation, obj.scale)
+            // update buffer based on offset
+            // device.queue.writeBuffer(
+            //     pipelineObj.mvpBuffer,
+            //     i * 4 * 4 * 4, // offset for each object, no need to 256-byte aligned
+            //     mvpMatrix
+            // )
+            // or save to mvpBuffer first
+            mvpBuffer.set(mvpMatrix, i * 4 * 4)
         }
-        let deltaTime = time-preTime
-        preTime = time
-        // rotate by time, and update transform matrix
-        const now = time / 1000
-        // rotation.x = Math.sin(now)
-        // rotation.y = Math.cos(now)
-        // let deltaX = deltaTime*vx
-        // let deltaY = deltaTime*vy
-        let deltaX = deltaTime*vx*Math.sin(now)
-        let deltaY = deltaTime*vy*Math.cos(now)
-        position.x+=deltaX
-        position.y+=deltaY
-        // if(position.x>20||position.x<-20){
-        //     vx = -vx
-        // }
-        // if(position.y>20||position.y<-20){
-        //     vy = -vy
-        // }
-        rotation.z = Math.atan2(-deltaX,deltaY)
-        const mvpMatrix = getMvpMatrix(aspect, position, rotation, scale)
-        device.queue.writeBuffer(
-            pipelineObj.mvpBuffer,
-            0,
-            mvpMatrix.buffer
-        )
-        // then draw
-        draw(device, context, pipelineObj, textureGroup)
-        aid = requestAnimationFrame(loop)
+        // the better way is update buffer in one write after loop
+        device.queue.writeBuffer(pipelineObj.mvpBuffer, 0, mvpBuffer)
+        draw(device, context, pipelineObj,textureGroup)
+        aid = requestAnimationFrame(frame)
     }
-    loop(performance.now())
-
+    frame()
 
     // re-configure context on resize
-    window.addEventListener('resize', () => {
-        console.log('ratio',devicePixelRatio)
+    window.addEventListener('resize', ()=>{
         size.width = canvas.width = canvas.clientWidth * devicePixelRatio
         size.height = canvas.height = canvas.clientHeight * devicePixelRatio
         // don't need to recall context.configure() after v104
@@ -284,6 +269,6 @@ export default async function run(canvas:HTMLCanvasElement) {
         })
         pipelineObj.depthView = pipelineObj.depthTexture.createView()
         // update aspect
-        aspect = size.width / size.height
-    },{passive:true})
+        aspect = size.width/ size.height
+    })
 }
