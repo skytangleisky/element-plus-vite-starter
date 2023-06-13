@@ -177,6 +177,7 @@ import { eventbus } from '~/eventbus'
     document.addEventListener('mousemove',mousemoveFunc,{passive:true})
     mask.addEventListener('mousewheel',mousewheelFunc,{passive:true})
     mask.addEventListener('mouseenter',mouseenterFunc,{passive:true})
+    mask.addEventListener('mouseleave',mouseleaveFunc,{passive:true})
 
 
     eventbus.on('move',(lng:number,lat:number)=>{
