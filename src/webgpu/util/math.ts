@@ -1,5 +1,41 @@
 import { mat4, vec3 } from '~/tools/gl-matrix'
 
+
+//投影矩阵
+
+//P
+// n 0  0   0
+// 0 n  0   0
+// 0 0 n+f -fn
+// 0 0  1   0
+
+//T
+// 1 0 0 -(l+r)/2
+// 0 1 0 -(t+b)/2
+// 0 0 1 -(f+n)/2
+// 0 0 0     1
+
+//S
+// 2/(r-l)   0        0    0
+//   0     2/(t-b)    0    0
+//   0       0     2/(f-n) 0
+//   0       0        0    1
+
+//Morth=S*T
+// 2/(r-l)    0       0    (l+r)/(l-r)
+//    0    2/(t-b)    0    (b+t)/(b-t)
+//    0       0    2/(f-n) (n+f)/(n-f)
+//    0       0       0         1
+
+
+//Mper=Morth*P=S*T*P
+// 2n/(r-l)    0     (l+r)/(l-r)    0
+//    0     2n/(t-b) (b+t)/(b-t)    0
+//    0        0     (f+n)/(f-n) 2nf/(n-f)
+//    0        0         1          0
+
+
+
 // return mvp matrix from given aspect, position, rotation, scale
 function getMvpMatrix(
     aspect: number,
@@ -17,6 +53,7 @@ function getMvpMatrix(
 
     // return matrix as Float32Array
     return mvpMatrix as Float32Array
+    // return modelViewMatrix as Float32Array
 }
 
 // return modelView matrix from given position, rotation, scale
@@ -40,13 +77,13 @@ function getModelViewMatrix(
     return modelViewMatrix as Float32Array
 }
 
-const center = vec3.fromValues(0,0,-1)
+const center = vec3.fromValues(0,0,1)
 const up = vec3.fromValues(0,1,0)
 
 function getProjectionMatrix(
     aspect: number,
     fov:number = 60 / 180 * Math.PI,
-    near:number = 32,
+    near:number = 0.1,
     far:number = 100.0,
     position = {x:0, y:0, z:0}
 ){
@@ -64,6 +101,11 @@ function getProjectionMatrix(
     // let b = -t
     // let r = t*aspect
     // let l = -r
+    // mat4.multiply(projectionMatrix,mat4.fromValues(
+    // n,0,0,0,
+    // 0,n,0,0,
+    // 0,0,n+f,-f*n,
+    // 0,0,1,0),projectionMatrix)
     // mat4.multiply(projectionMatrix,projectionMatrix,mat4.fromValues(
     // 1,0,0,-(r+l)/2,
     // 0,1,0,-(t+b)/2,
@@ -74,13 +116,7 @@ function getProjectionMatrix(
     // 0,2/(t-b),0,0,
     // 0,0,2/(n-f),0,
     // 0,0,0,1))
-    // mat4.multiply(projectionMatrix,mat4.fromValues(
-    // n,0,0,0,
-    // 0,n,0,0,
-    // 0,0,n+f,-f*n,
-    // 0,0,1,0),projectionMatrix)
     mat4.perspective(projectionMatrix, fov, aspect, near, far)
-    // mat4.ortho(projectionMatrix,-20,20,-20,20,near,far)
     mat4.multiply(projectionMatrix, projectionMatrix, cameraView)
     // return matrix as Float32Array
     return projectionMatrix as Float32Array

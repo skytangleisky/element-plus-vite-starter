@@ -79,7 +79,7 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{w
             ]
         },
         primitive: {
-            topology: 'triangle-strip',
+            topology: 'triangle-list',
             // Culling backfaces pointing away from the camera
             cullMode: 'none'
         },
@@ -87,7 +87,7 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{w
         // Fragment closest to the camera is rendered in front
         depthStencil: {
             depthWriteEnabled: true,
-            depthCompare: 'less',
+            depthCompare: 'always',
             format: 'depth24plus',
         }
     } as GPURenderPipelineDescriptor)
@@ -177,12 +177,10 @@ export function cancel(){
     window.cancelAnimationFrame(aid)
 }
 // total objects
-const NUM = 100
+const NUM = 1
 export default async function run(canvas:HTMLCanvasElement){
-    
     if (!canvas)
         throw new Error('No Canvas')
-    
     const {device, context, format, size} = await initWebGPU(canvas)
     const pipelineObj = await initPipeline(device, format, size)
     // create objects
@@ -190,8 +188,9 @@ export default async function run(canvas:HTMLCanvasElement){
     const scene:any[] = []
     const mvpBuffer = new Float32Array(NUM * 4 * 4)
     for(let i = 0; i < NUM; i++){
+        console.log(NUM)
         // craete simple object
-        const position = {x: Math.random() * 40 - 20, y: Math.random() * 40 - 20, z: -50 /*- 50 - Math.random()*50*/}
+        const position = {x: i/*Math.random() * 40 - 20*/, y: 0/*Math.random() * 40 - 20*/, z: 50 + i/*- 50 - Math.random()*50*/}
         const rotation = {x: 0, y: 0, z: 0}
         const scale = {x:1, y:1, z:1}
         scene.push({position, rotation, scale})
@@ -246,11 +245,11 @@ export default async function run(canvas:HTMLCanvasElement){
     // start loop
     function frame(){
         // update rotation for each object
-        for(let i = 0; i < scene.length - 1; i++){
+        for(let i = 0; i < scene.length; i++){
             const obj = scene[i]
-            const now = Date.now() / 1000
-            // obj.rotation.x = Math.sin(now + i)
-            // obj.rotation.y = Math.cos(now + i)
+            const now = Date.now() / 10000
+            obj.rotation.x = Math.sin(now + i)
+            obj.rotation.y = Math.cos(now + i)
             const mvpMatrix = getMvpMatrix(aspect, obj.position, obj.rotation, obj.scale)
             // update buffer based on offset
             // device.queue.writeBuffer(
