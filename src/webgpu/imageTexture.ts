@@ -62,7 +62,19 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{w
             entryPoint: 'main',
             targets: [
                 {
-                    format: format
+                    format: format,
+                    blend: {
+                        color: {
+                            srcFactor: 'src-alpha',
+                            dstFactor: 'one-minus-src-alpha',
+                            operation: 'add',
+                        },
+                        alpha: {
+                            srcFactor: 'one',
+                            dstFactor: 'one',
+                            operation: 'add',
+                        },
+                    }
                 }
             ]
         },
@@ -134,7 +146,7 @@ function draw(
         colorAttachments: [
             {
                 view: context.getCurrentTexture().createView(),
-                clearValue: { r: 0, g: 0, b: 0, a: 0 },
+                clearValue: { r: 0, g: 0, b: 0, a: 0.0 },
                 loadOp: 'clear',
                 storeOp: 'store'
             }
@@ -165,7 +177,7 @@ export function cancel(){
     window.cancelAnimationFrame(aid)
 }
 // total objects
-const NUM = 10
+const NUM = 100
 export default async function run(canvas:HTMLCanvasElement){
     
     if (!canvas)
@@ -179,7 +191,7 @@ export default async function run(canvas:HTMLCanvasElement){
     const mvpBuffer = new Float32Array(NUM * 4 * 4)
     for(let i = 0; i < NUM; i++){
         // craete simple object
-        const position = {x: Math.random() * 40 - 20, y: Math.random() * 40 - 20, z:  - 50 /*- Math.random()*50*/}
+        const position = {x: Math.random() * 40 - 20, y: Math.random() * 40 - 20, z: -50 /*- 50 - Math.random()*50*/}
         const rotation = {x: 0, y: 0, z: 0}
         const scale = {x:1, y:1, z:1}
         scene.push({position, rotation, scale})

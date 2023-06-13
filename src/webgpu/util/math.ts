@@ -46,10 +46,10 @@ const up = vec3.fromValues(0,1,0)
 function getProjectionMatrix(
     aspect: number,
     fov:number = 60 / 180 * Math.PI,
-    near:number = 0.1,
+    near:number = 32,
     far:number = 100.0,
     position = {x:0, y:0, z:0}
-){  near = 32
+){
     // create cameraview
     const cameraView = mat4.create()
     const eye = vec3.fromValues(position.x, position.y, position.z)
@@ -57,7 +57,30 @@ function getProjectionMatrix(
     mat4.lookAt(cameraView, eye, center, up)
     // get a perspective Matrix
     const projectionMatrix = mat4.create()
+
+    // let n = near
+    // let f = far
+    // let t = near*Math.tan(fov/2)
+    // let b = -t
+    // let r = t*aspect
+    // let l = -r
+    // mat4.multiply(projectionMatrix,projectionMatrix,mat4.fromValues(
+    // 1,0,0,-(r+l)/2,
+    // 0,1,0,-(t+b)/2,
+    // 0,0,1,-(n+f)/2,
+    // 0,0,1,0))
+    // mat4.multiply(projectionMatrix,projectionMatrix,mat4.fromValues(
+    // 2/(r-l),0,0,0,
+    // 0,2/(t-b),0,0,
+    // 0,0,2/(n-f),0,
+    // 0,0,0,1))
+    // mat4.multiply(projectionMatrix,mat4.fromValues(
+    // n,0,0,0,
+    // 0,n,0,0,
+    // 0,0,n+f,-f*n,
+    // 0,0,1,0),projectionMatrix)
     mat4.perspective(projectionMatrix, fov, aspect, near, far)
+    // mat4.ortho(projectionMatrix,-20,20,-20,20,near,far)
     mat4.multiply(projectionMatrix, projectionMatrix, cameraView)
     // return matrix as Float32Array
     return projectionMatrix as Float32Array
