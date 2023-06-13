@@ -696,8 +696,8 @@ import { eventbus } from '~/eventbus'
 }
 .map_mask{
   position:fixed;
-  display:block;
-  background-color: #ff000001;
+  display:none;
+  background-color: #ff000011;
   left:0;
   top:0;
   width: 100%;
