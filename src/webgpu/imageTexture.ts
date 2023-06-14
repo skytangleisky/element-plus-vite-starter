@@ -14,7 +14,7 @@ async function initWebGPU(canvas: HTMLCanvasElement) {
         throw new Error('No Adapter Found')
     const device = await adapter.requestDevice()
     const context = canvas.getContext('webgpu') as GPUCanvasContext
-    const format = navigator.gpu.getPreferredCanvasFormat ? navigator.gpu.getPreferredCanvasFormat() : context.getPreferredFormat(adapter)
+    const format = navigator.gpu.getPreferredCanvasFormat()
     const devicePixelRatio = window.devicePixelRatio || 1
     canvas.width = canvas.clientWidth * devicePixelRatio
     canvas.height = canvas.clientHeight * devicePixelRatio
@@ -81,19 +81,31 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{w
         primitive: {
             topology: 'triangle-list',
             // Culling backfaces pointing away from the camera
-            cullMode: 'none'
+            cullMode: 'back'
         },
         // Enable depth testing since we have z-level positions
         // Fragment closest to the camera is rendered in front
         depthStencil: {
             depthWriteEnabled: true,
             depthCompare: 'always',
-            format: 'depth24plus',
+            format: 'depth24plus-stencil8',
+            // stencilFront:{
+            //     compare:"less",
+            //     failOp:"keep",
+            //     depthFailOp:"keep",
+            //     passOp:'keep',
+            // },
+            // stencilBack:{
+            //     compare:"less",
+            //     failOp:"keep",
+            //     depthFailOp:"keep",
+            //     passOp:"keep",
+            // },
         }
     } as GPURenderPipelineDescriptor)
     // create depthTexture for renderPass
     const depthTexture = device.createTexture({
-        size, format: 'depth24plus',
+        size, format: 'depth24plus-stencil8',
         usage: GPUTextureUsage.RENDER_ATTACHMENT,
     })
     const depthView = depthTexture.createView()
@@ -156,6 +168,9 @@ function draw(
             depthClearValue: 1.0,
             depthLoadOp: 'clear',
             depthStoreOp: 'store',
+            stencilClearValue: 0,
+            stencilLoadOp: 'clear',
+            stencilStoreOp: 'store',
         }
     }
     const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor)
@@ -177,7 +192,7 @@ export function cancel(){
     window.cancelAnimationFrame(aid)
 }
 // total objects
-const NUM = 6
+const NUM = 1
 export default async function run(canvas:HTMLCanvasElement){
     if (!canvas)
         throw new Error('No Canvas')
@@ -188,9 +203,8 @@ export default async function run(canvas:HTMLCanvasElement){
     const scene:any[] = []
     const mvpBuffer = new Float32Array(NUM * 4 * 4)
     for(let i = 0; i < NUM; i++){
-        console.log(NUM)
         // craete simple object
-        const position = {x: i/2/*Math.random() * 40 - 20*/, y: 0/*Math.random() * 40 - 20*/, z: 50 - 10*i/*- 50 - Math.random()*50*/}
+        const position = {x: i/2/*Math.random() * 40 - 20*/, y: i/2/*Math.random() * 40 - 20*/, z: /*-10 - 5*i*/ -50 + 5*i /*- 20 - Math.random()*5*/}
         const rotation = {x: 0, y: 0, z: 0}
         const scale = {x:1, y:1, z:1}
         scene.push({position, rotation, scale})
@@ -275,7 +289,7 @@ export default async function run(canvas:HTMLCanvasElement){
         // re-create depth texture
         pipelineObj.depthTexture.destroy()
         pipelineObj.depthTexture = device.createTexture({
-            size, format: 'depth24plus',
+            size, format: 'depth24plus-stencil8',
             usage: GPUTextureUsage.RENDER_ATTACHMENT,
         })
         pipelineObj.depthView = pipelineObj.depthTexture.createView()

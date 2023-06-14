@@ -1,4 +1,5 @@
 import { mat4, vec3 } from '~/tools/gl-matrix'
+// import { mat4, vec3 } from 'gl-matrix'
 
 
 //投影矩阵
@@ -6,7 +7,7 @@ import { mat4, vec3 } from '~/tools/gl-matrix'
 //P
 // n 0  0   0
 // 0 n  0   0
-// 0 0 n+f -fn
+// 0 0 f+n -fn
 // 0 0  1   0
 
 //T
@@ -22,17 +23,17 @@ import { mat4, vec3 } from '~/tools/gl-matrix'
 //   0       0        0    1
 
 //Morth=S*T
-// 2/(r-l)    0       0    (l+r)/(l-r)
-//    0    2/(t-b)    0    (b+t)/(b-t)
-//    0       0    2/(f-n) (n+f)/(n-f)
-//    0       0       0         1
+// 2/(r-l)    0       0    -(r+l)/(r-l)
+//    0    2/(t-b)    0    -(t+b)/(t-b)
+//    0       0    2/(f-n) -(f+n)/(f-n)
+//    0       0       0          1
 
 
 //Mper=Morth*P=S*T*P
-// 2n/(r-l)    0     (l+r)/(l-r)    0
-//    0     2n/(t-b) (b+t)/(b-t)    0
-//    0        0     (f+n)/(f-n) 2nf/(n-f)
-//    0        0         1          0
+// 2n/(r-l)    0       (r+l)/(r-l)     0
+//    0     2n/(t-b)   (t+b)/(t-b)     0
+//    0        0      -(f+n)/(f-n) -2fn/(f-n)
+//    0        0           -1          0
 
 
 
@@ -49,7 +50,7 @@ function getMvpMatrix(
     const projectionMatrix = getProjectionMatrix(aspect)
     // get mvp matrix
     const mvpMatrix = mat4.create()
-    mat4.multiply(mvpMatrix, projectionMatrix, modelViewMatrix)
+    mat4.multiply(mvpMatrix,projectionMatrix, modelViewMatrix)
 
     // return matrix as Float32Array
     return mvpMatrix as Float32Array
@@ -77,7 +78,7 @@ function getModelViewMatrix(
     return modelViewMatrix as Float32Array
 }
 
-const center = vec3.fromValues(0,0,1)
+const center = vec3.fromValues(0,0,-100)
 const up = vec3.fromValues(0,1,0)
 
 function getProjectionMatrix(
@@ -93,32 +94,60 @@ function getProjectionMatrix(
     mat4.translate(cameraView, cameraView, eye)
     mat4.lookAt(cameraView, eye, center, up)
     // get a perspective Matrix
-    const projectionMatrix = mat4.create()
+    const projectionMatrix1 = mat4.create()
 
-    // let n = near
-    // let f = far
-    // let t = near*Math.tan(fov/2)
-    // let b = -t
-    // let r = t*aspect
-    // let l = -r
-    // mat4.multiply(projectionMatrix,mat4.fromValues(
-    // n,0,0,0,
-    // 0,n,0,0,
-    // 0,0,n+f,-f*n,
-    // 0,0,1,0),projectionMatrix)
-    // mat4.multiply(projectionMatrix,projectionMatrix,mat4.fromValues(
-    // 1,0,0,-(r+l)/2,
-    // 0,1,0,-(t+b)/2,
-    // 0,0,1,-(n+f)/2,
-    // 0,0,1,0))
-    // mat4.multiply(projectionMatrix,projectionMatrix,mat4.fromValues(
-    // 2/(r-l),0,0,0,
-    // 0,2/(t-b),0,0,
-    // 0,0,2/(n-f),0,
-    // 0,0,0,1))
+    let n = near
+    let f = far
+    let t = near*Math.tan(fov/2)
+    let b = -t
+    let r = t*aspect
+    let l = -r
+    // mat4.multiply(
+    //     projectionMatrix1,
+    //     projectionMatrix1,
+    //     mat4.fromValues(
+    //         n,0,0,0,
+    //         0,n,0,0,
+    //         0,0,f+n,-f*n,
+    //         0,0,1,0
+    //     )
+    // )
+    // mat4.multiply(
+    //     projectionMatrix1,
+    //     projectionMatrix1,
+    //     mat4.fromValues(
+    //         2/(r-l),0,0,0,
+    //         0,2/(t-b),0,0,
+    //         0,0,2/(n-f),0,
+    //         0,0,0,1
+    //     )
+    // )
+    // mat4.multiply(
+    //     projectionMatrix1,
+    //     projectionMatrix1,
+    //     mat4.fromValues(
+    //         1,0,0,-(r+l)/2,
+    //         0,1,0,-(t+b)/2,
+    //         0,0,1,-(n+f)/2,
+    //         0,0,0,1
+    //     )
+    // )
+
+    // mat4.multiply(
+    //     projectionMatrix1,
+    //     projectionMatrix1,
+    //     mat4.fromValues(
+    //         2*n/(r-l),0,(r+l)/(r-l),0,
+    //         0,2*n/(t-b),(t+b)/(t-b),0,
+    //         0,0,-(f+n)/(f-n),-1,
+    //         0,0,-2*f*n/(f-n),0
+    //     )
+    // )
+
+    const projectionMatrix = mat4.create()
     mat4.perspective(projectionMatrix, fov, aspect, near, far)
-    mat4.multiply(projectionMatrix, projectionMatrix, cameraView)
-    // return matrix as Float32Array
+    // mat4.ortho(projectionMatrix,l,r,b,t,n,f)
+    // mat4.multiply(projectionMatrix, projectionMatrix, cameraView)
     return projectionMatrix as Float32Array
 }
 
