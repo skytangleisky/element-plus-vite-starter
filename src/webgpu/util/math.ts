@@ -53,8 +53,8 @@ function getMvpMatrix(
     mat4.multiply(mvpMatrix,projectionMatrix, modelViewMatrix)
 
     // return matrix as Float32Array
-    return mvpMatrix as Float32Array
-    // return modelViewMatrix as Float32Array
+    // return mvpMatrix as Float32Array
+    return modelViewMatrix as Float32Array
 }
 
 // return modelView matrix from given position, rotation, scale
@@ -89,10 +89,10 @@ function getProjectionMatrix(
     position = {x:0, y:0, z:0}
 ){
     // create cameraview
-    const cameraView = mat4.create()
-    const eye = vec3.fromValues(position.x, position.y, position.z)
-    mat4.translate(cameraView, cameraView, eye)
-    mat4.lookAt(cameraView, eye, center, up)
+    // const cameraView = mat4.create()
+    // const eye = vec3.fromValues(position.x, position.y, position.z)
+    // mat4.translate(cameraView, cameraView, eye)
+    // mat4.lookAt(cameraView, eye, center, up)
     // get a perspective Matrix
     const projectionMatrix1 = mat4.create()
 

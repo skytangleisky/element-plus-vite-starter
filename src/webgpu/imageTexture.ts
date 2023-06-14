@@ -2,7 +2,8 @@ import basicInstanced from './shaders/basic.instanced.vert.wgsl?raw'
 import positionFrag from './shaders/position.frag.wgsl?raw'
 import * as cube from './util/cube'
 import { getMvpMatrix } from './util/math'
-import textureUrl from '../assets/aircraft.png?url'
+// import textureUrl from '../assets/aircraft.png?url'
+import textureUrl from '/texture.webp?url'
 let aid:number
 
 // initialize webgpu device & config canvas context
@@ -81,7 +82,7 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{w
         primitive: {
             topology: 'triangle-list',
             // Culling backfaces pointing away from the camera
-            cullMode: 'back'
+            cullMode: 'none'
         },
         // Enable depth testing since we have z-level positions
         // Fragment closest to the camera is rendered in front
@@ -192,7 +193,7 @@ export function cancel(){
     window.cancelAnimationFrame(aid)
 }
 // total objects
-const NUM = 1
+const NUM = 9
 export default async function run(canvas:HTMLCanvasElement){
     if (!canvas)
         throw new Error('No Canvas')
@@ -204,7 +205,7 @@ export default async function run(canvas:HTMLCanvasElement){
     const mvpBuffer = new Float32Array(NUM * 4 * 4)
     for(let i = 0; i < NUM; i++){
         // craete simple object
-        const position = {x: i/2/*Math.random() * 40 - 20*/, y: i/2/*Math.random() * 40 - 20*/, z: /*-10 - 5*i*/ -50 + 5*i /*- 20 - Math.random()*5*/}
+        const position = {x: i/2/*Math.random() * 40 - 20*/, y: i/2/*Math.random() * 40 - 20*/, z: 0 /*- 20 - Math.random()*5*/}
         const rotation = {x: 0, y: 0, z: 0}
         const scale = {x:1, y:1, z:1}
         scene.push({position, rotation, scale})

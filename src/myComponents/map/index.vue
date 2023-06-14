@@ -131,8 +131,8 @@ import { eventbus } from '~/eventbus'
     loop(performance.now())
     new ResizeObserver(()=>{
       let rect = cvs.getBoundingClientRect()
-      cvs.width = rect.width
-      cvs.height = rect.height
+      cvs.width = cvs.clientWidth
+      cvs.height = cvs.clientHeight
       planeLayer.quadtree.bounds = {x:0,y:0,width:cvs.width,height:cvs.height}
       stationLayer.quadtree.bounds = {x:0,y:0,width:cvs.width,height:cvs.height}
       localStorage.L&&(obj.targetL=obj.L=Number(localStorage.L))
