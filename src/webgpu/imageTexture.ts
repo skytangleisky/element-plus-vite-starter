@@ -177,7 +177,7 @@ export function cancel(){
     window.cancelAnimationFrame(aid)
 }
 // total objects
-const NUM = 1
+const NUM = 6
 export default async function run(canvas:HTMLCanvasElement){
     if (!canvas)
         throw new Error('No Canvas')
@@ -190,7 +190,7 @@ export default async function run(canvas:HTMLCanvasElement){
     for(let i = 0; i < NUM; i++){
         console.log(NUM)
         // craete simple object
-        const position = {x: i/*Math.random() * 40 - 20*/, y: 0/*Math.random() * 40 - 20*/, z: 50 + i/*- 50 - Math.random()*50*/}
+        const position = {x: i/2/*Math.random() * 40 - 20*/, y: 0/*Math.random() * 40 - 20*/, z: 50 - 10*i/*- 50 - Math.random()*50*/}
         const rotation = {x: 0, y: 0, z: 0}
         const scale = {x:1, y:1, z:1}
         scene.push({position, rotation, scale})
@@ -247,9 +247,9 @@ export default async function run(canvas:HTMLCanvasElement){
         // update rotation for each object
         for(let i = 0; i < scene.length; i++){
             const obj = scene[i]
-            const now = Date.now() / 10000
-            obj.rotation.x = Math.sin(now + i)
-            obj.rotation.y = Math.cos(now + i)
+            // const now = Date.now() / 10000
+            // obj.rotation.x = Math.sin(now + i)
+            // obj.rotation.y = Math.cos(now + i)
             const mvpMatrix = getMvpMatrix(aspect, obj.position, obj.rotation, obj.scale)
             // update buffer based on offset
             // device.queue.writeBuffer(
