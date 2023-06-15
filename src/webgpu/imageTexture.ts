@@ -200,7 +200,6 @@ export default async function run(canvas:HTMLCanvasElement){
     const {device, context, format, size} = await initWebGPU(canvas)
     const pipelineObj = await initPipeline(device, format, size)
     // create objects
-    let aspect = size.width / size.height
     const scene:any[] = []
     const mvpBuffer = new Float32Array(NUM * 4 * 4)
     for(let i = 0; i < NUM; i++){
@@ -265,7 +264,7 @@ export default async function run(canvas:HTMLCanvasElement){
             const now = Date.now() / 10000
             // obj.rotation.x = Math.sin(now + i)
             // obj.rotation.y = Math.cos(now + i)
-            const mvpMatrix = getMvpMatrix(aspect, obj.position, obj.rotation, obj.scale)
+            const mvpMatrix = getMvpMatrix(size, obj.position, obj.rotation, obj.scale)
             // update buffer based on offset
             // device.queue.writeBuffer(
             //     pipelineObj.mvpBuffer,
@@ -294,7 +293,5 @@ export default async function run(canvas:HTMLCanvasElement){
             usage: GPUTextureUsage.RENDER_ATTACHMENT,
         })
         pipelineObj.depthView = pipelineObj.depthTexture.createView()
-        // update aspect
-        aspect = size.width/ size.height
     })
 }

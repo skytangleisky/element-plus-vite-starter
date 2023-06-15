@@ -453,6 +453,7 @@ export function determinant(a) {
  * @param {ReadonlyMat4} a the first operand
  * @param {ReadonlyMat4} b the second operand
  * @returns {mat4} out
+ * tanglei
  */
 export function multiply(out, b, a) {
   let a00 = a[0],
@@ -1535,9 +1536,11 @@ export function frustum(out, left, right, bottom, top, near, far) {
  * @param {number} near Near bound of the frustum
  * @param {number} far Far bound of the frustum, can be null or Infinity
  * @returns {mat4} out
+ * tanglei
  */
 export function perspectiveNO(out, fovy, aspect, near, far) {
   const f = 1.0 / Math.tan(fovy / 2);
+  const nf = 1 / (near - far);
   out[0] = f / aspect;
   out[1] = 0;
   out[2] = 0;
@@ -1548,18 +1551,12 @@ export function perspectiveNO(out, fovy, aspect, near, far) {
   out[7] = 0;
   out[8] = 0;
   out[9] = 0;
-  out[11] = -1;
+  out[10] = -(far + near) * nf;
+  out[11] = 2 * far * near * nf;
   out[12] = 0;
   out[13] = 0;
+  out[14] = 1;
   out[15] = 0;
-  if (far != null && far !== Infinity) {
-    const nf = 1 / (near - far);
-    out[10] = (far + near) * nf;
-    out[14] = 2 * far * near * nf;
-  } else {
-    out[10] = -1;
-    out[14] = -2 * near;
-  }
   return out;
 }
 
@@ -1581,9 +1578,11 @@ export const perspective = perspectiveNO;
  * @param {number} near Near bound of the frustum
  * @param {number} far Far bound of the frustum, can be null or Infinity
  * @returns {mat4} out
+ * tanglei
  */
 export function perspectiveZO(out, fovy, aspect, near, far) {
   const f = 1.0 / Math.tan(fovy / 2);
+  const nf = 1 / (near - far);
   out[0] = f / aspect;
   out[1] = 0;
   out[2] = 0;
@@ -1594,18 +1593,12 @@ export function perspectiveZO(out, fovy, aspect, near, far) {
   out[7] = 0;
   out[8] = 0;
   out[9] = 0;
-  out[11] = -1;
+  out[10] = -far*nf;
+  out[11] = far * near * nf;
   out[12] = 0;
   out[13] = 0;
+  out[14] = 1;
   out[15] = 0;
-  if (far != null && far !== Infinity) {
-    const nf = 1 / (near - far);
-    out[10] = far * nf;
-    out[14] = far * near * nf;
-  } else {
-    out[10] = -1;
-    out[14] = -near;
-  }
   return out;
 }
 
@@ -1660,26 +1653,27 @@ export function perspectiveFromFieldOfView(out, fov, near, far) {
  * @param {number} near Near bound of the frustum
  * @param {number} far Far bound of the frustum
  * @returns {mat4} out
+ * tanglei
  */
 export function orthoNO(out, left, right, bottom, top, near, far) {
-  const lr = 1 / (left - right);
-  const bt = 1 / (bottom - top);
-  const nf = 1 / (near - far);
-  out[0] = -2 * lr;
+  const rl = 1 / (right - left);
+  const tb = 1 / (top - bottom);
+  const fn = 1 / (far - near);
+  out[0] = 2 * rl;
   out[1] = 0;
   out[2] = 0;
-  out[3] = 0;
+  out[3] = -(right + left) * rl;
   out[4] = 0;
-  out[5] = -2 * bt;
+  out[5] = 2 * tb;
   out[6] = 0;
-  out[7] = 0;
+  out[7] = -(top + bottom) * tb;
   out[8] = 0;
   out[9] = 0;
-  out[10] = 2 * nf;
-  out[11] = 0;
-  out[12] = (left + right) * lr;
-  out[13] = (top + bottom) * bt;
-  out[14] = (far + near) * nf;
+  out[10] = 2 * fn;
+  out[11] = -(far + near) * fn;
+  out[12] = 0;
+  out[13] = 0;
+  out[14] = 0;
   out[15] = 1;
   return out;
 }
@@ -1703,6 +1697,7 @@ export const ortho = orthoNO;
  * @param {number} near Near bound of the frustum
  * @param {number} far Far bound of the frustum
  * @returns {mat4} out
+ * tanglei
  */
 export function orthoZO(out, left, right, bottom, top, near, far) {
   const rl = 1 / (right - left);
