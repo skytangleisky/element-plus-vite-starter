@@ -28,26 +28,26 @@ export default class Plane implements Rect {
     let rad = Math.PI/2
     let scale = {scaleX:2,scaleY:2}
     const m1 = mat3.create()
-    mat3.multiply(m1,m1,mat3.fromValues(
+    mat3.multiply(m1,mat3.fromValues(
     1,0,position.x,
     0,1,position.y,
-    0,0,1))
-    mat3.multiply(m1,m1,mat3.fromValues(
+    0,0,1),m1)
+    mat3.multiply(m1,mat3.fromValues(
     1,0,-5,
     0,1,0,
-    0,0,1))
-    mat3.multiply(m1,m1,mat3.fromValues(
+    0,0,1),m1)
+    mat3.multiply(m1,mat3.fromValues(
     Math.cos(rad),Math.sin(rad),0,
     -Math.sin(rad),Math.cos(rad),0,
-    0,0,1))
-    mat3.multiply(m1,m1,mat3.fromValues(
+    0,0,1),m1)
+    mat3.multiply(m1,mat3.fromValues(
     scale.scaleX,0,0,
     0,scale.scaleY,0,
-    0,0,1))
-    mat3.multiply(m1,m1,mat3.fromValues(
+    0,0,1),m1)
+    mat3.multiply(m1,mat3.fromValues(
     1,0,+5,
     0,1,0,
-    0,0,1))
+    0,0,1),m1)
     console.log(m1)
 
     const m2=mat3.create()
@@ -105,22 +105,22 @@ export default class Plane implements Rect {
     mat3.translate(m,m,vec2.fromValues(x0,y0))
 
     // const m1 = mat3.create()
-    // mat3.multiply(m1,m1,mat3.fromValues(
+    // mat3.multiply(m1,mat3.fromValues(
     // 1,0,x,
     // 0,1,y,
-    // 0,0,1))
-    // mat3.multiply(m1,m1,mat3.fromValues(
+    // 0,0,1),m1)
+    // mat3.multiply(m1,mat3.fromValues(
     // 1,0,-x0,
     // 0,1,-y0,
-    // 0,0,1))
-    // mat3.multiply(m1,m1,mat3.fromValues(
+    // 0,0,1),m1)
+    // mat3.multiply(m1,mat3.fromValues(
     // Math.cos(rad),Math.sin(rad),0,
     // -Math.sin(rad),Math.cos(rad),0,
-    // 0,0,1))
-    // mat3.multiply(m1,m1,mat3.fromValues(
+    // 0,0,1),m1)
+    // mat3.multiply(m1,mat3.fromValues(
     // 1,0,x0,
     // 0,1,y0,
-    // 0,0,1))
+    // 0,0,1),m1)
     return {
       x:m[2],
       y:m[5],

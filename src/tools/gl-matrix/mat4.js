@@ -454,7 +454,7 @@ export function determinant(a) {
  * @param {ReadonlyMat4} b the second operand
  * @returns {mat4} out
  */
-export function multiply(out, a, b) {
+export function multiply(out, b, a) {
   let a00 = a[0],
     a01 = a[1],
     a02 = a[2],

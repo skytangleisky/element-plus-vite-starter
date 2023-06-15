@@ -50,7 +50,7 @@ function getMvpMatrix(
     const projectionMatrix = getProjectionMatrix(aspect)
     // get mvp matrix
     const mvpMatrix = mat4.create()
-    mat4.multiply(mvpMatrix,modelViewMatrix,projectionMatrix)
+    mat4.multiply(mvpMatrix,projectionMatrix,modelViewMatrix)
     mat4.transpose(mvpMatrix,mvpMatrix)
     // return matrix as Float32Array
     return mvpMatrix as Float32Array
@@ -120,33 +120,33 @@ function getProjectionMatrix(
     // )
     mat4.multiply(
         projectionMatrix1,
-        projectionMatrix1,
         mat4.fromValues(
             1,0,0,-(r+l)/2,
             0,1,0,-(t+b)/2,
             0,0,1,-(f+n)/2,
             0,0,0,1
-        )
+        ),
+        projectionMatrix1
     )
     mat4.multiply(
-        projectionMatrix1,
-        projectionMatrix1,
+        projectionMatrix1, 
         mat4.fromValues(
             2/(r-l),0,0,0,
             0,2/(t-b),0,0,
             0,0,2/(f-n),0,
             0,0,0,1
-        )
+        ),
+        projectionMatrix1
     )
     mat4.multiply(
-        projectionMatrix1,
         projectionMatrix1,
         mat4.fromValues(
             1,0,0,0,
             0,1,0,0,
             0,0,0.5,0.5,
             0,0,0,1
-        )
+        ),
+        projectionMatrix1
     )
 
     const projectionMatrix = mat4.create()
