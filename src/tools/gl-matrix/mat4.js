@@ -1705,24 +1705,24 @@ export const ortho = orthoNO;
  * @returns {mat4} out
  */
 export function orthoZO(out, left, right, bottom, top, near, far) {
-  const lr = 1 / (left - right);
-  const bt = 1 / (bottom - top);
-  const nf = 1 / (near - far);
-  out[0] = -2 * lr;
+  const rl = 1 / (right - left);
+  const tb = 1 / (top - bottom);
+  const fn = 1 / (far - near);
+  out[0] = 2 * rl;
   out[1] = 0;
   out[2] = 0;
-  out[3] = 0;
+  out[3] = -(right + left) * rl;
   out[4] = 0;
-  out[5] = -2 * bt;
+  out[5] = 2 * tb;
   out[6] = 0;
-  out[7] = 0;
+  out[7] = -(top + bottom) * tb;
   out[8] = 0;
   out[9] = 0;
-  out[10] = nf;
-  out[11] = 0;
-  out[12] = (left + right) * lr;
-  out[13] = (top + bottom) * bt;
-  out[14] = near * nf;
+  out[10] = fn;
+  out[11] = -near * fn;
+  out[12] = 0;
+  out[13] = 0;
+  out[14] = 0;
   out[15] = 1;
   return out;
 }

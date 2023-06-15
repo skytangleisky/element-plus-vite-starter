@@ -50,11 +50,11 @@ function getMvpMatrix(
     const projectionMatrix = getProjectionMatrix(aspect)
     // get mvp matrix
     const mvpMatrix = mat4.create()
-    mat4.multiply(mvpMatrix,projectionMatrix, modelViewMatrix)
-
+    mat4.multiply(mvpMatrix,modelViewMatrix,projectionMatrix)
+    mat4.transpose(mvpMatrix,mvpMatrix)
     // return matrix as Float32Array
-    // return mvpMatrix as Float32Array
-    return modelViewMatrix as Float32Array
+    return mvpMatrix as Float32Array
+    // return modelViewMatrix as Float32Array
 }
 
 // return modelView matrix from given position, rotation, scale
@@ -89,19 +89,25 @@ function getProjectionMatrix(
     position = {x:0, y:0, z:0}
 ){
     // create cameraview
-    // const cameraView = mat4.create()
-    // const eye = vec3.fromValues(position.x, position.y, position.z)
-    // mat4.translate(cameraView, cameraView, eye)
-    // mat4.lookAt(cameraView, eye, center, up)
+    const cameraView = mat4.create()
+    const eye = vec3.fromValues(position.x, position.y, position.z)
+    mat4.translate(cameraView, cameraView, eye)
+    mat4.lookAt(cameraView, eye, center, up)
     // get a perspective Matrix
     const projectionMatrix1 = mat4.create()
 
-    let n = near
-    let f = far
-    let t = near*Math.tan(fov/2)
-    let b = -t
-    let r = t*aspect
-    let l = -r
+    // let n = near
+    // let f = far
+    // let t = near*Math.tan(fov/2)
+    // let b = -t
+    // let r = t*aspect
+    // let l = -r
+    let n = 1
+    let f = 2
+    let t = 1
+    let b =-1
+    let r = 1
+    let l =-1
     // mat4.multiply(
     //     projectionMatrix1,
     //     projectionMatrix1,
@@ -112,43 +118,45 @@ function getProjectionMatrix(
     //         0,0,1,0
     //     )
     // )
-    // mat4.multiply(
-    //     projectionMatrix1,
-    //     projectionMatrix1,
-    //     mat4.fromValues(
-    //         2/(r-l),0,0,0,
-    //         0,2/(t-b),0,0,
-    //         0,0,2/(n-f),0,
-    //         0,0,0,1
-    //     )
-    // )
-    // mat4.multiply(
-    //     projectionMatrix1,
-    //     projectionMatrix1,
-    //     mat4.fromValues(
-    //         1,0,0,-(r+l)/2,
-    //         0,1,0,-(t+b)/2,
-    //         0,0,1,-(n+f)/2,
-    //         0,0,0,1
-    //     )
-    // )
-
-    // mat4.multiply(
-    //     projectionMatrix1,
-    //     projectionMatrix1,
-    //     mat4.fromValues(
-    //         2*n/(r-l),0,(r+l)/(r-l),0,
-    //         0,2*n/(t-b),(t+b)/(t-b),0,
-    //         0,0,-(f+n)/(f-n),-1,
-    //         0,0,-2*f*n/(f-n),0
-    //     )
-    // )
+    mat4.multiply(
+        projectionMatrix1,
+        projectionMatrix1,
+        mat4.fromValues(
+            1,0,0,-(r+l)/2,
+            0,1,0,-(t+b)/2,
+            0,0,1,-(f+n)/2,
+            0,0,0,1
+        )
+    )
+    mat4.multiply(
+        projectionMatrix1,
+        projectionMatrix1,
+        mat4.fromValues(
+            2/(r-l),0,0,0,
+            0,2/(t-b),0,0,
+            0,0,2/(f-n),0,
+            0,0,0,1
+        )
+    )
+    mat4.multiply(
+        projectionMatrix1,
+        projectionMatrix1,
+        mat4.fromValues(
+            1,0,0,0,
+            0,1,0,0,
+            0,0,0.5,0.5,
+            0,0,0,1
+        )
+    )
 
     const projectionMatrix = mat4.create()
-    mat4.perspective(projectionMatrix, fov, aspect, near, far)
-    // mat4.ortho(projectionMatrix,l,r,b,t,n,f)
+    // mat4.perspectiveZO(projectionMatrix, fov, aspect, 0, 1)
+    mat4.orthoZO(projectionMatrix,l,r,b,t,n,f)
+    if(!mat4.equals(projectionMatrix,projectionMatrix1)){
+        throw Error('not equal')
+    }
     // mat4.multiply(projectionMatrix, projectionMatrix, cameraView)
-    return projectionMatrix as Float32Array
+    return projectionMatrix1 as Float32Array
 }
 
 export { getMvpMatrix, getModelViewMatrix, getProjectionMatrix }
