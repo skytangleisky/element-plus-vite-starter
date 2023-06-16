@@ -198,9 +198,9 @@ export default async function run(canvas:HTMLCanvasElement){
     const mvpBuffer = new Float32Array(NUM * 4 * 4)
     for(let i = 0; i < NUM; i++){
         // craete simple object
-        const rotation = {x: 0, y: 0, z: 0*Math.PI/4}
-        const scale = {x:.1, y:.1, z:1.0}
-        const position = {x: i/NUM, y: 0/*Math.random() * 40 - 20*/, z: i/NUM}
+        const rotation = {x: 0, y: 0, z: 0}
+        const scale = {x:1.0, y:1.0, z: 1.0}
+        const position = {a: Math.random(), b: Math.random(), z: 0}
         scene.push({position, rotation, scale})
     }
 
@@ -252,12 +252,19 @@ export default async function run(canvas:HTMLCanvasElement){
     })
     // start loop
     function frame(){
+        logic()
+        draw(device, context, pipelineObj,textureGroup)
+        aid = requestAnimationFrame(frame)
+    }
+    frame()
+    function logic(){
         // update rotation for each object
         for(let i = 0; i < scene.length; i++){
             const obj = scene[i]
-            const now = Date.now() / 10000
+            const now = Date.now() / 1000
             // obj.rotation.x = Math.sin(now + i)
             // obj.rotation.y = Math.cos(now + i)
+            obj.rotation.z = Math.cos(now + i)
             const mvpMatrix = getMvpMatrix(size, obj.position, obj.rotation, obj.scale)
             // update buffer based on offset
             // device.queue.writeBuffer(
@@ -270,16 +277,13 @@ export default async function run(canvas:HTMLCanvasElement){
         }
         // the better way is update buffer in one write after loop
         device.queue.writeBuffer(pipelineObj.mvpBuffer, 0, mvpBuffer)
-        draw(device, context, pipelineObj,textureGroup)
-        // aid = requestAnimationFrame(frame)
     }
-    frame()
 
-    // re-configure context on resize
-    window.addEventListener('resize', ()=>{
-        size.width = canvas.width = canvas.clientWidth * devicePixelRatio
-        size.height = canvas.height = canvas.clientHeight * devicePixelRatio
-        console.log(devicePixelRatio)
+    new ResizeObserver(()=>{
+        let rect = canvas.getBoundingClientRect()
+        if(rect.width==0||rect.height==0)return
+        size.width = canvas.width = rect.width * devicePixelRatio
+        size.height = canvas.height = rect.height * devicePixelRatio
         // don't need to recall context.configure() after v104
         // re-create depth texture
         pipelineObj.depthTexture.destroy()
@@ -288,5 +292,25 @@ export default async function run(canvas:HTMLCanvasElement){
             usage: GPUTextureUsage.RENDER_ATTACHMENT,
         })
         pipelineObj.depthView = pipelineObj.depthTexture.createView()
-    })
+
+        for(let i = 0; i < scene.length; i++){
+            let position = scene[i].position
+            let scale = scene[i].scale
+            let pos = getGPUcoord(position.a*size.width,position.b*size.height,size)
+            position.x = pos.x
+            position.y = pos.y
+            let w=64
+            let h=64
+            scale.x=w/size.height
+            scale.y=h/size.height
+        }
+        logic()
+        draw(device, context, pipelineObj,textureGroup)
+    }).observe(canvas)
+    function getGPUcoord(x:number,y:number,size:{width:number,height:number}){
+        return {
+            x:(x-size.width/2)/(size.width/2)*size.width/size.height,
+            y:-(y-size.height/2)/(size.height/2)
+        }
+    }
 }

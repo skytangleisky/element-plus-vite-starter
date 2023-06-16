@@ -162,7 +162,6 @@ function getMvpMatrix(
     // get mvp matrix
     const mvpMatrix = mat4.create()
     mat4.multiply(mvpMatrix,projectionMatrix,modelViewMatrix)
-    mat4.transpose(mvpMatrix,mvpMatrix)
     // return matrix as Float32Array
     return mvpMatrix as Float32Array
     // return modelViewMatrix as Float32Array
@@ -175,22 +174,19 @@ function getModelViewMatrix(
     scale = {x:1, y:1, z:1}
 ){
     const modelViewMatrix = mat4.create()
+    mat4.translate(modelViewMatrix, modelViewMatrix, vec3.fromValues(0,0,-1))
     mat4.rotateX(modelViewMatrix, modelViewMatrix, rotation.x)
     mat4.rotateY(modelViewMatrix, modelViewMatrix, rotation.y)
     mat4.rotateZ(modelViewMatrix, modelViewMatrix, rotation.z)
     mat4.scale(modelViewMatrix, modelViewMatrix, vec3.fromValues(scale.x, scale.y, scale.z))
+    mat4.translate(modelViewMatrix, modelViewMatrix, vec3.fromValues(0,0,+1))
+
     mat4.translate(modelViewMatrix, modelViewMatrix, vec3.fromValues(position.x, position.y, position.z))
     return modelViewMatrix as Float32Array
 }
 
 const center = vec3.fromValues(0,0,-1)
 const up = vec3.fromValues(0,1,0)
-function getGPUcoord(x:number,y:number,size:{width:number,height:number}){
-    return {
-        x:(x-size.width/2)/(size.width/2),
-        y:-(y-size.height/2)/(size.height/2)
-    }
-}
 function getProjectionMatrix(
     size: {width:number,height:number},
     fov:number = 90 / 180 * Math.PI,
@@ -207,30 +203,29 @@ function getProjectionMatrix(
     const projectionMatrix1 = mat4.create()
     let aspect = size.width/size.height
 
-    // let n = 1
-    // let f = 2
-    // let t = n*Math.tan(fov/2)
-    // let b = -t
-    // let r = t*aspect
-    // let l = -r
-    getGPUcoord(size.width,size.height,size)
-    window.screen.height
     let n = 1
-    let f = 2
-    let t = 1
-    let b =-1
-    let r = 1
-    let l =-1
-    mat4.multiply(
-        projectionMatrix1,
-        mat4.fromValues(
-            n,0,0,0,
-            0,n,0,0,
-            0,0,f+n,-f*n,
-            0,0,1,0
-        ),
-        projectionMatrix1
-    )
+    let f = 3
+    let t = n*Math.tan(fov/2)
+    let b = -t
+    let r = t*aspect
+    let l = -r
+    window.screen.height
+    // let n = 1
+    // let f = 3
+    // let t = 1
+    // let b =-1
+    // let r = 1
+    // let l =-1
+    // mat4.multiply(
+    //     projectionMatrix1,
+    //     mat4.fromValues(
+    //         n,0,0,0,
+    //         0,n,0,0,
+    //         0,0,f+n,-f*n,
+    //         0,0,1,0
+    //     ),
+    //     projectionMatrix1
+    // )
     mat4.multiply(
         projectionMatrix1,
         mat4.fromValues(
@@ -264,6 +259,7 @@ function getProjectionMatrix(
     )
     const projectionMatrix = mat4.create()
     mat4.perspectiveZO(projectionMatrix, fov, aspect, n, f)
+    // mat4.orthoZO(projectionMatrix, l, r, b,t ,n , f)
     // mat4.multiply(projectionMatrix, cameraView,projectionMatrix)
     return projectionMatrix1 as Float32Array
 }
