@@ -174,18 +174,15 @@ function getModelViewMatrix(
     scale = {x:1, y:1, z:1}
 ){
     const modelViewMatrix = mat4.create()
-    mat4.translate(modelViewMatrix, modelViewMatrix, vec3.fromValues(0,0,-1))
     mat4.rotateX(modelViewMatrix, modelViewMatrix, rotation.x)
     mat4.rotateY(modelViewMatrix, modelViewMatrix, rotation.y)
     mat4.rotateZ(modelViewMatrix, modelViewMatrix, rotation.z)
     mat4.scale(modelViewMatrix, modelViewMatrix, vec3.fromValues(scale.x, scale.y, scale.z))
-    mat4.translate(modelViewMatrix, modelViewMatrix, vec3.fromValues(0,0,+1))
-
     mat4.translate(modelViewMatrix, modelViewMatrix, vec3.fromValues(position.x, position.y, position.z))
     return modelViewMatrix as Float32Array
 }
 
-const center = vec3.fromValues(0,0,-1)
+const center = vec3.fromValues(0,0,1)
 const up = vec3.fromValues(0,1,0)
 function getProjectionMatrix(
     size: {width:number,height:number},
@@ -209,7 +206,6 @@ function getProjectionMatrix(
     let b = -t
     let r = t*aspect
     let l = -r
-    window.screen.height
     // let n = 1
     // let f = 3
     // let t = 1
@@ -258,9 +254,9 @@ function getProjectionMatrix(
         projectionMatrix1
     )
     const projectionMatrix = mat4.create()
-    mat4.perspectiveZO(projectionMatrix, fov, aspect, n, f)
+    // mat4.perspectiveZO(projectionMatrix, fov, aspect, n, f)
     // mat4.orthoZO(projectionMatrix, l, r, b,t ,n , f)
-    // mat4.multiply(projectionMatrix, cameraView,projectionMatrix)
+    mat4.multiply(projectionMatrix1, cameraView,projectionMatrix1)
     return projectionMatrix1 as Float32Array
 }
 

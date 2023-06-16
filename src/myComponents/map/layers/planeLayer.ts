@@ -223,13 +223,13 @@ export default class PlaneLayer{
       ctx.fillStyle = 'rgba(255,255,255,0.5)';
       ctx.fillRect(this.myCursor.x, this.myCursor.y, this.myCursor.width, this.myCursor.height);
     }
-    // this.drawQuadtree(ctx,this.quadtree)
+    this.drawQuadtree(ctx,this.quadtree)
     this.drawObjects(ctx)
   }
   drawObjects(ctx:any) {
-    let 矩形碰撞框 = false
-    let 需要检测 = false
-    let intersection = false
+    let 矩形碰撞框 = true
+    let 需要检测 = true
+    let intersection = true
     for(var i=0;i<this.spirits.length;i++) {
       let item = this.spirits[i]
       ctx.save()

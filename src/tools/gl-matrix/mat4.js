@@ -1706,6 +1706,7 @@ export function orthoZO(out, left, right, bottom, top, near, far) {
  * @param {ReadonlyVec3} center Point the viewer is looking at
  * @param {ReadonlyVec3} up vec3 pointing up
  * @returns {mat4} out
+ * tanglei
  */
 export function lookAt(out, eye, center, up) {
   let x0, x1, x2, y0, y1, y2, z0, z1, z2, len;
@@ -1722,14 +1723,14 @@ export function lookAt(out, eye, center, up) {
   if (
     Math.abs(eyex - centerx) < glMatrix.EPSILON &&
     Math.abs(eyey - centery) < glMatrix.EPSILON &&
-    Math.abs(eyez - centerz) < glMatrix.EPSILON
+    Math.abs(eyez + centerz) < glMatrix.EPSILON
   ) {
     return identity(out);
   }
 
   z0 = eyex - centerx;
   z1 = eyey - centery;
-  z2 = eyez - centerz;
+  z2 = eyez + centerz;
 
   len = 1 / Math.sqrt(z0 * z0 + z1 * z1 + z2 * z2);
   z0 *= len;

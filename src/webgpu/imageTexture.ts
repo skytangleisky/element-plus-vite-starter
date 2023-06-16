@@ -200,7 +200,7 @@ export default async function run(canvas:HTMLCanvasElement){
         // craete simple object
         const rotation = {x: 0, y: 0, z: 0}
         const scale = {x:1.0, y:1.0, z: 1.0}
-        const position = {a: Math.random(), b: Math.random(), z: 0}
+        const position = {a: Math.random(), b: Math.random(), z: 1}
         scene.push({position, rotation, scale})
     }
 
@@ -299,10 +299,11 @@ export default async function run(canvas:HTMLCanvasElement){
             let pos = getGPUcoord(position.a*size.width,position.b*size.height,size)
             position.x = pos.x
             position.y = pos.y
+            let fovy=90/180*Math.PI
             let w=64
             let h=64
-            scale.x=w/size.height
-            scale.y=h/size.height
+            scale.x=w/size.height*(1*Math.tan(fovy/2))
+            scale.y=h/size.height*(1*Math.tan(fovy/2))
         }
         logic()
         draw(device, context, pipelineObj,textureGroup)
