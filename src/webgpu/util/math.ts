@@ -1,5 +1,52 @@
 import { mat4, vec3 } from '~/tools/gl-matrix'
 // import { mat4, vec3 } from 'gl-matrix'
+import { equals } from '../../tools/gl-matrix/quat2';
+
+/*
+    let position = {x:1,y:2,z:3}
+    let rotation = {x:Math.PI/4,y:Math.PI/4,z:Math.PI/4}
+    let scale = {x:1,y:2,z:3}
+    const modelViewMatrix = mat4.create()
+    const matrix = mat4.create()
+    mat4.translate(modelViewMatrix, modelViewMatrix, vec3.fromValues(position.x, position.y, position.z))
+    mat4.multiply(matrix,mat4.fromValues(
+        1,0,0,position.x,
+        0,1,0,position.y,
+        0,0,1,position.z,
+        0,0,0,1),matrix)
+
+    mat4.multiply(matrix,mat4.fromValues(
+        1,0,0,0,
+        0,Math.cos(rotation.x),Math.sin(rotation.x),0,
+        0,-Math.sin(rotation.x),Math.cos(rotation.x),0,
+        0,0,0,1),matrix)
+    mat4.rotateX(modelViewMatrix, modelViewMatrix, rotation.x)
+
+
+    mat4.multiply(matrix,mat4.fromValues(
+        Math.cos(rotation.y),0,-Math.sin(rotation.y),0,
+        0,1,0,0,
+        Math.sin(rotation.y),0,Math.cos(rotation.y),0,
+        0,0,0,1),matrix)
+    mat4.rotateY(modelViewMatrix, modelViewMatrix, rotation.y)
+
+    mat4.multiply(matrix,mat4.fromValues(
+        Math.cos(rotation.z),Math.sin(rotation.z),0,0,
+        -Math.sin(rotation.z),Math.cos(rotation.z),0,0,
+        0,0,1,0,
+        0,0,0,1),matrix)
+    mat4.rotateZ(modelViewMatrix, modelViewMatrix, rotation.z)
+
+    mat4.scale(modelViewMatrix, modelViewMatrix, vec3.fromValues(scale.x, scale.y, scale.z))
+    mat4.multiply(matrix,mat4.fromValues(
+        scale.x,0,0,0,
+        0,scale.y,0,0,
+        0,0,scale.z,0,
+        0,0,0,1),matrix)
+    console.log(mat4.equals(matrix,modelViewMatrix))
+*/
+
+
 
 
 /*
@@ -127,18 +174,12 @@ function getModelViewMatrix(
     rotation = {x:0, y:0, z:0},
     scale = {x:1, y:1, z:1}
 ){
-    // get modelView Matrix
     const modelViewMatrix = mat4.create()
-    // translate position
-    mat4.translate(modelViewMatrix, modelViewMatrix, vec3.fromValues(position.x, position.y, position.z))
-    // rotate
     mat4.rotateX(modelViewMatrix, modelViewMatrix, rotation.x)
     mat4.rotateY(modelViewMatrix, modelViewMatrix, rotation.y)
     mat4.rotateZ(modelViewMatrix, modelViewMatrix, rotation.z)
-    // scale
     mat4.scale(modelViewMatrix, modelViewMatrix, vec3.fromValues(scale.x, scale.y, scale.z))
-
-    // return matrix as Float32Array
+    mat4.translate(modelViewMatrix, modelViewMatrix, vec3.fromValues(position.x, position.y, position.z))
     return modelViewMatrix as Float32Array
 }
 
@@ -166,20 +207,20 @@ function getProjectionMatrix(
     const projectionMatrix1 = mat4.create()
     let aspect = size.width/size.height
 
-    let n = 1
-    let f = 2
-    let t = n*Math.tan(fov/2)
-    let b = -t
-    let r = t*aspect
-    let l = -r
-    getGPUcoord(size.width,size.height,size)
-    window.screen.height
     // let n = 1
     // let f = 2
-    // let t = 1
-    // let b =-1
-    // let r = 1
-    // let l =-1
+    // let t = n*Math.tan(fov/2)
+    // let b = -t
+    // let r = t*aspect
+    // let l = -r
+    getGPUcoord(size.width,size.height,size)
+    window.screen.height
+    let n = 1
+    let f = 2
+    let t = 1
+    let b =-1
+    let r = 1
+    let l =-1
     mat4.multiply(
         projectionMatrix1,
         mat4.fromValues(

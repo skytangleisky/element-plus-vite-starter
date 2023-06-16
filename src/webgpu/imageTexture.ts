@@ -2,8 +2,8 @@ import basicInstanced from './shaders/basic.instanced.vert.wgsl?raw'
 import positionFrag from './shaders/position.frag.wgsl?raw'
 import * as cube from './util/cube'
 import { getMvpMatrix } from './util/math'
-// import textureUrl from '../assets/aircraft.png?url'
-import textureUrl from '/texture.webp?url'
+import textureUrl from '../assets/aircraft.png?url'
+// import textureUrl from '/texture.webp?url'
 let aid:number
 
 // initialize webgpu device & config canvas context
@@ -74,7 +74,7 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{w
                             srcFactor: 'one',
                             dstFactor: 'one',
                             operation: 'add',
-                        },
+                        }
                     }
                 }
             ]
@@ -82,7 +82,7 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{w
         primitive: {
             topology: 'triangle-list',
             // Culling backfaces pointing away from the camera
-            cullMode: 'back'
+            cullMode: 'back',
         },
         // Enable depth testing since we have z-level positions
         // Fragment closest to the camera is rendered in front
@@ -92,15 +92,9 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{w
             format: 'depth24plus-stencil8',
             // stencilFront:{
             //     compare:"less",
-            //     failOp:"keep",
-            //     depthFailOp:"keep",
-            //     passOp:'keep',
-            // },
-            // stencilBack:{
-            //     compare:"less",
-            //     failOp:"keep",
-            //     depthFailOp:"keep",
-            //     passOp:"keep",
+            //     failOp:"invert",
+            //     depthFailOp:"replace",
+            //     passOp:"replace",
             // },
         }
     } as GPURenderPipelineDescriptor)
@@ -166,10 +160,10 @@ function draw(
         ],
         depthStencilAttachment: {
             view: pipelineObj.depthView,
-            depthClearValue: 1.0,
+            depthClearValue: 0,
             depthLoadOp: 'clear',
             depthStoreOp: 'store',
-            stencilClearValue: 0,
+            // stencilClearValue: 0,
             stencilLoadOp: 'clear',
             stencilStoreOp: 'store',
         }
@@ -193,7 +187,7 @@ export function cancel(){
     window.cancelAnimationFrame(aid)
 }
 // total objects
-const NUM = 1
+const NUM = 10
 export default async function run(canvas:HTMLCanvasElement){
     if (!canvas)
         throw new Error('No Canvas')
@@ -204,9 +198,9 @@ export default async function run(canvas:HTMLCanvasElement){
     const mvpBuffer = new Float32Array(NUM * 4 * 4)
     for(let i = 0; i < NUM; i++){
         // craete simple object
-        const position = {x: 0/*Math.random() * 40 - 20*/, y: 0/*Math.random() * 40 - 20*/, z: 0 /*- 20 - Math.random()*5*/}
-        const rotation = {x: 0, y: 0, z: 0}
-        const scale = {x:1, y:1, z:1}
+        const rotation = {x: 0, y: 0, z: 0*Math.PI/4}
+        const scale = {x:.1, y:.1, z:1.0}
+        const position = {x: i/NUM, y: 0/*Math.random() * 40 - 20*/, z: i/NUM}
         scene.push({position, rotation, scale})
     }
 
@@ -252,7 +246,7 @@ export default async function run(canvas:HTMLCanvasElement){
             },
             {
                 binding: 1,
-                resource: texture.createView()
+                resource: texture.createView(),
             }
         ]
     })
@@ -277,7 +271,7 @@ export default async function run(canvas:HTMLCanvasElement){
         // the better way is update buffer in one write after loop
         device.queue.writeBuffer(pipelineObj.mvpBuffer, 0, mvpBuffer)
         draw(device, context, pipelineObj,textureGroup)
-        aid = requestAnimationFrame(frame)
+        // aid = requestAnimationFrame(frame)
     }
     frame()
 
@@ -285,6 +279,7 @@ export default async function run(canvas:HTMLCanvasElement){
     window.addEventListener('resize', ()=>{
         size.width = canvas.width = canvas.clientWidth * devicePixelRatio
         size.height = canvas.height = canvas.clientHeight * devicePixelRatio
+        console.log(devicePixelRatio)
         // don't need to recall context.configure() after v104
         // re-create depth texture
         pipelineObj.depthTexture.destroy()

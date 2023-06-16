@@ -341,6 +341,7 @@ export function multiply(out, a, b) {
  * @param {ReadonlyMat3} a the matrix to translate
  * @param {ReadonlyVec2} v vector to translate by
  * @returns {mat3} out
+ * tanglei
  */
 export function translate(out, a, v) {
   let a00 = a[0],
