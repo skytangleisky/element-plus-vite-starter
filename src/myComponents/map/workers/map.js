@@ -1,7 +1,8 @@
 import { tileXY2QuadKey } from '../js/core.js'
 self.onmessage = e => {
+  let item = Object.assign({},e.data)
   var xhr = new XMLHttpRequest()
-  let src = e.data.url.replaceAll('{x}',e.data.x).replaceAll('{y}',e.data.y).replaceAll('{z}',e.data.z).replace('{q}',tileXY2QuadKey(e.data.z,e.data.y,e.data.x))+(e.data.url.indexOf('?')==-1?'?t=':'&t=')+Date.now();//?t=xxx防止浏览器本身的缓存机制
+  let src = item.url.replaceAll('{x}',item.x).replaceAll('{y}',item.y).replaceAll('{z}',item.z).replace('{q}',tileXY2QuadKey(item.z,item.y,item.x))+(item.url.indexOf('?')==-1?'?t=':'&t=')+Date.now();//?t=xxx防止浏览器本身的缓存机制
   xhr.open('GET',src,true)
   xhr.responseType = 'blob'
   // xhr.timeout=10000
@@ -10,11 +11,13 @@ self.onmessage = e => {
       let res = 'response' in xhr ? xhr.response : xhr.responseText
       if(xhr.status === 200) {
         createImageBitmap(res).then(bitmapData=>{
-          self.postMessage({url:e.data.url,z:e.data.z,y:e.data.y,x:e.data.x,i:e.data.i,j:e.data.j,bitmap:bitmapData,isDrawed:true})
+          self.postMessage({url:item.url,z:item.z,y:item.y,x:item.x,i:item.i,j:item.j,bitmap:bitmapData,isDrawed:true})
         }).catch(err=>{
           console.error(err)
+          self.postMessage({url:item.url,z:item.z,y:item.y,x:item.x,i:item.i,j:item.j,bitmap:-1,isDrawed:false})
         })
       }else{
+        self.postMessage({url:item.url,z:item.z,y:item.y,x:item.x,i:item.i,j:item.j,bitmap:-1,isDrawed:false})
         console.error(xhr.status)
       }
     }
@@ -22,7 +25,7 @@ self.onmessage = e => {
   xhr.onerror = function(error){
   }
   xhr.ontimeout = function(){
-    self.postMessage({url:e.data.url,z:e.data.z,y:e.data.y,x:e.data.x,i:e.data.i,j:e.data.j,bitmap:-1,isDrawed:false})
+    self.postMessage({url:item.url,z:item.z,y:item.y,x:item.x,i:item.i,j:item.j,bitmap:-1,isDrawed:false})
   }
   xhr.send()
   // self.close()

@@ -25,7 +25,7 @@ export default class MapLayer extends BaseLayer{
       this.Count--
       for(let k=0;k<this.mapsTiles.length;k++){
         if(this.mapsTiles[k]._LL==event.data.z&&this.mapsTiles[k].i==event.data.i&&this.mapsTiles[k].j==event.data.j&&this.mapsTiles[k].url==event.data.url){
-          if(event.data.bitmap===-1){
+          if(event.data.bitmap===-1&&this.mapsTiles[k].same==false){
             this.mapsTiles.splice(k--,1)
             break;
           }else if(event.data.bitmap===0){
@@ -40,13 +40,20 @@ export default class MapLayer extends BaseLayer{
               this.mapsTiles[k].isDrawed = event.data.isDrawed;
             }
           }else{
-            var cvs2 = document.createElement('canvas');
-            cvs2.width=256
-            cvs2.height=256
-            cvs2.getContext('bitmaprenderer').transferFromImageBitmap(event.data.bitmap);
-            this.mapsTiles[k].cvs = cvs2;
-            this.mapsTiles[k].isDrawed = event.data.isDrawed;
-            // console.log(this.Count)
+            try {
+              var cvs2 = document.createElement('canvas');
+              cvs2.width=256
+              cvs2.height=256
+              cvs2.getContext('bitmaprenderer').transferFromImageBitmap(event.data.bitmap);
+              this.mapsTiles[k].cvs = cvs2;
+              this.mapsTiles[k].isDrawed = event.data.isDrawed;
+              // console.log(this.Count)
+            } catch (error) {
+              this.mapsTiles.splice(k--,1)
+              break;
+              console.log(error)
+            }
+
           }
           this.cache&&this.myTiles.addTile(this.mapsTiles[k]._LL,event.data.y,event.data.x,{cvs:this.mapsTiles[k].cvs,isDrawed:event.data.isDrawed});
           this.cache&&this.NUM++
@@ -91,11 +98,21 @@ export default class MapLayer extends BaseLayer{
     if(this.isHide)return
     this.callback = callback
     this.procBoundary(obj,rect)
+
+    let arr=[]
+    for(let k=0;k<this.mapsTiles.length;k++){
+      if(this.mapsTiles[k].url==this.urlTemplate.url){
+        arr.push(this.mapsTiles.splice(k--,1)[0])
+      }
+    }
+    arr.forEach(v=>{
+      this.mapsTiles.push(v)
+    })
     for(let j=this._Y0;j<=this._Y1;j++){
       for(let i=this._X0;i<=this._X1;i++){
         let mapExist = false;
         for(let k=this.mapsTiles.length-1;k>=0;k--){
-          if(this.mapsTiles[k]._LL==this._LL&&this.mapsTiles[k].i==i&&this.mapsTiles[k].j==j&&this.mapsTiles[k].url==this.urlTemplate.url){
+          if(this.mapsTiles[k]._LL==this._LL&&this.mapsTiles[k].i==i&&this.mapsTiles[k].j==j&&this.mapsTiles[k].url===this.urlTemplate.url){
             mapExist = true;
             this.mapsTiles.push(this.mapsTiles.splice(k,1)[0]);
             break;
@@ -121,6 +138,7 @@ export default class MapLayer extends BaseLayer{
                 0,0,this.tileWidth,this.tileWidth,
               );
             }
+            tmp.same=this.mapsTiles[k].url===this.urlTemplate.url
           }else{//zoom out
             let n = tmp._LL - this._LL
             if(i==Math.floor(tmp.i/(2**n))&&j==Math.floor(tmp.j/(2**n))&&tmp.cvs){
@@ -132,6 +150,7 @@ export default class MapLayer extends BaseLayer{
                 this.tileWidth/(2**n),this.tileWidth/(2**n),
               );
             }
+            tmp.same=this.mapsTiles[k].url===this.urlTemplate.url
           }
         }
         let item = {_LL:this._LL,i,j,cvs,_X0:this._X0,_X1:this._X1,_Y0:this._Y0,_Y1:this._Y1,isDrawed:true,url:this.urlTemplate.url};
