@@ -25,7 +25,7 @@ export default class MapLayer extends BaseLayer{
       this.Count--
       for(let k=0;k<this.mapsTiles.length;k++){
         if(this.mapsTiles[k]._LL==event.data.z&&this.mapsTiles[k].i==event.data.i&&this.mapsTiles[k].j==event.data.j&&this.mapsTiles[k].url==event.data.url){
-          if(event.data.bitmap===-1&&this.mapsTiles[k].same==false){
+          if(event.data.bitmap===-1){
             this.mapsTiles.splice(k--,1)
             break;
           }else if(event.data.bitmap===0){
@@ -138,7 +138,6 @@ export default class MapLayer extends BaseLayer{
                 0,0,this.tileWidth,this.tileWidth,
               );
             }
-            tmp.same=this.mapsTiles[k].url===this.urlTemplate.url
           }else{//zoom out
             let n = tmp._LL - this._LL
             if(i==Math.floor(tmp.i/(2**n))&&j==Math.floor(tmp.j/(2**n))&&tmp.cvs){
@@ -150,7 +149,6 @@ export default class MapLayer extends BaseLayer{
                 this.tileWidth/(2**n),this.tileWidth/(2**n),
               );
             }
-            tmp.same=this.mapsTiles[k].url===this.urlTemplate.url
           }
         }
         let item = {_LL:this._LL,i,j,cvs,_X0:this._X0,_X1:this._X1,_Y0:this._Y0,_Y1:this._Y1,isDrawed:true,url:this.urlTemplate.url};
