@@ -201,7 +201,7 @@ function getProjectionMatrix(
     let aspect = size.width/size.height
 
     let n = 1
-    let f = 3
+    let f = 10
     let t = n*Math.tan(fov/2)
     let b = -t
     let r = t*aspect
@@ -256,7 +256,7 @@ function getProjectionMatrix(
     const projectionMatrix = mat4.create()
     // mat4.perspectiveZO(projectionMatrix, fov, aspect, n, f)
     // mat4.orthoZO(projectionMatrix, l, r, b,t ,n , f)
-    mat4.multiply(projectionMatrix1, cameraView,projectionMatrix1)
+    // mat4.multiply(projectionMatrix1, cameraView,projectionMatrix1)
     return projectionMatrix1 as Float32Array
 }
 

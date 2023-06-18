@@ -4,7 +4,6 @@ struct VertexOutput {
     @builtin(position) Position : vec4<f32>,
     @location(0) fragUV : vec2<f32>,
     @location(1) fragPosition: vec4<f32>
-
 };
 
 @vertex
@@ -16,7 +15,6 @@ fn main(
     var output : VertexOutput;
     output.Position = position * mvpMatrix[index];
     output.fragUV = uv;
-    // output.fragPosition = 0.5 * (position + vec4<f32>(1.0, 1.0, 1.0, 1.0));
-    output.fragPosition = vec4<f32>(1.0, 1.0, 1.0, 1.0);
+    output.fragPosition = 0.5 * (position + vec4<f32>(1.0, 1.0, 1.0, 1.0));
     return output;
 }

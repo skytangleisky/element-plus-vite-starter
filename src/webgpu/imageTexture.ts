@@ -2,6 +2,9 @@ import basicInstanced from './shaders/basic.instanced.vert.wgsl?raw'
 import positionFrag from './shaders/position.frag.wgsl?raw'
 import * as cube from './util/cube'
 import { getMvpMatrix } from './util/math'
+import positionVert from './shaders/position.vert.wgsl?raw'
+import colorFrag from './shaders/color.frag.wgsl?raw'
+import * as triangle from './util/triangle'
 import textureUrl from '../assets/aircraft.png?url'
 // import textureUrl from '/texture.webp?url'
 let aid:number
@@ -30,6 +33,74 @@ async function initWebGPU(canvas: HTMLCanvasElement) {
 
 // create pipiline & buffers
 async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{width:number, height:number}) {
+
+    const trianglePipeline = await device.createRenderPipelineAsync({
+        label: 'Basic Pipline',
+        layout: 'auto',
+        vertex: {
+            module: device.createShaderModule({
+                code: positionVert,
+            }),
+            entryPoint: 'main',
+            buffers: [{
+                arrayStride: 7 * 4, // 7 float32,
+                attributes: [
+                    {
+                        // position xyz
+                        shaderLocation: 0,
+                        offset: 0,
+                        format: 'float32x3',
+                    },
+                    {
+                        // position rgba
+                        shaderLocation: 1,
+                        offset: 3 * 4,
+                        format: 'float32x4',
+                    }
+                ]
+            }]
+        },
+        fragment: {
+            module: device.createShaderModule({
+                code: colorFrag,
+            }),
+            entryPoint: 'main',
+            targets: [
+                {
+                    format: format,
+                    blend: {
+                        color: {
+                            srcFactor: 'src-alpha',
+                            dstFactor: 'one-minus-src-alpha',
+                            operation: 'add',
+                        },
+                        alpha: {
+                            srcFactor: 'one',
+                            dstFactor: 'one',
+                            operation: 'add',
+                        }
+                    }
+                }
+            ]
+        },
+        primitive: {
+            topology: 'triangle-list' // try point-list, line-list, line-strip, triangle-strip?
+        },
+        depthStencil: {
+            depthWriteEnabled: true,
+            depthCompare: 'always',
+            format: 'depth24plus',
+        }
+    } as GPURenderPipelineDescriptor)
+    // create vertex buffer
+    const triangleBuffer = device.createBuffer({
+        label: 'GPUBuffer store vertex',
+        size: triangle.vertex.byteLength,
+        usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+        //mappedAtCreation: true
+    })
+    device.queue.writeBuffer(triangleBuffer, 0, triangle.vertex)
+
     const pipeline = await device.createRenderPipelineAsync({
         label: 'Basic Pipline',
         layout: 'auto',
@@ -38,23 +109,25 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{w
                 code: basicInstanced,
             }),
             entryPoint: 'main',
-            buffers: [{
-                arrayStride: 5 * 4, // 3 position 2 uv,
-                attributes: [
-                    {
-                        // position
-                        shaderLocation: 0,
-                        offset: 0,
-                        format: 'float32x3',
-                    },
-                    {
-                        // uv
-                        shaderLocation: 1,
-                        offset: 3 * 4,
-                        format: 'float32x2',
-                    }
-                ]
-            }]
+            buffers: [
+                {
+                    arrayStride: 5 * 4, // 3 position 2 uv,
+                    attributes: [
+                        {
+                            // position
+                            shaderLocation: 0,
+                            offset: 0,
+                            format: 'float32x3',
+                        },
+                        {
+                            // uv
+                            shaderLocation: 1,
+                            offset: 3 * 4,
+                            format: 'float32x2',
+                        }
+                    ]
+                }
+            ]
         },
         fragment: {
             module: device.createShaderModule({
@@ -82,25 +155,19 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{w
         primitive: {
             topology: 'triangle-list',
             // Culling backfaces pointing away from the camera
-            cullMode: 'back',
+            cullMode: 'none',
         },
         // Enable depth testing since we have z-level positions
         // Fragment closest to the camera is rendered in front
         depthStencil: {
             depthWriteEnabled: true,
             depthCompare: 'always',
-            format: 'depth24plus-stencil8',
-            // stencilFront:{
-            //     compare:"less",
-            //     failOp:"invert",
-            //     depthFailOp:"replace",
-            //     passOp:"replace",
-            // },
+            format: 'depth24plus',
         }
     } as GPURenderPipelineDescriptor)
     // create depthTexture for renderPass
     const depthTexture = device.createTexture({
-        size, format: 'depth24plus-stencil8',
+        size, format: 'depth24plus',
         usage: GPUTextureUsage.RENDER_ATTACHMENT,
     })
     const depthView = depthTexture.createView()
@@ -132,7 +199,7 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{w
         ]
     })
     // return all vars
-    return {pipeline, vertexBuffer, mvpBuffer, group, depthTexture, depthView}
+    return {pipeline, vertexBuffer, mvpBuffer, group, depthTexture, depthView,trianglePipeline,triangleBuffer}
 }
 
 // create & submit device commands
@@ -144,7 +211,9 @@ function draw(
         vertexBuffer: GPUBuffer,
         mvpBuffer: GPUBuffer,
         group: GPUBindGroup,
-        depthView: GPUTextureView
+        depthView: GPUTextureView,
+        trianglePipeline: GPURenderPipeline,
+        triangleBuffer: GPUBuffer
     },
     textureGroup: GPUBindGroup
 ) {
@@ -153,29 +222,27 @@ function draw(
         colorAttachments: [
             {
                 view: context.getCurrentTexture().createView(),
-                clearValue: { r: 0, g: 0, b: 0, a: 0.0 },
-                loadOp: 'clear',
+                clearValue: { r: 0, g: 0, b: 0, a: 0 },
+                loadOp: 'load',
                 storeOp: 'store'
             }
         ],
         depthStencilAttachment: {
             view: pipelineObj.depthView,
-            depthClearValue: 0,
+            depthClearValue: 1.0,
             depthLoadOp: 'clear',
             depthStoreOp: 'store',
-            // stencilClearValue: 0,
-            stencilLoadOp: 'clear',
-            stencilStoreOp: 'store',
         }
     }
     const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor)
-    passEncoder.setPipeline(pipelineObj.pipeline)
-    // set vertex
-    passEncoder.setVertexBuffer(0, pipelineObj.vertexBuffer)
     {
-        // draw NUM cubes in one draw()
+        passEncoder.setPipeline(pipelineObj.trianglePipeline)
+        passEncoder.setVertexBuffer(0, pipelineObj.triangleBuffer)
+        passEncoder.draw(triangle.vertexCount,1)
+
+        passEncoder.setPipeline(pipelineObj.pipeline)
+        passEncoder.setVertexBuffer(0, pipelineObj.vertexBuffer)
         passEncoder.setBindGroup(0, pipelineObj.group)
-        // set textureGroup
         passEncoder.setBindGroup(1, textureGroup)
         passEncoder.draw(cube.vertexCount, NUM)
     }
@@ -187,7 +254,7 @@ export function cancel(){
     window.cancelAnimationFrame(aid)
 }
 // total objects
-const NUM = 10
+const NUM = 100
 export default async function run(canvas:HTMLCanvasElement){
     if (!canvas)
         throw new Error('No Canvas')
@@ -200,7 +267,7 @@ export default async function run(canvas:HTMLCanvasElement){
         // craete simple object
         const rotation = {x: 0, y: 0, z: 0}
         const scale = {x:1.0, y:1.0, z: 1.0}
-        const position = {a: Math.random(), b: Math.random(), z: 1}
+        const position = {a: Math.random(), b: Math.random(), z: 5}
         scene.push({position, rotation, scale})
     }
 
@@ -258,6 +325,7 @@ export default async function run(canvas:HTMLCanvasElement){
     }
     frame()
     function logic(){
+        // device.queue.writeBuffer(pipelineObj.colorBuffer, 0, new Float32Array([Math.random(), Math.random(), Math.random(), .9]))
         // update rotation for each object
         for(let i = 0; i < scene.length; i++){
             const obj = scene[i]
@@ -288,7 +356,7 @@ export default async function run(canvas:HTMLCanvasElement){
         // re-create depth texture
         pipelineObj.depthTexture.destroy()
         pipelineObj.depthTexture = device.createTexture({
-            size, format: 'depth24plus-stencil8',
+            size, format: 'depth24plus',
             usage: GPUTextureUsage.RENDER_ATTACHMENT,
         })
         pipelineObj.depthView = pipelineObj.depthTexture.createView()
