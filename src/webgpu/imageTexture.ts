@@ -6,6 +6,7 @@ import positionVert from './shaders/position.vert.wgsl?raw'
 import colorFrag from './shaders/color.frag.wgsl?raw'
 import * as triangle from './util/triangle'
 import textureUrl from '../assets/aircraft.png?url'
+import { mat4, vec3 } from '~/tools/gl-matrix'
 // import textureUrl from '/texture.webp?url'
 let aid:number
 
@@ -84,7 +85,7 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{w
             ]
         },
         primitive: {
-            topology: 'triangle-list' // try point-list, line-list, line-strip, triangle-strip?
+            topology: 'triangle-strip' // try point-list, line-list, line-strip, triangle-strip?
         },
         depthStencil: {
             depthWriteEnabled: false,
@@ -163,7 +164,7 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{w
             depthWriteEnabled: false,
             depthCompare: 'less',
             format: 'depth24plus',
-        }
+        },
     } as GPURenderPipelineDescriptor)
     // create depthTexture for renderPass
     const depthTexture = device.createTexture({
@@ -198,8 +199,26 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{w
             }
         ]
     })
+    const mvpBufferTriangle = device.createBuffer({
+        label: 'GPUBuffer store n*4x4 matrix',
+        size: 4 * 4 * 4 * 2 * 4, // 4 x 4 x float32 x NUM
+        usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST
+    })
+    // create a uniform group for Matrix
+    const groupTriangle = device.createBindGroup({
+        label: 'Uniform Group with matrix',
+        layout: trianglePipeline.getBindGroupLayout(0),
+        entries: [
+            {
+                binding: 0,
+                resource: {
+                    buffer: mvpBufferTriangle
+                }
+            }
+        ]
+    })
     // return all vars
-    return {pipeline, vertexBuffer, mvpBuffer, group, depthTexture, depthView,trianglePipeline,triangleBuffer}
+    return {pipeline, vertexBuffer, mvpBuffer, group, depthTexture, depthView,trianglePipeline,triangleBuffer,mvpBufferTriangle,groupTriangle}
 }
 
 // create & submit device commands
@@ -213,7 +232,8 @@ function draw(
         group: GPUBindGroup,
         depthView: GPUTextureView,
         trianglePipeline: GPURenderPipeline,
-        triangleBuffer: GPUBuffer
+        triangleBuffer: GPUBuffer,
+        groupTriangle: GPUBindGroup
     },
     textureGroup: GPUBindGroup
 ) {
@@ -238,7 +258,8 @@ function draw(
     {
         passEncoder.setPipeline(pipelineObj.trianglePipeline)
         passEncoder.setVertexBuffer(0, pipelineObj.triangleBuffer)
-        passEncoder.draw(triangle.vertexCount,1)
+        passEncoder.setBindGroup(0, pipelineObj.groupTriangle)
+        passEncoder.draw(triangle.vertexCount,2)
 
         passEncoder.setPipeline(pipelineObj.pipeline)
         passEncoder.setVertexBuffer(0, pipelineObj.vertexBuffer)
@@ -254,7 +275,7 @@ export function cancel(){
     window.cancelAnimationFrame(aid)
 }
 // total objects
-const NUM = 1000
+const NUM = 10
 export default async function run(canvas:HTMLCanvasElement){
     if (!canvas)
         throw new Error('No Canvas')
@@ -345,6 +366,29 @@ export default async function run(canvas:HTMLCanvasElement){
         }
         // the better way is update buffer in one write after loop
         device.queue.writeBuffer(pipelineObj.mvpBuffer, 0, mvpBuffer)
+        const mvpBufferTriangle = new Float32Array(2*4*16)
+        for(let i=0;i<2;i++){
+            let θ = 10/180*Math.PI
+            let pt1 = mat4.create()
+            mat4.translate(pt1,pt1,vec3.fromValues(+1,-1,0))
+            mat4.translate(pt1,pt1,vec3.fromValues(-0.1*(i+1)*Math.tan(θ),-0.1*(i+1),0))
+            let pt2 = mat4.create()
+            mat4.translate(pt2,pt2,vec3.fromValues(-1,-1,0))
+            mat4.translate(pt2,pt2,vec3.fromValues(+0.1*(i+1)*Math.tan(θ),-0.1*(i+1),0))
+            let pt3 = mat4.create()
+            mat4.translate(pt3,pt3,vec3.fromValues(+1,+1,0))
+            mat4.translate(pt3,pt3,vec3.fromValues(-0.1*(i+2)*Math.tan(θ),-0.1*(i+2),0))
+            let pt4 = mat4.create()
+            mat4.translate(pt4,pt4,vec3.fromValues(-1,+1,0))
+            mat4.translate(pt4,pt4,vec3.fromValues(+0.1*(i+2)*Math.tan(θ),-0.1*(i+2),0))
+            mvpBufferTriangle.set(Float32Array.from([
+                ...(pt1 as Float32Array),
+                ...(pt2 as Float32Array),
+                ...(pt3 as Float32Array),
+                ...(pt4 as Float32Array),
+            ]), i * 4 * 4 * 4)
+        }
+        device.queue.writeBuffer(pipelineObj.mvpBufferTriangle, 0, mvpBufferTriangle)
     }
 
     new ResizeObserver(()=>{
