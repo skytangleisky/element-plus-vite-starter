@@ -18,10 +18,10 @@
   import { useSettingStore } from '~/stores/setting'
   import run,{ cancel } from '~/webgpu/imageTexture'
   import Windy from './layers/Windy'
+  import './Sample_POI'
 
   let needRedraw = false
   let aid:number
-  import { Engine3D, Scene3D, Object3D, Camera3D, DirectLight, HoverCameraController, Color, View3D, AtmosphericComponent } from "@orillusion/core"
 import { eventbus } from '~/eventbus'
   const setting = useSettingStore()
   const mapLayer = new MapLayer()
@@ -116,7 +116,6 @@ import { eventbus } from '~/eventbus'
 
     if(webgpu.value)
       run(webgpu.value)
-    // demo()
     window.addEventListener('message',test,{passive:true})
     // mapLayer.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}'})
     // mapLayer.setSource({url:'https://tanglei.site:444?z={z}&y={y}&x={x}'})//nps+go
@@ -190,53 +189,6 @@ import { eventbus } from '~/eventbus'
     removeEventListener('message',test)
     cancel()
   })
-  const demo = async() =>{
-    if(webgpu.value==null)
-      throw new Error('invalid webgpu')
-    // initializa engine
-    await Engine3D.init({
-      canvasConfig:{
-        canvas: webgpu.value
-      }
-    });
-    // create new scene as root node
-    let scene3D = new Scene3D();
-    // add an Atmospheric sky enviroment
-    let sky = scene3D.addComponent(AtmosphericComponent);
-    sky.enable=false
-    sky.sunY = 0.6;
-    // create camera
-    let cameraObj = new Object3D();
-    let camera = cameraObj.addComponent(Camera3D);
-    // adjust camera view
-    camera.perspective(60, Engine3D.aspect, 1, 5000.0);
-    // set camera controller
-    let controller = cameraObj.addComponent(HoverCameraController);
-    controller.setCamera(0, -20, 15);
-    // add camera node
-    scene3D.addChild(cameraObj);
-    // create light
-    let light = new Object3D();
-    // add direct light component
-    let component = light.addComponent(DirectLight);
-    // adjust lighting
-    light.rotationX = 45;
-    light.rotationY = 30;
-    component.lightColor = new Color(1.0, 1.0, 1.0, 1.0);
-    component.intensity = 1;
-    // add light object
-    scene3D.addChild(light);
-
-    let dragon = await Engine3D.res.loadGltf('https://cdn.orillusion.com/PBR/DragonAttenuation/DragonAttenuation.gltf');
-    scene3D.addChild(dragon);
-
-    // create a view with target scene and camera
-    let view = new View3D();
-    view.scene = scene3D;
-    view.camera = camera;
-    // start render
-    Engine3D.startRenderView(view);
-  }
   const init = () => {
     if(setting.loadmap){
       mapLayer.show()

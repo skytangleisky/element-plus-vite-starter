@@ -72,7 +72,7 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{w
                         color: {
                             srcFactor: 'src-alpha',
                             dstFactor: 'one-minus-src-alpha',
-                            operation: 'add',
+                            // operation: 'add',
                         },
                         alpha: {
                             srcFactor: 'one',
@@ -87,8 +87,8 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{w
             topology: 'triangle-list' // try point-list, line-list, line-strip, triangle-strip?
         },
         depthStencil: {
-            depthWriteEnabled: true,
-            depthCompare: 'always',
+            depthWriteEnabled: false,
+            depthCompare: 'less',
             format: 'depth24plus',
         }
     } as GPURenderPipelineDescriptor)
@@ -139,14 +139,14 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{w
                     format: format,
                     blend: {
                         color: {
-                            srcFactor: 'src-alpha',
-                            dstFactor: 'one-minus-src-alpha',
-                            operation: 'add',
+                            srcFactor:'one',
+                            dstFactor:'one-minus-src-alpha',
+                            // operation:'add'
                         },
                         alpha: {
                             srcFactor: 'one',
                             dstFactor: 'one',
-                            operation: 'add',
+                            // operation: 'add',
                         }
                     }
                 }
@@ -160,8 +160,8 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{w
         // Enable depth testing since we have z-level positions
         // Fragment closest to the camera is rendered in front
         depthStencil: {
-            depthWriteEnabled: true,
-            depthCompare: 'always',
+            depthWriteEnabled: false,
+            depthCompare: 'less',
             format: 'depth24plus',
         }
     } as GPURenderPipelineDescriptor)
@@ -267,7 +267,7 @@ export default async function run(canvas:HTMLCanvasElement){
         // craete simple object
         const rotation = {x: 0, y: 0, z: 0}
         const scale = {x:1.0, y:1.0, z: 1.0}
-        const position = {a: Math.random(), b: Math.random(), z: 5}
+        const position = {a: Math.random(), b: Math.random(), z: 1}
         scene.push({position, rotation, scale})
     }
 

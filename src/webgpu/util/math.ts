@@ -212,16 +212,16 @@ function getProjectionMatrix(
     // let b =-1
     // let r = 1
     // let l =-1
-    // mat4.multiply(
-    //     projectionMatrix1,
-    //     mat4.fromValues(
-    //         n,0,0,0,
-    //         0,n,0,0,
-    //         0,0,f+n,-f*n,
-    //         0,0,1,0
-    //     ),
-    //     projectionMatrix1
-    // )
+    mat4.multiply(
+        projectionMatrix1,
+        mat4.fromValues(
+            n,0,0,0,
+            0,n,0,0,
+            0,0,f+n,-f*n,
+            0,0,1,0
+        ),
+        projectionMatrix1
+    )
     mat4.multiply(
         projectionMatrix1,
         mat4.fromValues(
