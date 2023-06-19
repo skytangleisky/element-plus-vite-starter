@@ -1,8 +1,8 @@
 import { mat4, vec3 } from '~/tools/gl-matrix'
 // import { mat4, vec3 } from 'gl-matrix'
-import { equals } from '../../tools/gl-matrix/quat2';
 
 /*
+平移旋转缩放
     let position = {x:1,y:2,z:3}
     let rotation = {x:Math.PI/4,y:Math.PI/4,z:Math.PI/4}
     let scale = {x:1,y:2,z:3}
@@ -15,27 +15,26 @@ import { equals } from '../../tools/gl-matrix/quat2';
         0,0,1,position.z,
         0,0,0,1),matrix)
 
+    mat4.rotateX(modelViewMatrix, modelViewMatrix, rotation.x)
     mat4.multiply(matrix,mat4.fromValues(
         1,0,0,0,
         0,Math.cos(rotation.x),Math.sin(rotation.x),0,
         0,-Math.sin(rotation.x),Math.cos(rotation.x),0,
         0,0,0,1),matrix)
-    mat4.rotateX(modelViewMatrix, modelViewMatrix, rotation.x)
 
-
+    mat4.rotateY(modelViewMatrix, modelViewMatrix, rotation.y)
     mat4.multiply(matrix,mat4.fromValues(
         Math.cos(rotation.y),0,-Math.sin(rotation.y),0,
         0,1,0,0,
         Math.sin(rotation.y),0,Math.cos(rotation.y),0,
         0,0,0,1),matrix)
-    mat4.rotateY(modelViewMatrix, modelViewMatrix, rotation.y)
 
+    mat4.rotateZ(modelViewMatrix, modelViewMatrix, rotation.z)
     mat4.multiply(matrix,mat4.fromValues(
         Math.cos(rotation.z),Math.sin(rotation.z),0,0,
         -Math.sin(rotation.z),Math.cos(rotation.z),0,0,
         0,0,1,0,
         0,0,0,1),matrix)
-    mat4.rotateZ(modelViewMatrix, modelViewMatrix, rotation.z)
 
     mat4.scale(modelViewMatrix, modelViewMatrix, vec3.fromValues(scale.x, scale.y, scale.z))
     mat4.multiply(matrix,mat4.fromValues(
@@ -50,6 +49,7 @@ import { equals } from '../../tools/gl-matrix/quat2';
 
 
 /*
+正交透视投影
 let aspect = 1
 const fov = 90/180*Math.PI
 let n = 1
@@ -212,52 +212,52 @@ function getProjectionMatrix(
     // let b =-1
     // let r = 1
     // let l =-1
-    mat4.multiply(
-        projectionMatrix1,
-        mat4.fromValues(
-            n,0,0,0,
-            0,n,0,0,
-            0,0,f+n,-f*n,
-            0,0,1,0
-        ),
-        projectionMatrix1
-    )
-    mat4.multiply(
-        projectionMatrix1,
-        mat4.fromValues(
-            1,0,0,-(r+l)/2,
-            0,1,0,-(t+b)/2,
-            0,0,1,-(f+n)/2,
-            0,0,0,1
-        ),
-        projectionMatrix1
-    )
-    mat4.multiply(
-        projectionMatrix1, 
-        mat4.fromValues(
-            2/(r-l),0,0,0,
-            0,2/(t-b),0,0,
-            0,0,2/(f-n),0,
-            0,0,0,1
-        ),
-        projectionMatrix1
-    )
-    //Zrange [-1,1]->[0,1]
-    mat4.multiply(
-        projectionMatrix1,
-        mat4.fromValues(
-            1,0,0,0,
-            0,1,0,0,
-            0,0,0.5,0.5,
-            0,0,0,1
-        ),
-        projectionMatrix1
-    )
+    // mat4.multiply(
+    //     projectionMatrix1,
+    //     mat4.fromValues(
+    //         n,0,0,0,
+    //         0,n,0,0,
+    //         0,0,f+n,-f*n,
+    //         0,0,1,0
+    //     ),
+    //     projectionMatrix1
+    // )
+    // mat4.multiply(
+    //     projectionMatrix1,
+    //     mat4.fromValues(
+    //         1,0,0,-(r+l)/2,
+    //         0,1,0,-(t+b)/2,
+    //         0,0,1,-(f+n)/2,
+    //         0,0,0,1
+    //     ),
+    //     projectionMatrix1
+    // )
+    // mat4.multiply(
+    //     projectionMatrix1, 
+    //     mat4.fromValues(
+    //         2/(r-l),0,0,0,
+    //         0,2/(t-b),0,0,
+    //         0,0,2/(f-n),0,
+    //         0,0,0,1
+    //     ),
+    //     projectionMatrix1
+    // )
+    // //Zrange [-1,1]->[0,1]
+    // mat4.multiply(
+    //     projectionMatrix1,
+    //     mat4.fromValues(
+    //         1,0,0,0,
+    //         0,1,0,0,
+    //         0,0,0.5,0.5,
+    //         0,0,0,1
+    //     ),
+    //     projectionMatrix1
+    // )
     const projectionMatrix = mat4.create()
-    // mat4.perspectiveZO(projectionMatrix, fov, aspect, n, f)
+    mat4.perspectiveZO(projectionMatrix, fov, aspect, n, f)
     // mat4.orthoZO(projectionMatrix, l, r, b,t ,n , f)
     // mat4.multiply(projectionMatrix1, cameraView,projectionMatrix1)
-    return projectionMatrix1 as Float32Array
+    return projectionMatrix as Float32Array
 }
 
 export { getMvpMatrix, getModelViewMatrix, getProjectionMatrix }
