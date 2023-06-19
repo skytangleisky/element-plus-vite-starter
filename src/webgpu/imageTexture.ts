@@ -72,11 +72,11 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{w
                         color: {
                             srcFactor: 'src-alpha',
                             dstFactor: 'one-minus-src-alpha',
-                            // operation: 'add',
+                            operation: 'add',
                         },
                         alpha: {
-                            srcFactor: 'one',
-                            dstFactor: 'one',
+                            srcFactor: 'src-alpha',
+                            dstFactor: 'one-minus-src-alpha',
                             operation: 'add',
                         }
                     }
@@ -139,14 +139,14 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{w
                     format: format,
                     blend: {
                         color: {
-                            srcFactor:'one',
+                            srcFactor:'src-alpha',
                             dstFactor:'one-minus-src-alpha',
-                            // operation:'add'
+                            operation:'add'
                         },
                         alpha: {
-                            srcFactor: 'one',
-                            dstFactor: 'one',
-                            // operation: 'add',
+                            srcFactor: 'src-alpha',
+                            dstFactor: 'one-minus-src-alpha',
+                            operation: 'add',
                         }
                     }
                 }
@@ -254,7 +254,7 @@ export function cancel(){
     window.cancelAnimationFrame(aid)
 }
 // total objects
-const NUM = 100
+const NUM = 1000
 export default async function run(canvas:HTMLCanvasElement){
     if (!canvas)
         throw new Error('No Canvas')
@@ -368,10 +368,13 @@ export default async function run(canvas:HTMLCanvasElement){
             position.x = pos.x
             position.y = pos.y
             let fovy=90/180*Math.PI
-            let w=64
-            let h=64
-            scale.x=w/size.height*(1*Math.tan(fovy/2))
-            scale.y=h/size.height*(1*Math.tan(fovy/2))
+            // let w=size.width
+            // let h=size.height
+            let w=32
+            let h=34
+            scale.x=devicePixelRatio*w/size.height
+            scale.y=devicePixelRatio*h/size.height
+            scale.z=devicePixelRatio*h/size.height
         }
         logic()
         draw(device, context, pipelineObj,textureGroup)
