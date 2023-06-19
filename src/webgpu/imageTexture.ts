@@ -372,9 +372,9 @@ export default async function run(canvas:HTMLCanvasElement){
             // let h=size.height
             let w=32
             let h=34
-            scale.x=devicePixelRatio*w/size.height
-            scale.y=devicePixelRatio*h/size.height
-            scale.z=devicePixelRatio*h/size.height
+            scale.x=devicePixelRatio*w/size.height/(1*Math.tan(fovy/2))
+            scale.y=devicePixelRatio*h/size.height/(1*Math.tan(fovy/2))
+            scale.z=devicePixelRatio*h/size.height/(1*Math.tan(fovy/2))
         }
         logic()
         draw(device, context, pipelineObj,textureGroup)
