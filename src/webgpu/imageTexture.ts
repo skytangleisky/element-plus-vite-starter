@@ -9,7 +9,7 @@ import textureUrl from '../assets/aircraft.png?url'
 import { mat4, vec3 } from '~/tools/gl-matrix'
 // import textureUrl from '/texture.webp?url'
 let aid:number
-
+let N = 360*30
 // initialize webgpu device & config canvas context
 async function initWebGPU(canvas: HTMLCanvasElement) {
     if(!navigator.gpu)
@@ -201,7 +201,7 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{w
     })
     const mvpBufferTriangle = device.createBuffer({
         label: 'GPUBuffer store n*4x4 matrix',
-        size: 4 * 4 * 4 * 2 * 4, // 4 x 4 x float32 x NUM
+        size: 4 * 4 * 4 * N * 4, // 4 x 4 x float32 x NUM
         usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST
     })
     // create a uniform group for Matrix
@@ -259,7 +259,7 @@ function draw(
         passEncoder.setPipeline(pipelineObj.trianglePipeline)
         passEncoder.setVertexBuffer(0, pipelineObj.triangleBuffer)
         passEncoder.setBindGroup(0, pipelineObj.groupTriangle)
-        passEncoder.draw(triangle.vertexCount,2)
+        passEncoder.draw(triangle.vertexCount,N)
 
         passEncoder.setPipeline(pipelineObj.pipeline)
         passEncoder.setVertexBuffer(0, pipelineObj.vertexBuffer)
@@ -366,28 +366,37 @@ export default async function run(canvas:HTMLCanvasElement){
         }
         // the better way is update buffer in one write after loop
         device.queue.writeBuffer(pipelineObj.mvpBuffer, 0, mvpBuffer)
-        const mvpBufferTriangle = new Float32Array(2*4*16)
-        for(let i=0;i<2;i++){
-            let θ = 10/180*Math.PI
-            let pt1 = mat4.create()
-            mat4.translate(pt1,pt1,vec3.fromValues(+1,-1,0))
-            mat4.translate(pt1,pt1,vec3.fromValues(-0.1*(i+1)*Math.tan(θ),-0.1*(i+1),0))
-            let pt2 = mat4.create()
-            mat4.translate(pt2,pt2,vec3.fromValues(-1,-1,0))
-            mat4.translate(pt2,pt2,vec3.fromValues(+0.1*(i+1)*Math.tan(θ),-0.1*(i+1),0))
-            let pt3 = mat4.create()
-            mat4.translate(pt3,pt3,vec3.fromValues(+1,+1,0))
-            mat4.translate(pt3,pt3,vec3.fromValues(-0.1*(i+2)*Math.tan(θ),-0.1*(i+2),0))
-            let pt4 = mat4.create()
-            mat4.translate(pt4,pt4,vec3.fromValues(-1,+1,0))
-            mat4.translate(pt4,pt4,vec3.fromValues(+0.1*(i+2)*Math.tan(θ),-0.1*(i+2),0))
-            mvpBufferTriangle.set(Float32Array.from([
-                ...(pt1 as Float32Array),
-                ...(pt2 as Float32Array),
-                ...(pt3 as Float32Array),
-                ...(pt4 as Float32Array),
-            ]), i * 4 * 4 * 4)
+        let pre = performance.now()
+        const mvpBufferTriangle = new Float32Array(N*4*16)
+        for(let j=0;j<360;j++){
+            let I = 30
+            for(let i=0;i<I;i++){
+                let θ = 1.0/180*Math.PI
+                let pt1 = mat4.create()
+                mat4.translate(pt1,pt1,vec3.fromValues(+1,-1,0))
+                mat4.translate(pt1,pt1,vec3.fromValues(-0.01*(i+1)*Math.tan(θ),-0.01*(i+1),0))
+                mat4.rotateZ(pt1,pt1,4*j/180*Math.PI)
+                let pt2 = mat4.create()
+                mat4.translate(pt2,pt2,vec3.fromValues(-1,-1,0))
+                mat4.translate(pt2,pt2,vec3.fromValues(+0.01*(i+1)*Math.tan(θ),-0.01*(i+1),0))
+                mat4.rotateZ(pt2,pt2,4*j/180*Math.PI)
+                let pt3 = mat4.create()
+                mat4.translate(pt3,pt3,vec3.fromValues(+1,+1,0))
+                mat4.translate(pt3,pt3,vec3.fromValues(-0.01*(i+2)*Math.tan(θ),-0.01*(i+2),0))
+                mat4.rotateZ(pt3,pt3,4*j/180*Math.PI)
+                let pt4 = mat4.create()
+                mat4.translate(pt4,pt4,vec3.fromValues(-1,+1,0))
+                mat4.translate(pt4,pt4,vec3.fromValues(+0.01*(i+2)*Math.tan(θ),-0.01*(i+2),0))
+                mat4.rotateZ(pt4,pt4,4*j/180*Math.PI)
+                mvpBufferTriangle.set(Float32Array.from([
+                    ...(pt1 as Float32Array),
+                    ...(pt2 as Float32Array),
+                    ...(pt3 as Float32Array),
+                    ...(pt4 as Float32Array),
+                ]), (j*I+i) * 4 * 4 * 4)
+            }
         }
+        console.log(performance.now()-pre)
         device.queue.writeBuffer(pipelineObj.mvpBufferTriangle, 0, mvpBufferTriangle)
     }
 
