@@ -5,8 +5,8 @@ import { getMvpMatrix } from './util/math'
 import positionVert from './shaders/position.vert.wgsl?raw'
 import colorFrag from './shaders/color.frag.wgsl?raw'
 import * as triangle from './util/triangle'
-import textureUrl from '../assets/aircraft.png?url'
 import { mat4, vec3 } from '~/tools/gl-matrix'
+import textureUrl from '../assets/aircraft.png?url'
 // import textureUrl from '/texture.webp?url'
 let aid:number
 let N = 360*30
@@ -69,18 +69,18 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{w
             targets: [
                 {
                     format: format,
-                    blend: {
-                        color: {
-                            srcFactor: 'src-alpha',
-                            dstFactor: 'one-minus-src-alpha',
-                            operation: 'add',
-                        },
-                        alpha: {
-                            srcFactor: 'src-alpha',
-                            dstFactor: 'one-minus-src-alpha',
-                            operation: 'add',
-                        }
-                    }
+                    // blend: {
+                    //     color: {
+                    //         srcFactor: 'src-alpha',
+                    //         dstFactor: 'one-minus-src-alpha',
+                    //         operation: 'add',
+                    //     },
+                    //     alpha: {
+                    //         srcFactor: 'src-alpha',
+                    //         dstFactor: 'one-minus-src-alpha',
+                    //         operation: 'add',
+                    //     }
+                    // }
                 }
             ]
         },
@@ -288,7 +288,7 @@ export default async function run(canvas:HTMLCanvasElement){
         // craete simple object
         const rotation = {x: 0, y: 0, z: 0}
         const scale = {x:1.0, y:1.0, z: 1.0}
-        const position = {a: Math.random(), b: Math.random(), z: 1}
+        const position = {a: Math.random(), b: Math.random(), z: 1+Math.random()}
         scene.push({position, rotation, scale})
     }
 
@@ -350,10 +350,10 @@ export default async function run(canvas:HTMLCanvasElement){
         // update rotation for each object
         for(let i = 0; i < scene.length; i++){
             const obj = scene[i]
-            const now = Date.now() / 1000
+            const now = performance.now() / 1000
             // obj.rotation.x = Math.sin(now + i)
             // obj.rotation.y = Math.cos(now + i)
-            obj.rotation.z = Math.cos(now + i)
+            obj.rotation.z = now*5
             const mvpMatrix = getMvpMatrix(size, obj.position, obj.rotation, obj.scale)
             // update buffer based on offset
             // device.queue.writeBuffer(
@@ -366,28 +366,27 @@ export default async function run(canvas:HTMLCanvasElement){
         }
         // the better way is update buffer in one write after loop
         device.queue.writeBuffer(pipelineObj.mvpBuffer, 0, mvpBuffer)
-        let pre = performance.now()
         const mvpBufferTriangle = new Float32Array(N*4*16)
-        for(let j=0;j<360;j++){
-            let I = 30
+        for(let j=0;j<1;j++){
+            let I = 10
             for(let i=0;i<I;i++){
-                let θ = 1.0/180*Math.PI
+                let θ = 2.0/180*Math.PI
                 let pt1 = mat4.create()
                 mat4.translate(pt1,pt1,vec3.fromValues(+1,-1,0))
-                mat4.translate(pt1,pt1,vec3.fromValues(-0.01*(i+1)*Math.tan(θ),-0.01*(i+1),0))
-                mat4.rotateZ(pt1,pt1,4*j/180*Math.PI)
+                mat4.translate(pt1,pt1,vec3.fromValues(-0.1*(i+1)*Math.tan(θ),-0.1*(i+1),0))
+                mat4.rotateZ(pt1,pt1,2*j/180*Math.PI)
                 let pt2 = mat4.create()
                 mat4.translate(pt2,pt2,vec3.fromValues(-1,-1,0))
-                mat4.translate(pt2,pt2,vec3.fromValues(+0.01*(i+1)*Math.tan(θ),-0.01*(i+1),0))
-                mat4.rotateZ(pt2,pt2,4*j/180*Math.PI)
+                mat4.translate(pt2,pt2,vec3.fromValues(+0.1*(i+1)*Math.tan(θ),-0.1*(i+1),0))
+                mat4.rotateZ(pt2,pt2,2*j/180*Math.PI)
                 let pt3 = mat4.create()
                 mat4.translate(pt3,pt3,vec3.fromValues(+1,+1,0))
-                mat4.translate(pt3,pt3,vec3.fromValues(-0.01*(i+2)*Math.tan(θ),-0.01*(i+2),0))
-                mat4.rotateZ(pt3,pt3,4*j/180*Math.PI)
+                mat4.translate(pt3,pt3,vec3.fromValues(-0.1*(i+2)*Math.tan(θ),-0.1*(i+2),0))
+                mat4.rotateZ(pt3,pt3,2*j/180*Math.PI)
                 let pt4 = mat4.create()
                 mat4.translate(pt4,pt4,vec3.fromValues(-1,+1,0))
-                mat4.translate(pt4,pt4,vec3.fromValues(+0.01*(i+2)*Math.tan(θ),-0.01*(i+2),0))
-                mat4.rotateZ(pt4,pt4,4*j/180*Math.PI)
+                mat4.translate(pt4,pt4,vec3.fromValues(+0.1*(i+2)*Math.tan(θ),-0.1*(i+2),0))
+                mat4.rotateZ(pt4,pt4,2*j/180*Math.PI)
                 mvpBufferTriangle.set(Float32Array.from([
                     ...(pt1 as Float32Array),
                     ...(pt2 as Float32Array),
@@ -396,7 +395,6 @@ export default async function run(canvas:HTMLCanvasElement){
                 ]), (j*I+i) * 4 * 4 * 4)
             }
         }
-        console.log(performance.now()-pre)
         device.queue.writeBuffer(pipelineObj.mvpBufferTriangle, 0, mvpBufferTriangle)
     }
 
