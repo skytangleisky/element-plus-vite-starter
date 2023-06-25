@@ -26,7 +26,7 @@ export default class MapLayer extends BaseLayer{
       for(let k=0;k<this.mapsTiles.length;k++){
         if(this.mapsTiles[k]._LL==event.data.z&&this.mapsTiles[k].i==event.data.i&&this.mapsTiles[k].j==event.data.j&&this.mapsTiles[k].url==event.data.url){
           if(event.data.bitmap===-1){
-            // this.mapsTiles.splice(k--,1)
+            this.mapsTiles.splice(k--,1)
             break;
           }else if(event.data.bitmap===0){
             if(event.data.isDrawed){
@@ -50,8 +50,8 @@ export default class MapLayer extends BaseLayer{
               // console.log(this.Count)
             } catch (error) {
               this.mapsTiles.splice(k--,1)
-              break;
               console.log(error)
+              break;
             }
 
           }
@@ -158,7 +158,7 @@ export default class MapLayer extends BaseLayer{
     }
   }
   load(item,tiles){
-    setTimeout(()=>{
+    // setTimeout(()=>{
       if(this._X0<=item.i&&item.i<=this._X1&&this._Y0<=item.j&&item.j<=this._Y1&&item._LL==this._LL){
         let x=item.i%2**item._LL>=0?item.i%2**item._LL:item.i%2**item._LL+2**item._LL;
         let y=item.j%2**item._LL>=0?item.j%2**item._LL:item.j%2**item._LL+2**item._LL;
@@ -179,7 +179,7 @@ export default class MapLayer extends BaseLayer{
           }
         }
       }
-    },0)
+    // },0)
   }
   delete(callback){
     if(this.urlTemplate.remove){

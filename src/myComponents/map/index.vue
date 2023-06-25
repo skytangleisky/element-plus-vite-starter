@@ -114,8 +114,8 @@ import { eventbus } from '~/eventbus'
       throw new Error('invalid ctx')
     }
 
-    if(webgpu.value)
-      run(webgpu.value)
+    // if(webgpu.value)
+    //   run(webgpu.value)
     window.addEventListener('message',test,{passive:true})
     // mapLayer.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}'})
     // mapLayer.setSource({url:'https://tanglei.site:444?z={z}&y={y}&x={x}'})//nps+go

@@ -288,7 +288,7 @@ export default async function run(canvas:HTMLCanvasElement){
         // craete simple object
         const rotation = {x: 0, y: 0, z: 0}
         const scale = {x:1.0, y:1.0, z: 1.0}
-        const position = {a: Math.random(), b: Math.random(), z: 1+Math.random()}
+        const position = {a: Math.random(), b: Math.random(), z: 1}
         scene.push({position, rotation, scale})
     }
 
