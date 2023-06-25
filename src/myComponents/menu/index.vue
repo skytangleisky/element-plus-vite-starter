@@ -57,6 +57,7 @@
     }
   }
   const data = reactive({
+    level:'X',
     fps:'X',
     drawCall:'X',
     frameTime:'X',
