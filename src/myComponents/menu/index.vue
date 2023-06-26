@@ -79,8 +79,10 @@
   }
   const procStationMenu = (currentStation:any,target:string)=>{
     if(target=='作业申请'){
+      prevShow.value = false
       planShow.value = true
     }else if(target=='作业预报'){
+      planShow.value = false
       prevShow.value = true
     }
     console.log(currentStation,target)

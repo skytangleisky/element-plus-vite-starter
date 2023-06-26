@@ -32,10 +32,10 @@
         </table>
       </div>
       <ul class="menuUl" tabindex="-1">
-        <li @click="click"><img src="/src/assets/新增.svg" style="vertical-align:middle;width:20px;height:20px;pointer-events:none;" @click.native.stop>作业申请</li>
-        <li @click="click"><img src="/src/assets/修改.svg" style="vertical-align:middle;width:20px;height:20px;pointer-events:none;" @click.native.stop>作业预报</li>
-        <li @click="click"><img src="/src/assets/删除.svg" style="vertical-align:middle;width:20px;height:20px;pointer-events:none;" @click.native.stop>完成报请求</li>
-        <li @click="click"><img src="/src/assets/详情.svg" style="vertical-align:middle;width:20px;height:20px;pointer-events:none;" @click.native.stop>查看详细数据</li>
+        <li @click="click"><img src="/src/assets/新增.svg" @click.native.stop>作业申请</li>
+        <li @click="click"><img src="/src/assets/修改.svg" @click.native.stop>作业预报</li>
+        <li @click="click"><img src="/src/assets/删除.svg" @click.native.stop>完成报请求</li>
+        <li @click="click"><img src="/src/assets/详情.svg" @click.native.stop>查看详细数据</li>
       </ul>
     </div>
   </div>
@@ -104,6 +104,15 @@ const toggleCollapse = () => {
       list-style: none;
       padding: 2px;
       li {
+        img{
+          vertical-align:
+          middle;
+          width:20px;
+          height:20px;
+          pointer-events:none;
+          filter:drop-shadow(var(--ep-text-color-primary) 0 60px);
+          transform: translateY(-60px);
+        }
         vertical-align: middle;
         width: 140px;
         cursor: pointer;
