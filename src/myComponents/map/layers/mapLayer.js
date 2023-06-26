@@ -26,7 +26,7 @@ export default class MapLayer extends BaseLayer{
       for(let k=0;k<this.mapsTiles.length;k++){
         if(this.mapsTiles[k]._LL==event.data.z&&this.mapsTiles[k].i==event.data.i&&this.mapsTiles[k].j==event.data.j&&this.mapsTiles[k].url==event.data.url){
           if(event.data.bitmap===-1){
-            this.mapsTiles.splice(k--,1)
+            // this.mapsTiles.splice(k--,1)
             break;
           }else if(event.data.bitmap===0){
             if(event.data.isDrawed){

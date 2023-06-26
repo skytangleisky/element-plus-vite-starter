@@ -19,8 +19,8 @@
       <span>GFX Buffer Mem (M)<span>{{ data.buffer }}</span></span>
     </box>
     <my-dialog></my-dialog>
-    <dialog-plan-request class="z-1"></dialog-plan-request>
-    <dialog-prev-request class="z-2"></dialog-prev-request>
+    <dialog-plan-request class="z-1" v-model:show="planShow"></dialog-plan-request>
+    <dialog-prev-request class="z-2" v-model:show="prevShow"></dialog-prev-request>
     <li tabindex="-1" v-for="(item,index) in list" :key="index" @mouseenter="mouseenter">
       {{ item.name }}
       <ol class="absolute flex-col left-0 p-0 top-100% z-99999" v-if="item.children" :style="'left:' + (item.left?'-1em':'0')"><!--一级菜单-->
@@ -72,14 +72,26 @@
     buffer:'X',
     tiles:'X',
   })
+  const planShow = ref(false)
+  const prevShow = ref(false)
   let procInfo = (info:any)=>{
     Object.assign(data,info)
   }
+  const procStationMenu = (currentStation:any,target:string)=>{
+    if(target=='作业申请'){
+      planShow.value = true
+    }else if(target=='作业预报'){
+      prevShow.value = true
+    }
+    console.log(currentStation,target)
+  }
   onMounted(()=>{
     eventbus.on('systemInfo',procInfo)
+    eventbus.on('站点列表菜单点击',procStationMenu)
   })
   onBeforeUnmount(()=>{
     eventbus.off('systemInfo',procInfo)
+    eventbus.off('站点列表菜单点击',procStationMenu)
   })
 </script>
 <style lang="scss">

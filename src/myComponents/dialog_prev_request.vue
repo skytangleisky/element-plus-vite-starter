@@ -1,5 +1,5 @@
 <template>
-  <div v-dialogDrag class="dragDialog absolute w-550px" style="left:0px;top:300px;">
+  <div v-dialogDrag class="dragDialog absolute w-550px" style="left:0px;top:300px;" v-show="show">
     <el-row>
       <el-col :span="12"><div class="flex justify-between items-center pl-10px">作业ID<input @mousedown.stop class="operation_filter" style="width:150px;" value="110229042" /></div></el-col>
       <el-col :span="12"><div class="flex justify-between items-center pl-10px">作业点位置<input @mousedown.stop class="operation_filter" style="width:150px;" value="116192700E40413500N"/></div></el-col>
@@ -26,7 +26,7 @@
     </el-row>
     <div class="flex flex-row justify-between items-center pl-10px mt-0.5rem mb-0.5rem">
       <el-button @mousedown.stop type="default">发送</el-button>
-      <el-button @mousedown.stop type="default">取消</el-button>
+      <el-button @mousedown.stop @click="cancel" type="default">取消</el-button>
     </div>
   </div>
 </template>
@@ -36,6 +36,11 @@ const num1 = ref(10)
 const num2 = ref(8000)
 const num3 = ref(290)
 const num4 = ref(40)
+withDefaults(defineProps<{show?:boolean}>(),{show:false})
+const emit = defineEmits(['update:show'])
+const cancel = ()=>{
+  emit('update:show', false);
+}
 </script>
 <style lang="scss">
 .dragDialog{
