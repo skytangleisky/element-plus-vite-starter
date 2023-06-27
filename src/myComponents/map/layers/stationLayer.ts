@@ -51,7 +51,7 @@ export default class StationLayer{
     this.getImage()
     let boundary=[110,120,41,38]
     let POINT = {lng:116.39139324235674,lat:39.90723893689098}
-    for(var i=0;i<1;i++) {
+    for(var i=0;i<10;i++) {
       let plane = new Plane()
       plane.name=i.toString()
       plane.vx = this.randMinMax(-2/100,2/100)
@@ -60,9 +60,9 @@ export default class StationLayer{
       plane.vy=0
       plane.lng=this.randMinMax(boundary[0],boundary[1])
       plane.lat=this.randMinMax(boundary[3],boundary[2])
-      let convert = wgs84togcj02(POINT.lng,POINT.lat)
-      plane.lng=convert[0]
-      plane.lat=convert[1]
+      // let convert = wgs84togcj02(POINT.lng,POINT.lat)
+      // plane.lng=convert[0]
+      // plane.lat=convert[1]
       // plane.lng=0
       // plane.lat=0
       plane.cvs = document.createElement('canvas')
@@ -101,9 +101,9 @@ export default class StationLayer{
       //   // plane.showToolTips=true
       //   console.log('enter',plane)
       // })
-      plane.event.on('exit',(plane:Plane)=>{
+      plane.event.on('leave',(plane:Plane)=>{
         // plane.showToolTips=false
-        console.log('exit',plane)
+        console.log('leave',plane)
       })
       plane.event.on('mousemove',()=>{
         console.log('move',this)
@@ -198,7 +198,7 @@ export default class StationLayer{
       this.quadtree.insert(item);
     }
     if(this.isMouseOver){
-      let candidates:Array<Plane> = this.quadtree.retrieve(this.myCursor);
+      let candidates = this.quadtree.retrieve(this.myCursor) as Array<Plane>;
       //flag retrieved objects
       for(let i=0;i<candidates.length;i++) {
         let candidate = candidates[i]
@@ -291,7 +291,6 @@ export default class StationLayer{
       // let d3 = Math.sqrt((xy3.x-xy0.x)**2+(xy3.y-xy0.y)**2)
       // let d4 = Math.sqrt((xy4.x-xy0.x)**2+(xy4.y-xy0.y)**2)
       // console.log(d1,d2,d3,d4)
-
       ctx.beginPath()
       ctx.strokeStyle='red'
       ctx.moveTo(point1.x,point1.y)
@@ -323,14 +322,14 @@ export default class StationLayer{
         this.spirits.forEach(v=>{
           if(v!==item&&v.lastOverlap&&!v.overlap){
             v.lastOverlap=false
-            v.event.emit('exit',v)
+            v.event.emit('leave',v)
           }
         })
         item.lastOverlap=true
         item.event.emit('enter',item)
       }else if(item.lastOverlap&&!item.overlap){
         item.lastOverlap=false
-        item.event.emit('exit',item)
+        item.event.emit('leave',item)
       }
     }
   }

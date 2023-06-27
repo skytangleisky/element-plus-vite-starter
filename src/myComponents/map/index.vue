@@ -285,7 +285,7 @@ import { eventbus } from '~/eventbus'
       borderLayer.render(obj,ctx)
       pointLayer.render(obj,ctx)
       routeLayer.render(obj,ctx)
-      // windy.render(obj,ctx)
+      windy.render(obj,ctx)
       planeLayer.render(obj,ctx)
       stationLayer.render(obj,ctx)
       ctx.restore()
