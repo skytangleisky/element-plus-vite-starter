@@ -50,7 +50,7 @@ export default class PlaneLayer{
     this.getImage()
     let boundary=[110,120,41,38]
     // let POINT = {lng:116.39139324235674,lat:39.90723893689098}
-    for(var i=0;i<10;i++) {
+    for(var i=0;i<200;i++) {
       let plane = new Plane()
       plane.name=i.toString()
       plane.vx = this.randMinMax(-300,300)
@@ -223,9 +223,7 @@ export default class PlaneLayer{
       ctx.fillStyle = 'rgba(255,255,255,0.5)';
       ctx.fillRect(this.myCursor.x, this.myCursor.y, this.myCursor.width, this.myCursor.height);
     }
-    this.drawQuadtree(ctx,this.quadtree)
-    let candidates = this.quadtree.retrieve(this.quadtree.bounds) as Array<Plane>;
-    console.log(candidates)
+    // this.drawQuadtree(ctx,this.quadtree)
     this.drawObjects(ctx)
   }
   drawObjects(ctx:any) {
@@ -234,49 +232,54 @@ export default class PlaneLayer{
     let intersection = true
     for(var i=0;i<this.spirits.length;i++) {
       let item = this.spirits[i]
-      ctx.save()
-      ctx.translate(item.x,item.y)
-      if(矩形碰撞框){
-        ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-        ctx.strokeRect(0, 0, item.width, item.height);
-      }
-      if(item.check) {
-        if(item.overlap){
-          if(intersection){
-            ctx.save()
-            ctx.translate(item.width/2,item.height/2)
-            ctx.rotate(item.rad)
-            ctx.fillStyle = 'rgba(48,255,48,0.5)';
-            ctx.fillRect(-item.w/2,-item.h/2,item.w,item.h)
-            ctx.restore()
+      if(item.x+item.width>this.quadtree.bounds.x
+        &&item.x<this.quadtree.bounds.x+this.quadtree.bounds.width
+        &&item.y+item.height>this.quadtree.bounds.y
+        &&item.y<this.quadtree.bounds.y+this.quadtree.bounds.height){
+        ctx.save()
+        ctx.translate(item.x,item.y)
+        if(矩形碰撞框){
+          ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+          ctx.strokeRect(0, 0, item.width, item.height);
+        }
+        if(item.check) {
+          if(item.overlap){
+            if(intersection){
+              ctx.save()
+              ctx.translate(item.width/2,item.height/2)
+              ctx.rotate(item.rad)
+              ctx.fillStyle = 'rgba(48,255,48,0.5)';
+              ctx.fillRect(-item.w/2,-item.h/2,item.w,item.h)
+              ctx.restore()
+            }
+            item.cvs&&ctx.drawImage(item.cvs,0,0,item.cvs.width,item.cvs.height,0,0,item.width,item.height)
+            item.showToolTips&&item.cvs_toolTips&&ctx.drawImage(item.cvs_toolTips,0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,-item.cvs_toolTips.width/2+item.width/2,-item.cvs_toolTips.height,item.cvs_toolTips.width,item.cvs_toolTips.height)
+          }else{
+            if(需要检测){
+              ctx.fillStyle = 'rgba(48,255,48,0.5)';
+              ctx.fillRect(0, 0, item.width, item.height);
+            }
+            item.cvs&&ctx.drawImage(item.cvs,0,0,item.cvs.width,item.cvs.height,0,0,item.width,item.height)
+            item.cvs_toolTips&&item.showToolTips&&ctx.drawImage(item.cvs_toolTips,0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,-item.cvs_toolTips.width/2+item.width/2,-item.cvs_toolTips.height,item.cvs_toolTips.width,item.cvs_toolTips.height)
           }
-          item.cvs&&ctx.drawImage(item.cvs,0,0,item.cvs.width,item.cvs.height,0,0,item.width,item.height)
-          item.showToolTips&&item.cvs_toolTips&&ctx.drawImage(item.cvs_toolTips,0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,-item.cvs_toolTips.width/2+item.width/2,-item.cvs_toolTips.height,item.cvs_toolTips.width,item.cvs_toolTips.height)
-        }else{
-          if(需要检测){
-            ctx.fillStyle = 'rgba(48,255,48,0.5)';
-            ctx.fillRect(0, 0, item.width, item.height);
-          }
+        } else {
           item.cvs&&ctx.drawImage(item.cvs,0,0,item.cvs.width,item.cvs.height,0,0,item.width,item.height)
           item.cvs_toolTips&&item.showToolTips&&ctx.drawImage(item.cvs_toolTips,0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,-item.cvs_toolTips.width/2+item.width/2,-item.cvs_toolTips.height,item.cvs_toolTips.width,item.cvs_toolTips.height)
         }
-      } else {
-        item.cvs&&ctx.drawImage(item.cvs,0,0,item.cvs.width,item.cvs.height,0,0,item.width,item.height)
-        item.cvs_toolTips&&item.showToolTips&&ctx.drawImage(item.cvs_toolTips,0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,-item.cvs_toolTips.width/2+item.width/2,-item.cvs_toolTips.height,item.cvs_toolTips.width,item.cvs_toolTips.height)
-      }
-      ctx.restore()
-      if(!item.lastOverlap&&item.overlap){
-        this.spirits.forEach(v=>{
-          if(v!==item&&v.lastOverlap&&!v.overlap){
-            v.lastOverlap=false
-            v.event.emit('exit',v)
-          }
-        })
-        item.lastOverlap=true
-        item.event.emit('enter',item)
-      }else if(item.lastOverlap&&!item.overlap){
-        item.lastOverlap=false
-        item.event.emit('exit',item)
+        ctx.restore()
+        if(!item.lastOverlap&&item.overlap){
+          this.spirits.forEach(v=>{
+            if(v!==item&&v.lastOverlap&&!v.overlap){
+              v.lastOverlap=false
+              v.event.emit('exit',v)
+            }
+          })
+          item.lastOverlap=true
+          item.event.emit('enter',item)
+        }else if(item.lastOverlap&&!item.overlap){
+          item.lastOverlap=false
+          item.event.emit('exit',item)
+        }
       }
     }
   }

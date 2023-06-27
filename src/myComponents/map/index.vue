@@ -298,7 +298,7 @@ import { eventbus } from '~/eventbus'
       ctx.lineTo(0,20)
       ctx.moveTo(-20,0)
       ctx.lineTo(20,0)
-      ctx.strokeStyle='red'
+      ctx.strokeStyle='#ff000044'
       ctx.stroke()
       ctx.restore()
 
