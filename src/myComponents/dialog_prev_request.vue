@@ -1,5 +1,5 @@
 <template>
-  <div v-dialogDrag class="dragDialog absolute w-550px" style="left:0px;top:300px;" v-show="show">
+  <div v-dialogDrag class="dragDialog absolute w-550px" style="left:calc(50% - 275px);top:calc(50% - 155px);" v-show="show">
     <el-row>
       <el-col :span="12"><div class="flex justify-between items-center pl-10px">作业ID<input @mousedown.stop class="operation_filter" style="width:150px;" value="110229042" /></div></el-col>
       <el-col :span="12"><div class="flex justify-between items-center pl-10px">作业点位置<input @mousedown.stop class="operation_filter" style="width:150px;" value="116192700E40413500N"/></div></el-col>

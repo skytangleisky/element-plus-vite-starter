@@ -1,5 +1,5 @@
 <template>
-  <div v-dialogDrag class="dragDialog absolute w-550px" style="left:0px;top:300px;" v-show="show">
+  <div v-dialogDrag class="dragDialog absolute w-550px" left style="left:calc(50% - 275px);top:calc(50% - 155px);" v-show="show">
     <el-row>
       <el-col :span="12"><div class="flex justify-between items-center pl-10px">代码<input @mousedown.stop class="operation_filter" style="width:150px;" value="295" /></div></el-col>
       <el-col :span="12"><div class="flex justify-between items-center pl-10px">名称<input @mousedown.stop class="operation_filter" style="width:150px;" value="千家店作业点"/></div></el-col>

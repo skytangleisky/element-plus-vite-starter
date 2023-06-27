@@ -1,5 +1,5 @@
 <template>
-  <div v-dialogDrag class="collapse dragDialog absolute w-300px" style="left:0px;top:20px;">
+  <div v-dialogDrag class="collapse dragDialog absolute w-300px" style="left:20px;top:20px;">
     <div class="flex flex-row">
       <input @mousedown.stop class="operation_filter flex-1" placeholder="请输入ID、简码或作业点名称">
       <img src="/src/assets/Right.png" class="dropdown w-40px h-2.5rem" @click="toggleCollapse" @mousedown.stop>
