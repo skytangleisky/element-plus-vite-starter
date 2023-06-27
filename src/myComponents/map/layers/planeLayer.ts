@@ -1,5 +1,5 @@
 import textureUrl from '../../../assets/aircraft.png?url'
-import Quadtree, { Rect } from '@timohausmann/quadtree-js'
+import Quadtree, { Rect } from '~/tools/quadtree'
 import { wgs84togcj02 } from '../workers/mapUtil'
 import { lng2Pixel, lat2Pixel, pixel2Lng, pixel2Lat, pixel2LngLat } from '../js/core'
 import Eventbus,{ eventbus } from '../../../eventbus'
@@ -50,7 +50,7 @@ export default class PlaneLayer{
     this.getImage()
     let boundary=[110,120,41,38]
     // let POINT = {lng:116.39139324235674,lat:39.90723893689098}
-    for(var i=0;i<200;i++) {
+    for(var i=0;i<10;i++) {
       let plane = new Plane()
       plane.name=i.toString()
       plane.vx = this.randMinMax(-300,300)
@@ -188,7 +188,7 @@ export default class PlaneLayer{
       this.quadtree.insert(item);
     }
     if(this.isMouseOver){
-      let candidates:Array<Plane> = this.quadtree.retrieve(this.myCursor);
+      let candidates = this.quadtree.retrieve(this.myCursor) as Array<Plane>;
       //flag retrieved objects
       for(let i=0;i<candidates.length;i++) {
         let candidate = candidates[i]
@@ -223,7 +223,9 @@ export default class PlaneLayer{
       ctx.fillStyle = 'rgba(255,255,255,0.5)';
       ctx.fillRect(this.myCursor.x, this.myCursor.y, this.myCursor.width, this.myCursor.height);
     }
-    // this.drawQuadtree(ctx,this.quadtree)
+    this.drawQuadtree(ctx,this.quadtree)
+    let candidates = this.quadtree.retrieve(this.quadtree.bounds) as Array<Plane>;
+    console.log(candidates)
     this.drawObjects(ctx)
   }
   drawObjects(ctx:any) {

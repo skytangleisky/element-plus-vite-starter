@@ -1,5 +1,5 @@
 import textureUrl from '../../../assets/rocket-sharp.png?url'
-import Quadtree, { Rect } from '@timohausmann/quadtree-js'
+import Quadtree, { Rect } from '~/tools/quadtree'
 import { wgs84togcj02 } from '../workers/mapUtil'
 import { lng2Pixel, lat2Pixel, pixel2Lng, pixel2Lat, pixel2LngLat, XY2Pixel, lngLat2Pixel, getDistance, pixel2XY,lngLat2XY } from '../js/core'
 import Eventbus,{ eventbus } from '../../../eventbus'
