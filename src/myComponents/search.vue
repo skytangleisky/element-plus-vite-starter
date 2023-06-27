@@ -164,7 +164,7 @@ onMounted(()=>{
     if(e.data.auth){
       let data = e.data.userData
       console.log(data)
-      user.avatar = data.figureurl;
+      user.avatar = data.figureurl.indexOf('https://')==0?data.figureurl:data.figureurl.replace('http://','https://');
       user.username = data.nickname;
       user.logined = true;
     }

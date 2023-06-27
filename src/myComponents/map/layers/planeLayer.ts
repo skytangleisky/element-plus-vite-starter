@@ -89,9 +89,9 @@ export default class PlaneLayer{
         // plane.showToolTips=true
         console.log('enter',plane)
       })
-      plane.event.on('exit',(plane:Plane)=>{
+      plane.event.on('leave',(plane:Plane)=>{
         // plane.showToolTips=false
-        console.log('exit',plane)
+        console.log('leave',plane)
       })
       plane.event.on('mousemove',()=>{
         console.log('move',this)
@@ -271,14 +271,14 @@ export default class PlaneLayer{
           this.spirits.forEach(v=>{
             if(v!==item&&v.lastOverlap&&!v.overlap){
               v.lastOverlap=false
-              v.event.emit('exit',v)
+              v.event.emit('leave',v)
             }
           })
           item.lastOverlap=true
           item.event.emit('enter',item)
         }else if(item.lastOverlap&&!item.overlap){
           item.lastOverlap=false
-          item.event.emit('exit',item)
+          item.event.emit('leave',item)
         }
       }
     }

@@ -1,5 +1,5 @@
 <template>
-  <canvas ref="canvas" style="position:absolute;outline:none;left:0;top:0;width:100%;height:100%;"></canvas>
+  <canvas ref="canvas" style="position:absolute;outline:none;left:0;top:0;width:100%;height:100%;" @mousewheel.prevent></canvas>
   <canvas ref="webgpu" style="position:absolute;outline:none;left:0;top:0;width:100%;height:100%;pointer-events: none ;"></canvas>
   <div tabindex="-1" class="tileSelect absolute right-20px top-20px" style="outline: none;">
     <div :style="'border-radius:50%;border:1px solid grey;background-position:-0px -0px;background-repeat:no-repeat;width:58px;height:58px;'+'background-image:url('+setting.tileUrl.replace('{x}','105').replace('{y}','48').replace('{z}','7')+');'" @click.native="testClick"></div>
