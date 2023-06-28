@@ -1,7 +1,7 @@
 // import Worker from './worker.js?worker'
 import url from './worker.js?url'
 import { eventbus } from '~/eventbus'
-class Task{
+export default class Task{
   workers:Array<{
     busy:boolean
     worker: Worker
@@ -11,9 +11,9 @@ class Task{
     this.queue = []
     this.workers = []
     for(let i=0;i<poolSize;i++){
-      let worker = new Worker(url,{type: 'module',name:(i+1).toString()})
+      let worker = new Worker(url,{type: 'module',name:i.toString()})
       worker.onmessage = event => {
-        this.workers.forEach(v=>v.worker===worker&&(v.busy=false))
+        this.workers.forEach((v,k)=>v.worker===worker&&(v.busy=false))
         this.process()
         eventbus.emit('onmessage',event)
       }
@@ -23,23 +23,22 @@ class Task{
       })
     }
   }
+  destroy(){
+    for(let i=0;i<this.workers.length;i++){
+      let item = this.workers.splice(i--,1)[0]
+      item.worker.terminate()
+    }
+  }
   addTask(arg:any){
     this.queue.push(arg)
     this.process()
   }
   process(){
     this.workers.forEach(item => {
-      if(!item.busy){
-        let arg = this.queue.shift()
-        if(arg){
-          item.busy=true
-          item.worker.postMessage(arg)
-        }
+      if(!item.busy&&this.queue.length>0){
+        item.busy=true
+        item.worker.postMessage(this.queue.shift())
       }
     })
   }
-}
-const task = new Task(10)
-export {
-  task
 }

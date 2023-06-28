@@ -1,5 +1,6 @@
 import Tiles from '../tiles.js'
 import BaseLayer from './baseLayer.js'
+import { eventbus } from '~/eventbus'
 export default class IsolineLayer extends BaseLayer{
   constructor(){
     super()
@@ -11,8 +12,8 @@ export default class IsolineLayer extends BaseLayer{
     this.限制瓦片 = false
     this.瓦片网格 = false
 
-    this.worker = new Worker(window.MAP_BASE_URL+"static/航线/isoline.js");//一个对象加快访问速度
-    this.worker.onmessage = (event)=>{
+    // this.worker = new Worker(window.MAP_BASE_URL+"static/航线/isoline.js");//一个对象加快访问速度
+    eventbus.onmessage = (event)=>{
       // console.log((Date.now()-event.data.beginTime)/1000);
       for(let k=0;k<this.mapsTiles.length;k++){
         if(this.mapsTiles[k]._LL==event.data._LL&&this.mapsTiles[k].i==event.data.i&&this.mapsTiles[k].j==event.data.j){
@@ -155,7 +156,7 @@ export default class IsolineLayer extends BaseLayer{
     }
   }
   load2(item,obj,isolineData){
-    this.worker.postMessage({args:{beginTime:Date.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:obj.tileWidth,isolineData});//处理这段数据通常需要很长时间。
+    // task.addTask({args:{beginTime:Date.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:obj.tileWidth,isolineData,flag:'IsolineLayer'});//处理这段数据通常需要很长时间。
   }
   clear(){
     this.mapsTiles=[]

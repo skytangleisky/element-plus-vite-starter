@@ -1,6 +1,7 @@
 import Tiles from '../tiles.js'
 import BaseLayer from './baseLayer.js'
-import Worker from '../workers/route.js?worker'
+// import Worker from '../workers/route.js?worker'
+import { eventbus } from '~/eventbus'
 export default class RouteLayer extends BaseLayer{
   constructor(){
     super()
@@ -12,30 +13,30 @@ export default class RouteLayer extends BaseLayer{
     this.瓦片网格 = false
     this.isHide = false
     this.tileWidth = 256
-
-    this.worker = new Worker();//一个对象加快访问速度
-    this.worker.onmessage = (event)=>{
-      // console.log((Date.now()-event.data.beginTime)/1000);
-      for(let k=0;k<this.mapsTiles.length;k++){
-        if(this.mapsTiles[k]._LL==event.data._LL&&this.mapsTiles[k].i==event.data.i&&this.mapsTiles[k].j==event.data.j){
-          if(event.data.isDrawed){
-            var cvs2 = document.createElement('canvas');
-            cvs2.setAttribute("width",256);
-            cvs2.setAttribute("height",256);
-            cvs2.getContext('bitmaprenderer').transferFromImageBitmap(event.data.bitmap);
-            this.mapsTiles[k].cvs = cvs2;
-            this.mapsTiles[k].isDrawed = event.data.isDrawed;
-          }else{
-            this.mapsTiles[k].cvs = 0;
-            this.mapsTiles[k].isDrawed = event.data.isDrawed;
+    eventbus.onmessage = (event)=>{
+      if(event.data.flag){
+        // console.log((Date.now()-event.data.beginTime)/1000);
+        for(let k=0;k<this.mapsTiles.length;k++){
+          if(this.mapsTiles[k]._LL==event.data._LL&&this.mapsTiles[k].i==event.data.i&&this.mapsTiles[k].j==event.data.j){
+            if(event.data.isDrawed){
+              var cvs2 = document.createElement('canvas');
+              cvs2.setAttribute("width",256);
+              cvs2.setAttribute("height",256);
+              cvs2.getContext('bitmaprenderer').transferFromImageBitmap(event.data.bitmap);
+              this.mapsTiles[k].cvs = cvs2;
+              this.mapsTiles[k].isDrawed = event.data.isDrawed;
+            }else{
+              this.mapsTiles[k].cvs = 0;
+              this.mapsTiles[k].isDrawed = event.data.isDrawed;
+            }
+            this.myTiles.addTile(this.mapsTiles[k]._LL,event.data.y,event.data.x,{cvs:this.mapsTiles[k].cvs,isDrawed:event.data.isDrawed});
+            // rAF(draw);
+            this.callback()
           }
-          this.myTiles.addTile(this.mapsTiles[k]._LL,event.data.y,event.data.x,{cvs:this.mapsTiles[k].cvs,isDrawed:event.data.isDrawed});
-          // rAF(draw);
-          this.callback()
         }
-      }
-      while(this.mapsTiles.length>(this._X1-this._X0+1)*(this._Y1-this._Y0+1)){
-        this.mapsTiles.shift();
+        while(this.mapsTiles.length>(this._X1-this._X0+1)*(this._Y1-this._Y0+1)){
+          this.mapsTiles.shift();
+        }
       }
     }
   }
@@ -105,7 +106,7 @@ export default class RouteLayer extends BaseLayer{
   load2(item,tiles,obj){
     setTimeout(()=>{
       if(this._X0<=item.i&&item.i<=this._X1&&this._Y0<=item.j&&item.j<=this._Y1&&item._LL==this._LL){
-        this.worker.postMessage({args:{beginTime:Date.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:this.tileWidth});//处理这段数据通常需要很长时间。
+        // task.addTask({args:{beginTime:Date.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:this.tileWidth,flag:'RouteLayer'});//处理这段数据通常需要很长时间。
       }else{//删除跳过的瓦片
         for(let k=0;k<tiles.length;k++){
           if(tiles[k]._LL==item._LL&&tiles[k].i==item.i&&tiles[k].j==item.j){

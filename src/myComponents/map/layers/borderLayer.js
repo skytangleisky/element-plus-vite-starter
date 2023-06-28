@@ -1,9 +1,9 @@
 import Tiles from '../tiles.js'
 import BaseLayer from './baseLayer.js'
-import { task } from './task'
 import { eventbus } from '~/eventbus/index.ts'
+import Task from './task'
 export default class BorderLayer extends BaseLayer{
-  constructor(){
+  constructor(task){
     super()
     this.tileWidth = 256
     this.mapsTiles = []
@@ -12,7 +12,8 @@ export default class BorderLayer extends BaseLayer{
     this.跳过 = 0
     this.effect = false
     this.瓦片网格 = false
-    this.isHide=false
+    this.isHide = false
+    this.task = task
     eventbus.on('onmessage',event=>{
       if(event.data.flag=='BorderLayer'){
         // console.log((Date.now()-event.data.beginTime)/1000);
@@ -109,7 +110,7 @@ export default class BorderLayer extends BaseLayer{
   load2(item,tiles,obj){
     setTimeout(()=>{
       if(this._X0<=item.i&&item.i<=this._X1&&this._Y0<=item.j&&item.j<=this._Y1&&item._LL==this._LL){
-        task.addTask({args:{beginTime:Date.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:this.tileWidth,flag:'BorderLayer'})
+        this.task.addTask({args:{beginTime:Date.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:this.tileWidth,flag:'BorderLayer'})
       }else{//删除跳过的瓦片
         for(let k=0;k<tiles.length;k++){
           if(tiles[k]._LL==item._LL&&tiles[k].i==item.i&&tiles[k].j==item.j){

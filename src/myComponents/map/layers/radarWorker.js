@@ -84,7 +84,6 @@ draw(args){
 }
 
 onmessage(evt){
-  console.log(evt)
   this.imgX = evt.data.imgX;
   this.imgY = evt.data.imgY;
   this.imgScale = evt.data.imgScale;

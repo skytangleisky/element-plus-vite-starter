@@ -19,18 +19,19 @@
   import run,{ cancel } from '~/webgpu/imageTexture'
   import Windy from './layers/Windy'
   import './Sample_POI'
+  import Task from './layers/task'
 
   let needRedraw = false
   let aid:number
 import { eventbus } from '~/eventbus'
   const setting = useSettingStore()
-  const mapLayer = new MapLayer()
-  const borderLayer = new BorderLayer()
-  const radarLayer = new RadarLayer()
-  const pointLayer = new PointLayer()
-  const routeLayer = new RouteLayer()
-  const planeLayer = new PlaneLayer()
-  const stationLayer = new StationLayer()
+  let mapLayer:MapLayer
+  let borderLayer:BorderLayer
+  let radarLayer:RadarLayer
+  let pointLayer:PointLayer
+  let routeLayer:RouteLayer
+  let planeLayer:PlaneLayer
+  let stationLayer:StationLayer
   const windy = new Windy()
   let canvas = ref(null)
   let webgpu = ref(null)
@@ -52,17 +53,7 @@ import { eventbus } from '~/eventbus'
   if(setting.tileUrl==''){
     setting.tileUrl=urls.value[0].url
   }
-  let has = false
-  urls.value.forEach((v,k)=>{
-    if(setting.tileUrl==v.url){
-      mapLayer.setSource(v)
-      has = true
-    }
-  })
-  if(!has){
-    setting.tileUrl=urls.value[0].url
-    mapLayer.setSource(urls.value[0])
-  }
+
   const tileSelect = (v:any) => {
     setting.tileUrl = v.url
     mapLayer.setSource(v)
@@ -102,7 +93,27 @@ import { eventbus } from '~/eventbus'
     targetX:number
     targetY:number
   }={x:0,y:0,targetX:0,targetY:0}
+  let task:Task
   onMounted(async()=>{
+    task = new Task(10)
+    mapLayer = new MapLayer()
+    borderLayer = new BorderLayer(task)
+    radarLayer = new RadarLayer(task)
+    pointLayer = new PointLayer()
+    routeLayer = new RouteLayer()
+    planeLayer = new PlaneLayer()
+    stationLayer = new StationLayer()
+    let has = false
+    urls.value.forEach((v,k)=>{
+      if(setting.tileUrl==v.url){
+        mapLayer.setSource(v)
+        has = true
+      }
+    })
+    if(!has){
+      setting.tileUrl=urls.value[0].url
+      mapLayer.setSource(urls.value[0])
+    }
     if(canvas.value){
       cvs = canvas.value
     }else{
@@ -114,7 +125,6 @@ import { eventbus } from '~/eventbus'
     }else{
       throw new Error('invalid ctx')
     }
-
     // if(webgpu.value)
     //   run(webgpu.value)
     window.addEventListener('message',test,{passive:true})
@@ -189,6 +199,7 @@ import { eventbus } from '~/eventbus'
     cancelAnimationFrame(aid)
     removeEventListener('message',test)
     cancel()
+    task.destroy()
   })
   const init = () => {
     if(setting.loadmap){
