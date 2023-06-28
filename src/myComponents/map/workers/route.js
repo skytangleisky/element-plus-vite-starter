@@ -29,7 +29,7 @@ function draw(args){
   }else if(loadStatus=='unload'){
     loadStatus = 'loading'
     var xhr = new XMLHttpRequest()
-    xhr.open('GET','https://tanglei.top:5050/航路.json',true)
+    xhr.open('GET','http://data.tanglei.top/航路.json',true)
     xhr.responseType = 'json'
     xhr.send()
     xhr.onreadystatechange = function() {

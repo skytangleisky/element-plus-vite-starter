@@ -11,8 +11,8 @@ export {
   RouteLayer,
   BorderLayer,
   IsolineLayer,
-  RadarLayer,
   PointLayer,
   PlaneLayer,
   StationLayer,
+  RadarLayer,
 }

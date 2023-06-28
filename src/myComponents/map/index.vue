@@ -11,7 +11,7 @@
 </template>
 <script lang="ts" setup>
   import { onBeforeUnmount, onMounted, ref } from 'vue'
-  import { MapLayer, BorderLayer, PointLayer, RouteLayer, PlaneLayer, StationLayer } from './layers'
+  import { MapLayer, BorderLayer, PointLayer, RouteLayer, PlaneLayer, StationLayer, RadarLayer } from './layers'
   import { gsap, Power3, Linear } from 'gsap'
   import { windowToCanvas, pixel2Lng, pixel2Lat, lng2Pixel, lat2Pixel, lngLat2Pixel } from './js/core'
   import { wgs84togcj02 } from './workers/mapUtil'
@@ -26,6 +26,7 @@ import { eventbus } from '~/eventbus'
   const setting = useSettingStore()
   const mapLayer = new MapLayer()
   const borderLayer = new BorderLayer()
+  const radarLayer = new RadarLayer()
   const pointLayer = new PointLayer()
   const routeLayer = new RouteLayer()
   const planeLayer = new PlaneLayer()
@@ -283,6 +284,7 @@ import { eventbus } from '~/eventbus'
       ctx.save()
       mapLayer.render(obj,ctx)
       borderLayer.render(obj,ctx)
+      radarLayer.render(obj,ctx)
       pointLayer.render(obj,ctx)
       routeLayer.render(obj,ctx)
       windy.render(obj,ctx)
@@ -332,6 +334,9 @@ import { eventbus } from '~/eventbus'
       needRedraw = true
     })
     borderLayer.loadMap(obj,{x:0,y:0,w:cvs.width,h:cvs.height},()=>{
+      needRedraw = true
+    })
+    radarLayer.loadMap(obj,{x:0,y:0,w:cvs.width,h:cvs.height},()=>{
       needRedraw = true
     })
     pointLayer.loadMap(obj,{x:0,y:0,w:cvs.width,h:cvs.height},()=>{

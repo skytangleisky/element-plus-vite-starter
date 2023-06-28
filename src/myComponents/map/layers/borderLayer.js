@@ -1,6 +1,6 @@
 import Tiles from '../tiles.js'
 import BaseLayer from './baseLayer.js'
-import Task from './task'
+import { task } from './task'
 import { eventbus } from '~/eventbus/index.ts'
 export default class BorderLayer extends BaseLayer{
   constructor(){
@@ -14,30 +14,31 @@ export default class BorderLayer extends BaseLayer{
     this.瓦片网格 = false
     this.isHide=false
     eventbus.on('onmessage',event=>{
-      // console.log((Date.now()-event.data.beginTime)/1000);
-      for(let k=0;k<this.mapsTiles.length;k++){
-        if(this.mapsTiles[k]._LL==event.data._LL&&this.mapsTiles[k].i==event.data.i&&this.mapsTiles[k].j==event.data.j){
-          if(event.data.isDrawed){
-            var cvs2 = document.createElement('canvas');
-            cvs2.setAttribute("width",256);
-            cvs2.setAttribute("height",256);
-            cvs2.getContext('bitmaprenderer').transferFromImageBitmap(event.data.bitmap);
-            this.mapsTiles[k].cvs = cvs2;
-            this.mapsTiles[k].isDrawed = event.data.isDrawed;
-          }else{
-            this.mapsTiles[k].cvs = 0;
-            this.mapsTiles[k].isDrawed = event.data.isDrawed;
+      if(event.data.flag=='BorderLayer'){
+        // console.log((Date.now()-event.data.beginTime)/1000);
+        for(let k=0;k<this.mapsTiles.length;k++){
+          if(this.mapsTiles[k]._LL==event.data._LL&&this.mapsTiles[k].i==event.data.i&&this.mapsTiles[k].j==event.data.j){
+            if(event.data.isDrawed){
+              var cvs2 = document.createElement('canvas');
+              cvs2.setAttribute("width",256);
+              cvs2.setAttribute("height",256);
+              cvs2.getContext('bitmaprenderer').transferFromImageBitmap(event.data.bitmap);
+              this.mapsTiles[k].cvs = cvs2;
+              this.mapsTiles[k].isDrawed = event.data.isDrawed;
+            }else{
+              this.mapsTiles[k].cvs = 0;
+              this.mapsTiles[k].isDrawed = event.data.isDrawed;
+            }
+            this.myTiles.addTile(this.mapsTiles[k]._LL,event.data.y,event.data.x,{cvs:this.mapsTiles[k].cvs,isDrawed:event.data.isDrawed});
+            // rAF(draw);
+            this.callback()
           }
-          this.myTiles.addTile(this.mapsTiles[k]._LL,event.data.y,event.data.x,{cvs:this.mapsTiles[k].cvs,isDrawed:event.data.isDrawed});
-          // rAF(draw);
-          this.callback()
+        }
+        while(this.mapsTiles.length>(this._X1-this._X0+1)*(this._Y1-this._Y0+1)){
+          this.mapsTiles.shift();
         }
       }
-      while(this.mapsTiles.length>(this._X1-this._X0+1)*(this._Y1-this._Y0+1)){
-        this.mapsTiles.shift();
-      }
     })
-    this.task = new Task(10)
   }
   loadMap(obj,rect,callback){
     if(this.isHide)return
@@ -108,7 +109,7 @@ export default class BorderLayer extends BaseLayer{
   load2(item,tiles,obj){
     setTimeout(()=>{
       if(this._X0<=item.i&&item.i<=this._X1&&this._Y0<=item.j&&item.j<=this._Y1&&item._LL==this._LL){
-        this.task.addTask({args:{beginTime:Date.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:this.tileWidth})
+        task.addTask({args:{beginTime:Date.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:this.tileWidth,flag:'BorderLayer'})
       }else{//删除跳过的瓦片
         for(let k=0;k<tiles.length;k++){
           if(tiles[k]._LL==item._LL&&tiles[k].i==item.i&&tiles[k].j==item.j){
