@@ -17,6 +17,7 @@
       <span>Renderer(ms)<span>{{ data.renderer }}</span></span>
       <span>GFX Texture Mem (M)<span>{{ data.texture }}</span></span>
       <span>GFX Buffer Mem (M)<span>{{ data.buffer }}</span></span>
+      <span>Thead<span>{{ data.thead }}</span></span>
     </box>
     <my-dialog></my-dialog>
     <dialog-plan-request class="z-1" v-model:show="planShow"></dialog-plan-request>
@@ -71,6 +72,7 @@
     texture:'X',
     buffer:'X',
     tiles:'X',
+    thead:'X',
   })
   const planShow = ref(false)
   const prevShow = ref(false)

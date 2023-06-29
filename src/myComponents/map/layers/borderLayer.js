@@ -14,7 +14,7 @@ export default class BorderLayer extends BaseLayer{
     this.瓦片网格 = false
     this.isHide = false
     this.task = task
-    eventbus.on('onmessage',event=>{
+    this.onmessage = event=>{
       if(event.data.flag=='BorderLayer'){
         // console.log((Date.now()-event.data.beginTime)/1000);
         for(let k=0;k<this.mapsTiles.length;k++){
@@ -39,7 +39,11 @@ export default class BorderLayer extends BaseLayer{
           this.mapsTiles.shift();
         }
       }
-    })
+    }
+    eventbus.on('onmessage',this.onmessage)
+  }
+  off(){
+    eventbus.off('onmessage',this.onmessage)
   }
   loadMap(obj,rect,callback){
     if(this.isHide)return

@@ -17,13 +17,12 @@
   import { wgs84togcj02 } from './workers/mapUtil'
   import { useSettingStore } from '~/stores/setting'
   import run,{ cancel } from '~/webgpu/imageTexture'
-  import Windy from './layers/Windy'
+  // import Windy from './layers/Windy'
   import './Sample_POI'
   import Task from './layers/task'
-
   let needRedraw = false
   let aid:number
-import { eventbus } from '~/eventbus'
+  import { eventbus } from '~/eventbus'
   const setting = useSettingStore()
   let mapLayer:MapLayer
   let borderLayer:BorderLayer
@@ -32,7 +31,7 @@ import { eventbus } from '~/eventbus'
   let routeLayer:RouteLayer
   let planeLayer:PlaneLayer
   let stationLayer:StationLayer
-  const windy = new Windy()
+  // const windy = new Windy()
   let canvas = ref(null)
   let webgpu = ref(null)
   let map_mask = ref(null)
@@ -53,7 +52,6 @@ import { eventbus } from '~/eventbus'
   if(setting.tileUrl==''){
     setting.tileUrl=urls.value[0].url
   }
-
   const tileSelect = (v:any) => {
     setting.tileUrl = v.url
     mapLayer.setSource(v)
@@ -96,6 +94,7 @@ import { eventbus } from '~/eventbus'
   let task:Task
   onMounted(async()=>{
     task = new Task(10)
+    console.log('new Task')
     mapLayer = new MapLayer()
     borderLayer = new BorderLayer(task)
     radarLayer = new RadarLayer(task)
@@ -138,7 +137,8 @@ import { eventbus } from '~/eventbus'
     // mapLayer.setSource({url:'/map1?z={z}&y={y}&x={x}'})//proxy->nps->nodejs
     // mapLayer.setSource({url:'/data/google/terrain/Guangzhou/{z}/{x}/{y}.jpg'})
     init()
-    loop(performance.now())
+    lastTime=performance.now()
+    loop(lastTime)
     new ResizeObserver(()=>{
       let rect = cvs.getBoundingClientRect()
       if(rect.width==0||rect.height==0)return
@@ -161,7 +161,7 @@ import { eventbus } from '~/eventbus'
       limitRegion()
       loadMap()
       needRedraw=true
-      windy.start([[0,0],[cvs.width,cvs.height]],cvs.width,cvs.height,[[pixel2Lng(0,obj.imgX,2**obj.L,256), pixel2Lat(cvs.height,obj.imgY,2**obj.L,256)],[pixel2Lng(cvs.width,obj.imgX,2**obj.L,256), pixel2Lat(0,obj.imgY,2**obj.L,256)]])
+      // windy.start([[0,0],[cvs.width,cvs.height]],cvs.width,cvs.height,[[pixel2Lng(0,obj.imgX,2**obj.L,256), pixel2Lat(cvs.height,obj.imgY,2**obj.L,256)],[pixel2Lng(cvs.width,obj.imgX,2**obj.L,256), pixel2Lat(0,obj.imgY,2**obj.L,256)]])
       draw()
     }).observe(cvs)
     cvs.addEventListener('mouseleave',mouseleaveFunc,{passive:true})
@@ -190,7 +190,6 @@ import { eventbus } from '~/eventbus'
     mask.addEventListener('mouseenter',mouseenterFunc,{passive:true})
     mask.addEventListener('mouseleave',mouseleaveFunc,{passive:true})
 
-
     eventbus.on('move',(lng:number,lat:number)=>{
       flyTo(lng,lat,{duration:0})
     })
@@ -200,6 +199,10 @@ import { eventbus } from '~/eventbus'
     removeEventListener('message',test)
     cancel()
     task.destroy()
+    borderLayer.off()
+    radarLayer.off()
+    console.log('destroyed')
+
   })
   const init = () => {
     if(setting.loadmap){
@@ -298,7 +301,7 @@ import { eventbus } from '~/eventbus'
       radarLayer.render(obj,ctx)
       pointLayer.render(obj,ctx)
       routeLayer.render(obj,ctx)
-      windy.render(obj,ctx)
+      // windy.render(obj,ctx)
       planeLayer.render(obj,ctx)
       stationLayer.render(obj,ctx)
       ctx.restore()

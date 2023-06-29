@@ -22,15 +22,18 @@ export default class Task{
         worker
       })
     }
+    eventbus.emit('systemInfo',{thead:`0/${this.workers.length}`})
   }
   destroy(){
     for(let i=0;i<this.workers.length;i++){
       let item = this.workers.splice(i--,1)[0]
       item.worker.terminate()
     }
+    eventbus.emit('systemInfo',{thead:`0/0`})
   }
   addTask(arg:any){
     this.queue.push(arg)
+    eventbus.emit('systemInfo',{thead:`${this.workers.length-this.queue.length}/${this.workers.length}`})
     this.process()
   }
   process(){
@@ -40,5 +43,6 @@ export default class Task{
         item.worker.postMessage(this.queue.shift())
       }
     })
+    eventbus.emit('systemInfo',{thead:`${this.workers.length-this.queue.length}/${this.workers.length}`})
   }
 }
