@@ -1,5 +1,3 @@
-import { wgs84togcj02 } from "../workers/mapUtil"
-
 export default class RouteLayer{
   constructor(){
     this.isDrawed = false;

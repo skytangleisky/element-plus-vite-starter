@@ -1,22 +1,24 @@
 import Tiles from '../tiles.js'
 import BaseLayer from './baseLayer.js'
 import { eventbus } from '~/eventbus/index.ts'
+import Task from './task'
+import { wgs84togcj02 } from '../workers/mapUtil.js'
 export default class RadarLayer extends BaseLayer{
   constructor(task){
     super()
     this.tileWidth = 256
     this.mapsTiles = []
     this.平滑 = true
-    this.cache=true
     this.myTiles = new Tiles()
+    this.cache = true
     this.跳过 = 0
     this.effect = false
     this.瓦片网格 = false
-    this.isHide=false
+    this.isHide = false
     this.task = task
     this.onmessage = event=>{
       if(event.data.flag=='RadarLayer'){
-        // console.log((Date.now()-event.data.beginTime)/1000);
+        // console.log(((performance.now()-event.data.beginTime)/1000).toFixed(2)+'s');
         for(let k=0;k<this.mapsTiles.length;k++){
           if(this.mapsTiles[k]._LL==event.data._LL&&this.mapsTiles[k].i==event.data.i&&this.mapsTiles[k].j==event.data.j){
             if(event.data.isDrawed){
@@ -51,6 +53,12 @@ export default class RadarLayer extends BaseLayer{
       }
     }
     eventbus.on('onmessage',this.onmessage)
+    this.loadStatus = 'unload'
+    this.queue = []
+    this.MinLng=+180;
+    this.MaxLng=-180;
+    this.MinLat=+90;
+    this.MaxLat=-90;
   }
   off(){
     eventbus.off('onmessage',this.onmessage)
@@ -122,9 +130,66 @@ export default class RadarLayer extends BaseLayer{
     }
   }
   load2(item,tiles,obj){
-    setTimeout(()=>{
+    let args = {args:{beginTime:performance.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:this.tileWidth,flag:'RadarLayer'}
+    // setTimeout(()=>{
       if(this._X0<=item.i&&item.i<=this._X1&&this._Y0<=item.j&&item.j<=this._Y1&&item._LL==this._LL){
-        // this.task.addTask({args:{beginTime:Date.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:this.tileWidth,flag:'RadarLayer'})
+        if(this.loadStatus=='loaded'){
+          this.test(args);
+        }else if(this.loadStatus=='loading'){
+          this.queue.push(args);
+        }else if(this.loadStatus=='unload'){
+          this.loadStatus = 'loading'
+          var xhr = new XMLHttpRequest()
+          xhr.open('GET','http://data.tanglei.top/全国县界.json',true)
+          xhr.responseType = 'json'
+          xhr.send()
+          xhr.onreadystatechange = () => {
+            let res = 'response' in xhr ? xhr.response : xhr.responseText
+            if(xhr.readyState === 4 && xhr.status === 200) {
+              this.loadStatus = 'loaded'
+              this.country = res
+              for(let i=0;i<this.country.length;i++){
+                let points = this.country[i].points.split(' ');
+                let minLng=+180;
+                let maxLng=-180;
+                let minLat=+90;
+                let maxLat=-90;
+                for(let k=0;k<points.length;k++){
+                  let lng = points[k].substring(0,points[k].indexOf('E'));
+                  let lat = points[k].substring(points[k].indexOf('E')+1,points[k].indexOf('N'));
+                  points[k] = wgs84togcj02(Number(lng.substring(0,3))+Number(lng.substring(3,5))/60+Number(lng.substring(5,9))/100/3600,Number(lat.substring(0,2))+Number(lat.substring(2,4))/60+Number(lat.substring(4,8))/100/3600);
+                  // points[k] = [Number(lng.substring(0,3))+Number(lng.substring(3,5))/60+Number(lng.substring(5,9))/100/3600,Number(lat.substring(0,2))+Number(lat.substring(2,4))/60+Number(lat.substring(4,8))/100/3600];
+                  minLng=points[k][0]<minLng?points[k][0]:minLng;
+                  maxLng=points[k][0]>maxLng?points[k][0]:maxLng;
+                  minLat=points[k][1]<minLat?points[k][1]:minLat;
+                  maxLat=points[k][1]>maxLat?points[k][1]:maxLat;
+                }
+                this.MinLng=minLng<this.MinLng?minLng:this.MinLng;
+                this.MaxLng=maxLng>this.MaxLng?maxLng:this.MaxLng;
+                this.MinLat=minLat<this.MinLat?minLat:this.MinLat;
+                this.MaxLat=maxLat>this.MaxLat?maxLat:this.MaxLat;
+
+                this.country[i].minLng=minLng;
+                this.country[i].maxLng=maxLng;
+                this.country[i].minLat=minLat;
+                this.country[i].maxLat=maxLat;
+                this.country[i].points = points;
+              }
+              let encoder = new TextEncoder()
+              this.uint8Array=encoder.encode(JSON.stringify(this.country))
+              console.log((this.uint8Array.length/1024/1024).toFixed(2)+'MB')
+              this.test(args)
+              for(let i=0;i<this.queue.length;i++){
+                let args = this.queue.splice(i--,1)[0]
+                this.test(args)
+              }
+            }else if(xhr.readyState === 4 && (xhr.status === 404||xhr.status === 500)){
+              // self.postMessage({z:e.data.z,y:e.data.y,x:e.data.x,i:e.data.i,j:e.data.j,bitmap:0,isDrawed:false})
+            }
+          }
+          xhr.onerror = function(e){
+          }
+        }
       }else{//删除跳过的瓦片
         for(let k=0;k<tiles.length;k++){
           if(tiles[k]._LL==item._LL&&tiles[k].i==item.i&&tiles[k].j==item.j){
@@ -133,6 +198,14 @@ export default class RadarLayer extends BaseLayer{
           }
         }
       }
-    },0)
+    // },0)
+  }
+  test(args){
+    args.MinLng = this.MinLng
+    args.MaxLng = this.MaxLng
+    args.MinLat = this.MinLat
+    args.MaxLat = this.MaxLat
+    args.uint8Array = this.uint8Array
+    this.task.addTask(args)
   }
 }

@@ -186,8 +186,8 @@ export default class RouteLayer extends BaseLayer{
                 })
               }
               let encoder = new TextEncoder()
-              let json = JSON.stringify(this.航线)
-              this.uint8Array = encoder.encode(json)
+              this.uint8Array = encoder.encode(JSON.stringify(this.航线))
+              console.log((this.uint8Array.length/1024/1024).toFixed(2)+'MB')
               this.test(args)
               for(let i=0;i<this.queue.length;i++){
                 let args = this.queue.splice(i--,1)[0]
