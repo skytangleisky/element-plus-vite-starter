@@ -2,6 +2,7 @@ import Tiles from '../tiles.js'
 import BaseLayer from './baseLayer.js'
 // import Worker from '../workers/route.js?worker'
 import { eventbus } from '~/eventbus'
+import { wgs84togcj02 } from '../workers/mapUtil.js'
 export default class RouteLayer extends BaseLayer{
   constructor(task){
     super()
@@ -16,7 +17,7 @@ export default class RouteLayer extends BaseLayer{
     this.task = task
     this.onmessage = (event)=>{
       if(event.data.flag=='RouteLayer'){
-        // console.log((Date.now()-event.data.beginTime)/1000);
+        // console.log(((performance.now()-event.data.beginTime)/1000).toFixed(2)+'s');
         for(let k=0;k<this.mapsTiles.length;k++){
           if(this.mapsTiles[k]._LL==event.data._LL&&this.mapsTiles[k].i==event.data.i&&this.mapsTiles[k].j==event.data.j){
             if(event.data.isDrawed){
@@ -51,6 +52,13 @@ export default class RouteLayer extends BaseLayer{
       }
     }
     eventbus.on('onmessage',this.onmessage)
+    this.loadStatus = 'unload'
+    this.queue = []
+    this.MinLng=+180;
+    this.MaxLng=-180;
+    this.MinLat=+90;
+    this.MaxLat=-90;
+    this.maxLineWidth=0;
   }
   off(){
     eventbus.off('onmessage',this.onmessage)
@@ -121,7 +129,73 @@ export default class RouteLayer extends BaseLayer{
   load2(item,tiles,obj){
     // setTimeout(()=>{//有错误
       if(this._X0<=item.i&&item.i<=this._X1&&this._Y0<=item.j&&item.j<=this._Y1&&item._LL==this._LL){
-        this.task.addTask({args:{beginTime:Date.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:this.tileWidth,flag:'RouteLayer'});//处理这段数据通常需要很长时间。
+        let args = {args:{beginTime:performance.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:this.tileWidth,flag:'RouteLayer'}
+        if(this.loadStatus=='loaded'){
+          this.test(args)
+        }else if(this.loadStatus=='loading'){
+          this.queue.push(args)
+        }else if(this.loadStatus=='unload'){
+          this.loadStatus = 'loading'
+          console.log('loading')
+          var xhr = new XMLHttpRequest()
+          xhr.open('GET','http://data.tanglei.top/航路.json',true)
+          xhr.responseType = 'json'
+          xhr.send()
+          xhr.onreadystatechange = () => {
+            let res = 'response' in xhr ? xhr.response : xhr.responseText
+            if(xhr.readyState === 4 && xhr.status === 200) {
+              this.航线 = res
+              this.loadStatus = 'loaded'
+              for(let i=0;i<this.航线.length;i++){
+                this.航线[i].color = '#'+Math.random().toString(16).substring(2, 8).toUpperCase()+'88';
+                // this.航线[i].color = '#00ffff44';
+              }
+              for(let i=0;i<this.航线.length;i++){
+                let line = this.航线[i].points.split(" ");if(line.length<2)continue;
+                let widths = this.航线[i].widths.split(" ");if(widths.length<2)continue;
+                let heights = this.航线[i].safeheis.split(" ");if(heights.length<2)continue;
+                let minLng=+180;
+                let maxLng=-180;
+                let minLat=+90;
+                let maxLat=-90;
+                line = line.map(function (v) {
+                  let lng = v.substring(0,v.indexOf('E'));
+                  let lat = v.substring(v.indexOf('E')+1,v.indexOf('N'));
+                  let pt = {lng:Number(lng.substring(0,3))+Number(lng.substring(3,5))/60+Number(lng.substring(5,9))/100/3600,lat:Number(lat.substring(0,2))+Number(lat.substring(2,4))/60+Number(lat.substring(4,8))/100/3600}
+                  let tmp = wgs84togcj02(Number(lng.substring(0,3))+Number(lng.substring(3,5))/60+Number(lng.substring(5,9))/100/3600,Number(lat.substring(0,2))+Number(lat.substring(2,4))/60+Number(lat.substring(4,8))/100/3600);
+                  pt = {lng:tmp[0],lat:tmp[1]};
+                  minLng=pt.lng<minLng?pt.lng:minLng;
+                  maxLng=pt.lng>maxLng?pt.lng:maxLng;
+                  minLat=pt.lat<minLat?pt.lat:minLat;
+                  maxLat=pt.lat>maxLat?pt.lat:maxLat;
+                  return pt;
+                })
+                this.航线[i].points = line;
+                this.航线[i].widths = widths;
+                this.航线[i].heights = heights;
+                this.航线[i].minLng=minLng;
+                this.航线[i].maxLng=maxLng;
+                this.航线[i].minLat=minLat;
+                this.航线[i].maxLat=maxLat;
+                this.MinLng=minLng<this.MinLng?minLng:this.MinLng;
+                this.MaxLng=maxLng>this.MaxLng?maxLng:this.MaxLng;
+                this.MinLat=minLat<this.MinLat?minLat:this.MinLat;
+                this.MaxLat=maxLat>this.MaxLat?maxLat:this.MaxLat;
+                widths.map(v=>{
+                  this.maxLineWidth = Number(v)>this.maxLineWidth ? Number(v) : this.maxLineWidth;
+                })
+              }
+              let encoder = new TextEncoder()
+              let json = JSON.stringify(this.航线)
+              this.uint8Array = encoder.encode(json)
+              this.test(args)
+              for(let i=0;i<this.queue.length;i++){
+                let args = this.queue.splice(i--,1)[0]
+                this.test(args)
+              }
+            }
+          }
+        }
       }else{//删除跳过的瓦片
         for(let k=0;k<tiles.length;k++){
           if(tiles[k]._LL==item._LL&&tiles[k].i==item.i&&tiles[k].j==item.j){
@@ -131,5 +205,14 @@ export default class RouteLayer extends BaseLayer{
         }
       }
     // },0)
+  }
+  test(args){
+    args.MinLng = this.MinLng
+    args.MaxLng = this.MaxLng
+    args.MinLat = this.MinLat
+    args.MaxLat = this.MaxLat
+    args.maxLineWidth = this.maxLineWidth
+    args.uint8Array = this.uint8Array
+    this.task.addTask(args)
   }
 }

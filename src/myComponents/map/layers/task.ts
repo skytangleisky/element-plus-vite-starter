@@ -31,8 +31,8 @@ export default class Task{
     }
     eventbus.emit('systemInfo',{thead:`0/0`})
   }
-  addTask(arg:any){
-    this.queue.push(arg)
+  addTask(...args:any[]){
+    this.queue.push(args)
     eventbus.emit('systemInfo',{thead:`${this.workers.length-this.queue.length}/${this.workers.length}`})
     this.process()
   }
@@ -40,7 +40,8 @@ export default class Task{
     this.workers.forEach(item => {
       if(!item.busy&&this.queue.length>0){
         item.busy=true
-        item.worker.postMessage(this.queue.shift())
+        let args = this.queue.splice(0,1)[0]
+        item.worker.postMessage(args[0],args[1])
       }
     })
     eventbus.emit('systemInfo',{thead:`${this.workers.length-this.queue.length}/${this.workers.length}`})

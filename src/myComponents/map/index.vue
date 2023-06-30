@@ -93,7 +93,7 @@
   }={x:0,y:0,targetX:0,targetY:0}
   let task:Task
   onMounted(async()=>{
-    task = new Task(10)
+    task = new Task(20)
     console.log('new Task')
     mapLayer = new MapLayer()
     borderLayer = new BorderLayer(task)

@@ -2,13 +2,6 @@ import { wgs84togcj02 } from "../workers/mapUtil"
 
 export default class RouteLayer{
   constructor(){
-    this.loadStatus = 'unload'
-    this.queue = []
-    this.MinLng=+180;
-    this.MaxLng=-180;
-    this.MinLat=+90;
-    this.MaxLat=-90;
-    this.maxLineWidth=0;
     this.isDrawed = false;
     this.MAXLINEWIDTH;
   }
@@ -25,70 +18,7 @@ export default class RouteLayer{
     args.ctx = ctx;
     args._i=args.i%2**args._LL>=0?args.i%2**args._LL:args.i%2**args._LL+2**args._LL;
     args._j=args.j%2**args._LL>=0?args.j%2**args._LL:args.j%2**args._LL+2**args._LL;
-    console.log(args._i,args._j)
-    if(this.loadStatus=='loaded'){
-      this.test(args)
-    }else if(this.loadStatus=='loading'){
-      this.queue.push(args)
-    }else if(this.loadStatus=='unload'){
-      this.loadStatus = 'loading'
-      console.log('loading')
-      var xhr = new XMLHttpRequest()
-      xhr.open('GET','http://data.tanglei.top/航路.json',true)
-      xhr.responseType = 'json'
-      xhr.send()
-      xhr.onreadystatechange = () => {
-        let res = 'response' in xhr ? xhr.response : xhr.responseText
-        if(xhr.readyState === 4 && xhr.status === 200) {
-          this.航线 = res
-          this.loadStatus = 'loaded'
-          for(let i=0;i<this.航线.length;i++){
-            // this.航线[i].color = '#'+Math.random().toString(16).substr(2, 6).toUpperCase()+'88';
-            this.航线[i].color = '#00ffff88';
-          }
-          for(let i=0;i<this.航线.length;i++){
-            let line = this.航线[i].points.split(" ");if(line.length<2)continue;
-            let widths = this.航线[i].widths.split(" ");if(widths.length<2)continue;
-            let heights = this.航线[i].safeheis.split(" ");if(heights.length<2)continue;
-            let minLng=+180;
-            let maxLng=-180;
-            let minLat=+90;
-            let maxLat=-90;
-            line = line.map(function (v) {
-              let lng = v.substring(0,v.indexOf('E'));
-              let lat = v.substring(v.indexOf('E')+1,v.indexOf('N'));
-              let pt = {lng:Number(lng.substring(0,3))+Number(lng.substring(3,5))/60+Number(lng.substring(5,9))/100/3600,lat:Number(lat.substring(0,2))+Number(lat.substring(2,4))/60+Number(lat.substring(4,8))/100/3600}
-              let tmp = wgs84togcj02(Number(lng.substring(0,3))+Number(lng.substring(3,5))/60+Number(lng.substring(5,9))/100/3600,Number(lat.substring(0,2))+Number(lat.substring(2,4))/60+Number(lat.substring(4,8))/100/3600);
-              pt = {lng:tmp[0],lat:tmp[1]};
-              minLng=pt.lng<minLng?pt.lng:minLng;
-              maxLng=pt.lng>maxLng?pt.lng:maxLng;
-              minLat=pt.lat<minLat?pt.lat:minLat;
-              maxLat=pt.lat>maxLat?pt.lat:maxLat;
-              return pt;
-            })
-            this.航线[i].points = line;
-            this.航线[i].widths = widths;
-            this.航线[i].heights = heights;
-            this.航线[i].minLng=minLng;
-            this.航线[i].maxLng=maxLng;
-            this.航线[i].minLat=minLat;
-            this.航线[i].maxLat=maxLat;
-            this.MinLng=minLng<this.MinLng?minLng:this.MinLng;
-            this.MaxLng=maxLng>this.MaxLng?maxLng:this.MaxLng;
-            this.MinLat=minLat<this.MinLat?minLat:this.MinLat;
-            this.MaxLat=maxLat>this.MaxLat?maxLat:this.MaxLat;
-            widths.map(v=>{
-              this.maxLineWidth = Number(v)>this.maxLineWidth ? Number(v) : this.maxLineWidth;
-            })
-          }
-          this.test(args)
-          for(let i=0;i<this.queue.length;i++){
-            let args = this.queue.splice(i--,1)[0]
-            this.test(args)
-          }
-        }
-      }
-    }
+    this.test(args)
     // self.close();
   }
   onmessage(evt){
@@ -97,6 +27,14 @@ export default class RouteLayer{
     this.imgScale = evt.data.imgScale;
     this.TileWidth = evt.data.TileWidth;
     this.flag = evt.data.flag;
+    this.maxLineWidth = evt.data.maxLineWidth
+    this.MinLng = evt.data.MinLng
+    this.MaxLng = evt.data.MaxLng
+    this.MinLat = evt.data.MinLat
+    this.MaxLat = evt.data.MaxLat
+    let decoder = new TextDecoder()
+    let json = decoder.decode(evt.data.uint8Array)
+    this.航线 = JSON.parse(json)
     this.draw(evt.data.args);
   }
   test(args){
@@ -257,8 +195,6 @@ export default class RouteLayer{
     //     args.ctx.lineTo(pt.x,pt.y);
     //   }
     // }
-  
-  
     //提升性能
     for(let i=0;i<points.length;i++){
       let pt = {
@@ -299,39 +235,39 @@ export default class RouteLayer{
     pt1.y = (pt1.y - this.imgY)/this.imgScale*Math.pow(2,args._LL) - args._j*this.TileWidth;
     pt2.x = (pt2.x - this.imgX)/this.imgScale*Math.pow(2,args._LL) - args._i*this.TileWidth;
     pt2.y = (pt2.y - this.imgY)/this.imgScale*Math.pow(2,args._LL) - args._j*this.TileWidth;
-  
+
     if((pt1.x<0&&pt2.x<0)||(pt1.x>this.TileWidth&&pt2.x>this.TileWidth)||(pt1.y<0&&pt2.y<0)&&(pt1.y>this.TileWidth&&pt2.y>this.TileWidth)){
       return
     }
-  
-  
+
+
     args.ctx.font = '18px monospace';
     args.ctx.strokeStyle=color;
     args.ctx.fillStyle='#ffffff88';
     args.ctx.lineWidth=1;
     let distance = Math.sqrt((pt2.x-pt1.x)*(pt2.x-pt1.x)+(pt2.y-pt1.y)*(pt2.y-pt1.y));
     let width = args.ctx.measureText(text).width;
-  
+
     if(distance>=width*3&&text&&text!=""){
-  
+
       args.ctx.beginPath();
       args.ctx.moveTo(pt1.x,pt1.y);
       args.ctx.lineTo(pt1.x + (pt2.x-pt1.x)/distance*(distance-width)/2,pt1.y + (pt2.y-pt1.y)/distance*(distance-width)/2);
       args.ctx.stroke();
-  
+
       args.ctx.beginPath();
       args.ctx.moveTo(pt2.x,pt2.y);
       args.ctx.lineTo(pt2.x - (pt2.x-pt1.x)/distance*(distance-width)/2,pt2.y - (pt2.y-pt1.y)/distance*(distance-width)/2);
       args.ctx.stroke();
-  
+
       args.ctx.save();
       args.ctx.translate((pt1.x+pt2.x)/2,(pt1.y+pt2.y)/2);
-  
-  
-  
+
+
+
       let radian = Math.atan2(pt2.y-pt1.y,pt2.x-pt1.x);
       args.ctx.rotate(radian);
-  
+
       args.ctx.textBaseline='middle';
       args.ctx.textAlign='center';
       args.ctx.shadowOffsetX=0;
@@ -343,11 +279,11 @@ export default class RouteLayer{
       args.ctx.fillRect(-width/2,-(width/text.length+4)/2,width,width/text.length+4)
       args.ctx.fillStyle='#00000088'
       args.ctx.fillText(text,0,0);
-  
+
       args.ctx.shadowBlur = 0;
       args.ctx.shadowOffsetX=0;
       args.ctx.shadowOffsetY=0;
-  
+
       // args.ctx.rotate(-radian);
       // args.ctx.translate(-(pt1.x+pt2.x)/2,-(pt1.y+pt2.y)/2);
       args.ctx.restore();
