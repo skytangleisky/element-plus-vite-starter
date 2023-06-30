@@ -24,10 +24,10 @@
 </template>
 <script setup>
 import { ref } from 'vue'
-import { version as piniaVersion } from 'pinia/package.json'
-import { version as vueVersion } from 'vue/package.json'
-import { version as elementplusVersion } from 'element-plus/package.json'
-import { version as vueRouterVersion } from 'vue-router/package.json'
+// import { version as piniaVersion } from 'pinia/package.json'
+// import { version as vueVersion } from 'vue/package.json'
+// import { version as elementplusVersion } from 'element-plus/package.json'
+// import { version as vueRouterVersion } from 'vue-router/package.json'
 // import RemoteComponent from './myComponents/remoteComponent.vue'
 import TestButton from './elementplus/basic/button.vue'
 import TestBorder from './elementplus/basic/border.vue'

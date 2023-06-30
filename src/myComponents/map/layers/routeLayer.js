@@ -10,7 +10,7 @@ export default class RouteLayer extends BaseLayer{
     this.myTiles = new Tiles()
     this.跳过 = 0
     this.effect = false
-    this.瓦片网格 = true
+    this.瓦片网格 = false
     this.isHide = false
     this.tileWidth = 256
     this.task = task
@@ -119,7 +119,7 @@ export default class RouteLayer extends BaseLayer{
     }
   }
   load2(item,tiles,obj){
-    // setTimeout(()=>{
+    // setTimeout(()=>{//有错误
       if(this._X0<=item.i&&item.i<=this._X1&&this._Y0<=item.j&&item.j<=this._Y1&&item._LL==this._LL){
         this.task.addTask({args:{beginTime:Date.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:this.tileWidth,flag:'RouteLayer'});//处理这段数据通常需要很长时间。
       }else{//删除跳过的瓦片
