@@ -7,6 +7,7 @@ export default class RadarLayer extends BaseLayer{
     this.tileWidth = 256
     this.mapsTiles = []
     this.平滑 = true
+    this.cache=true
     this.myTiles = new Tiles()
     this.跳过 = 0
     this.effect = false
@@ -29,13 +30,23 @@ export default class RadarLayer extends BaseLayer{
               this.mapsTiles[k].cvs = 0;
               this.mapsTiles[k].isDrawed = event.data.isDrawed;
             }
-            this.myTiles.addTile(this.mapsTiles[k]._LL,event.data.y,event.data.x,{cvs:this.mapsTiles[k].cvs,isDrawed:event.data.isDrawed});
+            this.cache&&this.myTiles.addTile(this.mapsTiles[k]._LL,event.data.y,event.data.x,{cvs:this.mapsTiles[k].cvs,isDrawed:event.data.isDrawed});
             // rAF(draw);
             this.callback()
           }
         }
-        while(this.mapsTiles.length>(this._X1-this._X0+1)*(this._Y1-this._Y0+1)){
-          this.mapsTiles.shift();
+        for(let i=0;i<this.mapsTiles.length;i++){
+          let minX = Math.floor((2**this.mapsTiles[i]._LL)*this._M0)
+          let maxX = Math.floor((2**this.mapsTiles[i]._LL)*this._M1)
+          let minY = Math.floor((2**this.mapsTiles[i]._LL)*this._N0)
+          let maxY = Math.floor((2**this.mapsTiles[i]._LL)*this._N1)
+          if(this.mapsTiles[i].i<minX||maxX<this.mapsTiles[i].i||this.mapsTiles[i].j<minY||maxY<this.mapsTiles[i].j){
+            this.mapsTiles.splice(i--,1)
+          }
+        }
+        if(this.myTiles.Count>10000){
+          this.myTiles.clear()
+          this.NUM=0
         }
       }
     }

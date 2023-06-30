@@ -9,6 +9,7 @@ export default class BorderLayer extends BaseLayer{
     this.mapsTiles = []
     this.平滑 = true
     this.myTiles = new Tiles()
+    this.cache = true
     this.跳过 = 0
     this.effect = false
     this.瓦片网格 = false
@@ -30,13 +31,23 @@ export default class BorderLayer extends BaseLayer{
               this.mapsTiles[k].cvs = 0;
               this.mapsTiles[k].isDrawed = event.data.isDrawed;
             }
-            this.myTiles.addTile(this.mapsTiles[k]._LL,event.data.y,event.data.x,{cvs:this.mapsTiles[k].cvs,isDrawed:event.data.isDrawed});
+            this.cache&&this.myTiles.addTile(this.mapsTiles[k]._LL,event.data.y,event.data.x,{cvs:this.mapsTiles[k].cvs,isDrawed:event.data.isDrawed});
             // rAF(draw);
             this.callback()
           }
         }
-        while(this.mapsTiles.length>(this._X1-this._X0+1)*(this._Y1-this._Y0+1)){
-          this.mapsTiles.shift();
+        for(let i=0;i<this.mapsTiles.length;i++){
+          let minX = Math.floor((2**this.mapsTiles[i]._LL)*this._M0)
+          let maxX = Math.floor((2**this.mapsTiles[i]._LL)*this._M1)
+          let minY = Math.floor((2**this.mapsTiles[i]._LL)*this._N0)
+          let maxY = Math.floor((2**this.mapsTiles[i]._LL)*this._N1)
+          if(this.mapsTiles[i].i<minX||maxX<this.mapsTiles[i].i||this.mapsTiles[i].j<minY||maxY<this.mapsTiles[i].j){
+            this.mapsTiles.splice(i--,1)
+          }
+        }
+        if(this.myTiles.Count>10000){
+          this.myTiles.clear()
+          this.NUM=0
         }
       }
     }
@@ -112,7 +123,7 @@ export default class BorderLayer extends BaseLayer{
     }
   }
   load2(item,tiles,obj){
-    setTimeout(()=>{
+    // setTimeout(()=>{
       if(this._X0<=item.i&&item.i<=this._X1&&this._Y0<=item.j&&item.j<=this._Y1&&item._LL==this._LL){
         this.task.addTask({args:{beginTime:Date.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:this.tileWidth,flag:'BorderLayer'})
       }else{//删除跳过的瓦片
@@ -123,6 +134,6 @@ export default class BorderLayer extends BaseLayer{
           }
         }
       }
-    },0)
+    // },0)
   }
 }

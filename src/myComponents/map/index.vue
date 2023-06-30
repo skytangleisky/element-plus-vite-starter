@@ -99,7 +99,7 @@
     borderLayer = new BorderLayer(task)
     radarLayer = new RadarLayer(task)
     pointLayer = new PointLayer()
-    routeLayer = new RouteLayer()
+    routeLayer = new RouteLayer(task)
     planeLayer = new PlaneLayer()
     stationLayer = new StationLayer()
     let has = false
@@ -201,6 +201,7 @@
     task.destroy()
     borderLayer.off()
     radarLayer.off()
+    routeLayer.off()
     console.log('destroyed')
 
   })
