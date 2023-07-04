@@ -147,7 +147,7 @@ export default class RouteLayer extends BaseLayer{
               this.航线 = res
               this.loadStatus = 'loaded'
               for(let i=0;i<this.航线.length;i++){
-                this.航线[i].color = '#'+Math.random().toString(16).substring(2, 8).toUpperCase()+'88';
+                this.航线[i].color = '#'+Math.random().toString(16).substring(2, 8).toUpperCase()+'FF';
                 // this.航线[i].color = '#00ffff44';
               }
               for(let i=0;i<this.航线.length;i++){

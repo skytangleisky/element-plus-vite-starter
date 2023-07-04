@@ -4,7 +4,7 @@ export default class RouteLayer{
     this.MAXLINEWIDTH;
   }
   draw(args){
-    this.MAXLINEWIDTH=this.maxLineWidth*this.TileWidth*Math.pow(2,args._LL)/40075016.6855784861531768177614;
+    this.MAXLINEWIDTH=this.maxLineWidth/2/(2*Math.PI*6378137)*2**args._LL*256;
     args.cvs = new OffscreenCanvas(this.TileWidth,this.TileWidth);
     var ctx = args.cvs.getContext("2d",{antialias:false});
     // ctx.rect(0,0,20,10);
@@ -180,7 +180,7 @@ export default class RouteLayer{
     //     y:(this.lat2Pixel(points[i].lat) - this.imgY)/this.imgScale*Math.pow(2,args._LL) - args._j*this.TileWidth
     //   }
     //   if(i==0){
-    //     args.ctx.lineWidth=width*this.TileWidth*Math.pow(2,args._LL)/40075016.6855784861531768177614;
+    //     args.ctx.lineWidth=width/2/(2*Math.PI*6378137)*2**args._LL*256;
     //     args.ctx.lineJoin='round';//bevel|round|miter
     //     args.ctx.lineCap='round';//butt|round|square
     //     args.ctx.strokeStyle=color;
@@ -200,7 +200,7 @@ export default class RouteLayer{
         y:(this.lat2Pixel(points[i].lat) - this.imgY)/this.imgScale*Math.pow(2,args._LL) - args._j*this.TileWidth
       }
       if(i==0){
-        args.ctx.lineWidth=width*this.TileWidth*Math.pow(2,args._LL)/40075016.6855784861531768177614;
+        args.ctx.lineWidth=width/2/(2*Math.PI*6378137)*2**args._LL*256;
         args.ctx.lineJoin='round';//bevel|round|miter
         args.ctx.lineCap='round';//butt|round|square
         args.ctx.strokeStyle=color;
