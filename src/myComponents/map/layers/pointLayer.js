@@ -110,7 +110,7 @@ export default class PointLayer extends BaseLayer{
   load2(item,tiles,obj){
     setTimeout(()=>{
       if(this._X0<=item.i&&item.i<=this._X1&&this._Y0<=item.j&&item.j<=this._Y1&&item._LL==this._LL){
-        // this.worker.postMessage({args:{beginTime:Date.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:this.tileWidth});//处理这段数据通常需要很长时间。
+        this.worker.postMessage({args:{beginTime:Date.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:this.tileWidth});//处理这段数据通常需要很长时间。
       }else{//删除跳过的瓦片
         for(let k=0;k<tiles.length;k++){
           if(tiles[k]._LL==item._LL&&tiles[k].i==item.i&&tiles[k].j==item.j){

@@ -276,11 +276,11 @@ export default class StationLayer{
 
 
       let point0 = lngLat2Pixel(item.lng,item.lat,obj.imgX,obj.imgY,2**obj.L,256)
-      let D = 5000/(2*Math.PI*6378137)*2**obj.L*256
-      let point1 = {x:point0.x-D,y:point0.y-D}
-      let point2 = {x:point0.x+D,y:point0.y-D}
-      let point3 = {x:point0.x+D,y:point0.y+D}
-      let point4 = {x:point0.x-D,y:point0.y+D}
+      let R = 5000/(2*Math.PI*6378137)*2**obj.L*256
+      let point1 = {x:point0.x-R,y:point0.y-R}
+      let point2 = {x:point0.x+R,y:point0.y-R}
+      let point3 = {x:point0.x+R,y:point0.y+R}
+      let point4 = {x:point0.x-R,y:point0.y+R}
       // let xy1 = pixel2XY(point1.x,point1.y,obj.imgX,obj.imgY,2**obj.L,256)
       // let xy2 = pixel2XY(point2.x,point2.y,obj.imgX,obj.imgY,2**obj.L,256)
       // let xy3 = pixel2XY(point3.x,point3.y,obj.imgX,obj.imgY,2**obj.L,256)
@@ -312,7 +312,7 @@ export default class StationLayer{
       // )
       ctx.beginPath()
       ctx.moveTo(point0.x,point0.y)
-      ctx.arc(point0.x,point0.y,D,3/2*Math.PI,2*Math.PI)
+      ctx.arc(point0.x,point0.y,R,3/2*Math.PI,2*Math.PI)
       ctx.closePath()
       ctx.fillStyle='#0000ff88'
       ctx.stroke()

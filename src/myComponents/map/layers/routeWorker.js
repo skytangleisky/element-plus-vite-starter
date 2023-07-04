@@ -169,7 +169,7 @@ export default class RouteLayer{
     if(this.isDrawed){
       postMessage({i:args.i,j:args.j,_LL:args._LL,bitmap:args.cvs.transferToImageBitmap(),isDrawed:this.isDrawed,beginTime:args.beginTime,x:args._i,y:args._j,flag:this.flag});
     }else{
-      postMessage({i:args.i,j:args.j,_LL:args._LL,bitmap:0,isDrawed:this.isDrawed,beginTime:args.beginTime,x:args._i,y:args._j,flag:this.flag});
+      postMessage({i:args.i,j:args.j,_LL:args._LL,bitmap:0,isDrawed:true,beginTime:args.beginTime,x:args._i,y:args._j,flag:this.flag});
     }
   }
   drawRoute(points,width,color,args){

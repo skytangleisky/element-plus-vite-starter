@@ -649,7 +649,7 @@
   }
   const testClick = ()=>{
     let convert = wgs84togcj02(POINT.lng,POINT.lat)
-    flyTo(convert[0],convert[1],{targetL:10,duration:5})
+    // flyTo(convert[0],convert[1],{targetL:10,duration:5})
   }
 </script>
 <style lang="scss">

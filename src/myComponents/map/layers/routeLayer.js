@@ -20,7 +20,7 @@ export default class RouteLayer extends BaseLayer{
         // console.log(((performance.now()-event.data.beginTime)/1000).toFixed(2)+'s');
         for(let k=0;k<this.mapsTiles.length;k++){
           if(this.mapsTiles[k]._LL==event.data._LL&&this.mapsTiles[k].i==event.data.i&&this.mapsTiles[k].j==event.data.j){
-            if(event.data.isDrawed){
+            if(event.data.isDrawed&&event.data.bitmap){
               var cvs2 = document.createElement('canvas');
               cvs2.setAttribute("width",256);
               cvs2.setAttribute("height",256);

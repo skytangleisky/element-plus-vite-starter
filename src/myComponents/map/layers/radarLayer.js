@@ -21,7 +21,7 @@ export default class RadarLayer extends BaseLayer{
         // console.log(((performance.now()-event.data.beginTime)/1000).toFixed(2)+'s');
         for(let k=0;k<this.mapsTiles.length;k++){
           if(this.mapsTiles[k]._LL==event.data._LL&&this.mapsTiles[k].i==event.data.i&&this.mapsTiles[k].j==event.data.j){
-            if(event.data.isDrawed){
+            if(event.data.isDrawed&&event.data.bitmap){
               var cvs2 = document.createElement('canvas');
               cvs2.setAttribute("width",256);
               cvs2.setAttribute("height",256);
@@ -129,6 +129,69 @@ export default class RadarLayer extends BaseLayer{
       }
     }
   }
+  processData(res){
+    let dataArr=[];
+    for(let k in res.data){
+      if(k!=="radar_id"&&k!=="radar_name"){
+        let radial = res.data[k]
+        let array = [undefined]
+        let HorAngel=radial["HorAngel"];
+        let Time=radial["Time"];
+        let VerAngel=radial["VerAngel"];
+        if(this.type=='ppi'){
+          this.distance = 30*Math.cos(VerAngel/180*Math.PI)
+        }
+        for(let r in radial){
+          if(typeof radial[r] === 'object'){
+            let  item = {HorAngel,Time,VerAngel,Hei:radial[r].Hei,Speed:radial[r].Speed,PK:radial[r].PK,SNR:radial[r].SNR,PKQD:radial[r].PKQD};
+            if(this.PPIval===3){
+              if(radial[r].Speed===999){
+                item = undefined
+              }else{
+                item.color=verticalFlowColor(radial[r].Speed)
+                item.distance=r
+              }
+            }else if(this.PPIval===4){
+              item.color=getPKColor(radial[r].PK)
+              item.distance=r
+            }else if(this.PPIval===5){
+              item.color=getSNRColor(radial[r].SNR)
+              item.distance=r
+            }else if(this.PPIval===6){
+              item.color=getPKQDColor(radial[r].PKQD)
+              item.distance=r
+            }
+            array.push(item)
+          }
+        }
+        dataArr.push({Angle:HorAngel-90,array})
+        // if(dataArr.length==10)break;
+      }
+    }
+    if(dataArr.length>=2){
+      for(let i=1;i<dataArr.length-1;i++){
+        let Angle1 = dataArr[i-1].Angle
+        let Angle2 = dataArr[i].Angle
+        let Angle3 = dataArr[i+1].Angle
+        let α=(Angle1+Angle2)/2,β=(Angle2+Angle3)/2;
+        dataArr.splice(i,1,{α,Angle:dataArr[i].Angle,β,array:dataArr[i].array})
+      }
+      let Angle1 = dataArr[0].Angle
+      let Angle2 = dataArr[1].Angle
+      let α=Angle1-(Angle2-Angle1)/2,β=Angle1+(Angle2-Angle1)/2;
+      dataArr.splice(0,1,{α,Angle:dataArr[0].Angle,β,array:dataArr[0].array})
+
+      Angle1 = dataArr.slice(-2)[0].Angle
+      Angle2 = dataArr.slice(-1)[0].Angle
+      α=Angle2-(Angle2-Angle1)/2;β=Angle2+(Angle2-Angle1)/2;
+      dataArr.splice(dataArr.length-1,1,{α,Angle:dataArr.slice(-1)[0].Angle,β,array:dataArr.slice(-1)[0].array})
+    }else if(dataArr.length==1){
+      let Angle = dataArr[0].Angle
+      let α=Angle-0.5,β=Angle+0.5;
+      dataArr.splice(0,1,{α,Angle:dataArr[0].Angle,β,array:dataArr[0].array})
+    }
+    return dataArr;
+  }
   load2(item,tiles,obj){
     let args = {args:{beginTime:performance.now(),i:item.i,j:item.j,_LL:item._LL,_X0:item._X0,_Y0:item._Y0,_X1:item._X1,_Y1:item._Y1},imgX:obj.imgX,imgY:obj.imgY,imgScale:2**obj.L,TileWidth:this.tileWidth,flag:'RadarLayer'}
     // setTimeout(()=>{
@@ -140,44 +203,18 @@ export default class RadarLayer extends BaseLayer{
         }else if(this.loadStatus=='unload'){
           this.loadStatus = 'loading'
           var xhr = new XMLHttpRequest()
-          xhr.open('GET','http://data.tanglei.top/全国县界.json',true)
+          xhr.open('GET','http://data.tanglei.top/雷达PPI数据.json',true)
           xhr.responseType = 'json'
           xhr.send()
           xhr.onreadystatechange = () => {
             let res = 'response' in xhr ? xhr.response : xhr.responseText
             if(xhr.readyState === 4 && xhr.status === 200) {
               this.loadStatus = 'loaded'
-              this.country = res
-              for(let i=0;i<this.country.length;i++){
-                let points = this.country[i].points.split(' ');
-                let minLng=+180;
-                let maxLng=-180;
-                let minLat=+90;
-                let maxLat=-90;
-                for(let k=0;k<points.length;k++){
-                  let lng = points[k].substring(0,points[k].indexOf('E'));
-                  let lat = points[k].substring(points[k].indexOf('E')+1,points[k].indexOf('N'));
-                  points[k] = wgs84togcj02(Number(lng.substring(0,3))+Number(lng.substring(3,5))/60+Number(lng.substring(5,9))/100/3600,Number(lat.substring(0,2))+Number(lat.substring(2,4))/60+Number(lat.substring(4,8))/100/3600);
-                  // points[k] = [Number(lng.substring(0,3))+Number(lng.substring(3,5))/60+Number(lng.substring(5,9))/100/3600,Number(lat.substring(0,2))+Number(lat.substring(2,4))/60+Number(lat.substring(4,8))/100/3600];
-                  minLng=points[k][0]<minLng?points[k][0]:minLng;
-                  maxLng=points[k][0]>maxLng?points[k][0]:maxLng;
-                  minLat=points[k][1]<minLat?points[k][1]:minLat;
-                  maxLat=points[k][1]>maxLat?points[k][1]:maxLat;
-                }
-                this.MinLng=minLng<this.MinLng?minLng:this.MinLng;
-                this.MaxLng=maxLng>this.MaxLng?maxLng:this.MaxLng;
-                this.MinLat=minLat<this.MinLat?minLat:this.MinLat;
-                this.MaxLat=maxLat>this.MaxLat?maxLat:this.MaxLat;
-
-                this.country[i].minLng=minLng;
-                this.country[i].maxLng=maxLng;
-                this.country[i].minLat=minLat;
-                this.country[i].maxLat=maxLat;
-                this.country[i].points = points;
-              }
+              this.country = this.processData(res)
               let encoder = new TextEncoder()
               this.uint8Array=encoder.encode(JSON.stringify(this.country))
               console.log((this.uint8Array.length/1024/1024).toFixed(2)+'MB')
+              console.log(this.country)
               this.test(args)
               for(let i=0;i<this.queue.length;i++){
                 let args = this.queue.splice(i--,1)[0]

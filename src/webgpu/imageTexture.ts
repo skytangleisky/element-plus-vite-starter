@@ -275,7 +275,7 @@ export function cancel(){
     window.cancelAnimationFrame(aid)
 }
 // total objects
-const NUM = 10
+const NUM = 1000
 export default async function run(canvas:HTMLCanvasElement){
     if (!canvas)
         throw new Error('No Canvas')
@@ -353,7 +353,7 @@ export default async function run(canvas:HTMLCanvasElement){
             const now = performance.now() / 1000
             // obj.rotation.x = Math.sin(now + i)
             // obj.rotation.y = Math.cos(now + i)
-            obj.rotation.z = now*5
+            obj.rotation.z = Math.cos(now + i)
             const mvpMatrix = getMvpMatrix(size, obj.position, obj.rotation, obj.scale)
             // update buffer based on offset
             // device.queue.writeBuffer(
