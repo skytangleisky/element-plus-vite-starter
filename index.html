@@ -14,6 +14,34 @@
   </head>
   <body oncontextmenu="return false">
     <div id="app"></div>
+    <div id="user_num" style="position:absolute;top:50px;left:0;z-index: 999;font-size: 20px;color:green;"></div>
     <script type="module" src="/src/main.ts"></script>
+    <script>
+      connect()
+      function connect(){
+        let ws = new WebSocket('ws://websocket.tanglei.top')
+        // ws = new WebSocket('ws://' + window.location.host + '/websocket/')
+        ws.onopen = function () {
+          ws.send(JSON.stringify({'type': 'login', 'content': Math.ceil(Math.random()*10000)}));
+        }
+        ws.onmessage = function (e) {
+            var msg = JSON.parse(e.data);
+            document.getElementById("user_num").innerHTML = msg.content;
+            // switch (msg.type) {
+            //     case 'handshake':
+            //     case 'login':
+            //     case 'logout':
+            //       console.log(msg);
+            //     return;
+            // }
+        }
+        ws.onerror = function () {
+        }
+        ws.onclose = function(){
+          document.getElementById("user_num").innerHTML = '-'
+          connect()
+        }
+      }
+    </script>
   </body>
 </html>
