@@ -226,6 +226,11 @@
     }else{
       routeLayer.hide()
     }
+    if(setting.radar){
+      radarLayer.show()
+    }else{
+      radarLayer.hide()
+    }
   }
   const test = (e:MessageEvent) => {
     if(e.data.type=='自定义'){
@@ -263,6 +268,15 @@
         }else{
           routeLayer.hide()
           setting.airline=false
+        }
+        loadMap()
+      }else if(e.data.obj.name=='雷达'){
+        if(e.data.obj.leftImgSrc){
+          radarLayer.show()
+          setting.radar=true
+        }else{
+          radarLayer.hide()
+          setting.radar=false
         }
         loadMap()
       }
