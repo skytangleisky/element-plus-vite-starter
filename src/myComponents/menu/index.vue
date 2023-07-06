@@ -1,5 +1,5 @@
 <template>
-  <ol class="menu relative flex items-start content-center flex-row m-0 h-full p-0" style="overflow: hidden;"><!--导航栏-->
+  <ol class="menu relative flex items-start content-center flex-row h-full m-0 pl-1em" style="overflow: hidden;"><!--导航栏-->
     <my-map></my-map>
     <slot></slot>
     <box class="info-box" right bottom>

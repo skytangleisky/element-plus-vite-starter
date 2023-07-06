@@ -9,6 +9,10 @@ export const constantRoutes = [
   {
     path: '/qqlogin',
     component: () => import('../qqlogin.vue') //最好是异步加载
+  },
+  {
+    path: '/login',
+    component: () => import('../login.vue') //最好是异步加载
   }
 ]
 const router = createRouter({

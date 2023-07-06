@@ -61,25 +61,17 @@ import Menus from './myComponents/menu/index.vue'
 @media (prefers-color-scheme: no-preference) {
   /** ... */
 }
-html,body{
-  width:100%;
-  height:100%;
-}
-html{
-  font-size: 14px;
-}
-body{
-  overscroll-behavior: none;
-  // background: url(assets/background.jpg);
-  background: linear-gradient(136.36deg,#3390c4 4.86%,#1d1252 94.85%);
-}
 #app {
   text-align: center;
   color: var(--ep-text-color-primary);
   box-sizing: border-box;
-  position: relative;
+  position: absolute;
+  left: 50%;
+  top:50%;
+  transform: translate(-50%,-50%);
   width:100%;
   height:100%;
+  overflow: auto;
 }
 .nav-wrapper{
   position: absolute;
@@ -96,14 +88,4 @@ body{
 .element-plus-logo {
   width: 50%;
 }
-</style>
-<style lang="scss">
-.dark body{
-    // background: url(assets/g.jpg);
-    background: linear-gradient(136.36deg,#333964 4.86%,#171a39 94.85%);
-    // background: url(assets/newBg.jpg);
-    // background: #131417;
-    // background: rgb(13, 34, 75);
-    background-size: 100% 100%;
-  }
 </style>
