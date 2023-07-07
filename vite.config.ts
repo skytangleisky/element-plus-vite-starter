@@ -77,7 +77,8 @@ export default defineConfig({
       '/api':{
         target:'http://websocket.tanglei.top',//替换的服务端地址
         changeOrigin:true,//开启代理，允许跨域
-        rewrite:path=>path.replace(/^\/api/,'') // 设置重写的路径
+        rewrite:path=>path.replace(/^\/api/,''), // 设置重写的路径
+        ws:true,
       },
       '/tanglei':{
         target:'http://tanglei.top:5101',//替换的服务端地址

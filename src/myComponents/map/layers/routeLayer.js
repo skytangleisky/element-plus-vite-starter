@@ -138,7 +138,7 @@ export default class RouteLayer extends BaseLayer{
           this.loadStatus = 'loading'
           console.log('loading')
           var xhr = new XMLHttpRequest()
-          xhr.open('GET','http://data.tanglei.top/航路.json',true)
+          xhr.open('GET','https://data.tanglei.top/航路.json',true)
           xhr.responseType = 'json'
           xhr.send()
           xhr.onreadystatechange = () => {

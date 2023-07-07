@@ -203,7 +203,7 @@ export default class RadarLayer extends BaseLayer{
         }else if(this.loadStatus=='unload'){
           this.loadStatus = 'loading'
           var xhr = new XMLHttpRequest()
-          xhr.open('GET','http://data.tanglei.top/雷达PPI数据.json',true)
+          xhr.open('GET','https://data.tanglei.top/雷达PPI数据.json',true)
           xhr.responseType = 'json'
           xhr.send()
           xhr.onreadystatechange = () => {

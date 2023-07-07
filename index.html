@@ -45,8 +45,8 @@
     <script>
       connect()
       function connect(){
-        let ws = new WebSocket('ws://websocket.tanglei.top')
-        // ws = new WebSocket('ws://' + window.location.host + '/websocket/')
+        // let ws = new WebSocket('ws://websocket.tanglei.top')
+        ws = new WebSocket(`${window.location.protocol=='https:'?'wss:':'ws:'}//` + window.location.host + '/api/')
         ws.onopen = function () {
           ws.send(JSON.stringify({'type': 'login', 'content': Math.ceil(Math.random()*10000)}));
         }
