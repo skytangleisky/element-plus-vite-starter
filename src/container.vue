@@ -29,9 +29,9 @@ import { ref } from 'vue'
 // import { version as elementplusVersion } from 'element-plus/package.json'
 // import { version as vueRouterVersion } from 'vue-router/package.json'
 // import RemoteComponent from './myComponents/remoteComponent.vue'
-import TestButton from './elementplus/basic/button.vue'
-import TestBorder from './elementplus/basic/border.vue'
-import Search from './myComponents/search.vue'
+// import TestButton from './elementplus/basic/button.vue'
+// import TestBorder from './elementplus/basic/border.vue'
+// import Search from './myComponents/search.vue'
 import Menus from './myComponents/menu/index.vue'
 
 // const list = ref([{name:'测试',left:true,children:[{name:'456',leftImgSrc:'checked.svg'},{name:'789',leftImgSrc:'checked.svg'}]}])
