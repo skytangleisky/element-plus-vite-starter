@@ -242,7 +242,8 @@ export default class RadarLayer extends BaseLayer{
     args.MaxLng = this.MaxLng
     args.MinLat = this.MinLat
     args.MaxLat = this.MaxLat
-    args.uint8Array = this.uint8Array
-    this.task.addTask(args)
+    let tmp = this.uint8Array.slice()
+    args.uint8Array = tmp
+    this.task.addTask(args,[tmp.buffer])
   }
 }

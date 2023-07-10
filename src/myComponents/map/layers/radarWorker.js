@@ -54,7 +54,7 @@ test(args){
     for(let j=0;j<41;j++){
       let α=this.country[j].α/180*Math.PI
       let β=this.country[j].β/180*Math.PI
-      console.log(this.country[j].α,this.country[j].β)
+      // console.log(this.country[j].α,this.country[j].β)
       // let α=90/180*Math.PI
       // let β=90/180*Math.PI
       for(let i=0;i<=this.country[j].array.length;i++){

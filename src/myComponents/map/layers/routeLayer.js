@@ -212,7 +212,8 @@ export default class RouteLayer extends BaseLayer{
     args.MinLat = this.MinLat
     args.MaxLat = this.MaxLat
     args.maxLineWidth = this.maxLineWidth
-    args.uint8Array = this.uint8Array
-    this.task.addTask(args)
+    let tmp = this.uint8Array.slice()
+    args.uint8Array = tmp
+    this.task.addTask(args,[tmp.buffer])
   }
 }

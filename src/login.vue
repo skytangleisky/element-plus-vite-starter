@@ -3,7 +3,7 @@
     <div class="leftImage">珠海光恒科技雷达设备组网数据采集管理系统</div>
     <div class="rightPlane">
       <el-form
-        ref="formRef"
+        ref="formEl"
         :model="numberValidateForm"
         class="demo-ruleForm"
       >
@@ -35,14 +35,15 @@
           :prefix-icon="Lock"
         >
         <template #append>
-          <View v-show="!hide" style="width: 1em;height:1em;" @click="hide=!hide"></View>
-          <Hide v-show="hide" style="width: 1em;height:1em;" @click="hide=!hide"></Hide>
+          <div @click="hide=!hide" class="w-full h-full pl-8px pr-8px flex items-center">
+            <View v-show="!hide" style="width: 1em;height:1em;"></View>
+            <Hide v-show="hide" style="width: 1em;height:1em;"></Hide>
+          </div>
         </template>
         </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm(formRef)">Submit</el-button>
-          <el-button @click="resetForm(formRef)">Reset</el-button>
+          <el-button type="primary" :loading="loading" class="w-full" @click="submitForm(formEl)">登录</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -54,20 +55,25 @@ import type { FormInstance } from 'element-plus'
 import { User, Lock, Hide, View } from '@element-plus/icons-vue'
 
 const hide = ref(true)
-const formRef = ref<FormInstance>()
+const formEl = ref<FormInstance>()
 
 const numberValidateForm = reactive({
   username: '',
   password: '',
 })
+const loading = ref(false)
 
 const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return
+  loading.value=true
   formEl.validate((valid) => {
     if (valid) {
       console.log('submit!')
+      setTimeout(()=>{
+        loading.value=false
+      },1000)
     } else {
-      console.log('error submit!')
+      loading.value=false
       return false
     }
   })
@@ -115,14 +121,22 @@ const resetForm = (formEl: FormInstance | undefined) => {
     flex-direction: colum;
     justify-content: center;
     align-items: center;
-    background-color: #ffffff;
-    .ep-input__inner{
-      box-shadow: 0 0 0 1000px white inset;
-      -webkit-text-fill-color: grey;
-    }
-    .ep-input-group__append{
-      background: transparent;
-      color:grey;
+    background-color: #ffffff88;
+    .ep-input{
+      .ep-input__inner{
+        -webkit-text-fill-color: grey;
+        appearance: none;
+        background-image: none;
+        padding: 15px 0;
+        background-clip: content-box;
+      }
+      .ep-input-group__append{
+        background: transparent;
+        color:grey;
+      }
+      .ep-input-group__append{
+        padding:0;
+      }
     }
   }
 }
