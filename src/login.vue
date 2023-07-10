@@ -18,8 +18,7 @@
           type="text"
           autocomplete="off"
           placeholder="账户"
-          clearable
-          size="large"
+          :prefix-icon="User"
         />
         </el-form-item>
         <el-form-item
@@ -30,12 +29,16 @@
         >
         <el-input
           v-model.number="numberValidateForm.password"
-          type="text"
+          :type="hide?'password':'text'"
           autocomplete="off"
           placeholder="密码"
-          clearable
-          size="large"
-        />
+          :prefix-icon="Lock"
+        >
+        <template #append>
+          <View v-show="!hide" style="width: 1em;height:1em;" @click="hide=!hide"></View>
+          <Hide v-show="hide" style="width: 1em;height:1em;" @click="hide=!hide"></Hide>
+        </template>
+        </el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitForm(formRef)">Submit</el-button>
@@ -48,7 +51,9 @@
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
 import type { FormInstance } from 'element-plus'
+import { User, Lock, Hide, View } from '@element-plus/icons-vue'
 
+const hide = ref(true)
 const formRef = ref<FormInstance>()
 
 const numberValidateForm = reactive({
@@ -104,14 +109,21 @@ const resetForm = (formEl: FormInstance | undefined) => {
     box-sizing: border-box;
   }
   .rightPlane{
-    color:black;
     width:400px;
     height:600px;
     display: flex;
     flex-direction: colum;
     justify-content: center;
     align-items: center;
-    background-color: #000;
+    background-color: #ffffff;
+    .ep-input__inner{
+      box-shadow: 0 0 0 1000px white inset;
+      -webkit-text-fill-color: grey;
+    }
+    .ep-input-group__append{
+      background: transparent;
+      color:grey;
+    }
   }
 }
 </style>
