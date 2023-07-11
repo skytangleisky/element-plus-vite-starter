@@ -50,9 +50,12 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, h } from 'vue'
 import type { FormInstance } from 'element-plus'
 import { User, Lock, Hide, View } from '@element-plus/icons-vue'
+import { login } from '~/api/login.js'
+import { ElMessage } from 'element-plus'
+import router from '~/router'
 
 const hide = ref(true)
 const formEl = ref<FormInstance>()
@@ -68,17 +71,33 @@ const submitForm = (formEl: FormInstance | undefined) => {
   loading.value=true
   formEl.validate((valid) => {
     if (valid) {
-      console.log('submit!')
-      setTimeout(()=>{
+      login(numberValidateForm).then((res:any)=>{
         loading.value=false
-      },1000)
+        if(res.code==20000){
+          console.log('logined',res)
+          router.push({path:'/',replace:true})
+        }else{
+          openVn(res.message)
+        }
+      }).catch(e=>{
+        openVn(e.message)
+        loading.value=false
+      })
     } else {
       loading.value=false
       return false
     }
   })
 }
-
+const openVn = (message:string) => {
+  ElMessage({
+    message: h('p', null, [
+      // h('span', null, 'Message can be '),
+      h('i', { style: 'color: teal' }, message),
+    ]),
+    type:'error'
+  })
+}
 const resetForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.resetFields()
