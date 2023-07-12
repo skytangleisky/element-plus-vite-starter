@@ -53,7 +53,8 @@
 import { reactive, ref, h } from 'vue'
 import type { FormInstance } from 'element-plus'
 import { User, Lock, Hide, View } from '@element-plus/icons-vue'
-import { login } from '~/api/login.js'
+import { useUserStore } from '~/stores/user'
+let user = useUserStore()
 import { ElMessage } from 'element-plus'
 import router from '~/router'
 
@@ -71,7 +72,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
   loading.value=true
   formEl.validate((valid) => {
     if (valid) {
-      login(numberValidateForm).then((res:any)=>{
+      user.Login(numberValidateForm).then((res:any)=>{
         loading.value=false
         if(res.code==20000){
           console.log('logined',res)

@@ -37,8 +37,7 @@
       <div @click.native="search_click" class="search" tabindex="-1"></div>
       <div class="absolute right-0 items-center hidden lg:flex">
         <div style="display: flex;align-items: center;">
-          <div v-if="!user.logined" @click="login" class="QQ_Login_Button"></div>
-          <el-dropdown v-else trigger="click" size="small">
+          <el-dropdown v-if="user.logined" trigger="click" size="small">
             <el-avatar :size="32" :src="user.avatar">
               <!-- <span class="el-dropdown-link"><User style="width:24px;height:24px;"></User></span> -->
             </el-avatar>
@@ -52,6 +51,7 @@
               </el-dropdown-menu>
             </template>
           </el-dropdown>
+          <div v-else @click="login" class="QQ_Login_Button"></div>
           {{ user.username }}
         </div>
       </div>

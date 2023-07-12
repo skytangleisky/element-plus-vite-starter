@@ -1,10 +1,7 @@
 <template>
-  <div class="nav">
-    <img src="/src/assets/wstdlogo.ico" class="w-40px h-40px">
-    <span class="color-black p-0 m-0" style="height:40px;line-height: 40px;font-size: 2rem;">人影空域申报系统</span>
-  </div>
+  <my-header></my-header>
   <div class="flex flex-row flex-1">
-    <div class="w-100px h-100% bg-blue"></div>
+    <!-- <div class="w-100px h-100% bg-blue"></div> -->
     <menus class="menus"><!--<div class="nav-wrapper">人影空域申报系统</div>--></menus>
   </div>
   <!-- <search></search> -->
@@ -31,7 +28,8 @@ import { ref } from 'vue'
 // import RemoteComponent from './myComponents/remoteComponent.vue'
 // import TestButton from './elementplus/basic/button.vue'
 // import TestBorder from './elementplus/basic/border.vue'
-// import Search from './myComponents/search.vue'
+import Search from './myComponents/search.vue'
+import myHeader from './header.vue'
 import Menus from './myComponents/menu/index.vue'
 
 // const list = ref([{name:'测试',left:true,children:[{name:'456',leftImgSrc:'checked.svg'},{name:'789',leftImgSrc:'checked.svg'}]}])
@@ -41,15 +39,8 @@ import Menus from './myComponents/menu/index.vue'
 </script>
 
 <style lang="scss">
-.nav{
-  width: 100%;
-  height: 40px;
-  background-color: aliceblue;
-  display: flex;
-  align-items: center;
-}
 .menus{
-  width: calc(100% - 100px);
+  width: 100%;
   height: calc(100vh - 40px);
 }
 @media (prefers-color-scheme: light) {

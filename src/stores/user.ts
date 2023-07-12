@@ -18,40 +18,53 @@ export const useUserStore = defineStore({
       // we could do other stuff like redirecting the user
     },
     info(){
-      getInfo().then((infoRes:any)=>{
-        if(infoRes.code===20000){
-          this.$patch({
-            logined: true,
-            ...infoRes.data,
-          })
-        }else{
-          console.log(infoRes)
+      return new Promise((resolve,reject)=>{
+        getInfo().then((infoRes:any)=>{
+          if(infoRes.code===20000){
+            this.$patch({
+              logined: true,
+              ...infoRes.data,
+            })
+          }else{
+            console.log(infoRes)
+            this.$reset()
+            // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired; 60204: Error;
+          }
+          resolve(infoRes)
+        }).catch(e=>{
           this.$reset()
-          // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired; 60204: Error;
-        }
-      }).catch(()=>{
-        this.$reset()
+          reject(e)
+        })
       })
     },
     Login(data:any) {
-      // const res = await login({username:'admin',password:'admin'})
-      login(data).then((loginRes:any)=>{
-        console.log(loginRes)
-        if(loginRes.code===20000){
-          this.info()
-        }else{
-          console.log(loginRes.code)
-          // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired; 60204: Error;
+      return new Promise((resolve,reject)=>{
+        // const res = await login({username:'admin',password:'admin'})
+        login(data).then((loginRes:any)=>{
+          console.log(loginRes)
+          if(loginRes.code===20000){
+            this.info().then(()=>{
+              resolve(loginRes)
+            }).catch(e=>{
+              reject(e)
+            })
+          }else{
+            resolve(loginRes)
+            // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired; 60204: Error;
+            this.$reset()
+          }
+        }).catch(e=>{
           this.$reset()
-        }
-      }).catch(()=>{
-        this.$reset()
+          reject(e)
+        })
+        // const userData = await apiLogin(user, password)
       })
-      // const userData = await apiLogin(user, password)
     },
     Logout(){
       logout().then(()=>{
         this.$reset()
+      }).catch(e=>{
+        console.error(e)
       })
     }
   },

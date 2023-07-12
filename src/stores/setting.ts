@@ -1,8 +1,6 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
-import { useUserStore } from './user'
 import zhCn from '../languages/zh-cn.mjs'
 import en from '../languages/en.mjs'
-
 export const useSettingStore = defineStore({
   id: 'setting',
   state: () => ({

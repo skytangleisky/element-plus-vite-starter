@@ -1,6 +1,3 @@
-import { createApp } from "vue";
-import App from "./App.vue";
-
 // import "~/styles/element/index.scss";
 
 // import ElementPlus from "element-plus";
@@ -12,14 +9,9 @@ import App from "./App.vue";
 
 import "~/styles/index.scss";
 import 'uno.css'
-
 // If you want to use ElMessage, import it.
 import "element-plus/theme-chalk/src/message.scss"
-
-const app = createApp(App);
-
-import pinia from "./stores"
-app.use(pinia)
+import app from './app'
 // app.use(ElementPlus, { locale });
 import router from './router'
 app.use(router)

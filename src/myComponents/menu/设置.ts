@@ -1,9 +1,11 @@
 import { checkClick, Item } from './def'
+import { useSettingStore } from '~/stores/setting'
 function onClick(e:Event,item:Item,k:number){
   checkClick(e,item,k)
   window.postMessage(JSON.parse(JSON.stringify({type:'自定义',from:'作业声音设置.ts',obj:item.children&&item.children[k]})))
 }
-const setting = JSON.parse(localStorage.getItem('setting')||'{"loadmap":true,"district":false,"navigation":false,"airline":false,"radar":false}')
+const setting  = useSettingStore()
+// const setting = JSON.parse(localStorage.getItem('setting')||'{"loadmap":true,"district":false,"navigation":false,"airline":false,"radar":false}')
 export default [
   {name:'瓦片地图',onClick:onClick,leftImgSrc:setting.loadmap?'checked.svg':undefined},
   {name:'行政区划',onClick:onClick,leftImgSrc:setting.district?'checked.svg':undefined},

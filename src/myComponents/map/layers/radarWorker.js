@@ -97,13 +97,13 @@ test(args){
             if(item.Speed==999){
               args.ctx.fillStyle='transparent';
             }else{
-              args.ctx.fillStyle=this.verticalFlowColor(item.Speed)+'88';
+              args.ctx.fillStyle=this.verticalFlowColor(item.Speed)
             }
             args.ctx.strokeStyle=args.ctx.fillStyle
             args.ctx.arc(X1,Y1,R1,β,α,!anticlockwise)
             args.ctx.arc(X1,Y1,R2,α,β,anticlockwise)
             args.ctx.closePath()
-            // args.ctx.stroke()
+            args.ctx.stroke()
             args.ctx.fill()
 
             // args.ctx.beginPath()
