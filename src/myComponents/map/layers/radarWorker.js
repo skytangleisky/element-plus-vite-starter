@@ -32,6 +32,7 @@ onmessage(evt){
   this.MaxLng=evt.data.MaxLng;
   this.MinLat=evt.data.MinLat;
   this.MaxLat=evt.data.MaxLat;
+  this.POINT = evt.data.POINT;
   let decoder = new TextDecoder()
   this.country = JSON.parse(decoder.decode(evt.data.uint8Array))
   this.draw(evt.data.args);
@@ -43,8 +44,8 @@ verticalFlowColor(v) {
 test(args){
   this.isDrawed = false;
   if(this.country){
-    let X1 = (this.lng2Pixel(110) - this.imgX)/this.imgScale*Math.pow(2,args._LL) - args._i*this.TileWidth;
-    let Y1 = (this.lat2Pixel(35) - this.imgY)/this.imgScale*Math.pow(2,args._LL) - args._j*this.TileWidth;
+    let X1 = (this.lng2Pixel(this.POINT.lng) - this.imgX)/this.imgScale*Math.pow(2,args._LL) - args._i*this.TileWidth;
+    let Y1 = (this.lat2Pixel(this.POINT.lat) - this.imgY)/this.imgScale*Math.pow(2,args._LL) - args._j*this.TileWidth;
     args.ctx.lineWidth=1;
     args.ctx.strokeStyle='#f00';
     args.ctx.lineCap = "round";
@@ -96,13 +97,13 @@ test(args){
             if(item.Speed==999){
               args.ctx.fillStyle='transparent';
             }else{
-              args.ctx.fillStyle=this.verticalFlowColor(item.Speed);
+              args.ctx.fillStyle=this.verticalFlowColor(item.Speed)+'88';
             }
             args.ctx.strokeStyle=args.ctx.fillStyle
             args.ctx.arc(X1,Y1,R1,β,α,!anticlockwise)
             args.ctx.arc(X1,Y1,R2,α,β,anticlockwise)
             args.ctx.closePath()
-            args.ctx.stroke()
+            // args.ctx.stroke()
             args.ctx.fill()
 
             // args.ctx.beginPath()

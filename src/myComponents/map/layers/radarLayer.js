@@ -3,6 +3,7 @@ import BaseLayer from './baseLayer.js'
 import { eventbus } from '~/eventbus/index.ts'
 import Task from './task'
 import { wgs84togcj02 } from '../workers/mapUtil.js'
+let POINT = {lng:116.39139324235674,lat:39.90723893689098}
 export default class RadarLayer extends BaseLayer{
   constructor(task){
     super()
@@ -244,6 +245,8 @@ export default class RadarLayer extends BaseLayer{
     args.MaxLat = this.MaxLat
 
     let tmp = this.uint8Array.slice()
+    let convert = wgs84togcj02(POINT.lng,POINT.lat)
+    args.POINT = {lng:convert[0],lat:convert[1]}
     args.uint8Array = tmp
     this.task.addTask(args,[tmp.buffer])
 
