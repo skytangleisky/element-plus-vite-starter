@@ -35,7 +35,7 @@ const login = () => {
 }
 const logout = () => {
   user.Logout()
-  router.push({path:'/login'})
+  router.push({path:'/login',replace:true})
 }
 </script>
 <style lang="scss">
