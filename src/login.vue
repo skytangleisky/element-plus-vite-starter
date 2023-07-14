@@ -1,6 +1,6 @@
 <template>
   <div class="login_dialog">
-    <div class="leftImage">珠海光恒科技雷达设备组网数据采集管理系统</div>
+    <div class="leftImage">雷达设备组网数据采集管理系统</div>
     <div class="rightPlane">
       <el-form
         ref="formEl"

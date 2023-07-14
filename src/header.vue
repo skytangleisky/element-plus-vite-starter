@@ -1,7 +1,7 @@
 <template>
   <div class="nav">
-    <img src="/src/assets/wstdlogo.ico" class="w-40px h-40px">
-    <span class="color-black p-0 m-0" style="height:40px;line-height: 40px;font-size: 2rem;">珠海光恒科技雷达设备组网数据采集管理系统</span>
+    <img src="/src/assets/wstdlogo.ico" class="w-40px h-40px hidden">
+    <span class="color-black p-0 m-0" style="height:40px;line-height: 40px;font-size: 2rem;">雷达设备组网数据采集管理系统</span>
     <div class="absolute right-0 items-center hidden lg:flex">
       <div style="display: flex;align-items: center;color:black;">
         <el-dropdown v-if="user.logined" trigger="click" size="small">

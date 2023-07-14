@@ -51,7 +51,7 @@ export default class StationLayer{
     this.getImage()
     let boundary=[110,120,41,38]
     let POINT = {lng:116.39139324235674,lat:39.90723893689098}
-    for(var i=0;i<10;i++) {
+    for(var i=0;i<1;i++) {
       let plane = new Plane()
       plane.name=i.toString()
       plane.vx = this.randMinMax(-2/100,2/100)

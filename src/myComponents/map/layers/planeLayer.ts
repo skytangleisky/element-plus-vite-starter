@@ -1,8 +1,40 @@
-import textureUrl from '../../../assets/aircraft.png?url'
+// import textureUrl from '~/assets/aircraft.png?url'
+import textureUrl0 from '~/assets/feathers/0.svg?url'
+import textureUrl1 from '~/assets/feathers/1.svg?url'
+import textureUrl2 from '~/assets/feathers/2.svg?url'
+import textureUrl4 from '~/assets/feathers/4.svg?url'
+import textureUrl6 from '~/assets/feathers/6.svg?url'
+import textureUrl8 from '~/assets/feathers/8.svg?url'
+import textureUrl10 from '~/assets/feathers/10.svg?url'
+import textureUrl12 from '~/assets/feathers/12.svg?url'
+import textureUrl14 from '~/assets/feathers/14.svg?url'
+import textureUrl16 from '~/assets/feathers/16.svg?url'
+import textureUrl18 from '~/assets/feathers/18.svg?url'
+import textureUrl20 from '~/assets/feathers/20.svg?url'
+import textureUrl22 from '~/assets/feathers/22.svg?url'
+import textureUrl24 from '~/assets/feathers/24.svg?url'
+import textureUrl26 from '~/assets/feathers/26.svg?url'
+import textureUrl28 from '~/assets/feathers/28.svg?url'
+import textureUrl30 from '~/assets/feathers/30.svg?url'
+import textureUrl32 from '~/assets/feathers/32.svg?url'
+import textureUrl34 from '~/assets/feathers/34.svg?url'
+import textureUrl36 from '~/assets/feathers/36.svg?url'
+import textureUrl38 from '~/assets/feathers/38.svg?url'
+import textureUrl40 from '~/assets/feathers/40.svg?url'
+import textureUrl42 from '~/assets/feathers/42.svg?url'
+import textureUrl44 from '~/assets/feathers/44.svg?url'
+import textureUrl46 from '~/assets/feathers/46.svg?url'
+import textureUrl48 from '~/assets/feathers/48.svg?url'
+import textureUrl50 from '~/assets/feathers/50.svg?url'
+import textureUrl52 from '~/assets/feathers/52.svg?url'
+import textureUrl54 from '~/assets/feathers/54.svg?url'
+import textureUrl56 from '~/assets/feathers/56.svg?url'
+import textureUrl58 from '~/assets/feathers/58.svg?url'
+import textureUrl60 from '~/assets/feathers/60.svg?url'
 import Quadtree, { Rect } from '~/tools/quadtree'
 import { wgs84togcj02 } from '../workers/mapUtil'
 import { lng2Pixel, lat2Pixel, pixel2Lng, pixel2Lat, pixel2LngLat } from '../js/core'
-import Eventbus,{ eventbus } from '../../../eventbus'
+import Eventbus,{ eventbus } from '~/eventbus'
 import Plane from './Plane'
 export default class PlaneLayer{
   isMouseOver:Boolean
@@ -12,7 +44,7 @@ export default class PlaneLayer{
   preTime:number
   event:Eventbus
   constructor(){
-    this.event=new Eventbus()
+    this.event = new Eventbus()
     this.event.on('mousedown',(event:MouseEvent)=>{
       let overlap = false
       this.spirits.forEach(v=>{
@@ -49,12 +81,14 @@ export default class PlaneLayer{
     this.spirits=Array<Plane>()
     this.getImage()
     let boundary=[110,120,41,38]
-    // let POINT = {lng:116.39139324235674,lat:39.90723893689098}
-    for(var i=0;i<20;i++) {
+    let POINT = {lng:116.39139324235674,lat:39.90723893689098}
+    for(var i=0;i<100;i++) {
       let plane = new Plane()
       plane.name=i.toString()
-      plane.vx = this.randMinMax(-300,300)
-      plane.vy = this.randMinMax(-300,300)
+      // plane.vx = this.randMinMax(-300,300)
+      // plane.vy = this.randMinMax(-300,300)
+      plane.vx = this.randMinMax(-20,20)
+      plane.vy = this.randMinMax(-20,20)
       // plane.vx=0
       // plane.vy=0
       plane.lng=this.randMinMax(boundary[0],boundary[1])
@@ -63,10 +97,17 @@ export default class PlaneLayer{
       // plane.lng=convert[0]
       // plane.lat=convert[1]
       plane.cvs = document.createElement('canvas')
-      plane.rad = Math.atan2(-plane.vx,plane.vy)+Math.PI
-      // rad=Math.PI/180*30
-      plane.w=16*2
-      plane.h=17*2
+      if(plane.vx==0&&plane.vy==0){
+        plane.rad = Math.random()*360/180*Math.PI
+      }else{
+        plane.rad = Math.atan2(-plane.vx,plane.vy)+Math.PI
+      }
+      // plane.w=16*2
+      // plane.h=17*2
+      plane.w=16
+      plane.h=32
+      // plane.anchor={x:0,y:0}
+      plane.anchor={x:-8,y:16}
       plane.compute_width_height()
       plane.cvs.width=plane.width
       plane.cvs.height=plane.height
@@ -75,15 +116,16 @@ export default class PlaneLayer{
       // plane.x=100+i*10
       // plane.y=100+i*10
       plane.cvs_toolTips = document.createElement('canvas')
-      plane.cvs_toolTips.width = 100
-      plane.cvs_toolTips.height = 50
+      plane.cvs_toolTips.width = 150
+      plane.cvs_toolTips.height = 60
       let ctx_toolTips = plane.cvs_toolTips.getContext('2d',{willReadFrequently:true})
       if(!ctx_toolTips)throw Error('invalid ctx_toolTips')
 
       let angle = (plane.rad/Math.PI*180).toFixed(2)
       let speed = (Math.sqrt(plane.vx**2+plane.vy**2)*3.6).toFixed(2)
+      let speed1 = Math.sqrt(plane.vx**2+plane.vy**2).toFixed(2)
 
-      let text = `方向角:${angle}°\n速度:${speed}km/h`
+      let text = `雷达:${plane.name}\n方向角:${angle}°\n速度:${speed1}m/s`
       this.drawToolTips(plane.cvs_toolTips.width,plane.cvs_toolTips.height,text,ctx_toolTips)
       plane.event.on('enter',(plane:Plane)=>{
         // plane.showToolTips=true
@@ -126,40 +168,41 @@ export default class PlaneLayer{
     this.preTime=performance.now()
   }
   async getImage(){
-    const res = await fetch(textureUrl)
-    const img = await res.blob()
-    let bitmap = await createImageBitmap(img)
-    let planeCvs = document.createElement('canvas')
-    planeCvs.width = bitmap.width
-    planeCvs.height = bitmap.height
-    let planeCtx = planeCvs.getContext('bitmaprenderer')
-    if(!planeCtx)throw Error('invalid planeCtx')
-    planeCtx.transferFromImageBitmap(bitmap)
-    this.spirits.forEach((plane:Plane)=>{
-      let ctx = plane.cvs.getContext('2d', { willReadFrequently:true })
-      if(!ctx)throw Error('invalid ctx!')
-      let preCompositeOperation = ctx.globalCompositeOperation
-      ctx.save()
-      // {
-      //   ctx.fillStyle='red'
-      //   ctx.fillRect(0,0,planeCvs.width,planeCvs.height)
-      //   ctx.globalCompositeOperation='destination-in'
-      // }
-      ctx.translate(plane.cvs.width/2,plane.cvs.height/2)
-      ctx.rotate(plane.rad)
-      ctx.drawImage(planeCvs,0,0,planeCvs.width,planeCvs.height,-plane.w/2,-plane.h/2,plane.w,plane.h)
-      ctx.globalCompositeOperation=preCompositeOperation
-      // {
-      //   ctx.fillStyle='#ffffff88'
-      //   ctx.strokeStyle='white'
-      //   ctx.lineWidth=1
-      //   ctx.fillRect(-plane.w/2,-plane.h/2,plane.w,plane.h)
-      //   ctx.strokeRect(-plane.w/2+ctx.lineWidth,-plane.h/2+ctx.lineWidth,plane.w-ctx.lineWidth*2,plane.h-ctx.lineWidth*2)
-      //   ctx.stroke()
-      // }
-      ctx.restore()
-    })
-    this.preTime=performance.now()
+    let image = new Image()
+    image.onload = () => {
+      let planeCvs = document.createElement('canvas')
+      planeCvs.width = image.width
+      planeCvs.height = image.height
+      let planeCtx = planeCvs.getContext('2d')
+      if(!planeCtx)throw Error('invalid planeCtx')
+      planeCtx.drawImage(image,0,0)
+      this.spirits.forEach((plane:Plane)=>{
+        let ctx = plane.cvs.getContext('2d', { willReadFrequently:true })
+        if(!ctx)throw Error('invalid ctx!')
+        let preCompositeOperation = ctx.globalCompositeOperation
+        ctx.save()
+        {
+          ctx.fillStyle='white'
+          ctx.fillRect(0,0,planeCvs.width,planeCvs.height)
+          ctx.globalCompositeOperation='destination-in'
+        }
+        ctx.translate(plane.cvs.width/2,plane.cvs.height/2)
+        ctx.rotate(plane.rad)
+        ctx.drawImage(planeCvs,0,0,planeCvs.width,planeCvs.height,-plane.w/2,-plane.h/2,plane.w,plane.h)
+        ctx.globalCompositeOperation=preCompositeOperation
+        // {
+        //   ctx.fillStyle='#ffffff88'
+        //   ctx.strokeStyle='white'
+        //   ctx.lineWidth=1
+        //   ctx.fillRect(-plane.w/2,-plane.h/2,plane.w,plane.h)
+        //   ctx.strokeRect(-plane.w/2+ctx.lineWidth,-plane.h/2+ctx.lineWidth,plane.w-ctx.lineWidth*2,plane.h-ctx.lineWidth*2)
+        //   ctx.stroke()
+        // }
+        ctx.restore()
+      })
+      this.preTime=performance.now()
+    }
+    image.src = textureUrl20
   }
   randMinMax(min:number, max:number, round:boolean|undefined=undefined):number{
     let val = min + (Math.random() * (max - min));
@@ -176,10 +219,19 @@ export default class PlaneLayer{
       if(item.showToolTips){
         item.event.emit('move',item.lng,item.lat)
       }
-      item.x = lng2Pixel(item.lng,obj.imgX,2**obj.L,256)-item.width/2
-      item.y = lat2Pixel(item.lat,obj.imgY,2**obj.L,256)-item.height/2
+
+      ctx.fillStyle='blue'
+
+      item.x = lng2Pixel(item.lng,obj.imgX,2**obj.L,256) - item.width/2
+      item.y = lat2Pixel(item.lat,obj.imgY,2**obj.L,256) - item.height/2
+
       item.lng = pixel2Lng(item.x+item.vx*deltaTime/1000/(2*Math.PI*6378137)*2**obj.L*256+item.width/2,obj.imgX,2**obj.L,256)
       item.lat = pixel2Lat(item.y+item.vy*deltaTime/1000/(2*Math.PI*6378137)*2**obj.L*256+item.height/2,obj.imgY,2**obj.L,256)
+      item.x -= item.pt.x
+      item.y -= item.pt.y
+      ctx.beginPath()
+      ctx.arc(item.x+item.width/2+item.pt.x,item.y+item.height/2+item.pt.y,4,0,Math.PI*2)
+      ctx.fill()
       // item.lng += item.vx*deltaTime/1000;
       // item.lat -= item.vy*deltaTime/1000;
 
@@ -253,18 +305,30 @@ export default class PlaneLayer{
               ctx.restore()
             }
             item.cvs&&ctx.drawImage(item.cvs,0,0,item.cvs.width,item.cvs.height,0,0,item.width,item.height)
-            item.showToolTips&&item.cvs_toolTips&&ctx.drawImage(item.cvs_toolTips,0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,-item.cvs_toolTips.width/2+item.width/2,-item.cvs_toolTips.height,item.cvs_toolTips.width,item.cvs_toolTips.height)
+            item.showToolTips&&item.cvs_toolTips&&ctx.drawImage(
+              item.cvs_toolTips,
+              0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,
+              -item.cvs_toolTips.width/2+item.width/2+item.pt.x,-item.cvs_toolTips.height,item.cvs_toolTips.width,item.cvs_toolTips.height
+            )
           }else{
             if(需要检测){
               ctx.fillStyle = 'rgba(48,255,48,0.5)';
               ctx.fillRect(0, 0, item.width, item.height);
             }
             item.cvs&&ctx.drawImage(item.cvs,0,0,item.cvs.width,item.cvs.height,0,0,item.width,item.height)
-            item.cvs_toolTips&&item.showToolTips&&ctx.drawImage(item.cvs_toolTips,0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,-item.cvs_toolTips.width/2+item.width/2,-item.cvs_toolTips.height,item.cvs_toolTips.width,item.cvs_toolTips.height)
+            item.showToolTips&&item.cvs_toolTips&&ctx.drawImage(
+              item.cvs_toolTips,
+              0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,
+              -item.cvs_toolTips.width/2+item.width/2+item.pt.x,-item.cvs_toolTips.height,item.cvs_toolTips.width,item.cvs_toolTips.height
+            )
           }
         } else {
           item.cvs&&ctx.drawImage(item.cvs,0,0,item.cvs.width,item.cvs.height,0,0,item.width,item.height)
-          item.cvs_toolTips&&item.showToolTips&&ctx.drawImage(item.cvs_toolTips,0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,-item.cvs_toolTips.width/2+item.width/2,-item.cvs_toolTips.height,item.cvs_toolTips.width,item.cvs_toolTips.height)
+          item.showToolTips&&item.cvs_toolTips&&ctx.drawImage(
+            item.cvs_toolTips,
+            0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,
+            -item.cvs_toolTips.width/2+item.width/2+item.pt.x,-item.cvs_toolTips.height,item.cvs_toolTips.width,item.cvs_toolTips.height
+          )
         }
         ctx.restore()
         if(!item.lastOverlap&&item.overlap){
@@ -352,7 +416,7 @@ export default class PlaneLayer{
     lines.forEach((line:any) => {
         fitFontWidth = Math.min(fitFontWidth, width / ctx.measureText(line).width)
     })
-    let fitFontHeight = height / (lines.length * 1.2); // if you want more spacing between line, you can increase this value
+    let fitFontHeight = height / (lines.length * 1.4); // if you want more spacing between line, you can increase this value
     return Math.min(fitFontHeight, fitFontWidth)
   }
 }
