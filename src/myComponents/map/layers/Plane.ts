@@ -95,7 +95,7 @@ export default class Plane {
     this.height=Math.max(pt1.y,pt2.y,pt3.y,pt4.y)-Math.min(pt1.y,pt2.y,pt3.y,pt4.y)
 
     let m = mat3.create()
-    mat3.translate(m,m,vec2.fromValues(this.anchor.x,this.anchor.y))
+    mat3.translate(m,m,vec2.fromValues(this.anchor.x*this.w,this.anchor.y*this.h))
     mat3.rotate(m,m,-rad)
     this.pt={x:m[2],y:m[5]}
   }

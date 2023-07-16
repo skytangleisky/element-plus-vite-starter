@@ -1,4 +1,4 @@
-// import textureUrl from '~/assets/aircraft.png?url'
+import textureUrl from '~/assets/aircraft.png?url'
 import textureUrl0 from '~/assets/feathers/0.svg?url'
 import textureUrl1 from '~/assets/feathers/1.svg?url'
 import textureUrl2 from '~/assets/feathers/2.svg?url'
@@ -65,7 +65,7 @@ export default class PlaneLayer{
         }
       })
     })
-    this.isMouseOver=false
+    this.isMouseOver=true
     this.myCursor = {
       x:0,
       y:0,
@@ -99,6 +99,7 @@ export default class PlaneLayer{
       plane.cvs = document.createElement('canvas')
       if(plane.vx==0&&plane.vy==0){
         plane.rad = Math.random()*360/180*Math.PI
+        plane.rad = Math.PI/180*45
       }else{
         plane.rad = Math.atan2(-plane.vx,plane.vy)+Math.PI
       }
@@ -107,7 +108,7 @@ export default class PlaneLayer{
       plane.w=16
       plane.h=32
       // plane.anchor={x:0,y:0}
-      plane.anchor={x:-8,y:16}
+      plane.anchor={x:-0.5,y:0.5}
       plane.compute_width_height()
       plane.cvs.width=plane.width
       plane.cvs.height=plane.height
@@ -183,7 +184,7 @@ export default class PlaneLayer{
         ctx.save()
         {
           ctx.fillStyle='white'
-          ctx.fillRect(0,0,planeCvs.width,planeCvs.height)
+          ctx.fillRect(0,0,plane.cvs.width,plane.cvs.height)
           ctx.globalCompositeOperation='destination-in'
         }
         ctx.translate(plane.cvs.width/2,plane.cvs.height/2)
@@ -220,8 +221,6 @@ export default class PlaneLayer{
         item.event.emit('move',item.lng,item.lat)
       }
 
-      ctx.fillStyle='blue'
-
       item.x = lng2Pixel(item.lng,obj.imgX,2**obj.L,256) - item.width/2
       item.y = lat2Pixel(item.lat,obj.imgY,2**obj.L,256) - item.height/2
 
@@ -230,6 +229,7 @@ export default class PlaneLayer{
       item.x -= item.pt.x
       item.y -= item.pt.y
       ctx.beginPath()
+      ctx.fillStyle='blue'
       ctx.arc(item.x+item.width/2+item.pt.x,item.y+item.height/2+item.pt.y,4,0,Math.PI*2)
       ctx.fill()
       // item.lng += item.vx*deltaTime/1000;
@@ -247,32 +247,37 @@ export default class PlaneLayer{
         candidate.check = true
       }
       for(let i=candidates.length-1;i>=0;i--) {
-        let candidate = candidates[i]
-        let ctx = candidate.cvs.getContext('2d',{willReadFrequently:true})
-        if(!ctx)throw Error('invalid ctx')
-        let imgData = ctx.getImageData(0,0,candidate.width,candidate.height)
-        ctx.save()
-        ctx.globalCompositeOperation='destination-in'
-        ctx.fillStyle='#fff'
-        ctx.fillRect(this.myCursor.x-candidate.x,this.myCursor.y-candidate.y,this.myCursor.width,this.myCursor.height)
-        let imgPixels = ctx.getImageData(this.myCursor.x-candidate.x,this.myCursor.y-candidate.y,this.myCursor.width,this.myCursor.height)
-        out:
-        for(let y = 0; y < imgPixels.height; y++){
-          for(let x = 0; x < imgPixels.width; x++){
-            let i = (y * 4) * imgPixels.width + x * 4
-            if(imgPixels.data[i + 3]>0){
-              candidate.overlap=true
-              break out
+        let plane = candidates[i]
+        let ctx_plane = plane.cvs.getContext('2d',{willReadFrequently:true})
+        if(!ctx_plane)throw Error('invalid ctx_plane')
+        let imgData = ctx_plane.getImageData(0,0,plane.width,plane.height)
+        ctx_plane.save()
+        ctx_plane.globalCompositeOperation='destination-in'
+        ctx_plane.fillStyle='#000'
+        ctx_plane.fillRect(this.myCursor.x-plane.x,this.myCursor.y-plane.y,this.myCursor.width,this.myCursor.height)
+        let imgPixels = ctx_plane.getImageData(0,0,plane.width,plane.height)
+        exit:
+        for(let y = Math.max(0,Math.round(this.myCursor.y-plane.y)); y < Math.min(imgPixels.height,Math.round(this.myCursor.y-plane.y+this.myCursor.height)); y++){
+          for(let x = Math.max(0,Math.round(this.myCursor.x-plane.x)); x < Math.min(imgPixels.width,Math.round(this.myCursor.x-plane.x+this.myCursor.width)); x++){
+            let i = (y * imgPixels.width + x) * 4
+            if(imgPixels.data[i + 3]){
+              plane.overlap=true
+              break exit
             }
           }
         }
-        ctx.restore()
-        ctx.putImageData(imgData,0,0)
-        if(candidate.overlap){
+        // ctx.drawImage(plane.cvs,plane.x-plane.cvs.width,plane.y)
+        // ctx.putImageData(imgPixels,0,0)
+
+        ctx_plane.restore()
+        ctx_plane.putImageData(imgData,0,0)
+        if(plane.overlap){
           break
         }
       }
-      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+
+
+      ctx.fillStyle = 'rgba(255,255,255)';
       ctx.fillRect(this.myCursor.x, this.myCursor.y, this.myCursor.width, this.myCursor.height);
     }
     // this.drawQuadtree(ctx,this.quadtree)
