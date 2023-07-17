@@ -7,7 +7,6 @@
       <div v-for="(v,k) in urls" :style="'border:1px solid grey;background-position:-0px -0px;background-repeat:no-repeat;width:50px;height:50px;'+'background-image:url('+v.url.replace('{x}','105').replace('{y}','48').replace('{z}','7')+');'" @click.native="tileSelect(v)"></div>
     </div>
   </div>
-  <div ref="map_mask" class="map_mask"></div>
 </template>
 <script lang="ts" setup>
   import { onBeforeUnmount, onMounted, ref } from 'vue'
@@ -34,7 +33,6 @@
   // const windy = new Windy()
   let canvas = ref(null)
   let webgpu = ref(null)
-  let map_mask = ref(null)
   // let POINT = {lng:113.42165142106768,lat:23.098844381632485}
   let POINT = {lng:116.39139324235674,lat:39.90723893689098}
   const urls = ref([
@@ -164,37 +162,30 @@
       // windy.start([[0,0],[cvs.width,cvs.height]],cvs.width,cvs.height,[[pixel2Lng(0,obj.imgX,2**obj.L,256), pixel2Lat(cvs.height,obj.imgY,2**obj.L,256)],[pixel2Lng(cvs.width,obj.imgX,2**obj.L,256), pixel2Lat(0,obj.imgY,2**obj.L,256)]])
       draw()
     }).observe(cvs)
-    cvs.addEventListener('mouseleave',mouseleaveFunc,{passive:true})
-    cvs.addEventListener('mouseenter',mouseenterFunc,{passive:true})
     cvs.addEventListener('mousewheel',mousewheelFunc,{passive:true})
     eventbus.on('mousedown',(event:MouseEvent)=>{
-      mask.style.display='block'
       mousedownFunc(event)
     })
-    if(map_mask.value==null){
-      throw Error('invalid map_mask')
-    }
-    let mask:HTMLDivElement = map_mask.value
     cvs.addEventListener('mousedown',(event:MouseEvent)=>{
       planeLayer.event.emit('mousedown',event)
       stationLayer.event.emit('mousedown',event)
     },{passive:true})
     document.addEventListener('mouseup',(event:MouseEvent)=>{
-      mask.style.display='none'
       mouseupFunc(event)
       planeLayer.event.emit('mouseup',event)
       stationLayer.event.emit('mouseup',event)
     },{passive:true})
-    document.addEventListener('mousemove',mousemoveFunc,{passive:true})
-    mask.addEventListener('mousewheel',mousewheelFunc,{passive:true})
-    mask.addEventListener('mouseenter',mouseenterFunc,{passive:true})
-    mask.addEventListener('mouseleave',mouseleaveFunc,{passive:true})
+    document.addEventListener('mousemove',mousemoveFunc,{passive:true});
+    cvs.addEventListener('mousemove',mousemoveFunc,{passive:true})
 
     eventbus.on('move',(lng:number,lat:number)=>{
       flyTo(lng,lat,{duration:0})
     })
   })
   onBeforeUnmount(()=>{
+    cvs.removeEventListener('mousemove',mousemoveFunc)
+    document.removeEventListener('mousemove',mousemoveFunc);
+    cvs.removeEventListener('mousewheel',mousewheelFunc)
     cancelAnimationFrame(aid)
     removeEventListener('message',test)
     cancel()
@@ -318,7 +309,7 @@
       routeLayer.render(obj,ctx)
       // windy.render(obj,ctx)
       planeLayer.render(obj,ctx)
-      stationLayer.render(obj,ctx)
+      // stationLayer.render(obj,ctx)
       ctx.restore()
 
       ctx.save()
@@ -375,16 +366,6 @@
       needRedraw = true
     })
     needRedraw = true
-  }
-  const mouseleaveFunc = (event:any) => {
-    console.log('leave')
-    planeLayer.isMouseOver = false
-    stationLayer.isMouseOver = false
-  }
-  const mouseenterFunc = (event:any) => {
-    console.log('enter')
-    planeLayer.isMouseOver = true
-    stationLayer.isMouseOver = true
   }
   const mousedownFunc = (event:MouseEvent) => {
     gsap.killTweensOf(mousemove)
@@ -680,15 +661,5 @@
   &:focus-within>.tileList{
     display: block;
   }
-}
-.map_mask{
-  position:fixed;
-  display:none;
-  background-color: #ff000001;
-  left:0;
-  top:0;
-  width: 100%;
-  height:100%;
-  z-index:999999;
 }
 </style>

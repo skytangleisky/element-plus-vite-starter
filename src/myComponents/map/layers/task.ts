@@ -22,7 +22,7 @@ export default class Task{
         worker
       })
     }
-    eventbus.emit('systemInfo',{thead:`0/${this.workers.length}`})
+    eventbus.emit('systemInfo',{thead:`${this.workers.length}/${this.workers.length}`})
   }
   destroy(){
     for(let i=0;i<this.workers.length;i++){

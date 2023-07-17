@@ -13,6 +13,10 @@ export const constantRoutes = [
   {
     path: '/login',
     component: () => import('../login.vue') //最好是异步加载
+  },
+  {
+    path: '/pixi',
+    component: () => import('../myComponents/pixi/index.vue') //最好是异步加载
   }
 ]
 const router = createRouter({

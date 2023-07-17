@@ -13,6 +13,7 @@
   "dependencies": {
     "@orillusion/core": "^0.6.5",
     "@rollup/plugin-inject": "^5.0.3",
+    "@types/pixi.js": "^5.0.0",
     "@webgpu/types": "^0.1.21",
     "axios": "^1.3.4",
     "dat.gui": "^0.7.9",
@@ -23,6 +24,7 @@
     "nprogress": "^0.2.0",
     "pinia": "^2.0.33",
     "pinia-plugin-persistedstate": "^3.1.0",
+    "pixi.js": "^7.2.4",
     "vue": "^3.2.36",
     "vue-router": "^4.1.6",
     "vue3-sfc-loader": "^0.8.4"
@@ -31,6 +33,7 @@
     "@iconify-json/ep": "^1.1.4",
     "@types/jquery": "^3.5.16",
     "@types/node": "^18.14.0",
+    "@types/nprogress": "^0.2.0",
     "@vitejs/plugin-vue": "^4.0.0",
     "cross-env": "^7.0.3",
     "rollup-plugin-visualizer": "^5.9.0",

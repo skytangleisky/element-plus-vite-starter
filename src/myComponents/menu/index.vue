@@ -3,9 +3,9 @@
     <my-map></my-map>
     <slot></slot>
     <box class="info-box" right bottom>
+      <span>Framerate(FPS)<span>{{ data.fps }}</span></span>
       <span>Level<span>{{ data.level }}</span></span>
       <span>Tiles<span>{{ data.tiles }}</span></span>
-      <span>Framerate(FPS)<span>{{ data.fps }}</span></span>
       <span>Draw call<span>{{ data.drawCall }}</span></span>
       <span>Frame time(ms)<span>{{ data.frameTime }}</span></span>
       <span>Period time(ms)<span>{{ data.periodTime }}</span></span>

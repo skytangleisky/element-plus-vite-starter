@@ -8,6 +8,7 @@ export default class Plane {
   h:number
   vx:number
   vy:number
+  v:number
   width: number
   height: number
   check:boolean
@@ -66,6 +67,7 @@ export default class Plane {
     this.h=32
     this.vx=0
     this.vy=0
+    this.v=0
     this.width=32
     this.height=32
     this.check=false

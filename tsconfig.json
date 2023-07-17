@@ -17,7 +17,7 @@
     },
     "outDir": "dist",
     "skipLibCheck": true,
-    "types": ["vite/client", "@webgpu/types", "@types/jquery"]
+    "types": ["vite/client", "@webgpu/types", "@types/jquery", "@types/pixi.js"]
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
   "exclude": ["node_modules", "build/**/*"]
