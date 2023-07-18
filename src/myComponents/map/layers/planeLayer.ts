@@ -65,6 +65,25 @@ function getFeather(v:number){
   v>=1?textureUrl1:
   textureUrl0
 }
+
+let colors={0:'#0000ff',4:'#002aff',8:'#0054ff',12:'#007eff',16:'#00a8ff',20:'#00d2ff',24:'#14d474',28:'#a6dd00',32:'#ffe600',36:'#ffb300',40:'#ff8000',44:'#ff4d00',48:'#ff1a00',52:'#e60000',56:'#b30000'}
+function getColor(v:number){
+  return v>=56?colors[56]:
+  v>=52?colors[52]:
+  v>=48?colors[48]:
+  v>=44?colors[44]:
+  v>=40?colors[40]:
+  v>=36?colors[36]:
+  v>=32?colors[32]:
+  v>=28?colors[28]:
+  v>=24?colors[24]:
+  v>=20?colors[20]:
+  v>=16?colors[16]:
+  v>=12?colors[12]:
+  v>=8?colors[8]:
+  v>=4?colors[4]:
+  colors[0]
+}
 import Quadtree, { Rect } from '~/tools/quadtree'
 import { wgs84togcj02 } from '../workers/mapUtil'
 import { lng2Pixel, lat2Pixel, pixel2Lng, pixel2Lat, pixel2LngLat } from '../js/core'
@@ -115,7 +134,7 @@ export default class PlaneLayer{
     this.spirits=Array<Plane>()
     let boundary=[110,120,41,38]
     let POINT = {lng:116.39139324235674,lat:39.90723893689098}
-    for(var i=0;i<1000;i++) {
+    for(var i=0;i<100;i++) {
       let plane = new Plane()
       plane.name=i.toString()
       // plane.vx = this.randMinMax(-300,300)
@@ -124,7 +143,7 @@ export default class PlaneLayer{
       plane.vy = this.randMinMax(-20,20)
       plane.vx=0
       plane.vy=0
-      plane.v = this.randMinMax(1,20)
+      plane.v = this.randMinMax(1,60)
       plane.lng=this.randMinMax(boundary[0],boundary[1])
       plane.lat=this.randMinMax(boundary[3],boundary[2])
       // let convert = wgs84togcj02(POINT.lng,POINT.lat)
@@ -218,7 +237,7 @@ export default class PlaneLayer{
           let preCompositeOperation = ctx.globalCompositeOperation
           ctx.save()
           {
-            ctx.fillStyle='white'
+            ctx.fillStyle=getColor(plane.v)
             ctx.fillRect(0,0,plane.cvs.width,plane.cvs.height)
             ctx.globalCompositeOperation='destination-in'
           }
@@ -305,7 +324,7 @@ export default class PlaneLayer{
       }
 
 
-      ctx.fillStyle = 'rgba(255,255,255)';
+      ctx.fillStyle = '#ffffff88';
       ctx.fillRect(this.myCursor.x, this.myCursor.y, this.myCursor.width, this.myCursor.height);
     }
     // this.drawQuadtree(ctx,this.quadtree)

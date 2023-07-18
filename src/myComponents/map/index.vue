@@ -176,8 +176,6 @@
       stationLayer.event.emit('mouseup',event)
     },{passive:true})
     document.addEventListener('mousemove',mousemoveFunc,{passive:true});
-    cvs.addEventListener('mousemove',mousemoveFunc,{passive:true})
-
     eventbus.on('move',(lng:number,lat:number)=>{
       flyTo(lng,lat,{duration:0})
     })

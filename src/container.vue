@@ -53,16 +53,12 @@ import Menus from './myComponents/menu/index.vue'
   /** ... */
 }
 #app {
-  text-align: center;
   color: var(--ep-text-color-primary);
-  box-sizing: border-box;
   position: absolute;
-  left: 50%;
-  top:50%;
-  transform: translate(-50%,-50%);
-  width:100%;
-  height:100%;
+  width: 100%;
+  height: 100%;
   overflow: auto;
+  box-sizing: border-box;
 }
 .nav-wrapper{
   position: absolute;

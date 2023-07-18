@@ -1,108 +1,121 @@
 <template>
-
 </template>
 <script lang="ts" setup>
+import { onMounted,ref } from 'vue';
 import * as PIXI from 'pixi.js';
+import textureUrl from './wabbit_alpha.png?url'
+let myCvs = ref(null)
+onMounted(()=>{
+    var renderer = PIXI.autoDetectRenderer({backgroundAlpha:0});
+    renderer.view.style['transform'] = 'translatez(0)';
+    renderer.view.addEventListener('click', function() { addBunnies(10); });
+    // document.body.insertBefore(renderer.view, document.body.firstChild)
+    document.body.append(renderer.view)
 
-const app = new PIXI.Application({ resizeTo: window });
+    var bunnies:any[] = [];
+    var gravity = 0.5;
+    var minX = 0;
+    var maxX = renderer.width - 26;
+    var minY = 0;
+    var maxY = renderer.height - 37;
+    var bunniesCount = 0;
 
-document.body.appendChild(app.view);
+    var totalText = document.getElementById('total');
 
-const sprites = new PIXI.ParticleContainer(10000, {
-    scale: true,
-    position: true,
-    rotation: true,
-    uvs: true,
-    alpha: true,
-});
+    // create the root of the scene graph
 
-app.stage.addChild(sprites);
+    // simpler
+    // var stage = new PIXI.Container();
 
-// create an array to store all the sprites
-const maggots = [];
+    // faster
+    // http://pixijs.github.io/docs/PIXI.ParticleContainer.html
+    var stage = new PIXI.ParticleContainer(200000);
 
-const totalSprites = app.renderer instanceof PIXI.Renderer ? 10000 : 100;
+    var texture = PIXI.Texture.from(textureUrl);
 
-for (let i = 0; i < totalSprites; i++)
-{
-    // create a new Sprite
-    const dude = PIXI.Sprite.from('https://pixijs.com/assets/maggot_tiny.png');
 
-    // set the anchor point so the texture is centerd on the sprite
-    dude.anchor.set(0.5);
 
-    // different maggots, different sizes
-    dude.scale.set(0.8 + Math.random() * 0.3);
+    updateTotalText();
+    animate();
 
-    // scatter them all
-    dude.x = Math.random() * app.screen.width;
-    dude.y = Math.random() * app.screen.height;
-
-    dude.tint = Math.random() * 0x808080;
-
-    // create a random direction in radians
-    dude.direction = Math.random() * Math.PI * 2;
-
-    // this number will be used to modify the direction of the sprite over time
-    dude.turningSpeed = Math.random() - 0.8;
-
-    // create a random speed between 0 - 2, and these maggots are slooww
-    dude.speed = (2 + Math.random() * 2) * 0.2;
-
-    dude.offset = Math.random() * 100;
-
-    // finally we push the dude into the maggots array so it it can be easily accessed later
-    maggots.push(dude);
-
-    sprites.addChild(dude);
-}
-
-// create a bounding box box for the little maggots
-const dudeBoundsPadding = 100;
-const dudeBounds = new PIXI.Rectangle(
-    -dudeBoundsPadding,
-    -dudeBoundsPadding,
-    app.screen.width + dudeBoundsPadding * 2,
-    app.screen.height + dudeBoundsPadding * 2,
-);
-
-let tick = 0;
-
-app.ticker.add(() =>
-{
-    // iterate through the sprites and update their position
-    for (let i = 0; i < maggots.length; i++)
+    function animate() 
     {
-        const dude = maggots[i];
+        update();
+        renderer.render(stage);
 
-        dude.scale.y = 0.95 + Math.sin(tick + dude.offset) * 0.05;
-        dude.direction += dude.turningSpeed * 0.01;
-        dude.x += Math.sin(dude.direction) * (dude.speed * dude.scale.y);
-        dude.y += Math.cos(dude.direction) * (dude.speed * dude.scale.y);
-        dude.rotation = -dude.direction + Math.PI;
+        requestAnimationFrame(animate);
+    }
 
-        // wrap the maggots
-        if (dude.x < dudeBounds.x)
+    function update()
+    {
+        for (let i = 0; i < bunnies.length; i++)
         {
-            dude.x += dudeBounds.width;
-        }
-        else if (dude.x > dudeBounds.x + dudeBounds.width)
-        {
-            dude.x -= dudeBounds.width;
-        }
+            bunnies[i].spt.position.x += bunnies[i].speedX;
+            bunnies[i].spt.position.y += bunnies[i].speedY;
+            bunnies[i].speedY += gravity;
 
-        if (dude.y < dudeBounds.y)
-        {
-            dude.y += dudeBounds.height;
-        }
-        else if (dude.y > dudeBounds.y + dudeBounds.height)
-        {
-            dude.y -= dudeBounds.height;
+            if (bunnies[i].spt.position.x > maxX)
+            {
+                bunnies[i].speedX *= -1;
+                bunnies[i].spt.position.x = maxX;
+            }
+            else if (bunnies[i].spt.position.x < minX)
+            {
+                bunnies[i].speedX *= -1;
+                bunnies[i].spt.position.x = minX;
+            }
+            if (bunnies[i].spt.position.y > maxY)
+            {
+                bunnies[i].speedY *= -0.8;
+                bunnies[i].spt.position.y = maxY;
+                if (Math.random() > 0.5) bunnies[i].speedY -= 3 + Math.random() * 4;
+            } 
+            else if (bunnies[i].spt.position.y < minY)
+            {
+                bunnies[i].speedY = 0;
+                bunnies[i].spt.position.y = minY;
+            }
         }
     }
 
-    // increment the ticker
-    tick += 0.1;
-});
+    function addBunnies(count:number)
+    {
+        for(let i = 0; i < count; i++)
+        {
+            var bunny = {
+                spt: new PIXI.Sprite(texture),
+                speedX: Math.random() * 5,
+                speedY: (Math.random() * 5) - 2.5
+            };
+            bunny.spt.cursor = 'pointer';
+            bunny.spt.interactive=true
+            bunnies.push(bunny);
+            stage.addChild(bunny.spt);
+        }
+        console.log('addBunnies')
+
+        bunniesCount += count;
+        updateTotalText();
+    }
+
+    function updateTotalText()
+    {
+        if(!totalText)throw Error()
+        totalText.innerHTML = 'Total: ' + bunniesCount;
+    }
+})
 
 </script>
+<style lang="scss">
+    body>canvas{
+        position: absolute;
+        width:100%;
+        height:100%;
+    }
+    #total{
+        position: absolute;
+        top:0;
+        left:0;
+        z-index: 999;
+    }
+</style>
