@@ -235,6 +235,7 @@ export default class PlaneLayer{
           //   ctx.stroke()
           // }
           ctx.restore()
+        plane.imgPixel= ctx.getImageData(0,0,plane.width,plane.height)
         this.preTime=performance.now()
       }
       image.src = getFeather(plane.v)
@@ -286,14 +287,7 @@ export default class PlaneLayer{
       for(let i=candidates.length-1;i>=0;i--) {
         let plane = candidates[i]
         if(plane.x<=this.myCursor.x+this.myCursor.width&&this.myCursor.x<=plane.x+plane.width&&plane.y<=this.myCursor.y+this.myCursor.height&&this.myCursor.y<=plane.y+plane.height){
-          let ctx_plane = plane.cvs.getContext('2d',{willReadFrequently:true})
-          if(!ctx_plane)throw Error('invalid ctx_plane')
-          let imgData = ctx_plane.getImageData(0,0,plane.width,plane.height)
-          ctx_plane.save()
-          ctx_plane.globalCompositeOperation='destination-in'
-          ctx_plane.fillStyle='#000'
-          ctx_plane.fillRect(this.myCursor.x-plane.x,this.myCursor.y-plane.y,this.myCursor.width,this.myCursor.height)
-          let imgPixels = ctx_plane.getImageData(0,0,plane.width,plane.height)
+          let imgPixels = plane.imgPixel
           exit:
           for(let y = Math.max(0,Math.round(this.myCursor.y-plane.y)); y < Math.min(imgPixels.height,Math.round(this.myCursor.y-plane.y+this.myCursor.height)); y++){
             for(let x = Math.max(0,Math.round(this.myCursor.x-plane.x)); x < Math.min(imgPixels.width,Math.round(this.myCursor.x-plane.x+this.myCursor.width)); x++){
@@ -304,10 +298,6 @@ export default class PlaneLayer{
               }
             }
           }
-          // ctx.drawImage(plane.cvs,plane.x-plane.cvs.width,plane.y)
-          // ctx.putImageData(imgPixels,0,0)
-          ctx_plane.restore()
-          ctx_plane.putImageData(imgData,0,0)
           if(plane.overlap){
             break
           }

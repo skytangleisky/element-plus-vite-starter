@@ -24,6 +24,7 @@ export default class Plane {
   isMouseDown:boolean
   anchor:{x:number,y:number}
   pt:{x:number,y:number}
+  imgPixel:ImageData
   constructor(arg:{}|undefined=undefined){
     /*
     let position = {x:10,y:0}
@@ -83,6 +84,7 @@ export default class Plane {
     this.event=new Eventbus()
     this.anchor={x:0,y:0}
     this.pt = {x:0,y:0}
+    this.imgPixel = new ImageData(this.width,this.height)
     Object.assign(this,arg)
   }
   compute_width_height(){
