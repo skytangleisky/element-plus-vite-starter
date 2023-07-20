@@ -34,8 +34,6 @@ onMounted(()=>{
     var texture = PIXI.Texture.from(textureUrl);
 
 
-
-    updateTotalText();
     animate();
 
     function animate() 
@@ -95,14 +93,8 @@ onMounted(()=>{
         console.log('addBunnies')
 
         bunniesCount += count;
-        updateTotalText();
     }
 
-    function updateTotalText()
-    {
-        if(!totalText)throw Error()
-        totalText.innerHTML = 'Total: ' + bunniesCount;
-    }
 })
 
 </script>
@@ -111,11 +103,5 @@ onMounted(()=>{
         position: absolute;
         width:100%;
         height:100%;
-    }
-    #total{
-        position: absolute;
-        top:0;
-        left:0;
-        z-index: 999;
     }
 </style>

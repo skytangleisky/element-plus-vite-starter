@@ -43,8 +43,8 @@ export const useUserStore = defineStore({
         login(data).then((loginRes:any)=>{
           console.log(loginRes)
           if(loginRes.code===20000){
-            this.info().then(()=>{
-              resolve(loginRes)
+            this.info().then(res=>{
+              resolve(res)
             }).catch(e=>{
               reject(e)
             })

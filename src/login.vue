@@ -64,6 +64,7 @@ const formEl = ref<FormInstance>()
 const numberValidateForm = reactive({
   username: '',
   password: '',
+  secure: window.location.protocol=='https:'
 })
 const loading = ref(false)
 

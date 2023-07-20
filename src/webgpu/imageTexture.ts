@@ -275,7 +275,7 @@ export function cancel(){
     window.cancelAnimationFrame(aid)
 }
 // total objects
-const NUM = 1000
+const NUM = 10000
 export default async function run(canvas:HTMLCanvasElement){
     if (!canvas)
         throw new Error('No Canvas')

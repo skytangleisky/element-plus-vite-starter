@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import container from '../container.vue'
-// import qqLogin from '../qqlogin.vue'
+import login from '../login.vue'
 export const constantRoutes = [
   {
     path: '/',
@@ -12,11 +12,15 @@ export const constantRoutes = [
   },
   {
     path: '/login',
-    component: () => import('../login.vue') //最好是异步加载
+    component: login
   },
   {
     path: '/pixi',
-    component: () => import('../myComponents/pixi/index.vue') //最好是异步加载
+    component: () => import('../myComponents/pixi/index.vue') 
+  },
+  {
+    path: '/deck',
+    component: () => import('../myComponents/deck/index.vue')
   }
 ]
 const router = createRouter({
