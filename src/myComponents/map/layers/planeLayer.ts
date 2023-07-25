@@ -1,69 +1,40 @@
 import textureUrl from '~/assets/aircraft.png?url'
-import textureUrl0 from '~/assets/feathers/0.svg?url'
-import textureUrl1 from '~/assets/feathers/1.svg?url'
-import textureUrl2 from '~/assets/feathers/2.svg?url'
-import textureUrl4 from '~/assets/feathers/4.svg?url'
-import textureUrl6 from '~/assets/feathers/6.svg?url'
-import textureUrl8 from '~/assets/feathers/8.svg?url'
-import textureUrl10 from '~/assets/feathers/10.svg?url'
-import textureUrl12 from '~/assets/feathers/12.svg?url'
-import textureUrl14 from '~/assets/feathers/14.svg?url'
-import textureUrl16 from '~/assets/feathers/16.svg?url'
-import textureUrl18 from '~/assets/feathers/18.svg?url'
-import textureUrl20 from '~/assets/feathers/20.svg?url'
-import textureUrl22 from '~/assets/feathers/22.svg?url'
-import textureUrl24 from '~/assets/feathers/24.svg?url'
-import textureUrl26 from '~/assets/feathers/26.svg?url'
-import textureUrl28 from '~/assets/feathers/28.svg?url'
-import textureUrl30 from '~/assets/feathers/30.svg?url'
-import textureUrl32 from '~/assets/feathers/32.svg?url'
-import textureUrl34 from '~/assets/feathers/34.svg?url'
-import textureUrl36 from '~/assets/feathers/36.svg?url'
-import textureUrl38 from '~/assets/feathers/38.svg?url'
-import textureUrl40 from '~/assets/feathers/40.svg?url'
-import textureUrl42 from '~/assets/feathers/42.svg?url'
-import textureUrl44 from '~/assets/feathers/44.svg?url'
-import textureUrl46 from '~/assets/feathers/46.svg?url'
-import textureUrl48 from '~/assets/feathers/48.svg?url'
-import textureUrl50 from '~/assets/feathers/50.svg?url'
-import textureUrl52 from '~/assets/feathers/52.svg?url'
-import textureUrl54 from '~/assets/feathers/54.svg?url'
-import textureUrl56 from '~/assets/feathers/56.svg?url'
-import textureUrl58 from '~/assets/feathers/58.svg?url'
-import textureUrl60 from '~/assets/feathers/60.svg?url'
+import featherUrl from '~/assets/feather.svg'
 function getFeather(v:number){
-  return v>=60?textureUrl60:
-  v>=58?textureUrl58:
-  v>=56?textureUrl56:
-  v>=54?textureUrl54:
-  v>=52?textureUrl52:
-  v>=50?textureUrl50:
-  v>=48?textureUrl48:
-  v>=46?textureUrl46:
-  v>=44?textureUrl44:
-  v>=42?textureUrl42:
-  v>=40?textureUrl40:
-  v>=38?textureUrl38:
-  v>=36?textureUrl36:
-  v>=34?textureUrl34:
-  v>=32?textureUrl32:
-  v>=30?textureUrl30:
-  v>=28?textureUrl28:
-  v>=26?textureUrl26:
-  v>=24?textureUrl24:
-  v>=22?textureUrl22:
-  v>=20?textureUrl20:
-  v>=18?textureUrl18:
-  v>=16?textureUrl16:
-  v>=14?textureUrl14:
-  v>=12?textureUrl12:
-  v>=10?textureUrl10:
-  v>=8?textureUrl8:
-  v>=6?textureUrl6:
-  v>=4?textureUrl4:
-  v>=2?textureUrl2:
-  v>=1?textureUrl1:
-  textureUrl0
+  return (
+    v<=0?{i:0,j:0}:
+    v<=1?{i:1,j:0}:
+    v<=2?{i:2,j:0}:
+    v<=4?{i:3,j:0}:
+    v<=6?{i:4,j:0}:
+    v<=8?{i:5,j:0}:
+    v<=10?{i:6,j:0}:
+    v<=12?{i:0,j:1}:
+    v<=14?{i:1,j:1}:
+    v<=16?{i:2,j:1}:
+    v<=18?{i:3,j:1}:
+    v<=20?{i:4,j:1}:
+    v<=22?{i:5,j:1}:
+    v<=24?{i:6,j:1}:
+    v<=26?{i:0,j:2}:
+    v<=28?{i:1,j:2}:
+    v<=30?{i:2,j:2}:
+    v<=32?{i:3,j:2}:
+    v<=34?{i:4,j:2}:
+    v<=36?{i:5,j:2}:
+    v<=38?{i:6,j:2}:
+    v<=40?{i:0,j:3}:
+    v<=42?{i:1,j:3}:
+    v<=44?{i:2,j:3}:
+    v<=46?{i:3,j:3}:
+    v<=48?{i:4,j:3}:
+    v<=50?{i:5,j:3}:
+    v<=52?{i:6,j:3}:
+    v<=54?{i:0,j:4}:
+    v<=56?{i:1,j:4}:
+    v<=58?{i:2,j:4}:
+    {i:3,j:4}
+  )
 }
 
 let colors={0:'#0000ff',4:'#002aff',8:'#0054ff',12:'#007eff',16:'#00a8ff',20:'#00d2ff',24:'#14d474',28:'#a6dd00',32:'#ffe600',36:'#ffb300',40:'#ff8000',44:'#ff4d00',48:'#ff1a00',52:'#e60000',56:'#b30000'}
@@ -134,7 +105,7 @@ export default class PlaneLayer{
     this.spirits=Array<Plane>()
     let boundary=[110,120,41,38]
     let POINT = {lng:116.39139324235674,lat:39.90723893689098}
-    for(var i=0;i<100;i++) {
+    for(var i=0;i<1;i++) {
       let plane = new Plane()
       plane.name=i.toString()
       // plane.vx = this.randMinMax(-300,300)
@@ -152,7 +123,7 @@ export default class PlaneLayer{
       plane.cvs = document.createElement('canvas')
       if(plane.vx==0&&plane.vy==0){
         plane.rad = Math.random()*360/180*Math.PI
-        // plane.rad = Math.PI/180*45
+        // plane.rad = Math.PI/180*0
       }else{
         plane.rad = Math.atan2(-plane.vx,plane.vy)+Math.PI
       }
@@ -222,10 +193,17 @@ export default class PlaneLayer{
 
 
 
-      let image = new Image()
-      image.width=15
-      image.height=30
-      image.onload = () => {
+
+    }
+    this.preTime=performance.now()
+
+    let image = new Image()
+    image.width=15*7
+    image.height=30*6
+    image.onload = () => {
+      console.dir(image)
+      this.preTime=performance.now()
+      this.spirits.forEach(plane=>{
         let planeCvs = document.createElement('canvas')
         planeCvs.width = image.width
         planeCvs.height = image.height
@@ -243,7 +221,8 @@ export default class PlaneLayer{
           }
           ctx.translate(plane.cvs.width/2,plane.cvs.height/2)
           ctx.rotate(plane.rad)
-          ctx.drawImage(planeCvs,0,0,planeCvs.width,planeCvs.height,-plane.w/2,-plane.h/2,plane.w,plane.h)
+          const {i,j} = getFeather(plane.v)
+          ctx.drawImage(planeCvs,15*i,30*j,14,29,-plane.w/2,-plane.h/2,plane.w,plane.h)
           ctx.globalCompositeOperation=preCompositeOperation
           // {
           //   ctx.fillStyle='#ffffff88'
@@ -255,12 +234,9 @@ export default class PlaneLayer{
           // }
           ctx.restore()
         plane.imgPixel= ctx.getImageData(0,0,plane.width,plane.height)
-        this.preTime=performance.now()
-      }
-      image.src = getFeather(plane.v)
-
+      })
     }
-    this.preTime=performance.now()
+    image.src = featherUrl
   }
   randMinMax(min:number, max:number, round:boolean|undefined=undefined):number{
     let val = min + (Math.random() * (max - min));

@@ -7,16 +7,17 @@ const whiteList=['/login','/404','/401']
 router.beforeEach((to,from,next)=>{
   NProgress.start()
   // document.title = xxx
-  const user = useUserStore()
-  if(whiteList.indexOf(to.path)>=0){
-    next()
-  }else{
-    if(user.logined){
-      next()
-    }else{
-      next('/login')
-    }
-  }
+  // const user = useUserStore()
+  // if(whiteList.indexOf(to.path)>=0){
+  //   next()
+  // }else{
+  //   if(user.logined){
+  //     next()
+  //   }else{
+  //     next('/login')
+  //   }
+  // }
+  next()
 })
 
 router.afterEach((to,from)=>{

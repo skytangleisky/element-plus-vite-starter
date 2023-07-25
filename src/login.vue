@@ -122,7 +122,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
   .leftImage{
     width:800px;
     height:600px;
-    background-image: url(assets/9.jpg);
+    background-image: url(assets/10.jpg);
     background-size: cover;
     font-family: 'SourceHanSansSC-Bold';
     font-weight: 600;

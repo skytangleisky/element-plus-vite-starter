@@ -47,6 +47,7 @@ export default class MapLayer extends BaseLayer{
               cvs2.getContext('bitmaprenderer').transferFromImageBitmap(event.data.bitmap);
               this.mapsTiles[k].cvs = cvs2;
               this.mapsTiles[k].isDrawed = event.data.isDrawed;
+              this.mapsTiles[k].sameOrgin = true
               // console.log(this.Count)
             } catch (error) {
               this.mapsTiles.splice(k--,1)
@@ -101,7 +102,7 @@ export default class MapLayer extends BaseLayer{
 
     let arr=[]
     for(let k=0;k<this.mapsTiles.length;k++){
-      if(this.mapsTiles[k].url==this.urlTemplate.url){
+      if(this.mapsTiles[k].url==this.urlTemplate.url&&this.mapsTiles[k].sameOrgin){
         arr.push(this.mapsTiles.splice(k--,1)[0])
       }
     }
@@ -112,7 +113,7 @@ export default class MapLayer extends BaseLayer{
       for(let i=this._X0;i<=this._X1;i++){
         let mapExist = false;
         for(let k=this.mapsTiles.length-1;k>=0;k--){
-          if(this.mapsTiles[k]._LL==this._LL&&this.mapsTiles[k].i==i&&this.mapsTiles[k].j==j&&this.mapsTiles[k].url===this.urlTemplate.url){
+          if(this.mapsTiles[k]._LL==this._LL&&this.mapsTiles[k].i==i&&this.mapsTiles[k].j==j&&this.mapsTiles[k].url===this.urlTemplate.url&&this.mapsTiles[k].sameOrgin){
             mapExist = true;
             this.mapsTiles.push(this.mapsTiles.splice(k,1)[0]);
             break;
@@ -126,11 +127,13 @@ export default class MapLayer extends BaseLayer{
         cvs.setAttribute("height",this.tileWidth);
         var ctx = cvs.getContext('2d');
         this.平滑||(ctx.imageSmoothingEnabled = false);
+        let sameOrgin = true
         for(let k=0;k<this.mapsTiles.length;k++){
           let tmp = this.mapsTiles[k]
           if(this._LL-tmp._LL>0){//zoom in
             let n = this._LL-tmp._LL
             if(tmp.i==Math.floor(i/(2**n))&&tmp.j==Math.floor(j/(2**n))&&tmp.cvs){
+              sameOrgin = tmp.url === this.urlTemplate.url
               ctx.clearRect(0,0,this.tileWidth,this.tileWidth)
               ctx.drawImage(tmp.cvs,
                 Math.abs(this.tileWidth*i/(2**n))%this.tileWidth,Math.abs(this.tileWidth*j/(2**n))%this.tileWidth,
@@ -141,6 +144,7 @@ export default class MapLayer extends BaseLayer{
           }else{//zoom out
             let n = tmp._LL - this._LL
             if(i==Math.floor(tmp.i/(2**n))&&j==Math.floor(tmp.j/(2**n))&&tmp.cvs){
+              sameOrgin = tmp.url === this.urlTemplate.url
               ctx.clearRect(Math.abs(this.tileWidth*tmp.i/(2**n))%this.tileWidth,Math.abs(this.tileWidth*tmp.j/(2**n))%this.tileWidth,this.tileWidth/(2**n),this.tileWidth/(2**n))
               ctx.drawImage(tmp.cvs,
                 0,0,
@@ -151,14 +155,14 @@ export default class MapLayer extends BaseLayer{
             }
           }
         }
-        let item = {_LL:this._LL,i,j,cvs,_X0:this._X0,_X1:this._X1,_Y0:this._Y0,_Y1:this._Y1,isDrawed:true,url:this.urlTemplate.url};
+        let item = {_LL:this._LL,i,j,cvs,_X0:this._X0,_X1:this._X1,_Y0:this._Y0,_Y1:this._Y1,isDrawed:true,url:this.urlTemplate.url,sameOrgin};
         this.mapsTiles.push(item);
         this.load(item,this.mapsTiles)
       }
     }
   }
   load(item,tiles){
-    // setTimeout(()=>{
+    setTimeout(()=>{
       if(this._X0<=item.i&&item.i<=this._X1&&this._Y0<=item.j&&item.j<=this._Y1&&item._LL==this._LL){
         let x=item.i%2**item._LL>=0?item.i%2**item._LL:item.i%2**item._LL+2**item._LL;
         let y=item.j%2**item._LL>=0?item.j%2**item._LL:item.j%2**item._LL+2**item._LL;
@@ -179,7 +183,7 @@ export default class MapLayer extends BaseLayer{
           }
         }
       }
-    // },0)
+    },0)
   }
   delete(callback){
     if(this.urlTemplate.remove){

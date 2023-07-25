@@ -70,6 +70,12 @@ export default class BaseLayer{
         context.fillText(`Z:${tmp._LL} Y:${tmp.j} X:${tmp.i}`,obj.imgX + (tmp.i+0.5)*dxy,obj.imgY + (tmp.j+0.5)*dxy);
         context.textBaseline='top';
         context.fillText(`Q:${tileXY2QuadKey(tmp._LL,tmp.j,tmp.i)}`,obj.imgX + (tmp.i+0.5)*dxy,obj.imgY + (tmp.j+0.5)*dxy);
+        // if(tmp.sameOrgin){
+        //   context.fillStyle='#0f0'
+        // }else{
+        //   context.fillStyle='#f00'
+        // }
+        // context.fillText(`${tmp.sameOrgin}`,obj.imgX + (tmp.i+0.5)*dxy,obj.imgY + (tmp.j+0.5)*dxy+20);
         context.strokeStyle='#f0f';
         context.shadowBlur = 0;
         context.strokeRect(Math.round(obj.imgX+tmp.i*dxy),Math.round(obj.imgY+tmp.j*dxy),Math.round(obj.imgX+(tmp.i+1)*dxy)-Math.round(obj.imgX+tmp.i*dxy),Math.round(obj.imgY+(tmp.j+1)*dxy)-Math.round(obj.imgY+tmp.j*dxy))
