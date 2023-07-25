@@ -105,7 +105,7 @@ export default class PlaneLayer{
     this.spirits=Array<Plane>()
     let boundary=[110,120,41,38]
     let POINT = {lng:116.39139324235674,lat:39.90723893689098}
-    for(var i=0;i<1;i++) {
+    for(var i=0;i<100;i++) {
       let plane = new Plane()
       plane.name=i.toString()
       // plane.vx = this.randMinMax(-300,300)
@@ -201,7 +201,6 @@ export default class PlaneLayer{
     image.width=15*7
     image.height=30*6
     image.onload = () => {
-      console.dir(image)
       this.preTime=performance.now()
       this.spirits.forEach(plane=>{
         let planeCvs = document.createElement('canvas')
