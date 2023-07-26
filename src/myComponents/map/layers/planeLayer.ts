@@ -114,7 +114,7 @@ export default class PlaneLayer{
       plane.vy = this.randMinMax(-20,20)
       plane.vx=0
       plane.vy=0
-      plane.v = this.randMinMax(1,60)
+      plane.v = this.randMinMax(-1,60)
       plane.lng=this.randMinMax(boundary[0],boundary[1])
       plane.lat=this.randMinMax(boundary[3],boundary[2])
       // let convert = wgs84togcj02(POINT.lng,POINT.lat)
@@ -132,7 +132,11 @@ export default class PlaneLayer{
       plane.w=15
       plane.h=30
       // plane.anchor={x:0,y:0}
-      plane.anchor={x:-0.5,y:0.5}
+      if(plane.v<=0){
+        plane.anchor={x:0,y:0}
+      }else{
+        plane.anchor={x:-0.5,y:0.5}
+      }
       plane.compute_width_height()
       plane.cvs.width=plane.width
       plane.cvs.height=plane.height

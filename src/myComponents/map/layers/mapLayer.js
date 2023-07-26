@@ -25,6 +25,7 @@ export default class MapLayer extends BaseLayer{
       this.Count--
       for(let k=0;k<this.mapsTiles.length;k++){
         if(this.mapsTiles[k]._LL==event.data.z&&this.mapsTiles[k].i==event.data.i&&this.mapsTiles[k].j==event.data.j&&this.mapsTiles[k].url==event.data.url){
+          this.mapsTiles[k].sameOrgin = true
           if(event.data.bitmap===-1){
             // this.mapsTiles.splice(k--,1)
             break;
@@ -47,7 +48,6 @@ export default class MapLayer extends BaseLayer{
               cvs2.getContext('bitmaprenderer').transferFromImageBitmap(event.data.bitmap);
               this.mapsTiles[k].cvs = cvs2;
               this.mapsTiles[k].isDrawed = event.data.isDrawed;
-              this.mapsTiles[k].sameOrgin = true
               // console.log(this.Count)
             } catch (error) {
               this.mapsTiles.splice(k--,1)
