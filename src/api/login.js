@@ -1,8 +1,8 @@
 import request from '../utils/request'
-
+const url = '/api/libs/db/src/login.php'
 export function login(data) {
   return request({
-    url: 'libs/db/src/login.php',
+    url,
     method: 'post',
     timeout: 5000,
     data
@@ -10,14 +10,14 @@ export function login(data) {
 }
 export function getInfo() {
   return request({
-    url: 'libs/db/src/login.php',
+    url,
     method: 'get'
   })
 }
 export function logout() {
   const data = { 'logout': 'true' }
   return request({
-    url: 'libs/db/src/login.php',
+    url,
     method: 'delete',
     data
   })

@@ -60,6 +60,7 @@ import { wgs84togcj02 } from '../workers/mapUtil'
 import { lng2Pixel, lat2Pixel, pixel2Lng, pixel2Lat, pixel2LngLat } from '../js/core'
 import Eventbus,{ eventbus } from '~/eventbus'
 import Plane from './Plane'
+import { fetchList } from '~/api/光恒/station'
 export default class PlaneLayer{
   isMouseOver:Boolean
   myCursor:Rect
@@ -105,6 +106,9 @@ export default class PlaneLayer{
     this.spirits=Array<Plane>()
     let boundary=[110,120,41,38]
     let POINT = {lng:116.39139324235674,lat:39.90723893689098}
+    fetchList().then((res:any)=>{
+      console.log(res)
+    })
     for(var i=0;i<100;i++) {
       let plane = new Plane()
       plane.name=i.toString()
