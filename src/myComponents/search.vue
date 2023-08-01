@@ -177,13 +177,13 @@ onMounted(()=>{
   height: 24px;
   background: url("/src/assets/Connect_logo_7.png");
 }
-/*
- * 作者:helang
- * 邮箱:helang.love@qq.com
- * jQuery插件库:http://www.jq22.com/mem395541
- * CSDN博客:https://blog.csdn.net/u013350495
- * 微信公众号:web-7258
- */
+
+// 作者:helang
+// 邮箱:helang.love@qq.com
+// jQuery插件库:http://www.jq22.com/mem395541
+// CSDN博客:https://blog.csdn.net/u013350495
+// 微信公众号:web-7258
+
 .input_pane{
   display: flex;
   width: 100%;
@@ -434,48 +434,48 @@ onMounted(()=>{
 .ep-tabs__item{
 	font-size: 12px;
 }
-</style>
-<style lang="scss">
-.dark .input_pane{
-  .classificationButton{
-    background:rgba(255,255,255,0.02);
-    border:1px solid rgba(255,255,255,0.05);
-    &>.classificationPhoto{
-      filter: drop-shadow(rgba(255,255,255,0.15) 0 60px);
-    }
-  }
-  .input{
-    .hot-list{
-      background:#3b3b3b;
-      &>div:hover{
-        background:#2b2b2b;
-      }
-    }
-    .picker-list{
-      background:#3b3b3b;
-      &>li{
-        padding-left: 36px;
-        background-position: 10px center;
-        background-repeat: no-repeat;
-        background-size: 16px auto;
-        &:hover{
-          background-color: #2b2b2b;
-          cursor: pointer;
-        }
-        &.baidu{
-          background-image: url('/src/assets/ico_baidu.png')
-        }
-        &.sogou{
-          background-image: url('/src/assets/ico_sogou.png')
-        }
-        &.bing{
-          background-image: url('/src/assets/ico_bing.png')
-        }
-        &.google{
-          background-image: url('/src/assets/ico_google.ico')
-        }
-      }
-    }
-  }
-}
+
+
+// .dark .input_pane{
+//   .classificationButton{
+//     background:rgba(255,255,255,0.02);
+//     border:1px solid rgba(255,255,255,0.05);
+//     &>.classificationPhoto{
+//       filter: drop-shadow(rgba(255,255,255,0.15) 0 60px);
+//     }
+//   }
+//   .input{
+//     .hot-list{
+//       background:#3b3b3b;
+//       &>div:hover{
+//         background:#2b2b2b;
+//       }
+//     }
+//     .picker-list{
+//       background:#3b3b3b;
+//       &>li{
+//         padding-left: 36px;
+//         background-position: 10px center;
+//         background-repeat: no-repeat;
+//         background-size: 16px auto;
+//         &:hover{
+//           background-color: #2b2b2b;
+//           cursor: pointer;
+//         }
+//         &.baidu{
+//           background-image: url('/src/assets/ico_baidu.png')
+//         }
+//         &.sogou{
+//           background-image: url('/src/assets/ico_sogou.png')
+//         }
+//         &.bing{
+//           background-image: url('/src/assets/ico_bing.png')
+//         }
+//         &.google{
+//           background-image: url('/src/assets/ico_google.ico')
+//         }
+//       }
+//     }
+//   }
+// }
 </style>
