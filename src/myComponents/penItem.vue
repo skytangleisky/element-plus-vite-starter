@@ -59,11 +59,9 @@ interface Item {
   product_url?: string;
 }
 type Props = {
-  item: Item|undefined
+  item: Item
 }
-withDefaults(defineProps<Props>(),{
-  item:undefined
-})
+const {item} = defineProps<Props>()
 </script>
 <style lang="scss">
 .pen-item {
