@@ -75,7 +75,7 @@ export default defineConfig({
     host:'0.0.0.0',
     proxy:{
       '/guangheng':{
-        target:'http://tanglei.top:8000',//替换的服务端地址
+        target:'http://192.168.0.240:8000',//替换的服务端地址
         changeOrigin:true,//开启代理，允许跨域
         rewrite:path=>path.replace(/^\/guangheng/,''), // 设置重写的路径
       },

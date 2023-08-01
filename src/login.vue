@@ -75,7 +75,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
     if (valid) {
       user.Login(numberValidateForm).then((res:any)=>{
         loading.value=false
-        if(res.code==20000){
+        if(res.data.code==20000){
           console.log('logined',res)
           router.push({path:'/',replace:true})
         }else{

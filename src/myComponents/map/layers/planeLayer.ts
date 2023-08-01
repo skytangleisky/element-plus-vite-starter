@@ -55,6 +55,7 @@ function getColor(v:number){
   v>=4?colors[4]:
   colors[0]
 }
+import { reactive } from 'vue'
 import Quadtree, { Rect } from '~/tools/quadtree'
 import { wgs84togcj02 } from '../workers/mapUtil'
 import { lng2Pixel, lat2Pixel, pixel2Lng, pixel2Lat, pixel2LngLat } from '../js/core'
@@ -68,7 +69,7 @@ export default class PlaneLayer{
   spirits:Array<Plane>
   preTime:number
   event:Eventbus
-  constructor(){
+  constructor(stations:any[]){
     this.event = new Eventbus()
     this.event.on('mousedown',(event:MouseEvent)=>{
       let overlap = false
@@ -80,7 +81,7 @@ export default class PlaneLayer{
         }
       })
       if(!overlap){
-        eventbus.emit('mousedown',event)
+        // eventbus.emit('mousedown',event)
       }
     })
     this.event.on('mouseup',(event:MouseEvent)=>{
@@ -103,106 +104,10 @@ export default class PlaneLayer{
       width:800,
       height:800,
     })
-    this.spirits=Array<Plane>()
+    // this.spirits=Array<Plane>()
+    this.spirits = stations
     let boundary=[110,120,41,38]
     let POINT = {lng:116.39139324235674,lat:39.90723893689098}
-    fetchList().then((res:any)=>{
-      console.log(res)
-    })
-    for(var i=0;i<100;i++) {
-      let plane = new Plane()
-      plane.name=i.toString()
-      // plane.vx = this.randMinMax(-300,300)
-      // plane.vy = this.randMinMax(-300,300)
-      plane.vx = this.randMinMax(-20,20)
-      plane.vy = this.randMinMax(-20,20)
-      plane.vx=0
-      plane.vy=0
-      plane.v = this.randMinMax(-1,60)
-      plane.lng=this.randMinMax(boundary[0],boundary[1])
-      plane.lat=this.randMinMax(boundary[3],boundary[2])
-      // let convert = wgs84togcj02(POINT.lng,POINT.lat)
-      // plane.lng=convert[0]
-      // plane.lat=convert[1]
-      plane.cvs = document.createElement('canvas')
-      if(plane.vx==0&&plane.vy==0){
-        plane.rad = Math.random()*360/180*Math.PI
-        // plane.rad = Math.PI/180*0
-      }else{
-        plane.rad = Math.atan2(-plane.vx,plane.vy)+Math.PI
-      }
-      // plane.w=16*2
-      // plane.h=17*2
-      plane.w=15
-      plane.h=30
-      // plane.anchor={x:0,y:0}
-      if(plane.v<=0){
-        plane.anchor={x:0,y:0}
-      }else{
-        plane.anchor={x:-0.5,y:0.5}
-      }
-      plane.compute_width_height()
-      plane.cvs.width=plane.width
-      plane.cvs.height=plane.height
-      plane.x=this.randMinMax(0, 640)
-      plane.y=this.randMinMax(0, 480)
-      // plane.x=100+i*10
-      // plane.y=100+i*10
-      plane.cvs_toolTips = document.createElement('canvas')
-      plane.cvs_toolTips.width = 150
-      plane.cvs_toolTips.height = 60
-      let ctx_toolTips = plane.cvs_toolTips.getContext('2d',{willReadFrequently:true})
-      if(!ctx_toolTips)throw Error('invalid ctx_toolTips')
-
-      let angle = (plane.rad/Math.PI*180).toFixed(2)
-      let speed = (Math.sqrt(plane.vx**2+plane.vy**2)*3.6).toFixed(2)
-      let speed1 = Math.sqrt(plane.vx**2+plane.vy**2).toFixed(2)
-      let speed2 = plane.v.toFixed(2)
-
-      let text = `雷达:${plane.name}\n方向角:${angle}°\n速度:${speed2}m/s`
-      this.drawToolTips(plane.cvs_toolTips.width,plane.cvs_toolTips.height,text,ctx_toolTips)
-      plane.event.on('enter',(plane:Plane)=>{
-        // plane.showToolTips=true
-        console.log('enter',plane)
-      })
-      plane.event.on('leave',(plane:Plane)=>{
-        // plane.showToolTips=false
-        console.log('leave',plane)
-      })
-      plane.event.on('mousemove',()=>{
-        console.log('move',this)
-      })
-      plane.event.on('mousedown',(event:MouseEvent)=>{
-        console.log('mousedown',event)
-        this.spirits.forEach(v=>{
-          if(v!==plane){
-            v.showToolTips=false
-          }
-        })
-        plane.showToolTips=!plane.showToolTips
-        plane.isMouseDown = true
-      })
-      plane.event.on('mouseup',(event:MouseEvent)=>{
-        console.log('up',plane,event)
-        this.spirits.forEach((v:Plane)=>{
-          if(v.isMouseDown&&v.overlap){
-            plane.event.emit('click')
-          }
-          v.isMouseDown=false
-        })
-      })
-      plane.event.on('click',()=>{
-        console.log('click',this)
-      })
-      plane.event.on('move',(lng:number,lat:number)=>{
-        eventbus.emit('move',lng,lat)
-      })
-      this.spirits.push(plane)
-
-
-
-
-    }
     this.preTime=performance.now()
 
     let image = new Image()
@@ -210,37 +115,142 @@ export default class PlaneLayer{
     image.height=30*6
     image.onload = () => {
       this.preTime=performance.now()
-      this.spirits.forEach(plane=>{
-        let planeCvs = document.createElement('canvas')
-        planeCvs.width = image.width
-        planeCvs.height = image.height
-        let planeCtx = planeCvs.getContext('2d')
-        if(!planeCtx)throw Error('invalid planeCtx')
-        planeCtx.drawImage(image,0,0)
-          let ctx = plane.cvs.getContext('2d', { willReadFrequently:true })
-          if(!ctx)throw Error('invalid ctx!')
-          let preCompositeOperation = ctx.globalCompositeOperation
-          ctx.save()
-          {
-            ctx.fillStyle=getColor(plane.v)
-            ctx.fillRect(0,0,plane.cvs.width,plane.cvs.height)
-            ctx.globalCompositeOperation='destination-in'
+      fetchList().then((res:any)=>{
+        for(let k=0;k<100;k++) {
+          // const item = res.data.data[k]
+          // console.log(item)
+          let plane = reactive(new Plane())
+          plane.showToolTips=false
+          plane.name=k.toString()
+          plane.mouseenter=(e:MouseEvent)=>{
+            this.spirits.push(this.spirits.splice(this.spirits.indexOf(plane),1)[0])
           }
-          ctx.translate(plane.cvs.width/2,plane.cvs.height/2)
-          ctx.rotate(plane.rad)
-          const {i,j} = getFeather(plane.v)
-          ctx.drawImage(planeCvs,15*i,30*j,14,29,-plane.w/2,-plane.h/2,plane.w,plane.h)
-          ctx.globalCompositeOperation=preCompositeOperation
-          // {
-          //   ctx.fillStyle='#ffffff88'
-          //   ctx.strokeStyle='white'
-          //   ctx.lineWidth=1
-          //   ctx.fillRect(-plane.w/2,-plane.h/2,plane.w,plane.h)
-          //   ctx.strokeRect(-plane.w/2+ctx.lineWidth,-plane.h/2+ctx.lineWidth,plane.w-ctx.lineWidth*2,plane.h-ctx.lineWidth*2)
-          //   ctx.stroke()
-          // }
-          ctx.restore()
-        plane.imgPixel= ctx.getImageData(0,0,plane.width,plane.height)
+          plane.mousedown = (e:PointerEvent)=>{
+            this.spirits.forEach(v=>{
+              if(v!==plane){
+                v.showToolTips=false
+              }
+            })
+            plane.showToolTips=!plane.showToolTips
+            plane.isMouseDown = true
+          }
+          // plane.name=item.name
+          // plane.vx = this.randMinMax(-300,300)
+          // plane.vy = this.randMinMax(-300,300)
+          plane.vx = this.randMinMax(-20,20)
+          plane.vy = this.randMinMax(-20,20)
+          plane.vx=0
+          plane.vy=0
+          plane.v = this.randMinMax(-1,60)
+          plane.lng=this.randMinMax(boundary[0],boundary[1])
+          plane.lat=this.randMinMax(boundary[3],boundary[2])
+          // let convert = wgs84togcj02(POINT.lng,POINT.lat)
+          // let convert = wgs84togcj02(item.longitude,item.latitude)
+          // plane.lng=convert[0]
+          // plane.lat=convert[1]
+
+
+          plane.cvs = document.createElement('canvas')
+          if(plane.vx==0&&plane.vy==0){
+            plane.rad = Math.random()*360/180*Math.PI
+            // plane.rad = Math.PI/180*0
+          }else{
+            plane.rad = Math.atan2(-plane.vx,plane.vy)+Math.PI
+          }
+          // plane.w=16*2
+          // plane.h=17*2
+          plane.w=15
+          plane.h=30
+          // plane.anchor={x:0,y:0}
+          if(plane.v<=0){
+            plane.anchor={x:0,y:0}
+          }else{
+            plane.anchor={x:-0.5,y:0.5}
+          }
+          plane.compute_width_height()
+          plane.cvs.width=plane.width
+          plane.cvs.height=plane.height
+          plane.x=this.randMinMax(0, 640)
+          plane.y=this.randMinMax(0, 480)
+          // plane.x=100+i*10
+          // plane.y=100+i*10
+
+          let angle = (plane.rad/Math.PI*180).toFixed(2)
+          let speed = (Math.sqrt(plane.vx**2+plane.vy**2)*3.6).toFixed(2)
+          let speed1 = Math.sqrt(plane.vx**2+plane.vy**2).toFixed(2)
+          let speed2 = plane.v.toFixed(2)
+
+          let text = `雷达:${plane.name}\n方向角:${angle}°\n速度:${speed2}m/s`
+          plane.event.on('enter',(plane:Plane)=>{
+            // plane.showToolTips=true
+            console.log('enter',plane)
+          })
+          plane.event.on('leave',(plane:Plane)=>{
+            // plane.showToolTips=false
+            console.log('leave',plane)
+          })
+          plane.event.on('mousemove',()=>{
+            console.log('move',this)
+          })
+          // plane.event.on('mousedown',(event:MouseEvent)=>{
+          //   console.log('mousedown',event)
+          //   this.spirits.forEach(v=>{
+          //     if(v!==plane){
+          //       v.showToolTips=false
+          //     }
+          //   })
+          //   plane.showToolTips=!plane.showToolTips
+          //   plane.isMouseDown = true
+          // })
+          plane.event.on('mouseup',(event:MouseEvent)=>{
+            console.log('up',plane,event)
+            this.spirits.forEach((v:Plane)=>{
+              if(v.isMouseDown&&v.overlap){
+                plane.event.emit('click')
+              }
+              v.isMouseDown=false
+            })
+          })
+          plane.event.on('click',()=>{
+            console.log('click',this)
+          })
+          plane.event.on('move',(lng:number,lat:number)=>{
+            eventbus.emit('move',lng,lat)
+          })
+          this.spirits.push(plane)
+  
+  
+          let planeCvs = document.createElement('canvas')
+          planeCvs.width = image.width
+          planeCvs.height = image.height
+          let planeCtx = planeCvs.getContext('2d')
+          if(!planeCtx)throw Error('invalid planeCtx')
+          planeCtx.drawImage(image,0,0)
+            let ctx = plane.cvs.getContext('2d', { willReadFrequently:true })
+            if(!ctx)throw Error('invalid ctx!')
+            let preCompositeOperation = ctx.globalCompositeOperation
+            ctx.save()
+            {
+              ctx.fillStyle=getColor(plane.v)
+              ctx.fillRect(0,0,plane.cvs.width,plane.cvs.height)
+              ctx.globalCompositeOperation='destination-in'
+            }
+            ctx.translate(plane.cvs.width/2,plane.cvs.height/2)
+            ctx.rotate(plane.rad)
+            const {i,j} = getFeather(plane.v)
+            ctx.drawImage(planeCvs,15*i,30*j,14,29,-plane.w/2,-plane.h/2,plane.w,plane.h)
+            ctx.globalCompositeOperation=preCompositeOperation
+            // {
+            //   ctx.fillStyle='#ffffff88'
+            //   ctx.strokeStyle='white'
+            //   ctx.lineWidth=1
+            //   ctx.fillRect(-plane.w/2,-plane.h/2,plane.w,plane.h)
+            //   ctx.strokeRect(-plane.w/2+ctx.lineWidth,-plane.h/2+ctx.lineWidth,plane.w-ctx.lineWidth*2,plane.h-ctx.lineWidth*2)
+            //   ctx.stroke()
+            // }
+            ctx.restore()
+          plane.imgPixel= ctx.getImageData(0,0,plane.width,plane.height)
+        }
       })
     }
     image.src = featherUrl
@@ -257,9 +267,9 @@ export default class PlaneLayer{
     this.quadtree.clear()
     for(let i=0;i<this.spirits.length;i++) {
       let item = this.spirits[i]
-      if(item.showToolTips){
-        item.event.emit('move',item.lng,item.lat)
-      }
+      // if(item.showToolTips){
+      //   item.event.emit('move',item.lng,item.lat)
+      // }
 
       item.x = lng2Pixel(item.lng,obj.imgX,2**obj.L,256) - item.width/2
       item.y = lat2Pixel(item.lat,obj.imgY,2**obj.L,256) - item.height/2
@@ -268,10 +278,10 @@ export default class PlaneLayer{
       item.lat = pixel2Lat(item.y+item.vy*deltaTime/1000/(2*Math.PI*6378137)*2**obj.L*256+item.height/2,obj.imgY,2**obj.L,256)
       item.x -= item.pt.x
       item.y -= item.pt.y
-      ctx.beginPath()
-      ctx.fillStyle='blue'
-      ctx.arc(item.x+item.width/2+item.pt.x,item.y+item.height/2+item.pt.y,4,0,Math.PI*2)
-      ctx.fill()
+      // ctx.beginPath()
+      // ctx.fillStyle='blue'
+      // ctx.arc(item.x+item.width/2+item.pt.x,item.y+item.height/2+item.pt.y,4,0,Math.PI*2)
+      // ctx.fill()
       // item.lng += item.vx*deltaTime/1000;
       // item.lat -= item.vy*deltaTime/1000;
 
@@ -307,8 +317,8 @@ export default class PlaneLayer{
       }
 
 
-      ctx.fillStyle = '#ffffff88';
-      ctx.fillRect(this.myCursor.x, this.myCursor.y, this.myCursor.width, this.myCursor.height);
+      // ctx.fillStyle = '#ffffff88';
+      // ctx.fillRect(this.myCursor.x, this.myCursor.y, this.myCursor.width, this.myCursor.height);
     }
     // this.drawQuadtree(ctx,this.quadtree)
     this.drawObjects(ctx)
@@ -316,7 +326,7 @@ export default class PlaneLayer{
   drawObjects(ctx:any) {
     let 矩形碰撞框 = false
     let 需要检测 = false
-    let intersection = true
+    let intersection = false
     for(var i=0;i<this.spirits.length;i++) {
       let item = this.spirits[i]
       if(item.x+item.width>this.quadtree.bounds.x
@@ -340,30 +350,30 @@ export default class PlaneLayer{
               ctx.restore()
             }
             item.cvs&&ctx.drawImage(item.cvs,0,0,item.cvs.width,item.cvs.height,0,0,item.width,item.height)
-            item.showToolTips&&item.cvs_toolTips&&ctx.drawImage(
-              item.cvs_toolTips,
-              0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,
-              -item.cvs_toolTips.width/2+item.width/2+item.pt.x,-item.cvs_toolTips.height,item.cvs_toolTips.width,item.cvs_toolTips.height
-            )
+            // item.showToolTips&&item.cvs_toolTips&&ctx.drawImage(
+            //   item.cvs_toolTips,
+            //   0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,
+            //   -item.cvs_toolTips.width/2+item.width/2+item.pt.x,-item.cvs_toolTips.height,item.cvs_toolTips.width,item.cvs_toolTips.height
+            // )
           }else{
             if(需要检测){
               ctx.fillStyle = 'rgba(48,255,48,0.5)';
               ctx.fillRect(0, 0, item.width, item.height);
             }
             item.cvs&&ctx.drawImage(item.cvs,0,0,item.cvs.width,item.cvs.height,0,0,item.width,item.height)
-            item.showToolTips&&item.cvs_toolTips&&ctx.drawImage(
-              item.cvs_toolTips,
-              0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,
-              -item.cvs_toolTips.width/2+item.width/2+item.pt.x,-item.cvs_toolTips.height,item.cvs_toolTips.width,item.cvs_toolTips.height
-            )
+            // item.showToolTips&&item.cvs_toolTips&&ctx.drawImage(
+            //   item.cvs_toolTips,
+            //   0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,
+            //   -item.cvs_toolTips.width/2+item.width/2+item.pt.x,-item.cvs_toolTips.height,item.cvs_toolTips.width,item.cvs_toolTips.height
+            // )
           }
         } else {
           item.cvs&&ctx.drawImage(item.cvs,0,0,item.cvs.width,item.cvs.height,0,0,item.width,item.height)
-          item.showToolTips&&item.cvs_toolTips&&ctx.drawImage(
-            item.cvs_toolTips,
-            0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,
-            -item.cvs_toolTips.width/2+item.width/2+item.pt.x,-item.cvs_toolTips.height,item.cvs_toolTips.width,item.cvs_toolTips.height
-          )
+          // item.showToolTips&&item.cvs_toolTips&&ctx.drawImage(
+          //   item.cvs_toolTips,
+          //   0,0,item.cvs_toolTips.width,item.cvs_toolTips.height,
+          //   -item.cvs_toolTips.width/2+item.width/2+item.pt.x,-item.cvs_toolTips.height,item.cvs_toolTips.width,item.cvs_toolTips.height
+          // )
         }
         ctx.restore()
         if(!item.lastOverlap&&item.overlap){
@@ -382,42 +392,6 @@ export default class PlaneLayer{
       }
     }
   }
-  drawToolTips(width:number,height:number,text:string,ctx:CanvasRenderingContext2D){
-    let radius=4
-    let triangleW=10
-    let triangleH=4
-    ctx.save()
-    ctx.fillStyle='#ffffffbb'
-    ctx.beginPath()
-    ctx.moveTo(radius,0)
-    ctx.arc(width-radius,radius,radius,Math.PI*3/2,Math.PI*4/2)
-    ctx.arc(width-radius,height-triangleH-radius,radius,Math.PI*0/2,Math.PI*1/2)
-    ctx.lineTo(width/2+triangleW/2,height-triangleH)
-    ctx.lineTo(width/2,height)
-    ctx.lineTo(width/2-triangleW/2,height-triangleH)
-    ctx.arc(radius,height-triangleH-radius,radius,Math.PI/2,Math.PI*2/2)
-    ctx.arc(radius,radius,radius,Math.PI*2/2,Math.PI*3/2)
-    ctx.fill()
-    // ctx.translate(radius,radius)
-    // ctx.fillStyle='black'
-    // ctx.textBaseline='top'
-    // ctx.font='20px kaiti'
-    // ctx.fillText('100',0,0)
-
-
-    let rect = {
-      x:radius,
-      y:radius,
-      width:width-2*radius,
-      height:height-2*radius-triangleH,
-    }
-    let fontSize = this.getFontSizeToFit(ctx, text, "Arial", rect.width, rect.height)
-    ctx.font = fontSize + "px Arial"
-    ctx.fillStyle='#000'
-    this.fillTextCenter(ctx, text, rect.x, rect.y, rect.width, rect.height)
-
-    ctx.restore()
-  }
   drawQuadtree(ctx:any,node:Quadtree) {
     var bounds = node.bounds;
     //no subnodes? draw the current node
@@ -430,28 +404,5 @@ export default class PlaneLayer{
         this.drawQuadtree(ctx,node.nodes[i]);
       }
     }
-  }
-  fillTextCenter(ctx:CanvasRenderingContext2D, text:string, x:number, y:number, width:number, height:number) {
-    ctx.textBaseline = 'bottom';
-    ctx.textAlign = "left";
-    const lines = text.match(/[^\r\n]+/g);
-    if(!lines)throw Error('invalid lines')
-    for (let i = 0; i < lines.length; i++) {
-      let xL = (width - x) / 2
-      xL=0
-      let yL = y + (height / (lines.length + 1)) * (i + 1)
-      ctx.fillText(lines[i], x + xL, y + yL)
-    }
-  }
-  getFontSizeToFit(ctx:CanvasRenderingContext2D, text:string, fontFace:string, width:number, height:number) {
-    ctx.font = `1px ${fontFace}`;
-    let fitFontWidth = Number.MAX_VALUE
-    const lines = text.match(/[^\r\n]+/g);
-    if(!lines)throw Error('invalid lines')
-    lines.forEach((line:any) => {
-        fitFontWidth = Math.min(fitFontWidth, width / ctx.measureText(line).width)
-    })
-    let fitFontHeight = height / (lines.length * 1.4); // if you want more spacing between line, you can increase this value
-    return Math.min(fitFontHeight, fitFontWidth)
   }
 }

@@ -20,10 +20,10 @@ export const useUserStore = defineStore({
     info(){
       return new Promise((resolve,reject)=>{
         getInfo().then((infoRes:any)=>{
-          if(infoRes.code===20000){
+          if(infoRes.data.code===20000){
             this.$patch({
               logined: true,
-              ...infoRes.data,
+              ...infoRes.data.data,
             })
           }else{
             console.log(infoRes)
@@ -42,7 +42,7 @@ export const useUserStore = defineStore({
         // const res = await login({username:'admin',password:'admin'})
         login(data).then((loginRes:any)=>{
           console.log(loginRes)
-          if(loginRes.code===20000){
+          if(loginRes.data.code===20000){
             this.info().then(res=>{
               resolve(res)
             }).catch(e=>{

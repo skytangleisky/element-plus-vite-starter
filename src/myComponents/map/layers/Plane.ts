@@ -9,11 +9,12 @@ export default class Plane {
   vx:number
   vy:number
   v:number
+  mousedown: Function
+  mouseenter: Function
   width: number
   height: number
   check:boolean
   cvs:HTMLCanvasElement
-  cvs_toolTips:HTMLCanvasElement
   showToolTips:boolean
   rad:number
   lng:number
@@ -69,11 +70,16 @@ export default class Plane {
     this.vx=0
     this.vy=0
     this.v=0
+    this.mousedown=(e:PointerEvent)=>{
+      console.log(e,this)
+    }
+    this.mouseenter=(e:MouseEvent)=>{
+      console.log(e,this)
+    }
     this.width=32
     this.height=32
     this.check=false
     this.cvs=document.createElement('canvas')
-    this.cvs_toolTips=document.createElement('canvas')
     this.rad=0
     this.lng=0
     this.lat=0
