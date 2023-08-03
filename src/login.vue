@@ -145,6 +145,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
     background-color: #ffffff88;
     .ep-input{
       .ep-input__inner{
+        caret-color: black;
         -webkit-text-fill-color: grey;
         appearance: none;
         background-image: none;
