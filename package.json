@@ -11,6 +11,7 @@
     "report": "rm -rf dist && cross-env vite build"
   },
   "dependencies": {
+    "ol": "6.15.1",
     "@orillusion/core": "^0.6.5",
     "@pixi/utils": "7.2.4",
     "@rollup/plugin-inject": "^5.0.3",

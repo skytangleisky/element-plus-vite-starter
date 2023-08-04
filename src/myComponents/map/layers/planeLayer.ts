@@ -9,31 +9,31 @@ function getFeather(v:number){
     v<=6?{i:4,j:0}:
     v<=8?{i:5,j:0}:
     v<=10?{i:6,j:0}:
-    v<=12?{i:0,j:1}:
-    v<=14?{i:1,j:1}:
-    v<=16?{i:2,j:1}:
-    v<=18?{i:3,j:1}:
-    v<=20?{i:4,j:1}:
-    v<=22?{i:5,j:1}:
-    v<=24?{i:6,j:1}:
-    v<=26?{i:0,j:2}:
-    v<=28?{i:1,j:2}:
-    v<=30?{i:2,j:2}:
-    v<=32?{i:3,j:2}:
-    v<=34?{i:4,j:2}:
-    v<=36?{i:5,j:2}:
-    v<=38?{i:6,j:2}:
-    v<=40?{i:0,j:3}:
-    v<=42?{i:1,j:3}:
-    v<=44?{i:2,j:3}:
-    v<=46?{i:3,j:3}:
-    v<=48?{i:4,j:3}:
-    v<=50?{i:5,j:3}:
-    v<=52?{i:6,j:3}:
-    v<=54?{i:0,j:4}:
-    v<=56?{i:1,j:4}:
-    v<=58?{i:2,j:4}:
-    {i:3,j:4}
+    v<=12?{i:7,j:0}:
+    v<=14?{i:8,j:0}:
+    v<=16?{i:9,j:0}:
+    v<=18?{i:0,j:1}:
+    v<=20?{i:1,j:1}:
+    v<=22?{i:2,j:1}:
+    v<=24?{i:3,j:1}:
+    v<=26?{i:4,j:1}:
+    v<=28?{i:5,j:1}:
+    v<=30?{i:6,j:1}:
+    v<=32?{i:7,j:1}:
+    v<=34?{i:8,j:1}:
+    v<=36?{i:9,j:1}:
+    v<=38?{i:0,j:2}:
+    v<=40?{i:1,j:2}:
+    v<=42?{i:2,j:2}:
+    v<=44?{i:3,j:2}:
+    v<=46?{i:4,j:2}:
+    v<=48?{i:5,j:2}:
+    v<=50?{i:6,j:2}:
+    v<=52?{i:7,j:2}:
+    v<=54?{i:8,j:2}:
+    v<=56?{i:9,j:2}:
+    v<=58?{i:0,j:3}:
+    {i:1,j:3}
   )
 }
 
@@ -111,8 +111,8 @@ export default class PlaneLayer{
     this.preTime=performance.now()
 
     let image = new Image()
-    image.width=15*7
-    image.height=30*6
+    image.width=16*10+20*(10-1)
+    image.height=32*4+20*(4-1)
     image.onload = () => {
       this.preTime=performance.now()
       fetchList().then((res:any)=>{
@@ -159,8 +159,8 @@ export default class PlaneLayer{
           }
           // plane.w=16*2
           // plane.h=17*2
-          plane.w=15
-          plane.h=30
+          plane.w=16
+          plane.h=32
           // plane.anchor={x:0,y:0}
           if(plane.v<=0){
             plane.anchor={x:0,y:0}
@@ -238,7 +238,7 @@ export default class PlaneLayer{
             ctx.translate(plane.cvs.width/2,plane.cvs.height/2)
             ctx.rotate(plane.rad)
             const {i,j} = getFeather(plane.v)
-            ctx.drawImage(planeCvs,15*i,30*j,14,29,-plane.w/2,-plane.h/2,plane.w,plane.h)
+            ctx.drawImage(planeCvs,36*i,52*j,16,32,-plane.w/2,-plane.h/2,plane.w,plane.h)
             ctx.globalCompositeOperation=preCompositeOperation
             // {
             //   ctx.fillStyle='#ffffff88'

@@ -21,6 +21,10 @@ export const constantRoutes = [
   {
     path: '/deck',
     component: () => import('../myComponents/deck/index.vue')
+  },
+  {
+    path: '/openlayers',
+    component:() => import('../myComponents/openlayers/index.vue')
   }
 ]
 const router = createRouter({
