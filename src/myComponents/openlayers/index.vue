@@ -7,6 +7,11 @@
       <select id="shape-filter"></select>
     </div>
   </div>
+
+  <div id="popup" class="ol-popup">
+    <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+    <div id="popup-content"></div>
+  </div>
 </template>
 <script setup>
 import {onMounted,onBeforeUnmount} from 'vue'
@@ -18,19 +23,49 @@ import VectorSource from 'ol/source/Vector';
 import View from 'ol/View';
 import WebGLPointsLayer from 'ol/layer/WebGLPoints';
 import XYZ from 'ol/source/XYZ';
-import {fromLonLat} from 'ol/proj';
+import {fromLonLat,toLonLat} from 'ol/proj';
 import 'ol/ol.css';
+import Overlay from 'ol/Overlay'
+import {toStringHDMS} from 'ol/coordinate';
 import ufo_sighting_data from './data/ufo_sighting_data.csv?url'
 // import ufo_shapes from './data/ufo_shapes.png?url'
 import ufo_shapes from '../../assets/feather.svg?url'
 // import ufo_shapes from '../../assets/feather.png?url'
+import circle from '../../assets/circle.png?url'
 let aid
 onMounted(()=>{
+  /**
+   * Elements that make up the popup.
+   */
+  const container = document.getElementById('popup');
+  const content = document.getElementById('popup-content');
+  const closer = document.getElementById('popup-closer');
+
+  /**
+   * Create an overlay to anchor the popup to the map.
+   */
+  const overlay = new Overlay({
+    element: container,
+    autoPan: {
+      animation: {
+        duration: 250,
+      },
+    },
+  });
+  closer.onclick=function(){
+    overlay.setPosition(undefined)
+    closer.blur();
+    return false
+  }
+
+
+
   const attributions =
     '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> ' +
     '<a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>';
 
   const map = new Map({
+    overlays:[overlay],
     layers: [
       new TileLayer({
         preload: Infinity,
@@ -88,7 +123,7 @@ onMounted(()=>{
         90,
         90,
       ],
-      offset: [8, 16],
+      offset: [6, 16],
       textureCoord:
       [1/10, 1/4, 1/10+16/(16*10+20*(10-1)), 1/4+32/(32*4+20*(4-1))]
       // [
@@ -111,7 +146,45 @@ onMounted(()=>{
       //   [0.75, 0.5, 1, 1],
       // ],
     },
-  };
+  }
+
+  const style2 = {
+    variables: {
+      filterShape: 'all',
+    },
+    filter: [
+      'any',
+      ['==', ['var', 'filterShape'], 'all'],
+      ['==', ['var', 'filterShape'], ['get', 'shape']],
+    ],
+    symbol: {
+      symbolType: 'image',
+      src: circle,
+      size: 5,
+      color: 'white',
+      textureCoord:
+      [0, 0, 1, 1]
+      // [
+      //   'match',
+      //   ['get', 'shape'],
+      //   'light',
+      //   [0, 0, 0.25, 0.5],
+      //   'sphere',
+      //   [0.25, 0, 0.5, 0.5],
+      //   'circle',
+      //   [0.25, 0, 0.5, 0.5],
+      //   'disc',
+      //   [0.5, 0, 0.75, 0.5],
+      //   'oval',
+      //   [0.5, 0, 0.75, 0.5],
+      //   'triangle',
+      //   [0.75, 0, 1, 0.5],
+      //   'fireball',
+      //   [0, 0.5, 0.25, 1],
+      //   [0.75, 0.5, 1, 1],
+      // ],
+    },
+  }
 
   const shapeSelect = document.getElementById('shape-filter');
   shapeSelect.addEventListener('input', function () {
@@ -141,7 +214,6 @@ onMounted(()=>{
     // key is shape name, value is sightings count
     const shapeTypes = {};
     const features = [];
-
     let prevIndex = csv.indexOf('\n') + 1; // scan past the header line
     let curIndex;
     while ((curIndex = csv.indexOf('\n', prevIndex)) !== -1) {
@@ -159,11 +231,22 @@ onMounted(()=>{
           shape: shape,
           duration: line[3],
           deg:Math.PI/180*parseFloat(line[4]),
+          coords,
           geometry: new Point(fromLonLat(coords)),
         })
-      );
+      )
     }
     shapeTypes['all'] = features.length;
+
+    map.addLayer(
+      new WebGLPointsLayer({
+        source: new VectorSource({
+          features: features,
+          // attributions: 'National UFO Reporting Center',
+        }),
+        style: style2,
+      })
+    );
     map.addLayer(
       new WebGLPointsLayer({
         source: new VectorSource({
@@ -172,17 +255,23 @@ onMounted(()=>{
         }),
         style: style,
       })
-    );
+    )
     fillShapeSelect(shapeTypes);
   });
   client.send();
 
   const info = document.getElementById('info');
-  map.on('pointermove', function (evt) {
+  map.on('pointerdown', function (evt) {
     if (map.getView().getInteracting() || map.getView().getAnimating()) {
       return;
     }
     const text = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
+
+      const coordinate = evt.coordinate;
+      const hdms = toStringHDMS(toLonLat(coordinate));
+      content.innerHTML = '<p>You clicked here:</p><span style="color:#e83e8c;">' + hdms + '</span>';
+      overlay.setPosition(fromLonLat(feature.get('coords')));
+
       const datetime = feature.get('datetime');
       const duration = feature.get('duration');
       const shape = feature.get('shape');
@@ -200,5 +289,48 @@ onBeforeUnmount(()=>{
   cancelAnimationFrame(aid)
 })
 </script>
+
 <style>
+.ol-popup {
+  position: absolute;
+  background-color: white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #cccccc;
+  bottom: 12px;
+  left: -50px;
+  min-width: 280px;
+  color: black;
+}
+.ol-popup:after, .ol-popup:before {
+  top: 100%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+.ol-popup:after {
+  border-top-color: white;
+  border-width: 10px;
+  left: 48px;
+  margin-left: -10px;
+}
+.ol-popup:before {
+  border-top-color: #cccccc;
+  border-width: 11px;
+  left: 48px;
+  margin-left: -11px;
+}
+.ol-popup-closer {
+  text-decoration: none;
+  position: absolute;
+  top: 2px;
+  right: 8px;
+}
+.ol-popup-closer:after {
+  content: "✖";
+}
 </style>
