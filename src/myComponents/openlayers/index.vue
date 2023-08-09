@@ -232,33 +232,26 @@ onMounted(()=>{
       ['==', ['var', 'filterShape'], 'all'],
       ['==', ['var', 'filterShape'], ['get', 'shape']],
     ],
-    symbol: {
-      symbolType: 'image',
-      src: circle,
-      size: 6,
-      color: 'white',
-      textureCoord:
-      [0, 0, 1, 1]
-      // [
-      //   'match',
-      //   ['get', 'shape'],
-      //   'light',
-      //   [0, 0, 0.25, 0.5],
-      //   'sphere',
-      //   [0.25, 0, 0.5, 0.5],
-      //   'circle',
-      //   [0.25, 0, 0.5, 0.5],
-      //   'disc',
-      //   [0.5, 0, 0.75, 0.5],
-      //   'oval',
-      //   [0.5, 0, 0.75, 0.5],
-      //   'triangle',
-      //   [0.75, 0, 1, 0.5],
-      //   'fireball',
-      //   [0, 0.5, 0.25, 1],
-      //   [0.75, 0.5, 1, 1],
-      // ],
-    },
+  "symbol": {
+    "symbolType": "circle",
+    "size": 10,
+    "color": [
+      "match",
+      [
+        "get",
+        "hover"
+      ],
+      1,
+      "#ff3f3f",
+      "#006688"
+    ],
+    "rotateWithView": false,
+    "offset": [
+      0,
+      0
+    ],
+    "opacity": 0.6
+  }
   }
 
   const shapeSelect = document.getElementById('shape-filter');
@@ -339,12 +332,6 @@ onMounted(()=>{
           style: style,
         })
         map.addLayer(layer)
-
-
-        layer.on('postrender',event=>{
-          console.log('postrender',event)
-        })
-
       }else{
         console.error(res.data)
       }
@@ -354,11 +341,10 @@ onMounted(()=>{
   })
 
   const timer = setInterval(()=>{
-    layer.getSource().getFeatures().forEach(feature=>{
-      feature.deg = Math.PI/180*Math.random()*360
+    features.forEach(feature=>{
+      feature.set('deg', Math.PI/180*Math.random()*360)
+      feature.set('speed',Math.random()*60)
     })
-    // layer.getSource().changed()
-    map.render()
   },1000)
   /*
   const client = new XMLHttpRequest();
@@ -422,6 +408,18 @@ onMounted(()=>{
     clearInterval(timer)
   })
   const info = document.getElementById('info');
+  let selected = null
+  map.on('pointermove',function(evt){
+    if(selected!==null){
+      selected.set('hover',0)
+      selected=null
+    }
+    map.forEachFeatureAtPixel(evt.pixel, function (feature) {
+      feature.set('hover',1)
+      selected = feature
+      return true
+    });
+  })
   map.on('pointerdown', function (evt) {
     if (map.getView().getInteracting() || map.getView().getAnimating()) {
       return;
