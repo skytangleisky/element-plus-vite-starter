@@ -41,7 +41,6 @@ export const useUserStore = defineStore({
       return new Promise((resolve,reject)=>{
         // const res = await login({username:'admin',password:'admin'})
         login(data).then((loginRes:any)=>{
-          console.log(loginRes)
           if(loginRes.data.code===20000){
             this.info().then(res=>{
               resolve(res)
