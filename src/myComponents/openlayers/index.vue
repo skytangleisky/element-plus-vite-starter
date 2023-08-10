@@ -1,5 +1,5 @@
 <template>
-  <div id="map" class="map" style="position: absolute;left:0;top:0;width:100vw;height:100vh;"></div>
+  <div id="mapContainer" class="map" style="position: absolute;left:0;top:0;width:100vw;height:100vh;"></div>
   <div id="popup" class="ol-popup">
     <div href="#" id="popup-closer" class="ol-popup-closer"></div>
     <div id="popup-content"></div>
@@ -7,11 +7,12 @@
 </template>
 <script setup>
 import FullScreen from 'ol/control/FullScreen'
-import { onMounted,onBeforeUnmount } from 'vue';
+import { onMounted,onBeforeUnmount,ref } from 'vue';
 import GeoJSON from 'ol/format/GeoJSON.js';
 import Layer from 'ol/layer/Layer.js';
 import Map from 'ol/Map.js';
 import TileLayer from 'ol/layer/Tile.js';
+// import TileLayer from 'ol/layer/WebGLTile.js';
 import XYZ from 'ol/source/XYZ.js';
 import VectorSource from 'ol/source/Vector.js';
 import View from 'ol/View.js';
@@ -25,8 +26,10 @@ import {fromLonLat,toLonLat} from 'ol/proj';
 import Overlay from 'ol/Overlay'
 // import ufo_shapes from './data/ufo_shapes.png?url'
 import ufo_shapes from '~/assets/feather.svg?url'
+// import ufo_shapes from '~/assets/feather.png?url'
 import circle from '~/assets/circle.svg?url'
 import {Circle as CircleStyle, Fill, Stroke, Style} from 'ol/style.js';
+import {fetchList} from '~/api/光恒/station.js'
 
 /** @type {import('ol/style/literal.js').LiteralStyle} */
 
@@ -45,8 +48,8 @@ class WebGLLayer extends Layer {
 const osm = new TileLayer({
   preload:Infinity,
   source: new XYZ({
-    url: 'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}',
-    // url:'https://wprd0{1-4}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'
+    // url: 'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}',
+    url:'https://wprd0{1-4}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'
   })
 });
 
@@ -60,7 +63,6 @@ const vectorLayer = new WebGLLayer({
 let timer
 const getCoord = (i,j) => [i*(16+20)/(16*10+20*(10-1)),j*(32+20)/(32*4+20*(4-1)),i*(16+20)/(16*10+20*(10-1))+16/(16*10+20*(10-1)),j*(32+20)/(32*4+20*(4-1))+32/(32*4+20*(4-1))]
 const getFeather = v => v<=0?0:v<=1?1:v<=2?2:v<=4?4:v<=6?6:v<=8?8:v<=10?10:v<=12?12:v<=14?14:v<=16?16:v<=18?18:v<=20?20:v<=22?22:v<=24?24:v<=26?26:v<=28?28:v<=30?30:v<=32?32:v<=34?34:v<=36?36:v<=38?38:v<=40?40:v<=42?42:v<=44?44:v<=46?46:v<=48?48:v<=50?50:v<=52?52:v<=54?54:v<=56?56:v<=58?58:60
-
 const style = {
   symbol: {
     symbolType: 'image',
@@ -74,7 +76,13 @@ const style = {
       0,'#0000ff',4,'#002aff',8,'#0054ff',12,'#007eff',16,'#00a8ff',20,'#00d2ff',24,'#14d474',28,'#a6dd00',32,'#ffe600',36,'#ffb300',40,'#ff8000',44,'#ff4d00',48,'#ff1a00',52,'#e60000',56,'#b30000',58,'#b30000',60,'#b30000',
     ],
     rotateWithView: true,
-    offset: [8, 16],
+    offset: 
+      ['match',
+      ['get','flag'],
+      0,
+      [0, 0],
+      [8, 16]
+    ],
     textureCoord:
     [
       'match',
@@ -128,8 +136,7 @@ onMounted(()=>{
   const container = document.getElementById('popup');
   const content = document.getElementById('popup-content');
   const closer = document.getElementById('popup-closer');
-  const mapContainer = document.getElementById('map');
-  if(!(container&&content&&closer&&mapContainer))throw Error()
+  if(!(container&&content&&closer))throw Error()
   const overlay = new Overlay({
     element: container,
     autoPan: {
@@ -146,22 +153,27 @@ onMounted(()=>{
   const map = new Map({
     overlays:[overlay],
     layers: [osm, vectorLayer],
-    target: 'map',
+    target: document.getElementById('mapContainer'),
     view: new View({
-      center: fromLonLat([105,30]),
-      zoom: 8,
+      // center: fromLonLat([105,30]),
+      // zoom:8,
+      center: fromLonLat([115.33123283436979, 39.56864128657364]),
+      zoom: 12,
     }),
   });
   map.addControl(new FullScreen())
   let selected = null
   map.on('pointermove',function(evt){
     if(selected!==null){
-      selected.set('hover',0)
+      selected.set('hover')
       selected=null
     }
     map.forEachFeatureAtPixel(evt.pixel, function (feature) {
+      if(selected&&selected!=feature){
+        selected.set('hover',0)
+      }
       feature.set('hover',1)
-        selected = feature
+      selected = feature
     });
   })
   map.on('pointerdown', function (evt) {
@@ -183,45 +195,55 @@ onMounted(()=>{
       }
     });
   });
-  const features = []
-  const features2 = []
-  for(let i=0;i<800;i++){
-    let lngLat = [105+(Math.random()-0.5)*10,30+(Math.random()-0.5)*10]
-    const speed = Math.random()*60
-    features.push(new Feature({
-      speed,
-      deg:Math.PI/180*Math.random()*360,
-      flag:getFeather(speed),
-      geometry: new Point(fromLonLat(lngLat))
-    }))
-
-    features2.push(new Feature({
-      coords:lngLat,
-      geometry: new Point(fromLonLat(lngLat))
-    }))
-  }
-
+  map.on('moveend',function(){
+    let view = map.getView()
+    // console.log(view.getZoom(),toLonLat(view.getCenter()))
+  })
+  fetchList().then(res=>{
+    if(res.status==200){
+      if(res.data.code==200){
+        let data = res.data.data
+        for(let i=0;i<data.length;i++){
+          let lngLat = [data[i].longitude,data[i].latitude]
+          source.addFeature(new Feature({
+            deg:Math.PI/180*Math.random()*360,
+            flag:getFeather(Math.random()*60),
+            geometry: new Point(fromLonLat(lngLat))
+          }))
+          source2.addFeature(new Feature({
+            coords:lngLat,
+            geometry: new Point(fromLonLat(lngLat))
+          }))
+        }
+      }else{
+        throw res.data
+      }
+    }else{
+      throw Error(res.status)
+    }
+  }).catch(e=>{
+    throw e
+  })
+  const source = new VectorSource()
+  const source2= new VectorSource()
   map.addLayer(new WebGLPointsLayer({
-    source: new VectorSource({
-      features:features2
-    }),
+    source:source2,
     style:style2,
   }))
   map.addLayer(new WebGLPointsLayer({
-    source:new VectorSource({
-      features
-    }),
+    source,
     style,
   }))
-  timer = setInterval(()=>{
-    features.forEach(feature=>{
-      // feature.set('deg',Math.PI/180*Math.random()*360)
-      feature.set('deg',Math.PI/180*Math.random()*360)
-    })
-  },1000)
+  // timer = setInterval(()=>{
+  //   source.getFeatures().forEach(feature=>{
+  //     feature.set('deg',Math.PI/180*Math.random()*360)
+  //     let geometry = feature.get('geometry')
+  //     geometry.setCoordinates(fromLonLat([110,30]))
+  //     feature.set('geometry',geometry)
+  //   })
+  // },1000)
 })
 onBeforeUnmount(()=>{
-  
   clearInterval(timer)
 })
 </script>
