@@ -26,16 +26,34 @@
 
 </template>
 <script lang="ts" setup>
+import {h} from 'vue'
 import { useUserStore } from '~/stores/user'
 import { Select, Setting, Close, SwitchButton, ColdDrink, User, CloseBold } from '@element-plus/icons-vue'
 import router from '~/router'
+import { ElMessage } from 'element-plus'
 const user = useUserStore()
 const login = () => {
 
 }
 const logout = () => {
-  user.Logout()
+  user.$reset()
+  user.Logout().catch(e=>{
+    throw e
+  })
   router.push({path:'/login',replace:true})
+
+
+  // user.Logout().then(()=>{
+  //   router.push({path:'/login',replace:true})
+  // }).catch(e=>{
+  //   ElMessage({
+  //     message: h('p', null, [
+  //       // h('span', null, 'Message can be '),
+  //       h('i', { style: 'color: teal' }, e.message),
+  //     ]),
+  //     type:'error'
+  //   })
+  // })
 }
 </script>
 <style lang="scss">

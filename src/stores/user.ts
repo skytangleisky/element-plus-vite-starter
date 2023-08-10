@@ -61,10 +61,13 @@ export const useUserStore = defineStore({
       })
     },
     Logout(){
-      logout().then(()=>{
-        this.$reset()
-      }).catch(e=>{
-        console.error(e)
+      return new Promise((resolve,reject)=>{
+        logout().then(res=>{
+          this.$reset()
+          resolve(res)
+        }).catch(e=>{
+          reject(e)
+        })
       })
     }
   },
