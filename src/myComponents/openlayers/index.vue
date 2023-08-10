@@ -1,13 +1,5 @@
 <template>
   <div id="map" class="map" style="position: absolute;left:0;top:0;width:100vw;height:100vh;"></div>
-  <div style="position: absolute;left:0;top:0;background-color: #2b2b2b;display: none;">
-    <div>Current sighting: <span id="info"></span></div>
-    <div>
-      <label for="shape-filter">Filter by UFO shape:</label>
-      <select id="shape-filter"></select>
-    </div>
-  </div>
-
   <div id="popup" class="ol-popup">
     <div href="#" id="popup-closer" class="ol-popup-closer"></div>
     <div id="popup-content"></div>
@@ -190,7 +182,6 @@ onMounted(()=>{
         return `On ${datetime}, lasted ${duration} seconds and had a "${shape}" shape.`;
       }
     });
-    info.innerText = text || '';
   });
   const features = []
   const features2 = []
@@ -230,6 +221,7 @@ onMounted(()=>{
   },1000)
 })
 onBeforeUnmount(()=>{
+  
   clearInterval(timer)
 })
 </script>
