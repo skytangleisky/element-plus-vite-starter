@@ -7,7 +7,7 @@
 </template>
 <script setup>
 import FullScreen from 'ol/control/FullScreen'
-import { onMounted,onBeforeUnmount,ref } from 'vue';
+import { onMounted,onBeforeUnmount,watch } from 'vue';
 import GeoJSON from 'ol/format/GeoJSON.js';
 import Layer from 'ol/layer/Layer.js';
 import Map from 'ol/Map.js';
@@ -29,8 +29,10 @@ import ufo_shapes from '~/assets/feather.svg?url'
 // import ufo_shapes from '~/assets/feather.png?url'
 import circle from '~/assets/circle.svg?url'
 import {Circle as CircleStyle, Fill, Stroke, Style} from 'ol/style.js';
-import {fetchList} from '~/api/光恒/station.js'
+import { eventbus } from '~/eventbus';
+import { useStationStore } from '~/stores/station';
 
+const station = useStationStore()
 /** @type {import('ol/style/literal.js').LiteralStyle} */
 
 class WebGLLayer extends Layer {
@@ -133,6 +135,7 @@ const style2 = {
   }
 }
 onMounted(()=>{
+  eventbus.on('将站点移动到屏幕中心',flyTo)
   const container = document.getElementById('popup');
   const content = document.getElementById('popup-content');
   const closer = document.getElementById('popup-closer');
@@ -161,6 +164,23 @@ onMounted(()=>{
       zoom: 12,
     }),
   });
+  function flyTo(v) {
+    console.log(v)
+    let zoom = map.getView().getZoom()
+    const duration = 2000;
+    // map.getView().animate({
+    //   center:fromLonLat([110,30]),
+    //   duration:2000
+    // })
+    map.getView().cancelAnimations()
+    map.getView().animate(
+      {
+        zoom: 16,
+        center:fromLonLat([v.longitude,v.latitude]),
+        duration: duration,
+      }
+    )
+  }
   map.addControl(new FullScreen())
   let selected = null
   map.on('pointermove',function(evt){
@@ -199,31 +219,24 @@ onMounted(()=>{
     let view = map.getView()
     // console.log(view.getZoom(),toLonLat(view.getCenter()))
   })
-  fetchList().then(res=>{
-    if(res.status==200){
-      if(res.data.code==200){
-        let data = res.data.data
-        for(let i=0;i<data.length;i++){
-          let lngLat = [data[i].longitude,data[i].latitude]
-          source.addFeature(new Feature({
-            deg:Math.PI/180*Math.random()*360,
-            flag:getFeather(Math.random()*60),
-            geometry: new Point(fromLonLat(lngLat))
-          }))
-          source2.addFeature(new Feature({
-            coords:lngLat,
-            geometry: new Point(fromLonLat(lngLat))
-          }))
-        }
-      }else{
-        throw res.data
-      }
-    }else{
-      throw Error(res.status)
+  watch(station,newValue=>{
+    console.log(newValue.result)
+    const data = newValue.result
+    source.getFeatures().forEach(feature=>source.removeFeature(feature))
+    source2.getFeatures().forEach(feature=>source2.removeFeature(feature))
+    for(let i=0;i<data.length;i++){
+      let lngLat = [data[i].longitude,data[i].latitude]
+      source.addFeature(new Feature({
+        deg:Math.PI/180*Math.random()*360,
+        flag:getFeather(Math.random()*60),
+        geometry: new Point(fromLonLat(lngLat))
+      }))
+      source2.addFeature(new Feature({
+        coords:lngLat,
+        geometry: new Point(fromLonLat(lngLat))
+      }))
     }
-  }).catch(e=>{
-    throw e
-  })
+  },{deep:true})
   const source = new VectorSource()
   const source2= new VectorSource()
   map.addLayer(new WebGLPointsLayer({
@@ -242,10 +255,30 @@ onMounted(()=>{
   //     feature.set('geometry',geometry)
   //   })
   // },1000)
+
+
+  function processData(data){
+    for(let i=0;i<data.length;i++){
+      let lngLat = [data[i].longitude,data[i].latitude]
+      source.addFeature(new Feature({
+        deg:Math.PI/180*Math.random()*360,
+        flag:getFeather(Math.random()*60),
+        geometry: new Point(fromLonLat(lngLat))
+      }))
+      source2.addFeature(new Feature({
+        coords:lngLat,
+        geometry: new Point(fromLonLat(lngLat))
+      }))
+    }
+  }
+  processData(station.result)
+
+  onBeforeUnmount(()=>{
+    eventbus.off('将站点移动到屏幕中心',flyTo)
+    clearInterval(timer)
+  })
 })
-onBeforeUnmount(()=>{
-  clearInterval(timer)
-})
+
 </script>
 
 <style>

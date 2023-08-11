@@ -1,7 +1,7 @@
 <template>
   <my-header></my-header>
   <div class="flex flex-row flex-1">
-    <!-- <div class="w-100px h-100% bg-blue"></div> -->
+    <div class="w-100px h-100% bg-blue"></div>
     <menus class="menus"><!--<div class="nav-wrapper">人影空域申报系统</div>--></menus>
   </div>
   <!-- <search></search> -->

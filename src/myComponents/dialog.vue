@@ -16,17 +16,13 @@
               <th>代码</th>
               <th>名称</th>
               <th>状态</th>
-              <th>装备</th>
-              <th>ID</th>
             </tr>
           </thead>
           <tbody style="position: relative;">
-            <tr v-for="(v,k) in menus" :key="v.id" @contextmenu.prevent="event=>contextmenu(event,v)">
-              <td>{{ v.code }}</td>
+            <tr v-for="(v,k) in station.result" :key="v.radar_id" @contextmenu.prevent="event=>contextmenu(event,v)" @click="flyTo(v)">
+              <td>{{ v.radar_id.substring(0,4) }}</td>
               <td>{{ v.name }}</td>
-              <td :class="v.status=='在线'?'color-green':'color-red'">{{ v.status }}</td>
-              <td>{{ v.equipment }}</td>
-              <td>{{ v.id }}</td>
+              <td :class="v.status==true?'color-green':'color-red'">{{ v.status?'在线':'离线' }}</td>
             </tr>
           </tbody>
         </table>
@@ -42,7 +38,10 @@
 </template>
 <script lang="ts" setup>
 import { reactive,onMounted } from 'vue'
+import { useStationStore } from '~/stores/station';
 import { eventbus } from '~/eventbus';
+const station = useStationStore()
+station.FetchList()
 const menus = reactive([
   {code:291,name:'白河堡作业点',status:'离线',equipment:'火箭',id:'110229041'},
   {code:295,name:'千家店作业点',status:'在线',equipment:'火箭',id:'110229042'},
@@ -68,6 +67,9 @@ const contextmenu = (event:MouseEvent,v:any) => {
 const click = (event:MouseEvent) => {
   eventbus.emit('站点列表菜单点击',currentStation,(event.target as HTMLElement).innerText)
   $('.menuUl').trigger('blur')
+}
+const flyTo = (v:any)=>{
+  eventbus.emit('将站点移动到屏幕中心',v)
 }
 const toggleCollapse = () => {
   $('.dragDialog').toggleClass('collapse')

@@ -33,7 +33,8 @@
 <script lang="ts" setup>
   import { eventbus } from '~/eventbus'
   import Box from '../../myComponents/box.vue'
-  import myMap from '../map/index.vue'
+  // import myMap from '../map/index.vue' //用canvas绘制的地图
+  import myMap from '../openlayers/index.vue' //基于openlayers的地图
   import { ref, watch, onMounted, onBeforeUnmount, reactive } from 'vue'
   import submenu from './menu.vue'
   import menusData from './menusData'

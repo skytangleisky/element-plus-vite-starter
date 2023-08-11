@@ -15,7 +15,7 @@ export const useDataStore = defineStore({
     FetchList(query:any){
       fetchList(query).then((result:any)=>{
         console.log(result)
-        this.$patch({result})
+        this.$patch({result:result.data})
       }).catch(()=>{
         this.$reset()
       })
