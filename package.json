@@ -11,7 +11,6 @@
     "report": "rm -rf dist && cross-env vite build"
   },
   "dependencies": {
-    "ol": "7.4.0",
     "@orillusion/core": "^0.6.5",
     "@pixi/utils": "7.2.4",
     "@rollup/plugin-inject": "^5.0.3",
@@ -21,8 +20,9 @@
     "element-plus": "^2.2.13",
     "gl-matrix": "^3.4.3",
     "gsap": "^3.11.5",
-    "jquery": "^3.6.4",
+    "jquery": "^3.7.0",
     "nprogress": "^0.2.0",
+    "ol": "7.4.0",
     "pinia": "^2.0.33",
     "pinia-plugin-persistedstate": "^3.1.0",
     "pixi.js": "^7.2.4",

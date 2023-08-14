@@ -7,20 +7,21 @@ const whiteList=['/login','/qqlogin','/register','/404','/401']
 router.beforeEach((to,from,next)=>{
   NProgress.start()
   // document.title = 'abcdef'
-  const user = useUserStore()
-  if(user.logined){
-    if(to.path === '/login'||to.path === '/register'){
-      next({path: '/',replace:true})
-    }else{
-      next()
-    }
-  }else{
-    if(whiteList.includes(to.path)){
-      next()
-    }else{
-      next({path:'/login',replace:true})
-    }
-  }
+  // const user = useUserStore()
+  // if(user.logined){
+  //   if(to.path === '/login'||to.path === '/register'){
+  //     next({path: '/',replace:true})
+  //   }else{
+  //     next()
+  //   }
+  // }else{
+  //   if(whiteList.includes(to.path)){
+  //     next()
+  //   }else{
+  //     next({path:'/login',replace:true})
+  //   }
+  // }
+  next()
 })
 router.afterEach((to,from)=>{
   NProgress.done()

@@ -1,5 +1,5 @@
 <template>
-  <ol class="menu relative flex items-start content-center flex-row h-full m-0 pl-1em" style="overflow: hidden;"><!--导航栏-->
+  <ol class="menu ol_list" style="overflow: hidden;"><!--导航栏-->
     <my-map></my-map>
     <slot></slot>
     <box class="info-box" right bottom>
@@ -22,9 +22,9 @@
     <my-dialog></my-dialog>
     <dialog-plan-request class="z-1" v-model:show="planShow"></dialog-plan-request>
     <dialog-prev-request class="z-2" v-model:show="prevShow"></dialog-prev-request>
-    <li tabindex="-1" v-for="(item,index) in list" :key="index" @mouseenter="mouseenter">
+    <li class="li_item" tabindex="-1" v-for="(item,index) in list" :key="index" @mouseenter="mouseenter">
       {{ item.name }}
-      <ol class="absolute flex-col left-0 p-0 top-100% z-99999" v-if="item.children" :style="'left:' + (item.left?'-1em':'0')"><!--一级菜单-->
+      <ol class="ol_list" v-if="item.children" :style="'left:' + (item.left?'-1em':'0')"><!--一级菜单-->
         <submenu :item.sync="item"></submenu>
       </ol>
     </li>
@@ -103,13 +103,13 @@
   .info-box{
     position: absolute;right:0;bottom:0;
   }
-  ol{
+  .ol_list{
     user-select: none;
     list-style: none;
     position: relative;
     display: none;
     // background: lightgrey;
-    li{
+    .li_item{
       outline: none;
       position: relative;
       display: inline-flex;
@@ -120,16 +120,37 @@
       padding: 1px 4px 1px 4px;
       cursor:default;
     }
-    li:focus-within>ol{
+    .li_item:focus-within>.ol_list{
       display: flex;
     }
   }
   .menu{
+    display: flex;
+    align-items: flex-start;
+    position: relative;
     background-color: transparent;
-    &>li{
+    flex-direction: row;
+    height: 100%;
+    margin: 0;
+    padding-left: 1em;
+    &>.li_item{
       padding:0 8px 0 8px;
+      &>.ol_list{
+        position: absolute;
+        flex-direction: column;
+        left:0;
+        top:100%;
+        z-index: 99999;
+        .li_item .ol_list{
+          position: absolute;
+          flex-direction: column;
+          left: 100%;
+          padding: 4px;
+          top:-4px;
+        }
+      }
     }
-    li>ol{
+    .li_item>.ol_list{
       padding: 4px;
       &::before{
         content:'';
@@ -146,10 +167,10 @@
         backdrop-filter: blur(4px);
       }
     }
-    &>li:focus-within{
+    &>.li_item:focus-within{
       background-color: rgba(150, 150, 150, .5);
       border-radius: 4px;
-      li{
+      .li_item{
         align-items: center;
         justify-content: space-between;
         &:focus-within:has(ol){

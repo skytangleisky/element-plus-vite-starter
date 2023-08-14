@@ -38,7 +38,7 @@ export default defineConfig({
     inject({
       $: "jquery",
       jQuery: "jquery",
-      "windows.jQuery": "jquery"
+      "window.jQuery": "jquery"
     }),
     Components({
       // allow auto load markdown components under `./src/components/`

@@ -183,7 +183,7 @@ onMounted(()=>{
   }
   map.addControl(new FullScreen())
   let selected = null
-  map.on('pointermove',function(evt){
+  map.getView().on('pointermove',evt=>{
     if(selected!==null){
       selected.set('hover')
       selected=null
@@ -237,6 +237,7 @@ onMounted(()=>{
       }))
     }
   },{deep:true})
+  station.FetchList()
   const source = new VectorSource()
   const source2= new VectorSource()
   map.addLayer(new WebGLPointsLayer({

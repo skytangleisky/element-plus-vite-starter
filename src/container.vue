@@ -1,7 +1,7 @@
 <template>
   <my-header></my-header>
   <div class="flex flex-row flex-1">
-    <div class="w-100px h-100% bg-blue"></div>
+    <left-menu></left-menu>
     <menus class="menus"><!--<div class="nav-wrapper">人影空域申报系统</div>--></menus>
   </div>
   <!-- <search></search> -->
@@ -31,6 +31,7 @@ import { ref } from 'vue'
 import Search from './myComponents/search.vue'
 import myHeader from './header.vue'
 import Menus from './myComponents/menu/index.vue'
+import leftMenu from './myComponents/leftMenu/index.vue'
 
 // const list = ref([{name:'测试',left:true,children:[{name:'456',leftImgSrc:'checked.svg'},{name:'789',leftImgSrc:'checked.svg'}]}])
 // setTimeout(()=>{
