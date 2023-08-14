@@ -102,6 +102,7 @@
 <style lang="scss">
   .info-box{
     position: absolute;right:0;bottom:0;
+    display: none;
   }
   .ol_list{
     user-select: none;

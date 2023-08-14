@@ -2,7 +2,7 @@
   <div id="mapContainer" class="map" style="position: absolute;left:0;top:0;width:100vw;height:100vh;"></div>
   <div id="popup" class="ol-popup">
     <div href="#" id="popup-closer" class="ol-popup-closer"></div>
-    <div id="popup-content"></div>
+    <div id="popup-content" style="display: flex;flex-direction: column;font-family: Menlo,Consolas,Monaco;"></div>
   </div>
 </template>
 <script setup>
@@ -70,23 +70,22 @@ const style = {
     symbolType: 'image',
     src: ufo_shapes,
     size: [16,32],
-    rotation:['get','deg','number'],
-    color:[
+    rotation:['get','rad','number'],
+    color: [
       'interpolate',
       ['linear'],
       ['get', 'flag'],
       0,'#0000ff',4,'#002aff',8,'#0054ff',12,'#007eff',16,'#00a8ff',20,'#00d2ff',24,'#14d474',28,'#a6dd00',32,'#ffe600',36,'#ffb300',40,'#ff8000',44,'#ff4d00',48,'#ff1a00',52,'#e60000',56,'#b30000',58,'#b30000',60,'#b30000',
     ],
     rotateWithView: true,
-    offset: 
-      ['match',
+    offset: [
+      'match',
       ['get','flag'],
       0,
       [0, 0],
       [8, 16]
     ],
-    textureCoord:
-    [
+    textureCoord: [
       'match',
       ['get','flag'],
       0,getCoord(0,0),
@@ -160,7 +159,7 @@ onMounted(()=>{
     view: new View({
       // center: fromLonLat([105,30]),
       // zoom:8,
-      center: fromLonLat([115.33123283436979, 39.56864128657364]),
+      center: fromLonLat([115.43123283436979, 39.56864128657364]),
       zoom: 12,
     }),
   });
@@ -205,7 +204,13 @@ onMounted(()=>{
       // const hdms = toStringHDMS(toLonLat(coordinate));
       if(feature.get('coords')){
         const hdms = toStringHDMS(feature.get('coords'));
-        content.innerHTML = '<p>You clicked here:</p><span style="color:#e83e8c;">' + hdms + '</span>';
+        content.innerHTML =
+        '<span style="color:#e83e8c;">名&ensp;&ensp;称:' + feature.get('name') + '</span>' +
+        '<span style="color:#e83e8c;">状&ensp;&ensp;态:' + feature.get('is_online') + '</span>' +
+        '<span style="color:#e83e8c;">方向角:' + (feature.get('rad')*180/Math.PI).toFixed(2) + '°</span>' +
+        '<span style="color:#e83e8c;">速&ensp;&ensp;度:' + (feature.get('speed')).toFixed(2) + 'm/s</span>' +
+        '<span style="color:#e83e8c;">经&ensp;&ensp;度:' + feature.get('coords')[0] + '°</span>' +
+        '<span style="color:#e83e8c;">纬&ensp;&ensp;度:' + feature.get('coords')[1] + '°</span>';
         overlay.setPosition(fromLonLat(feature.get('coords')));
 
         const datetime = feature.get('datetime');
@@ -225,13 +230,19 @@ onMounted(()=>{
     source.getFeatures().forEach(feature=>source.removeFeature(feature))
     source2.getFeatures().forEach(feature=>source2.removeFeature(feature))
     for(let i=0;i<data.length;i++){
+      const speed = Math.random()*60
+      const rad = Math.PI/180*Math.random()*360
       let lngLat = [data[i].longitude,data[i].latitude]
       source.addFeature(new Feature({
-        deg:Math.PI/180*Math.random()*360,
-        flag:getFeather(Math.random()*60),
+        rad,
+        flag:getFeather(speed),
         geometry: new Point(fromLonLat(lngLat))
       }))
       source2.addFeature(new Feature({
+        name:data[i].name,
+        is_online:data[i].is_online?'在线':'离线',
+        speed,
+        rad,
         coords:lngLat,
         geometry: new Point(fromLonLat(lngLat))
       }))
@@ -250,7 +261,7 @@ onMounted(()=>{
   }))
   // timer = setInterval(()=>{
   //   source.getFeatures().forEach(feature=>{
-  //     feature.set('deg',Math.PI/180*Math.random()*360)
+  //     feature.set('rad',Math.PI/180*Math.random()*360)
   //     let geometry = feature.get('geometry')
   //     geometry.setCoordinates(fromLonLat([110,30]))
   //     feature.set('geometry',geometry)
@@ -261,8 +272,9 @@ onMounted(()=>{
   function processData(data){
     for(let i=0;i<data.length;i++){
       let lngLat = [data[i].longitude,data[i].latitude]
+      const rad = Math.PI/180*Math.random()*360
       source.addFeature(new Feature({
-        deg:Math.PI/180*Math.random()*360,
+        rad,
         flag:getFeather(Math.random()*60),
         geometry: new Point(fromLonLat(lngLat))
       }))
@@ -284,10 +296,12 @@ onMounted(()=>{
 
 <style>
 .ol-popup {
+  width:200px;
+  height: 120px;
   position: absolute;
   background-color: white;
   box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-  padding: 15px;
+  padding: 5px;
   border-radius: 10px;
   border: 1px solid #cccccc;
   bottom: 12px;
