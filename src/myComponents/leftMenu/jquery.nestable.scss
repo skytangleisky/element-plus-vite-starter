@@ -145,19 +145,3 @@ $nestable-empty-class: dd-empty;
 .#{$nestable-no-children-class} .#{$nestable-placeholder-class} {
   display: none;
 }
-
-.icon {
-  height: 1em;
-  width: 1em;
-  line-height: 1em;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  fill: currentColor;
-  font-size: inherit;
-  svg{
-    width: 1em;
-    height: 1em;
-  }
-}

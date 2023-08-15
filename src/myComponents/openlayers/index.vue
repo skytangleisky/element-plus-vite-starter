@@ -2,7 +2,7 @@
   <div id="mapContainer" class="map" style="position: absolute;left:0;top:0;width:100vw;height:100vh;"></div>
   <div id="popup" class="ol-popup">
     <div href="#" id="popup-closer" class="ol-popup-closer"></div>
-    <div id="popup-content" style="display: flex;flex-direction: column;font-family: Menlo,Consolas,Monaco;"></div>
+    <div id="popup-content" style="display: flex;flex-direction: column;"></div>
   </div>
 </template>
 <script setup>
@@ -205,12 +205,12 @@ onMounted(()=>{
       if(feature.get('coords')){
         const hdms = toStringHDMS(feature.get('coords'));
         content.innerHTML =
-        '<span style="color:#e83e8c;">名&ensp;&ensp;称:' + feature.get('name') + '</span>' +
-        '<span style="color:#e83e8c;">状&ensp;&ensp;态:' + feature.get('is_online') + '</span>' +
-        '<span style="color:#e83e8c;">方向角:' + (feature.get('rad')*180/Math.PI).toFixed(2) + '°</span>' +
-        '<span style="color:#e83e8c;">速&ensp;&ensp;度:' + (feature.get('speed')).toFixed(2) + 'm/s</span>' +
-        '<span style="color:#e83e8c;">经&ensp;&ensp;度:' + feature.get('coords')[0] + '°</span>' +
-        '<span style="color:#e83e8c;">纬&ensp;&ensp;度:' + feature.get('coords')[1] + '°</span>';
+        '<span style="color:#e83e8c;">名&emsp;称：' + feature.get('name') + '</span>' +
+        '<span style="color:#e83e8c;">状&emsp;态：' + feature.get('is_online') + '</span>' +
+        '<span style="color:#e83e8c;">速&emsp;度：' + (feature.get('speed')).toFixed(2) + 'm/s</span>' +
+        '<span style="color:#e83e8c;">经&emsp;度：' + feature.get('coords')[0] + '°</span>' +
+        '<span style="color:#e83e8c;">纬&emsp;度：' + feature.get('coords')[1] + '°</span>' +
+        '<span style="color:#e83e8c;">方向角：' + (feature.get('rad')*180/Math.PI).toFixed(2) + '°</span>';
         overlay.setPosition(fromLonLat(feature.get('coords')));
 
         const datetime = feature.get('datetime');
@@ -339,5 +339,9 @@ onMounted(()=>{
 .ol-popup-closer:after {
   color: var(--ep-color-primary);
   content: "✖";
+}
+
+#popup-conternt span{
+  font-family: Menlo,Consolas,Monaco;
 }
 </style>

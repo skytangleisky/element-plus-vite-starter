@@ -1,6 +1,36 @@
 <template>
 <div class="flex-col" style="color:black;background-color: #fff;">
+<div class="icons">
+    <span v-for="v in menus"><i class="icon" style="margin-right: 10px;width:2em;height:2em;" v-html="v.svg"></i>{{ v.name }}</span>
+</div>
     <h1>Nestable2</h1>
+    <el-button text @click="dialogFormVisible = true">open a Form nested Dialog</el-button>
+    <el-dialog v-model="dialogFormVisible" title="Icon">
+        <el-form :model="form" label-width="120px" ref="ruleFormRef" :rules="rules">
+            <el-form-item label="id">
+                <el-input v-model="form.id" placeholder="autogeneration"/>
+            </el-form-item>
+            <el-form-item label="uuid">
+                <el-input v-model="form.uuid" placeholder="autogeneration"/>
+            </el-form-item>
+            <el-form-item label="createtime">
+                <el-input v-model="form.createtime" placeholder="autogeneration"/>
+            </el-form-item>
+            <el-form-item label="updatetime">
+                <el-input v-model="form.updatetime" placeholder="autogeneration"/>
+            </el-form-item>
+            <el-form-item label="name">
+                <el-input v-model="form.name" />
+            </el-form-item>
+            <el-form-item label="svg">
+                <el-input v-model="form.svg" />
+            </el-form-item>
+            <el-form-item>
+                <el-button @click="dialogFormVisible = false">Cancel</el-button>
+                <el-button type="primary" @click="submitForm(ruleFormRef)">Submit</el-button>
+            </el-form-item>
+        </el-form>
+    </el-dialog>
 
 <p>Drag &amp; drop hierarchical list with mouse and touch compatibility (jQuery plugin)</p>
 
@@ -11,6 +41,7 @@
     <button type="button" data-action="collapse-all">Collapse All</button>
     <button type="button" data-action="add-item">Add new item</button>
     <button type="button" data-action="replace-item">Replace item 10</button>
+    <button type="button" data-action="remove-item">Remove item</button>
 </menu>
 
 <div class="cf nestable-lists">
@@ -94,10 +125,37 @@
 </div>
 
 </template>
-<script setup>
-    import {ref,onMounted,onBeforeUnmount} from 'vue'
+<script lang="ts" setup>
+    import {ref,reactive,onMounted,onBeforeUnmount} from 'vue'
+    import {fetchList,saveData} from '~/api/icon.js'
+    import type { FormInstance, FormRules } from 'element-plus'
     import './jquery.nestable.js'
     import './jquery.nestable.scss'
+
+
+    const ruleFormRef = ref<FormInstance>()
+    const rules = reactive<FormRules<typeof form>>({
+    })
+
+    const submitForm = (formEl: FormInstance | undefined) => {
+        if (!formEl) return
+        dialogFormVisible.value = false
+        formEl.validate((valid) => {
+            if (valid) {
+                console.log('submit!')
+                console.log(JSON.stringify(form))
+                saveData([form]).then(res=>{
+                    console.log(res)
+                }).catch(e=>{
+                    throw e
+                })
+            } else {
+                console.log('error submit!')
+                return false
+            }
+        })
+    }
+
     const menus = ref([
         {svg:`<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ea893728=""><path fill="currentColor" d="M480 480V128a32 32 0 0 1 64 0v352h352a32 32 0 1 1 0 64H544v352a32 32 0 1 1-64 0V544H128a32 32 0 0 1 0-64h352z"></path></svg>`},
         {svg:`<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ea893728=""><path fill="currentColor" d="M480 480V128a32 32 0 0 1 64 0v352h352a32 32 0 1 1 0 64H544v352a32 32 0 1 1-64 0V544H128a32 32 0 0 1 0-64h352z"></path></svg>`},
@@ -106,6 +164,21 @@
         {svg:`
         <svg id="图层_1" data-name="图层 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 9.56"><defs><style>.cls-1{fill:#fff;stroke:#231815;stroke-miterlimit:10;}</style></defs><ellipse class="cls-1" cx="16.5" cy="4.78" rx="16" ry="4.28"/></svg>`},
     ])
+
+    const dialogFormVisible = ref(false)
+    const form = reactive({
+        id:undefined,
+        uuid:undefined,
+        createtime:undefined,
+        updatetime:undefined,
+        name:null,
+        svg:null,
+    })
+    fetchList().then(res=>{
+        menus.value = res.data.results
+    }).catch(e=>{
+        throw e
+    })
     onMounted(()=>{
         $(document).ready(function() {
             var updateOutput = function(e) {
@@ -122,7 +195,7 @@
             var json = [
                 {
                     "id": 1,
-                    "content": "First item",
+                    "content": '<i class="icon" style="color:orange">'+menus.value[0].svg+'</i>' + "First item",
                     "classes": ["dd-nochildren"]
                 },
                 {
@@ -233,6 +306,9 @@
                     };
                     $('#nestable').nestable('add', newItem);
                 }
+                if(action === 'remove-item'){
+                    $('#nestable').nestable('remove',lastId--)
+                }
                 if(action === 'replace-item') {
                     var replacedItem = {
                         "id": 10,
@@ -254,6 +330,7 @@
                 }
             });
             $('#nestable3').nestable();
+
         })
     })
     // onBeforeUnmount(()=>{
@@ -442,5 +519,37 @@
 
     .dd3-handle:hover {
         background: #ddd;
+    }
+
+    .icons{
+        border:1px solid red;
+        display: grid;
+        // grid-template-rows: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap:10px;
+        place-items: start;
+        place-content: center;
+        span{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+
+    .icon {
+        height: 1em;
+        width: 1em;
+        line-height: 1em;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        // color:red;
+        fill:currentColor;
+        font-size: inherit;
+        svg{
+            width: inherit;
+            height: inherit;
+        }
     }
 </style>
