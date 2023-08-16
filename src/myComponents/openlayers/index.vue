@@ -191,9 +191,9 @@ onMounted(()=>{
   }
   // map.addControl(new FullScreen())
   let selected = null
-  map.getView().on('pointermove',evt=>{
+  map.on('pointermove',evt=>{
     if(selected!==null){
-      selected.set('hover')
+      selected.set('hover',0)
       selected=null
     }
     map.forEachFeatureAtPixel(evt.pixel, function (feature) {
@@ -303,7 +303,7 @@ onMounted(()=>{
 
 </script>
 
-<style>
+<style lang="scss">
 .ol-popup {
   width:200px;
   height: 120px;
@@ -317,40 +317,36 @@ onMounted(()=>{
   left: -50px;
   min-width: 280px;
   color: black;
-}
-.ol-popup:after, .ol-popup:before {
-  top: 100%;
-  border: solid transparent;
-  content: " ";
-  height: 0;
-  width: 0;
-  position: absolute;
-  pointer-events: none;
-}
-.ol-popup:after {
-  border-top-color: white;
-  border-width: 10px;
-  left: 49px;
-  margin-left: -10px;
-}
-.ol-popup:before {
-  border-top-color: #cccccc;
-  border-width: 11px;
-  left: 49px;
-  margin-left: -11px;
-}
-.ol-popup-closer {
-  text-decoration: none;
-  position: absolute;
-  top: 2px;
-  right: 8px;
-}
-.ol-popup-closer:after {
-  color: var(--ep-color-primary);
-  content: "✖";
-}
-
-#popup-conternt span{
-  font-family: Menlo,Consolas,Monaco;
+  &:after,&:before{
+    top: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+  }
+  &:after {
+    border-top-color: white;
+    border-width: 10px;
+    left: 49px;
+    margin-left: -10px;
+  }
+  &:before {
+    border-top-color: #cccccc;
+    border-width: 12px;
+    left: 49px;
+    margin-left: -12px;
+  }
+  .ol-popup-closer {
+    text-decoration: none;
+    position: absolute;
+    top: 2px;
+    right: 8px;
+    &:after {
+      color: var(--ep-color-primary);
+      content: "✖";
+    }
+  }
 }
 </style>
