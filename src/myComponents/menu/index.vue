@@ -1,7 +1,7 @@
 <template>
   <ol class="menu ol_list" style="overflow: hidden;"><!--导航栏-->
     <my-map></my-map>
-    <slot></slot>
+    <!-- <div class="nav-wrapper">人影空域申报系统</div> -->
     <box class="info-box" right bottom>
       <span>Framerate(FPS)<span>{{ data.fps }}</span></span>
       <span>Level<span>{{ data.level }}</span></span>
@@ -126,14 +126,15 @@
     }
   }
   .menu{
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: flex-start;
     position: relative;
     background-color: transparent;
     flex-direction: row;
-    height: 100%;
     margin: 0;
-    padding-left: 1em;
+    padding-left: 0;
     &>.li_item{
       padding:0 8px 0 8px;
       &>.ol_list{
@@ -193,5 +194,18 @@
         // }
       }
     }
+  }
+
+  .nav-wrapper{
+    position: absolute;
+    top:0;
+    left:0;
+    width: 100%;
+    line-height: 50px;
+    font-size: 1.5em;
+    height: 65px;
+    background: url(~/assets/nav.png) no-repeat;
+    background-size:100% 100%;
+    pointer-events: none;
   }
 </style>

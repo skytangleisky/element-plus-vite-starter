@@ -1,8 +1,8 @@
 <template>
-<div class="flex-col" style="color:black;background-color: #fff;">
-<div class="icons">
-    <span v-for="v in menus"><i class="icon" style="margin-right: 10px;width:2em;height:2em;" v-html="v.svg"></i>{{ v.name }}</span>
-</div>
+<div class="flex-col" style="color:black;background-color: #fff;overflow: auto;">
+    <div class="icons">
+        <span v-for="v in menus"><i class="icon" style="margin-right: 10px;width:2em;height:2em;" v-html="v.svg"></i>{{ v.name }}</span>
+    </div>
     <h1>Nestable2</h1>
     <el-button text @click="dialogFormVisible = true">open a Form nested Dialog</el-button>
     <el-dialog v-model="dialogFormVisible" title="Icon">
@@ -131,6 +131,9 @@
     import type { FormInstance, FormRules } from 'element-plus'
     import './jquery.nestable.js'
     import './jquery.nestable.scss'
+    import router from '~/router'
+    const modules = import.meta.glob('~/**/*.vue')
+    console.log(modules)
 
 
     const ruleFormRef = ref<FormInstance>()
@@ -308,6 +311,14 @@
                 }
                 if(action === 'remove-item'){
                     $('#nestable').nestable('remove',lastId--)
+
+                    // router.addRoute(
+                    //     {
+                    //     path: '/openlayers',
+                    //     component:modules['/src/myComponents/openlayers/index.vue']
+                    //     }
+                    // )
+                    router.push({path:'/openlayers'})
                 }
                 if(action === 'replace-item') {
                     var replacedItem = {

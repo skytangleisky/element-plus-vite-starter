@@ -1,6 +1,10 @@
 <template>
   <el-config-provider namespace="ep" :locale="setting.locale">
-    <router-view></router-view>
+    <router-view v-slot="{ Component }">
+      <keep-alive>
+        <component :is="Component" />
+      </keep-alive>
+    </router-view>
   </el-config-provider>
 </template>
 <script lang="ts" setup>

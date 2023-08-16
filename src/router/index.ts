@@ -1,30 +1,39 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import container from '../container.vue'
-import login from '../login.vue'
+const modules = import.meta.glob('~/**/*.vue')
 export const constantRoutes = [
   {
     path: '/',
-    component: container
+    component: container,
+    redirect:   () => {
+      return { path: '/map' }
+    },
+    children:[
+      {
+        path:'map',
+        component:modules['/src/myComponents/menu/index.vue'],
+      }
+    ]
   },
   {
     path: '/qqlogin',
-    component: () => import('../qqlogin.vue') //最好是异步加载
+    component: modules['/src/qqlogin.vue'] //最好是异步加载
   },
   {
     path: '/login',
-    component: login
+    component: modules['/src/login.vue']
   },
   {
     path: '/pixi',
-    component: () => import('../myComponents/pixi/index.vue') 
+    component: modules['/src/myComponents/pixi/index.vue']
   },
   {
     path: '/deck',
-    component: () => import('../myComponents/deck/index.vue')
+    component: modules['/src/myComponents/deck/index.vu']
   },
   {
     path: '/openlayers',
-    component:() => import('../myComponents/openlayers/index.vue')
+    component:modules['/src/myComponents/menu/index.vue']
   }
 ]
 const router = createRouter({

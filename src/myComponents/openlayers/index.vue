@@ -1,5 +1,5 @@
 <template>
-  <div id="mapContainer" class="map" style="position: absolute;left:0;top:0;width:100vw;height:100vh;"></div>
+  <div id="mapContainer" class="map" style="position: absolute;left:0;top:0;width:100%;height:100%;"></div>
   <div id="popup" class="ol-popup">
     <div href="#" id="popup-closer" class="ol-popup-closer"></div>
     <div id="popup-content" style="display: flex;flex-direction: column;"></div>
@@ -31,6 +31,7 @@ import circle from '~/assets/circle.svg?url'
 import {Circle as CircleStyle, Fill, Stroke, Style} from 'ol/style.js';
 import { eventbus } from '~/eventbus';
 import { useStationStore } from '~/stores/station';
+import {ScaleLine, defaults as defaultControls} from 'ol/control';
 
 const station = useStationStore()
 /** @type {import('ol/style/literal.js').LiteralStyle} */
@@ -162,6 +163,14 @@ onMounted(()=>{
       center: fromLonLat([115.43123283436979, 39.56864128657364]),
       zoom: 12,
     }),
+    //加载控件到地图容器中
+    controls: defaultControls({
+        zoom: false,
+        rotate: false,
+        attribution: false
+    }).extend([
+      new ScaleLine({bar: true, text: true, minWidth: 125})
+    ])
   });
   function flyTo(v) {
     console.log(v)
@@ -180,7 +189,7 @@ onMounted(()=>{
       }
     )
   }
-  map.addControl(new FullScreen())
+  // map.addControl(new FullScreen())
   let selected = null
   map.getView().on('pointermove',evt=>{
     if(selected!==null){
