@@ -1,13 +1,22 @@
 <template>
-  <div id="mapContainer" class="map" style="position: absolute;left:0;top:0;width:100%;height:100%;"></div>
+  <div ref="mapContainer" class="map" style="position: absolute;left:0;top:0;width:100%;height:100%;"></div>
   <div id="popup" class="ol-popup">
+    <div style="position: absolute;background-color:rgb(73,208,37);left:0;right:0;top:0;display: flex;flex-direction: row;justify-content: space-around;padding-right: 20px;align-items: center;"><div class="title">南昌昌北国际机场(ZSCN)</div><div class="latestTime">2020-09-24 16:00更新</div></div>
+    <div id="popup-content" style="position:absolute;display: flex;flex-direction: column;top:30px;justify-content: start;"></div>
     <div href="#" id="popup-closer" class="ol-popup-closer"></div>
-    <div id="popup-content" style="display: flex;flex-direction: column;"></div>
+  </div>
+  <div class="right-drawer">
+    <i class="icon color-blue hover:color-orange" style="width:2em;height:2em;position: absolute;top:10px;right:10px;" @click="disapper">
+      <svg t="1692175718614" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7426"><path d="M861.012317 164.091494C765.809507 68.885661 639.229448 16.455901 504.590713 16.455901S243.372927 68.885661 148.170117 164.091494C52.965291 259.293296 0.534525 385.874363 0.534525 520.51209c0 134.639743 52.430767 261.217786 147.635592 356.422612 95.20281 95.20281 221.782869 147.633577 356.420596 147.633577s261.217786-52.430767 356.420596-147.633577c95.204825-95.204825 147.635592-221.783877 147.635592-356.422612C1008.646902 385.874363 956.217143 259.293296 861.012317 164.091494zM791.219829 810.54584c-4.394084 4.393077-10.152441 6.590623-15.910797 6.590623-5.759364 0-11.518728-2.197546-15.911805-6.590623L504.590713 555.740334 249.785207 810.54584c-4.394084 4.393077-10.152441 6.590623-15.911805 6.590623-5.758356 0-11.516713-2.197546-15.910797-6.590623-8.788169-8.788169-8.788169-23.036448 0-31.824617L472.767104 523.916725 219.336953 270.485566c-8.788169-8.788169-8.788169-23.036448 0-31.824617 8.788169-8.785146 23.035441-8.785146 31.823609 0l253.431158 253.431158 253.431158-253.431158c8.788169-8.785146 23.035441-8.785146 31.823609 0 8.788169 8.788169 8.788169 23.036448 0 31.824617L536.41533 523.916725l254.804499 254.805506C800.007998 787.509392 800.007998 801.757672 791.219829 810.54584z" p-id="7427"></path></svg>
+    </i>
+    <router-link to="/" replace>
+      <el-button type="primary">toHome</el-button>
+    </router-link>
   </div>
 </template>
 <script setup>
 import FullScreen from 'ol/control/FullScreen'
-import { onMounted,onBeforeUnmount,watch } from 'vue';
+import { onMounted,onBeforeUnmount,watch,ref } from 'vue';
 import GeoJSON from 'ol/format/GeoJSON.js';
 import Layer from 'ol/layer/Layer.js';
 import Map from 'ol/Map.js';
@@ -47,7 +56,7 @@ class WebGLLayer extends Layer {
     });
   }
 }
-
+const mapContainer = ref(null)
 const osm = new TileLayer({
   preload:Infinity,
   source: new XYZ({
@@ -63,6 +72,9 @@ const vectorLayer = new WebGLLayer({
     format: new GeoJSON()
   }),
 });
+const disapper = (e)=>{
+  $(e.target).closest('.right-drawer').addClass('disapper')
+}
 let timer
 const getCoord = (i,j) => [i*(16+20)/(16*10+20*(10-1)),j*(32+20)/(32*4+20*(4-1)),i*(16+20)/(16*10+20*(10-1))+16/(16*10+20*(10-1)),j*(32+20)/(32*4+20*(4-1))+32/(32*4+20*(4-1))]
 const getFeather = v => v<=0?0:v<=1?1:v<=2?2:v<=4?4:v<=6?6:v<=8?8:v<=10?10:v<=12?12:v<=14?14:v<=16?16:v<=18?18:v<=20?20:v<=22?22:v<=24?24:v<=26?26:v<=28?28:v<=30?30:v<=32?32:v<=34?34:v<=36?36:v<=38?38:v<=40?40:v<=42?42:v<=44?44:v<=46?46:v<=48?48:v<=50?50:v<=52?52:v<=54?54:v<=56?56:v<=58?58:60
@@ -144,11 +156,12 @@ onMounted(()=>{
     element: container,
     autoPan: {
       animation: {
-        duration: 250,
+        duration: 0,
       },
     },
   });
   closer.onclick=function(){
+    selected=null
     overlay.setPosition(undefined)
     closer.blur();
     return false
@@ -156,7 +169,7 @@ onMounted(()=>{
   const map = new Map({
     overlays:[overlay],
     layers: [osm, vectorLayer],
-    target: document.getElementById('mapContainer'),
+    target: mapContainer.value,
     view: new View({
       // center: fromLonLat([105,30]),
       // zoom:8,
@@ -191,48 +204,49 @@ onMounted(()=>{
   }
   // map.addControl(new FullScreen())
   let selected = null
-  map.on('pointermove',evt=>{
-    if(selected!==null){
-      selected.set('hover',0)
-      selected=null
-    }
-    map.forEachFeatureAtPixel(evt.pixel, function (feature) {
-      if(selected&&selected!=feature){
-        selected.set('hover',0)
+  const pointermoveFunc = evt => {
+    selected&&selected.set('hover',0)
+    map.forEachFeatureAtPixel(evt.pixel, feature => {
+      if(feature.get('station')){
+        if(selected!=feature){
+          console.log('enter')
+          // const coordinate = evt.coordinate;
+          // const hdms = toStringHDMS(toLonLat(coordinate));
+            feature.set('hover',1)
+          //   const hdms = toStringHDMS(feature.get('coords'));
+            content.innerHTML =
+            '<span style="color:#e83e8c;">名&emsp;称：' + feature.get('name') + '</span>' +
+            '<span style="color:#e83e8c;">状&emsp;态：' + feature.get('is_online') + '</span>' +
+            '<span style="color:#e83e8c;">速&emsp;度：' + (feature.get('speed')).toFixed(2) + 'm/s</span>' +
+            '<span style="color:#e83e8c;">经&emsp;度：' + feature.get('coords')[0] + '°</span>' +
+            '<span style="color:#e83e8c;">纬&emsp;度：' + feature.get('coords')[1] + '°</span>' +
+            '<span style="color:#e83e8c;">方向角：' + (feature.get('rad')*180/Math.PI).toFixed(2) + '°</span>';
+            overlay.setPosition(fromLonLat(feature.get('coords')));
+          //   const datetime = feature.get('datetime');
+          //   const duration = feature.get('duration');
+          //   const shape = feature.get('shape');
+          //   return `On ${datetime}, lasted ${duration} seconds and had a "${shape}" shape.`;
+        }
+        selected=feature
+        selected.set('hover',1)
       }
-      feature.set('hover',1)
-      selected = feature
-    });
-  })
-  map.on('pointerdown', function (evt) {
+    })
+  }
+  const pointerdownFunc = evt => {
     if (map.getView().getInteracting() || map.getView().getAnimating()) {
       return;
     }
     const text = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
-      // const coordinate = evt.coordinate;
-      // const hdms = toStringHDMS(toLonLat(coordinate));
-      if(feature.get('coords')){
-        const hdms = toStringHDMS(feature.get('coords'));
-        content.innerHTML =
-        '<span style="color:#e83e8c;">名&emsp;称：' + feature.get('name') + '</span>' +
-        '<span style="color:#e83e8c;">状&emsp;态：' + feature.get('is_online') + '</span>' +
-        '<span style="color:#e83e8c;">速&emsp;度：' + (feature.get('speed')).toFixed(2) + 'm/s</span>' +
-        '<span style="color:#e83e8c;">经&emsp;度：' + feature.get('coords')[0] + '°</span>' +
-        '<span style="color:#e83e8c;">纬&emsp;度：' + feature.get('coords')[1] + '°</span>' +
-        '<span style="color:#e83e8c;">方向角：' + (feature.get('rad')*180/Math.PI).toFixed(2) + '°</span>';
-        overlay.setPosition(fromLonLat(feature.get('coords')));
-
-        const datetime = feature.get('datetime');
-        const duration = feature.get('duration');
-        const shape = feature.get('shape');
-        return `On ${datetime}, lasted ${duration} seconds and had a "${shape}" shape.`;
-      }
+      $('.right-drawer').removeClass('disapper')
     });
-  });
-  map.on('moveend',function(){
+  }
+  const moveendFunc = () => {
     let view = map.getView()
     // console.log(view.getZoom(),toLonLat(view.getCenter()))
-  })
+  }
+  map.on('pointermove',pointermoveFunc)
+  map.on('pointerdown', pointerdownFunc)
+  map.on('moveend',moveendFunc)
   watch(station,newValue=>{
     console.log(newValue.result)
     const data = newValue.result
@@ -248,6 +262,7 @@ onMounted(()=>{
         geometry: new Point(fromLonLat(lngLat))
       }))
       source2.addFeature(new Feature({
+        station:true,
         name:data[i].name,
         is_online:data[i].is_online?'在线':'离线',
         speed,
@@ -298,6 +313,9 @@ onMounted(()=>{
   onBeforeUnmount(()=>{
     eventbus.off('将站点移动到屏幕中心',flyTo)
     clearInterval(timer)
+    map.un('pointermove',pointermoveFunc)
+    map.un('pointerdown',pointerdownFunc)
+    map.un('moveend',moveendFunc)
   })
 })
 
@@ -305,20 +323,18 @@ onMounted(()=>{
 
 <style lang="scss">
 .ol-popup {
-  width:200px;
-  height: 120px;
+  width:340px;
+  height: 280px;
   position: absolute;
   background-color: white;
   box-shadow: 0 1px 4px rgba(0,0,0,0.2);
   padding: 5px;
-  border-radius: 10px;
-  border: 1px solid #cccccc;
-  bottom: 12px;
-  left: -50px;
-  min-width: 280px;
+  border-radius: 4px;
+  border: 1px solid rgb(73,208,37);
+  top: -15px;
+  left: 10px;
   color: black;
   &:after,&:before{
-    top: 100%;
     border: solid transparent;
     content: " ";
     height: 0;
@@ -327,26 +343,54 @@ onMounted(()=>{
     pointer-events: none;
   }
   &:after {
-    border-top-color: white;
-    border-width: 10px;
-    left: 49px;
-    margin-left: -10px;
+    border-right-color: rgb(73,208,37);
+    border-width: 6px;
+    top: 8px;
+    left: -12px;
+    margin-left: -0px;
   }
   &:before {
-    border-top-color: #cccccc;
-    border-width: 12px;
-    left: 49px;
-    margin-left: -12px;
+    border-right-color: rgb(73,208,37);
+    border-width: 8px;
+    top: 6px;
+    left: -16px;
   }
   .ol-popup-closer {
     text-decoration: none;
     position: absolute;
-    top: 2px;
+    top: 6px;
     right: 8px;
     &:after {
       color: var(--ep-color-primary);
       content: "✖";
     }
   }
+  .title{
+    line-height: 30px;
+    color: white;
+    font-size: 16px;
+  }
+  .latestTime{
+    line-height: 30px;
+    font-size: 10px;
+    color:white;
+  }
+}
+
+
+.right-drawer{
+  position: absolute;
+  right: 0;
+  width: 600px;
+  box-sizing: border-box;
+  height: 100%;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  transition: all 250ms;
+}
+.disapper.right-drawer{
+  right: -100%;
+  transition: all 250ms;
 }
 </style>

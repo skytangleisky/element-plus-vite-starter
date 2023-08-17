@@ -318,7 +318,7 @@
                     //     component:modules['/src/myComponents/openlayers/index.vue']
                     //     }
                     // )
-                    router.push({path:'/openlayers'})
+                    router.push({path:'/openlayers',replace:true})
                 }
                 if(action === 'replace-item') {
                     var replacedItem = {

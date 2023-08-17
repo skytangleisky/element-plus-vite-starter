@@ -1,10 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import container from '../container.vue'
 const modules = import.meta.glob('~/**/*.vue')
 export const constantRoutes = [
   {
     path: '/',
-    component: container,
+    component: modules['/src/container.vue'],
     redirect:   () => {
       return { path: '/map' }
     },

@@ -52,14 +52,6 @@ import leftMenu from './myComponents/leftMenu/index.vue'
 @media (prefers-color-scheme: no-preference) {
   /** ... */
 }
-#app {
-  color: var(--ep-text-color-primary);
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  box-sizing: border-box;
-}
 .element-plus-logo {
   width: 50%;
 }
