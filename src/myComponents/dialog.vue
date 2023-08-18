@@ -41,7 +41,6 @@ import { reactive,onMounted } from 'vue'
 import { useStationStore } from '~/stores/station';
 import { eventbus } from '~/eventbus';
 const station = useStationStore()
-station.FetchList()
 const menus = reactive([
   {code:291,name:'白河堡作业点',status:'离线',equipment:'火箭',id:'110229041'},
   {code:295,name:'千家店作业点',status:'在线',equipment:'火箭',id:'110229042'},

@@ -1,9 +1,9 @@
 <template>
   <div ref="mapContainer" class="map" style="position: absolute;left:0;top:0;width:100%;height:100%;"></div>
-  <div id="popup" class="ol-popup">
+  <div ref="popup" class="ol-popup">
     <div style="position: absolute;background-color:rgb(73,208,37);left:0;right:0;top:0;display: flex;flex-direction: row;justify-content: space-around;padding-right: 20px;align-items: center;"><div class="title">南昌昌北国际机场(ZSCN)</div><div class="latestTime">2020-09-24 16:00更新</div></div>
-    <div id="popup-content" style="position:absolute;display: flex;flex-direction: column;top:30px;justify-content: start;"></div>
-    <div href="#" id="popup-closer" class="ol-popup-closer"></div>
+    <div ref="popup_content" style="position:absolute;display: flex;flex-direction: column;top:30px;justify-content: start;"></div>
+    <div href="#" ref="popup_closer" class="ol-popup-closer"></div>
   </div>
   <div class="right-drawer">
     <i class="icon color-blue hover:color-orange" style="width:2em;height:2em;position: absolute;top:10px;right:10px;" @click="disapper">
@@ -57,6 +57,9 @@ class WebGLLayer extends Layer {
   }
 }
 const mapContainer = ref(null)
+const popup = ref(null)
+const popup_content = ref(null)
+const popup_closer = ref(null)
 const osm = new TileLayer({
   preload:Infinity,
   source: new XYZ({
@@ -148,10 +151,9 @@ const style2 = {
 }
 onMounted(()=>{
   eventbus.on('将站点移动到屏幕中心',flyTo)
-  const container = document.getElementById('popup');
-  const content = document.getElementById('popup-content');
-  const closer = document.getElementById('popup-closer');
-  if(!(container&&content&&closer))throw Error()
+  const container = popup.value;
+  const content = popup_content.value;
+  const closer = popup_closer.value;
   const overlay = new Overlay({
     element: container,
     autoPan: {
