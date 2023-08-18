@@ -1,8 +1,8 @@
 <template>
   <div v-dialogDrag class="collapse dragDialog absolute w-300px" style="left:20px;top:20px;">
-    <div class="flex flex-row">
+    <div class="flex flex-row" style="align-items: center;">
       <input @mousedown.stop class="operation_filter flex-1" placeholder="请输入过滤条件">
-      <img src="/src/assets/Right.png" class="dropdown w-40px h-2.5rem" @click="toggleCollapse" @mousedown.stop>
+      <el-icon class="dropdown" style="width:40px;line-height:40px;font-size: 40px;display: flex;align-items: center;" @click="toggleCollapse" @mousedown.stop><svg t="1692335429583" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="9958" width="200" height="200"><path d="M64 320l64-64 384 384L896 256l64 64-448 448z" p-id="9959" data-spm-anchor-id="a313x.search_index.0.i4.4d423a814g60B1" class="selected"></path></svg></el-icon>
     </div>
     <div class="contain" @mousedown.stop>
       <div class="flex flex-row justify-between mt-0.5rem mb-0.5rem">
@@ -76,12 +76,13 @@ const toggleCollapse = () => {
 </script>
 <style lang="scss">
   .dropdown{
-    transform:rotate(-90deg);
+    transform:rotate(180deg);
     user-select: none;
     -webkit-user-drag: none;
+    color:#ccc;
   }
   .collapse.dragDialog .dropdown{
-    transform: rotate(90deg);
+    transform: rotate(0deg);
   }
   .contain{
     position:relative;
