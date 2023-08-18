@@ -9,7 +9,7 @@
         <el-button @mousedown.stop type="default">北京延庆</el-button>
         <el-button @mousedown.stop type="default">还原</el-button>
       </div>
-      <div @scroll="scrolling" style="overflow: auto;border: 1px solid black;box-sizing: border-box;position: relative;">
+      <div @scroll="scrolling" style="overflow: auto;border: 1px solid #ccc;box-sizing: border-box;position: relative;">
         <table>
           <thead style="z-index: 1;">
             <tr class="bg-blue">
@@ -100,7 +100,7 @@ const toggleCollapse = () => {
       border-radius: 8px;
       border: none;
       background-color: #252948;
-      border:1px solid black;
+      border:1px solid grey;
       color: #fff;
       list-style: none;
       padding: 2px;
@@ -127,10 +127,10 @@ const toggleCollapse = () => {
         }
       }
       li:first-child{
-        border-bottom: 1px solid rgba(0, 0, 0, 0.47);
+        border-bottom: 1px solid grey;
       }
       li:last-child{
-        border-top: 1px solid rgba(0, 0, 0, 0.47);
+        border-top: 1px solid grey;
       }
     }
   }
@@ -143,15 +143,15 @@ const toggleCollapse = () => {
   padding: 0.5rem 0.75rem;
   font-size: 1rem;
   line-height: 1.5rem;
-  color: rgba(244,244,245,.6);
-  background-color: #04062088;
+  color: grey;
+  background-color: #eee;
   background-clip: padding-box;
   border: 0 solid #c1ccd3;
   appearance: none;
   border-radius: 0.3rem;
   &:focus{
-    color: rgba(244,244,245,.6);
-    background-color: #040620;
+    color: #000;
+    background-color: #ddd;
     border-color: #4d90fe;
     outline: 0;
   }
@@ -174,7 +174,7 @@ const toggleCollapse = () => {
   border-radius:10px;
   padding:0.5rem;
   // background: linear-gradient(172.98deg,hsla(0,0%,100%,0.08) 1.49%,hsla(0,0%,100%,0.0208) 99.64%);
-  background: #396196;
+  background: white;
   box-shadow: 0 23px 20px -20px rgb(9 10 18 / 10%), 0 0 15px rgb(9 10 18 / 6%);
   table{
     border-collapse: collapse;
@@ -207,7 +207,7 @@ const toggleCollapse = () => {
       }
     }
     th,td{
-      border: 1px solid black;
+      border: 1px solid #ccc;
     }
   }
 }

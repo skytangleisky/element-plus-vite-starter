@@ -144,13 +144,16 @@ const resetForm = (formEl: FormInstance | undefined) => {
     align-items: center;
     background-color: #ffffff88;
     .ep-input{
-      .ep-input__inner{
-        caret-color: black;
-        -webkit-text-fill-color: grey;
-        appearance: none;
-        background-image: none;
-        padding: 15px 0;
-        background-clip: content-box;
+      .ep-input__wrapper{
+        background: transparent;
+        .ep-input__inner{
+          caret-color: black;
+          -webkit-text-fill-color: grey;
+          appearance: none;
+          background-image: none;
+          padding: 15px 0;
+          background-clip: content-box;
+        }
       }
       .ep-input-group__append{
         background: transparent;
