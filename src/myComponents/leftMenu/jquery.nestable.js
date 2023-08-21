@@ -1,4 +1,5 @@
 /*!
+import { rotateX } from '../../tools/gl-matrix/quat';
  * Nestable jQuery Plugin - Copyright (c) 2014 Ramon Smit - https://github.com/RamonSmit/Nestable
  */
 (function($, window, document, undefined) {
@@ -42,8 +43,8 @@
         emptyClass: 'dd-empty',
         //expandBtnHTML: '<button class="dd-expand" data-action="expand" type="button">Expand</button>',
         //collapseBtnHTML: '<button class="dd-collapse" data-action="collapse" type="button">Collapse</button>',
-        expandBtnHTML: '<button class="dd-expand" data-action="expand" type="button"><i class="icon" style="color:#0f0;"><svg t="1691992118145" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5798" width="200" height="200"><path d="M1024 448H576V0H448v448H0v128h448v448h128V576h448z" p-id="5799"></path></svg></i></button>',
-        collapseBtnHTML: '<button class="dd-collapse" data-action="collapse" type="button"><i class="icon" style="color:#f00"><svg t="1691992215226" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7620" width="200" height="200"><path d="M66.462276 431.621065l891.075447 0 0 127.296492L66.462276 558.917558 66.462276 431.621065z" p-id="7621"></path></svg></i></button>',
+        expandBtnHTML: '<button class="dd-expand" data-action="expand" type="button"><i class="icon"><svg t="1692368742984" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7220" width="200" height="200"><path d="M490.061576 311.947636a31.030303 31.030303 0 0 1 43.876848 0l310.303031 310.303031a31.030303 31.030303 0 0 1-43.876849 43.876848L512 377.762909l-288.364606 288.364606a31.030303 31.030303 0 0 1-43.876849-43.876848l310.303031-310.303031z" fill="#303133" p-id="7221"></path></svg></i></button>',
+        // collapseBtnHTML: '<button class="dd-collapse" data-action="collapse" type="button"><i class="icon"><svg t="1692368742984" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7220" width="200" height="200"><path d="M490.061576 311.947636a31.030303 31.030303 0 0 1 43.876848 0l310.303031 310.303031a31.030303 31.030303 0 0 1-43.876849 43.876848L512 377.762909l-288.364606 288.364606a31.030303 31.030303 0 0 1-43.876849-43.876848l310.303031-310.303031z" p-id="7221"></path></svg></i></button>',
         group: 0,
         maxDepth: 5,
         threshold: 20,
@@ -149,12 +150,8 @@
                 var target = $(e.currentTarget),
                     action = target.data('action'),
                     item = target.parents(list.options.itemNodeName).eq(0);
-                if (action === 'collapse') {
-                    list.collapseItem(item);
-                }
-                if (action === 'expand') {
-                    list.expandItem(item);
-                }
+                item.find('>.dd-list').slideToggle(300)
+                item.toggleClass(list.options.collapsedClass)
             });
 
             var onStartEvent = function(e) {
@@ -368,7 +365,6 @@
             $.each(items, function(index, sub) {
                 children += that._buildItem(sub, options);
             });
-
             return options.listRenderer(children, options);
         },
 
@@ -653,10 +649,12 @@
         },
 
         collapseItem: function(li) {
-            var lists = li.children(this.options.listNodeName);
-            if (lists.length) {
-                li.addClass(this.options.collapsedClass);
-            }
+            // var lists = li.children(this.options.listNodeName);
+            // console.log('collapseItem',lists.length)
+            // if (lists.length) {
+            //     li.addClass(this.options.collapsedClass);
+            // }
+            li.addClass(this.options.collapsedClass)
         },
 
         expandAll: function() {
@@ -679,7 +677,7 @@
             // make sure NOT showing two or more sets data-action buttons
             li.children('[data-action]').remove();
             li.prepend($(this.options.expandBtnHTML));
-            li.prepend($(this.options.collapseBtnHTML));
+            // li.prepend($(this.options.collapseBtnHTML));
             }
         },
 

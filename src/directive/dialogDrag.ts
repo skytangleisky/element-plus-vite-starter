@@ -1,4 +1,4 @@
-
+localStorage.setItem('z-index','1')
 import { gsap, Power0, Power1, Power2, Power3, Power4 } from 'gsap'
 export default {
   beforeMount(el:any, binding:any, vnode:any, oldVnode:any) {

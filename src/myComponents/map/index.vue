@@ -197,7 +197,7 @@
     borderLayer.off()
     radarLayer.off()
     routeLayer.off()
-    eventbus.off('move',moveFunc)
+    eventbus.off('move')
     console.log('destroyed')
 
   })

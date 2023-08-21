@@ -40,6 +40,9 @@ import { eventbus } from '~/eventbus';
 import { useStationStore } from '~/stores/station';
 import {ScaleLine, defaults as defaultControls} from 'ol/control';
 import chartDom from '~/myComponents/echarts/index.vue'
+import { getQuery } from '~/utils/tool'
+const query = getQuery()
+console.log(query)
 const station = useStationStore()
 /** @type {import('ol/style/literal.js').LiteralStyle} */
 
@@ -74,7 +77,7 @@ const vectorLayer = new WebGLLayer({
   }),
 });
 const disapper = (e)=>{
-  $(e.target).closest('.right-drawer').addClass('disapper')
+  $(e.currentTarget).closest('.right-drawer').addClass('disapper')
 }
 let timer
 const getCoord = (i,j) => [i*(16+20)/(16*10+20*(10-1)),j*(32+20)/(32*4+20*(4-1)),i*(16+20)/(16*10+20*(10-1))+16/(16*10+20*(10-1)),j*(32+20)/(32*4+20*(4-1))+32/(32*4+20*(4-1))]
@@ -311,7 +314,7 @@ onMounted(()=>{
   processData(station.result)
 
   onBeforeUnmount(()=>{
-    eventbus.off('将站点移动到屏幕中心',flyTo)
+    eventbus.off('将站点移动到屏幕中心')
     clearInterval(timer)
     map.un('pointermove',pointermoveFunc)
     map.un('pointerdown',pointerdownFunc)

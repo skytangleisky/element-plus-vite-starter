@@ -1,14 +1,4 @@
-$nestable-root-class: dd;
-$nestable-list-class: dd-list;
-$nestable-item-class: dd-item;
-$nestable-drag-class: dd-dragel;
-$nestable-handle-class: dd-handle;
-$nestable-collapsed-class: dd-collapsed;
-$nestable-placeholder-class: dd-placeholder;
-$nestable-no-children-class: dd-nochildren;
-$nestable-empty-class: dd-empty;
-
-.#{$nestable-root-class} {
+.dd {
   position: relative;
   display: block;
   margin: 0;
@@ -18,32 +8,30 @@ $nestable-empty-class: dd-empty;
   font-size: 13px;
   line-height: 20px;
 }
-
-.#{$nestable-list-class} {
+.dd-list {
   display: block;
   position: relative;
+  overflow: hidden;
   margin: 0;
   padding: 0;
   list-style: none;
-
-  .#{$nestable-list-class} {
+  .dd-list {
     padding-left: 30px;
   }
 }
-
-.#{$nestable-item-class},
-.#{$nestable-empty-class},
-.#{$nestable-placeholder-class} {
+.dd-item,
+.dd-empty,
+.dd-placeholder {
   display: block;
   position: relative;
   margin: 0;
   padding: 0;
-  min-height: 20px;
+  min-height: 0px;
   font-size: 13px;
   line-height: 20px;
 }
 
-.#{$nestable-handle-class} {
+.dd-handle {
   display: block;
   height: 30px;
   // margin: 5px 0;
@@ -62,7 +50,7 @@ $nestable-empty-class: dd-empty;
   }
 }
 
-.#{$nestable-item-class} > button {
+.dd-item > button {
   position: relative;
   cursor: pointer;
   color:black;
@@ -98,19 +86,22 @@ $nestable-empty-class: dd-empty;
   // }
 }
 
-.dd-expand {
-  display: none;
+// .dd-collapsed .dd-list{
+//   max-height: 0px;
+// }
+button{
+  transform: rotate(0deg);
+  transition:all 250ms;
 }
-.#{$nestable-collapsed-class} .#{$nestable-list-class},
-.#{$nestable-collapsed-class} .dd-collapse {
-  display: none;
-}
-.#{$nestable-collapsed-class} .dd-expand {
-  display: block;
+.dd-collapsed>button{
+  transform: rotate(-180deg);
+  transition:all 300ms;
 }
 
-.#{$nestable-empty-class},
-.#{$nestable-placeholder-class} {
+
+
+.dd-empty,
+.dd-placeholder {
   // margin: 5px 0;
   padding: 0;
   min-height: 30px;
@@ -120,7 +111,7 @@ $nestable-empty-class: dd-empty;
   -moz-box-sizing: border-box;
 }
 
-.#{$nestable-empty-class} {
+.dd-empty {
   border: 1px dashed #bbb;
   min-height: 100px;
   background-color: #e5e5e5;
@@ -128,20 +119,20 @@ $nestable-empty-class: dd-empty;
   background-position: 0 0, 30px 30px;
 }
 
-.#{$nestable-drag-class} {
+.dd-dragel {
   position: absolute;
   pointer-events: none;
   z-index: 9999;
 
-  &> .#{$nestable-item-class} .#{$nestable-handle-class} {
+  &> .dd-item .dd-handle {
     margin-top: 0;
   }
 
-  .#{$nestable-handle-class} {
+  .dd-handle {
     box-shadow: 2px 4px 6px 0 rgba(0,0,0,.1);
   }
 }
 
-.#{$nestable-no-children-class} .#{$nestable-placeholder-class} {
+.dd-nochildren .dd-placeholder {
   display: none;
 }

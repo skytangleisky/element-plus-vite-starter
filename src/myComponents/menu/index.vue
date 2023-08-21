@@ -95,8 +95,8 @@
     eventbus.on('站点列表菜单点击',procStationMenu)
   })
   onBeforeUnmount(()=>{
-    eventbus.off('systemInfo',procInfo)
-    eventbus.off('站点列表菜单点击',procStationMenu)
+    eventbus.off('systemInfo')
+    eventbus.off('站点列表菜单点击')
   })
 </script>
 <style lang="scss">

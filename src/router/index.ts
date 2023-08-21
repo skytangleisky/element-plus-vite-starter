@@ -4,13 +4,15 @@ export const constantRoutes = [
   {
     path: '/',
     component: modules['/src/container.vue'],
-    redirect:   () => {
-      return { path: '/map' }
-    },
+    redirect: { path: '/map' },
     children:[
       {
         path:'map',
         component:modules['/src/myComponents/menu/index.vue'],
+      },
+      {
+        path:'edit',
+        component:modules['/src/myComponents/leftMenu/edit.vue']
       }
     ]
   },

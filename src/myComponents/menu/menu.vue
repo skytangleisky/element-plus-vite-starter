@@ -31,18 +31,19 @@
   const time = 100
   const mouseup = (e:any,item:any,k:any) => {
     if(e.which==1){
-      $(e.target).closest('li').addClass('play')
-      gsap.killTweensOf($(e.target).closest('li'))
-      animation = gsap.fromTo($(e.target).closest('li'),{
+      let currentTarget = $(e.currentTarget)
+      currentTarget.addClass('play')
+      gsap.killTweensOf(currentTarget)
+      animation = gsap.fromTo(currentTarget,{
         opacity:0
       },
       {
         duration:time/1000,
         onComplete(){
-          $(e.target).closest('li').css({opacity:'1'})
+          currentTarget.css({opacity:'1'})
           item?.children[k].onClick&&item?.children[k].onClick(e,item,k)
           // setTimeout(() => {
-          //   $(e.target).closest('li').trigger('blur')
+          //   currentTarget.trigger('blur')
           // }, time);
           // console.log(item?.children[k])
         }

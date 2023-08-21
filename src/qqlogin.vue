@@ -1,12 +1,8 @@
 <template></template>
 <script>
   import axios from 'axios'
-  let params = {}
-  var vars = window.location.toString().substring(window.location.toString().indexOf('#')+1).split('&');
-  for (var i=0;i<vars.length;i++) {
-    var pair = vars[i].split("=");
-    params[pair[0]] = decodeURIComponent(pair[1])
-  }
+  import { getHash } from './utils/tool'
+  let params = getHash()
   if(params.access_token){
     axios.get('/qqAuth/oauth2.0/me',{params:{access_token:params.access_token}}).then(res=>{
       let me = JSON.parse(res.data.substring("callback( ".length,res.data.length-" );\n".length))

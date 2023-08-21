@@ -14,9 +14,10 @@ import "element-plus/theme-chalk/src/message.scss"
 import app from './app'
 // app.use(ElementPlus, { locale });
 import router from './router'
+import dragable from './directive/dialogDrag'
+import VueDOMPurifyHTML from 'vue-dompurify-html'
 app.use(router)
 import './permission'
-localStorage.setItem('z-index','1')
-import dragable from './directive/dialogDrag'
 app.directive('dialogDrag',dragable)
+app.use(VueDOMPurifyHTML)
 app.mount("#app")

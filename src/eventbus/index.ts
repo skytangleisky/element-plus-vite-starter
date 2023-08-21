@@ -15,9 +15,13 @@ export default class Eventbus{
       fn.apply(this,args)
     })
   }
-  off(key:string, callback:Function){
+  off(key:string, callback:Function|undefined=undefined){
     let item = this.map[key]
-    item?.splice(item.findIndex(fn=>fn===callback),1)
+    if(callback){
+      item?.splice(item.findIndex(fn=>fn===callback),1)
+    }else{
+      delete this.map[key]
+    }
   }
   once(key:string, callback:Function){
     let fn = (...args:Array<any>) => {
