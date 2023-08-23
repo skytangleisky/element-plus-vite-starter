@@ -19,10 +19,10 @@
             </tr>
           </thead>
           <tbody style="position: relative;">
-            <tr v-for="(v,k) in station.result" :key="v.radar_id" @contextmenu.prevent="event=>contextmenu(event,v)" @click="flyTo(v)">
-              <td>{{ v.radar_id.substring(0,4) }}</td>
-              <td>{{ v.name }}</td>
-              <td :class="v.status==true?'color-green':'color-red'">{{ v.status?'在线':'离线' }}</td>
+            <tr v-for="(v,k) in station.result" :key="v.radar.radar_id" @contextmenu.prevent="event=>contextmenu(event,v)" @click="flyTo(v)">
+              <td>{{ v.radar.radar_id.substring(0,4) }}</td>
+              <td>{{ v.radar.name }}</td>
+              <td :class="v.is_online==true?'color-green':'color-red'">{{ v.is_online?'在线':'离线' }}</td>
             </tr>
           </tbody>
         </table>

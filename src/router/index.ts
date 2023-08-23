@@ -35,6 +35,7 @@ export const constantRoutes = [
   {
     path: '/openlayers',
     component:modules['/src/myComponents/menu/index.vue']
+    // component:modules['/src/myComponents/openlayers/index.vue']
   }
 ]
 const router = createRouter({

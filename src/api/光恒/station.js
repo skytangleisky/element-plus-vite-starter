@@ -1,11 +1,62 @@
 import request from '../../utils/request'
-const url = '/guangheng/api/radars/'
 export function fetchList(query) {
   return request({
-    url,
+    url: '/guangheng/api/radars',
     method: 'post',
     data: {
-      ent_id:'123'
+      user_id: 'e13df6498a4e46bc8970b95ec47779f5'
+    }
+  })
+}
+
+export function 雷达统计接口(){
+  return request({
+    url: '/guangheng/api/radars/count',
+    method: 'post',
+    data: {
+      user_id: 'e13df6498a4e46bc8970b95ec47779f5'
+    }
+  })
+}
+
+export function 发送电子邮件接口(){
+  return request({
+    url: '/guangheng/api/mail',
+    method: 'post',
+    data: {
+      subject: '文本测试',
+      html_message: '<p>Hello World.</p>',
+      recipient_list: [
+        "2413081441@qq.com"
+      ]
+    }
+  })
+}
+
+export function 发送带附件的邮件接口(){
+  return request({
+    url: '/guangheng/api/mail_with_atachments',
+    method: 'post',
+    data: {
+      subject: '文本测试',
+      html_message: '<p>Hello World.</p>',
+      file_url: 'http://127.0.0.1/测试docx',
+      recipient_list: [
+        "2413081441@qq.com"
+      ]
+    }
+  })
+}
+
+export function 发送短信接口(){
+  return request({
+    url: '/guangheng/api/sms',
+    method: 'post',
+    data: {
+      phone_numbers: "13265328058",
+      sign_name: "阿里云短信测试",
+      template_code: "SMS_154950909",
+      template_param: "{\"code\": \"1234\"}"
     }
   })
 }

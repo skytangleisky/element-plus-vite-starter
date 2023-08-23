@@ -1,20 +1,39 @@
 <template>
-  <div ref="mapContainer" class="map" style="position: absolute;left:0;top:0;width:100%;height:100%;"></div>
-  <div ref="popup" class="ol-popup">
-    <div style="position: absolute;background-color:rgb(73,208,37);left:0;right:0;top:0;display: flex;flex-direction: row;justify-content: space-around;padding-right: 20px;align-items: center;"><div class="title">南昌昌北国际机场(ZSCN)</div><div class="latestTime">2020-09-24 16:00更新</div></div>
-    <div ref="popup_content" style="position:absolute;display: flex;flex-direction: column;top:30px;justify-content: start;"></div>
-    <div href="#" ref="popup_closer" class="ol-popup-closer"></div>
-  </div>
-  <div class="right-drawer">
-    <i class="icon color-blue hover:color-orange" style="width:2em;height:2em;position: absolute;top:10px;right:10px;z-index: 999" @click="disapper">
-      <svg t="1692175718614" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7426"><path d="M861.012317 164.091494C765.809507 68.885661 639.229448 16.455901 504.590713 16.455901S243.372927 68.885661 148.170117 164.091494C52.965291 259.293296 0.534525 385.874363 0.534525 520.51209c0 134.639743 52.430767 261.217786 147.635592 356.422612 95.20281 95.20281 221.782869 147.633577 356.420596 147.633577s261.217786-52.430767 356.420596-147.633577c95.204825-95.204825 147.635592-221.783877 147.635592-356.422612C1008.646902 385.874363 956.217143 259.293296 861.012317 164.091494zM791.219829 810.54584c-4.394084 4.393077-10.152441 6.590623-15.910797 6.590623-5.759364 0-11.518728-2.197546-15.911805-6.590623L504.590713 555.740334 249.785207 810.54584c-4.394084 4.393077-10.152441 6.590623-15.911805 6.590623-5.758356 0-11.516713-2.197546-15.910797-6.590623-8.788169-8.788169-8.788169-23.036448 0-31.824617L472.767104 523.916725 219.336953 270.485566c-8.788169-8.788169-8.788169-23.036448 0-31.824617 8.788169-8.785146 23.035441-8.785146 31.823609 0l253.431158 253.431158 253.431158-253.431158c8.788169-8.785146 23.035441-8.785146 31.823609 0 8.788169 8.788169 8.788169 23.036448 0 31.824617L536.41533 523.916725l254.804499 254.805506C800.007998 787.509392 800.007998 801.757672 791.219829 810.54584z" p-id="7427"></path></svg>
-    </i>
-    <chart-dom></chart-dom>
+  <div style="overflow: hidden;height: 100%;width: 100%;">
+    <div ref="mapContainer" class="map" style="position: absolute;left:0;top:0;width:100%;height:100%;"></div>
+    <div ref="popup" class="ol-popup">
+      <div style="position: absolute;background-color:rgb(73,208,37);left:0;right:0;top:0;display: flex;flex-direction: row;justify-content: space-between;padding-left:10px;padding-right: 25px;align-items: center;"><div class="title">{{ info.title }}</div><div class="latestTime">{{ info.time }}更新</div></div>
+      <div ref="popup_content" style="position:absolute;display: flex;flex-direction: column;top:30px;justify-content: start;">
+        <div style="color:#e83e8c">状&emsp;态：{{ info.status }}</div>
+        <div style="color:#e83e8c">速&emsp;度：{{ info.speed }}</div>
+        <div style="color:#e83e8c">经&emsp;度：{{ info.longitude }}</div>
+        <div style="color:#e83e8c">维&emsp;度：{{ info.latitude }}</div>
+        <div style="color:#e83e8c">方位角：{{ info.deg }}</div>
+      </div>
+      <div href="#" ref="popup_closer" class="ol-popup-closer"></div>
+    </div>
+    <radar-statistic></radar-statistic>
+    <div class="right-drawer disapper b-solid b-0 b-l-coolGray b-l-1px">
+      <el-icon class="m-20px right-10px top-10px z-999" style="font-size:2em;position: absolute;" @click="disapper">
+        <svg class="icon color-blue hover:color-orange" t="1692175718614" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7426"><path d="M861.012317 164.091494C765.809507 68.885661 639.229448 16.455901 504.590713 16.455901S243.372927 68.885661 148.170117 164.091494C52.965291 259.293296 0.534525 385.874363 0.534525 520.51209c0 134.639743 52.430767 261.217786 147.635592 356.422612 95.20281 95.20281 221.782869 147.633577 356.420596 147.633577s261.217786-52.430767 356.420596-147.633577c95.204825-95.204825 147.635592-221.783877 147.635592-356.422612C1008.646902 385.874363 956.217143 259.293296 861.012317 164.091494zM791.219829 810.54584c-4.394084 4.393077-10.152441 6.590623-15.910797 6.590623-5.759364 0-11.518728-2.197546-15.911805-6.590623L504.590713 555.740334 249.785207 810.54584c-4.394084 4.393077-10.152441 6.590623-15.911805 6.590623-5.758356 0-11.516713-2.197546-15.910797-6.590623-8.788169-8.788169-8.788169-23.036448 0-31.824617L472.767104 523.916725 219.336953 270.485566c-8.788169-8.788169-8.788169-23.036448 0-31.824617 8.788169-8.785146 23.035441-8.785146 31.823609 0l253.431158 253.431158 253.431158-253.431158c8.788169-8.785146 23.035441-8.785146 31.823609 0 8.788169 8.788169 8.788169 23.036448 0 31.824617L536.41533 523.916725l254.804499 254.805506C800.007998 787.509392 800.007998 801.757672 791.219829 810.54584z" p-id="7427"></path></svg>
+      </el-icon>
+      <chart-dom></chart-dom>
+    </div>
   </div>
 </template>
 <script setup>
 import FullScreen from 'ol/control/FullScreen'
 import { onMounted,onBeforeUnmount,watch,ref } from 'vue';
+const info=ref({
+  title:'南昌昌北国际机场(ZSCN)',
+  time:'2020-09-24 16:00',
+  name:'',
+  status:'',
+  speed:'',
+  longitude:'',
+  latitude:'',
+  deg:'',
+})
 import GeoJSON from 'ol/format/GeoJSON.js';
 import Layer from 'ol/layer/Layer.js';
 import Map from 'ol/Map.js';
@@ -41,6 +60,8 @@ import { useStationStore } from '~/stores/station';
 import {ScaleLine, defaults as defaultControls} from 'ol/control';
 import chartDom from '~/myComponents/echarts/index.vue'
 import { getQuery } from '~/utils/tool'
+import {linear, inAndOut} from 'ol/easing';
+import radarStatistic from './radarStatistic.vue'
 const query = getQuery()
 console.log(query)
 const station = useStationStore()
@@ -181,11 +202,11 @@ onMounted(()=>{
     }),
     //加载控件到地图容器中
     controls: defaultControls({
-        zoom: false,
-        rotate: false,
-        attribution: false
+      zoom: false,
+      rotate: false,
+      attribution: false
     }).extend([
-      new ScaleLine({bar: true, text: true, minWidth: 125})
+      // new ScaleLine({bar: true, text: true, minWidth: 125})
     ])
   });
   function flyTo(v) {
@@ -199,11 +220,21 @@ onMounted(()=>{
     map.getView().cancelAnimations()
     map.getView().animate(
       {
-        zoom: 16,
         center:fromLonLat([v.longitude,v.latitude]),
         duration: duration,
+        // easing: linear,
       }
     )
+    // map.getView().animate(
+    //   {
+    //     zoom: 6,
+    //     duration: duration/2,
+    //   },
+    //   {
+    //     zoom: 7,
+    //     duration: duration/2,
+    //   }
+    // )
   }
   // map.addControl(new FullScreen())
   let selected = null
@@ -217,13 +248,13 @@ onMounted(()=>{
           // const hdms = toStringHDMS(toLonLat(coordinate));
             feature.set('hover',1)
           //   const hdms = toStringHDMS(feature.get('coords'));
-            content.innerHTML =
-            '<span style="color:#e83e8c;">名&emsp;称：' + feature.get('name') + '</span>' +
-            '<span style="color:#e83e8c;">状&emsp;态：' + feature.get('is_online') + '</span>' +
-            '<span style="color:#e83e8c;">速&emsp;度：' + (feature.get('speed')).toFixed(2) + 'm/s</span>' +
-            '<span style="color:#e83e8c;">经&emsp;度：' + feature.get('coords')[0] + '°</span>' +
-            '<span style="color:#e83e8c;">纬&emsp;度：' + feature.get('coords')[1] + '°</span>' +
-            '<span style="color:#e83e8c;">方向角：' + (feature.get('rad')*180/Math.PI).toFixed(2) + '°</span>';
+            info.value.time = feature.get('time')
+            info.value.title=feature.get('name')
+            info.value.status=feature.get('is_online')
+            info.value.speed=feature.get('speed').toFixed(2)+'m/s'
+            info.value.longitude=feature.get('coords')[0]+'°'
+            info.value.latitude=feature.get('coords')[1]+'°'
+            info.value.deg = (feature.get('rad')*180/Math.PI).toFixed(2) + '°'
             overlay.setPosition(fromLonLat(feature.get('coords')));
           //   const datetime = feature.get('datetime');
           //   const duration = feature.get('duration');
@@ -265,8 +296,9 @@ onMounted(()=>{
         geometry: new Point(fromLonLat(lngLat))
       }))
       source2.addFeature(new Feature({
+        time:data[i].data_time,
         station:true,
-        name:data[i].name,
+        name:data[i].radar.name,
         is_online:data[i].is_online?'在线':'离线',
         speed,
         rad,
@@ -289,9 +321,9 @@ onMounted(()=>{
   // timer = setInterval(()=>{
   //   source.getFeatures().forEach(feature=>{
   //     feature.set('rad',Math.PI/180*Math.random()*360)
-  //     let geometry = feature.get('geometry')
-  //     geometry.setCoordinates(fromLonLat([110,30]))
-  //     feature.set('geometry',geometry)
+  //     // let geometry = feature.get('geometry')
+  //     // geometry.setCoordinates(fromLonLat([110,30]))
+  //     // feature.set('geometry',geometry)
   //   })
   // },1000)
 

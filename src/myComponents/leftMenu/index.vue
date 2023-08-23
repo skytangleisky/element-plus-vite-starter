@@ -47,21 +47,3 @@ import {
   Setting,
 } from '@element-plus/icons-vue'
 </script>
-<style lang="scss">
-    .icon {
-        height: 1em;
-        width: 1em;
-        line-height: 1em;
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        position: relative;
-        // color:red;
-        fill:currentColor;
-        font-size: inherit;
-        svg{
-            width: inherit;
-            height: inherit;
-        }
-    }
-</style>

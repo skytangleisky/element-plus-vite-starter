@@ -2,11 +2,25 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { fetchList } from '../api/光恒/station'
 interface Station {
-  radar_id:string
-  name:string
-  status:boolean
+  data_time:string
+  is_online:boolean
   longitude:number
   latitude:number
+  radar:{
+    ent:{
+      contacts:string
+      ent_id:string
+      name:string
+      phone_number:string
+      uscc:string
+    }
+    name:string
+    radar_id:string
+    type:{
+      name:string
+      type_id:string
+    }
+  }
 }
 export const useStationStore = defineStore({
   id: 'station',
@@ -15,13 +29,14 @@ export const useStationStore = defineStore({
   }),
   actions: {
     FetchList(){
-      // fetchList().then((res:any)=>{
-      //   let result = res.data.data
-      //   this.$patch({result})
-      // }).catch(()=>{
-      //   this.$reset()
-      // })
+      fetchList().then((res:any)=>{
+        let result = res.data.data
+        this.$patch({result})
+      }).catch(()=>{
+        this.$reset()
+      })
 
+      /*
       let res = {
         "code": 200,
         "message": "请求成功。",
@@ -92,6 +107,7 @@ export const useStationStore = defineStore({
         ]
       }
       this.result = res.data
+      */
     }
   },
   persist: false,
