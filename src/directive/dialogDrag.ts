@@ -1,4 +1,4 @@
-localStorage.setItem('z-index','1')
+// localStorage.setItem('z-index','1')
 import { gsap, Power0, Power1, Power2, Power3, Power4 } from 'gsap'
 export default {
   beforeMount(el:any, binding:any, vnode:any, oldVnode:any) {
@@ -41,9 +41,9 @@ export default {
     }
     var pos:any, posl:any
     el.addEventListener('mousedown', (event:any) => {
-      let z = localStorage.getItem('z-index')
-      el.style['z-index']=z
-      localStorage.setItem('z-index',(Number(z)+1).toString())
+      // let z = localStorage.getItem('z-index')
+      // el.style['z-index']=z
+      // localStorage.setItem('z-index',(Number(z)+1).toString())
       var ev = event || window.event
       event.stopPropagation()
       let rect = el.getBoundingClientRect()

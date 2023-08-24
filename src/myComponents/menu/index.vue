@@ -24,7 +24,7 @@
     <dialog-prev-request class="z-2" v-model:show="prevShow"></dialog-prev-request>
     <li class="li_item" tabindex="-1" v-for="(item,index) in list" :key="index" @mouseenter="mouseenter">
       {{ item.name }}
-      <ol class="ol_list" v-if="item.children" :style="'left:' + (item.left?'-1em':'0')"><!--一级菜单-->
+      <ol class="ol_list" v-if="item.children" :style="'left:' + (item.left?'-1em':'0')">
         <submenu :item.sync="item"></submenu>
       </ol>
     </li>
@@ -142,7 +142,6 @@
         flex-direction: column;
         left:0;
         top:100%;
-        z-index: 99999;
         .li_item .ol_list{
           position: absolute;
           flex-direction: column;
