@@ -12,6 +12,7 @@
   display: block;
   position: relative;
   overflow: hidden;
+  transition:height 300ms,max-height 300ms;
   margin: 0;
   padding: 0;
   list-style: none;

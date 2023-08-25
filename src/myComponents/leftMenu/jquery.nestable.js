@@ -150,7 +150,39 @@ import { rotateX } from '../../tools/gl-matrix/quat';
                 var target = $(e.currentTarget),
                     action = target.data('action'),
                     item = target.parents(list.options.itemNodeName).eq(0);
-                item.find('>.dd-list').slideToggle(300)
+                const el = item.find('>.dd-list')
+
+                // if(item.hasClass(list.options.collapsedClass)){
+                //     el.height(el.prop('scrollHeight')+'px')
+                //     el.off('transitionend')
+                //     el.on('transitionend',()=>{
+                //         el.height('auto')
+                //     })
+                // }else{
+                //     el.off('transitionend')
+                //     if(el.prop('style').height==''||el.prop('style').height=='auto')
+                //         el.height(el.prop('scrollHeight')+'px')
+                //     setTimeout(()=>{
+                //         el.height('0px')
+                //     })
+                // }
+
+                if(item.hasClass(list.options.collapsedClass)){
+                    el.css('max-height',el.prop('scrollHeight')+'px')
+                    el.off('transitionend')
+                    el.on('transitionend',()=>{
+                        el.css('max-height','')
+                    })
+                }else{
+                    el.off('transitionend')
+                    if(el.css('max-height')=='none')
+                        el.css('max-height',el.prop('scrollHeight')+'px')
+                    setTimeout(()=>{
+                        el.css('max-height','0px')
+                    })
+                }
+
+                // item.find('>.dd-list').slideToggle(300)
                 item.toggleClass(list.options.collapsedClass)
             });
 

@@ -145,9 +145,9 @@
             if (valid) {
                 console.log('submit!')
                 console.log(JSON.stringify(form))
-                saveData([form]).then(res=>{
+                icon.saveData([form]).then((res:any)=>{
                     console.log(res)
-                }).catch(e=>{
+                }).catch((e:any)=>{
                     throw e
                 })
             } else {
@@ -167,7 +167,7 @@
     })
     onMounted(()=>{
         $(document).ready(function() {
-            var updateOutput = function(e) {
+            var updateOutput = function(e:any) {
                 var list = e.length ? e : $(e.target),
                     output = list.data('output');
                 if(window.JSON) {
