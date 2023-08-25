@@ -5,9 +5,11 @@ export const constantRoutes = [
     path: '/',
     component: modules['/src/container.vue'],
     redirect: { path: '/map' },
+    name:'top',
     children:[
       {
         path:'map',
+        name:'abcdefg',
         component:modules['/src/myComponents/menu/index.vue'],
       },
       {

@@ -129,7 +129,8 @@
     import type { FormInstance, FormRules } from 'element-plus'
     import './jquery.nestable.js'
     import './jquery.nestable.scss'
-    import router from '~/router'
+    import {useRouter} from 'vue-router'
+    const router = useRouter()
     import {useIconStore} from '~/stores/icon'
     const icon = useIconStore()
     icon.FetchList()

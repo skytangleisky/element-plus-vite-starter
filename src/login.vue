@@ -56,7 +56,8 @@ import { User, Lock, Hide, View } from '@element-plus/icons-vue'
 import { useUserStore } from '~/stores/user'
 let user = useUserStore()
 import { ElMessage } from 'element-plus'
-import router from '~/router'
+import {useRouter} from 'vue-router'
+const router = useRouter()
 
 const hide = ref(true)
 const formEl = ref<FormInstance>()
@@ -76,10 +77,10 @@ const submitForm = (formEl: FormInstance | undefined) => {
       user.Login(numberValidateForm).then((res:any)=>{
         loading.value=false
         if(res.data.code==20000){
-          console.log('logined',res)
+          console.log('logined',res.data)
           router.push({path:'/',replace:true})
         }else{
-          openVn(res.message)
+          openVn(res.data.message)
         }
       }).catch(e=>{
         openVn(e.message)

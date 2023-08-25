@@ -1,79 +1,91 @@
 <template>
-  <div class="absolute left-0 top-0 h-full w-350px z-1" style="background-color: rgb(35,49,120);border-top-right-radius: 10px;border-bottom-right-radius: 10px;">
-    <collapse-card title="雷达" v-model:show="show">
-      <div v-for="(v,k) in checks" class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-gray-8 b-t-1px">
-        <span>{{ v.name }}</span>
-        <span>{{ v.val }}</span>
-        <el-switch :before-change="beforeChange" v-model="v.select" class="mt-2" style="margin-left: 24px" inline-prompt :active-icon="Check" :inactive-icon="Close"/>
-      </div>
-    </collapse-card>
-    <collapse-card title="风" v-model:show="show2">
-      <div class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-gray-8 b-t-1px">
-        <span>地面观测</span>
-        <el-switch class="mt-2" style="margin-left: 24px" inline-prompt :active-icon="Check" :inactive-icon="Close"/>
-      </div>
-      <div class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-gray-8 b-t-1px">
-        <span>组合风场</span>
-        <div>
-          <el-select v-model="value" placeholder="Select" size="small" style="width:100px;">
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-          <el-switch class="mt-2" style="margin-left: 24px" inline-prompt :active-icon="Check" :inactive-icon="Close"/>
+  <div class="absolute left-0 top-0 h-full w-300px z-1 box-border bg-blue-9 dark:bg-gray-8" style="background-color: overflow: auto;">
+    <div class="p-r-10px bg-white dark:bg-black" style="border-radius:8px;margin: 8px 10px;">
+      <collapse-card title="雷达" v-model:show="show">
+        <div v-for="(v,k) in checks" class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-gray-9 b-t-1px">
+          <span>{{ v.name }}</span>
+          <span>{{ v.val }}</span>
+          <el-switch :before-change="beforeChange" v-model="v.select" inline-prompt :active-icon="Check" :inactive-icon="Close"/>
         </div>
-      </div>
-      <div class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-gray-8 b-t-1px">
-        <span>天气雷达反演风场</span>
-        <div>
-          <el-select v-model="value" placeholder="Select" size="small" style="width:100px;">
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-          <el-switch class="mt-2" style="margin-left: 24px" inline-prompt :active-icon="Check" :inactive-icon="Close"/>
+      </collapse-card>
+    </div>
+    <div class="p-r-10px bg-white dark:bg-black" style="border-radius:8px;margin: 8px 10px;">
+      <collapse-card title="雷达" v-model:show="show3">
+        <div v-for="(v,k) in checks" class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-gray-9 b-t-1px">
+          <span>{{ v.name }}</span>
+          <span>{{ v.val }}</span>
+          <el-switch :before-change="beforeChange" v-model="v.select" inline-prompt :active-icon="Check" :inactive-icon="Close"/>
         </div>
-      </div>
-      <div class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-gray-8 b-t-1px">
-        <span>融合风场</span>
-        <div>
-          <el-select v-model="value" placeholder="Select" size="small" style="width:100px;">
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-          <el-switch class="mt-2" style="margin-left: 24px" inline-prompt :active-icon="Check" :inactive-icon="Close"/>
+      </collapse-card>
+    </div>
+    <div class="p-r-10px bg-white dark:bg-black" style="border-radius:8px;margin: 8px 10px;">
+      <collapse-card title="风" v-model:show="show2">
+        <div class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-gray-9 b-t-1px">
+          <span>地面观测</span>
+          <el-switch inline-prompt :active-icon="Check" :inactive-icon="Close"/>
         </div>
-      </div>
-      <div class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-gray-8 b-t-1px">
-        <span>风流场</span>
-        <el-switch class="mt-2" style="margin-left: 24px" inline-prompt :active-icon="Check" :inactive-icon="Close"/>
-      </div>
-      <div class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-gray-8 b-t-1px">
-        <span>高空风流场</span>
-        <div>
-          <el-select v-model="value" placeholder="Select" size="small" style="width:100px;">
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-          <el-switch class="mt-2" style="margin-left: 24px" inline-prompt :active-icon="Check" :inactive-icon="Close"/>
+        <div class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-gray-9 b-t-1px">
+          <span>组合风场</span>
+          <div>
+            <el-select v-model="value" placeholder="Select" size="small" style="width:100px;">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+            <el-switch inline-prompt :active-icon="Check" :inactive-icon="Close"/>
+          </div>
         </div>
-      </div>
-    </collapse-card>
-
+        <div class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-gray-9 b-t-1px">
+          <span>天气雷达反演风场</span>
+          <div>
+            <el-select v-model="value" placeholder="Select" size="small" style="width:100px;">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+            <el-switch inline-prompt :active-icon="Check" :inactive-icon="Close"/>
+          </div>
+        </div>
+        <div class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-gray-9 b-t-1px">
+          <span>融合风场</span>
+          <div>
+            <el-select v-model="value" placeholder="Select" size="small" style="width:100px;">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+            <el-switch inline-prompt :active-icon="Check" :inactive-icon="Close"/>
+          </div>
+        </div>
+        <div class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-gray-9 b-t-1px">
+          <span>风流场</span>
+          <el-switch inline-prompt :active-icon="Check" :inactive-icon="Close"/>
+        </div>
+        <div class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-gray-9 b-t-1px">
+          <span>高空风流场</span>
+          <div>
+            <el-select v-model="value" placeholder="Select" size="small" style="width:100px;">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+            <el-switch inline-prompt :active-icon="Check" :inactive-icon="Close"/>
+          </div>
+        </div>
+      </collapse-card>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -83,6 +95,7 @@
   import collapseCard from './collapseCard.vue'
   const show=ref(true)
   const show2=ref(true)
+  const show3=ref(true)
   const beforeChange=()=>{
     for(let k in checks.value){
       checks.value[k].select=false;
