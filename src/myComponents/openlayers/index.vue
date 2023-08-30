@@ -1,5 +1,13 @@
 <template>
-  <div style="width: 100%; height: 100%; overflow: hidden; position: absolute">
+  <div
+    style="
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      position: absolute;
+      background: #2b2b2b;
+    "
+  >
     <div
       ref="mapContainer"
       class="map"
@@ -37,7 +45,7 @@
         <div style="color: #e83e8c">状&emsp;态：{{ info.status }}</div>
         <div style="color: #e83e8c">速&emsp;度：{{ info.speed }}</div>
         <div style="color: #e83e8c">经&emsp;度：{{ info.longitude }}</div>
-        <div style="color: #e83e8c">维&emsp;度：{{ info.latitude }}</div>
+        <div style="color: #e83e8c">纬&emsp;度：{{ info.latitude }}</div>
         <div style="color: #e83e8c">方位角：{{ info.deg }}</div>
       </div>
       <div href="#" ref="popup_closer" class="ol-popup-closer"></div>
@@ -69,7 +77,7 @@
 </template>
 <script setup>
 import FullScreen from "ol/control/FullScreen";
-import { onMounted, onBeforeUnmount, watch, ref } from "vue";
+import { onMounted, onBeforeUnmount, watch, ref, computed, h } from "vue";
 const info = ref({
   title: "南昌昌北国际机场(ZSCN)",
   time: "2020-09-24 16:00",
@@ -80,6 +88,8 @@ const info = ref({
   latitude: "",
   deg: "",
 });
+import { ElMessage } from "element-plus";
+import VectorLayer from "ol/layer/Vector";
 import GeoJSON from "ol/format/GeoJSON.js";
 import Layer from "ol/layer/Layer.js";
 import Map from "ol/Map.js";
@@ -93,14 +103,14 @@ import "ol/ol.css";
 import WebGLPointsLayer from "ol/layer/WebGLPoints.js";
 import Feature from "ol/Feature.js";
 import Point from "ol/geom/Point.js";
-import { toStringHDMS } from "ol/coordinate";
+import { format, toStringHDMS } from "ol/coordinate";
 import { fromLonLat, toLonLat } from "ol/proj";
 import Overlay from "ol/Overlay";
 // import ufo_shapes from './data/ufo_shapes.png?url'
 import ufo_shapes from "~/assets/feather.svg?url";
 // import ufo_shapes from '~/assets/feather.png?url'
 import circle from "~/assets/circle.svg?url";
-import { Circle as CircleStyle, Fill, Stroke, Style } from "ol/style.js";
+import { Circle, Fill, Stroke, Style, Text } from "ol/style.js";
 import { eventbus } from "~/eventbus";
 import { useStationStore } from "~/stores/station";
 import { ScaleLine, defaults as defaultControls } from "ol/control";
@@ -109,7 +119,10 @@ import { useRoute } from "vue-router";
 const route = useRoute();
 import { linear, inAndOut } from "ol/easing";
 import radarStatistic from "./radarStatistic.vue";
-console.log(route.query);
+import { useSettingStore } from "~/stores/setting";
+import { storeToRefs } from "pinia";
+
+console.log("route.query", route.query);
 const station = useStationStore();
 /** @type {import('ol/style/literal.js').LiteralStyle} */
 
@@ -124,25 +137,30 @@ class WebGLLayer extends Layer {
     });
   }
 }
-const mapContainer = ref(null);
-const popup = ref(null);
-const popup_content = ref(null);
-const popup_closer = ref(null);
-const osm = new TileLayer({
-  preload: Infinity,
-  source: new XYZ({
-    // url: 'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}',
-    url: "https://wprd0{1-4}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
-  }),
-});
-
-const vectorLayer = new WebGLLayer({
+const webglLayer = new WebGLLayer({
+  id: "districtLayer",
   source: new VectorSource({
     // url: 'https://openlayers.org/data/vector/ecoregions.json',
     url: "https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json",
     format: new GeoJSON(),
   }),
 });
+const osm = new TileLayer({
+  id: "tileLayer",
+  preload: Infinity,
+  source: new XYZ({
+    // url: 'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}',
+    url: "https://wprd0{1-4}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
+  }),
+});
+const vectorLayer = new VectorLayer({
+  id: "factor",
+});
+
+const mapContainer = ref(null);
+const popup = ref(null);
+const popup_content = ref(null);
+const popup_closer = ref(null);
 const disapper = (e) => {
   $(e.currentTarget).closest(".right-drawer").addClass("disapper");
 };
@@ -343,6 +361,14 @@ const style2 = {
     opacity: 1,
   },
 };
+const stationLayer = new WebGLPointsLayer({
+  id: "station",
+  style: style2,
+});
+const featherLayer = new WebGLPointsLayer({
+  id: "feather",
+  style,
+});
 onMounted(() => {
   eventbus.on("将站点移动到屏幕中心", flyTo);
   const container = popup.value;
@@ -364,7 +390,7 @@ onMounted(() => {
   };
   const map = new Map({
     overlays: [overlay],
-    layers: [osm, vectorLayer],
+    layers: [osm, webglLayer, stationLayer, featherLayer, vectorLayer],
     target: mapContainer.value,
     view: new View({
       // center: fromLonLat([105,30]),
@@ -440,8 +466,12 @@ onMounted(() => {
     if (map.getView().getInteracting() || map.getView().getAnimating()) {
       return;
     }
-    const text = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
-      $(".right-drawer").removeClass("disapper");
+    map.forEachFeatureAtPixel(evt.pixel, (feature) => {
+      if (feature.get("station")) {
+        const text = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
+          $(".right-drawer").removeClass("disapper");
+        });
+      }
     });
   };
   const moveendFunc = () => {
@@ -451,13 +481,19 @@ onMounted(() => {
   map.on("pointermove", pointermoveFunc);
   map.on("pointerdown", pointerdownFunc);
   map.on("moveend", moveendFunc);
+  const source = new VectorSource();
+  const source2 = new VectorSource();
+  const source3 = new VectorSource();
+  vectorLayer.setSource(source3);
+  stationLayer.setSource(source2);
+  featherLayer.setSource(source);
   watch(
-    station,
-    (newValue) => {
-      console.log(newValue.result);
-      const data = newValue.result;
+    storeToRefs(station).result,
+    (newVal) => {
+      const data = newVal;
       source.getFeatures().forEach((feature) => source.removeFeature(feature));
       source2.getFeatures().forEach((feature) => source2.removeFeature(feature));
+      source3.getFeatures().forEach((feature) => source3.removeFeature(feature));
       for (let i = 0; i < data.length; i++) {
         const speed = Math.random() * 60;
         const rad = (Math.PI / 180) * Math.random() * 360;
@@ -479,26 +515,360 @@ onMounted(() => {
             rad,
             coords: lngLat,
             geometry: new Point(fromLonLat(lngLat)),
+            opacity: 1.0,
           })
         );
+        let feature = new Feature({
+          time: data[i].data_time,
+          name: data[i].radar.name,
+          is_online: data[i].is_online ? "在线" : "离线",
+          speed,
+          rad,
+          coords: lngLat,
+          geometry: new Point(fromLonLat(lngLat)),
+          opacity: 1.0,
+        });
+        const gap = 30;
+        feature.setStyle([
+          new Style({
+            text: new Text({
+              font: "14px Menlo",
+              textBaseline: "middle",
+              textAlign: "middle",
+              justify: "center",
+              text: "ZH",
+              offsetX: 0,
+              offsetY: -2 * gap,
+              fill: new Fill({
+                color: [255, 255, 255, 1],
+              }),
+              stroke: new Stroke({ color: "black", width: 1 }),
+              backgroundFill: new Fill({
+                color: [168, 50, 153, 0],
+              }),
+              padding: [0, 0, 0, 0],
+            }),
+          }),
+          new Style({
+            text: new Text({
+              font: "14px Menlo",
+              textBaseline: "middle",
+              textAlign: "middle",
+              justify: "center",
+              text: "FY",
+              offsetX: 2 * gap,
+              offsetY: -2 * gap,
+              fill: new Fill({
+                color: [255, 255, 255, 1],
+              }),
+              stroke: new Stroke({ color: "black", width: 1 }),
+              backgroundFill: new Fill({
+                color: [168, 50, 153, 0],
+              }),
+              padding: [0, 0, 0, 0],
+            }),
+          }),
+          new Style({
+            text: new Text({
+              font: "14px Menlo",
+              textBaseline: "middle",
+              textAlign: "middle",
+              justify: "center",
+              text: "SNR",
+              offsetX: -gap,
+              offsetY: -gap,
+              fill: new Fill({
+                color: [255, 255, 255, 1],
+              }),
+              stroke: new Stroke({ color: "black", width: 1 }),
+              backgroundFill: new Fill({
+                color: [168, 50, 153, 0],
+              }),
+              padding: [0, 0, 0, 0],
+            }),
+          }),
+          new Style({
+            text: new Text({
+              font: "14px Menlo",
+              textAlign: "middle",
+              textBaseline: "middle",
+              justify: "center",
+              text: "ZM",
+              offsetX: 0,
+              offsetY: -gap,
+              fill: new Fill({
+                color: [255, 255, 255, 1],
+              }),
+              stroke: new Stroke({ color: "black", width: 1 }),
+              backgroundFill: new Fill({
+                color: [168, 50, 153, 0],
+              }),
+              padding: [0, 0, 0, 0],
+            }),
+          }),
+          new Style({
+            text: new Text({
+              font: "14px Menlo",
+              textAlign: "middle",
+              textBaseline: "middle",
+              justify: "center",
+              text: "W",
+              offsetX: gap,
+              offsetY: -gap,
+              fill: new Fill({
+                color: [255, 255, 255, 1],
+              }),
+              stroke: new Stroke({ color: "black", width: 1 }),
+              backgroundFill: new Fill({
+                color: [168, 50, 153, 0],
+              }),
+              padding: [0, 0, 0, 0],
+            }),
+          }),
+          new Style({
+            text: new Text({
+              font: "14px Menlo",
+              textAlign: "middle",
+              textBaseline: "middle",
+              justify: "center",
+              text: "4",
+              offsetX: -gap,
+              offsetY: 0,
+              fill: new Fill({
+                color: [255, 255, 255, 1],
+              }),
+              stroke: new Stroke({ color: "black", width: 1 }),
+              backgroundFill: new Fill({
+                color: [168, 50, 153, 0],
+              }),
+              padding: [0, 0, 0, 0],
+            }),
+          }),
+          new Style({
+            text: new Text({
+              font: "14px Menlo",
+              textAlign: "middle",
+              textBaseline: "middle",
+              justify: "center",
+              text: "N",
+              offsetX: 0,
+              offsetY: 0,
+              fill: new Fill({
+                color: [255, 255, 255, 1],
+              }),
+              stroke: new Stroke({ color: "black", width: 1 }),
+              backgroundFill: new Fill({
+                color: [168, 50, 153, 0],
+              }),
+              padding: [0, 0, 0, 0],
+            }),
+          }),
+          new Style({
+            text: new Text({
+              font: "14px Menlo",
+              textAlign: "middle",
+              textBaseline: "middle",
+              justify: "center",
+              text: "SW",
+              offsetX: gap,
+              offsetY: 0,
+              fill: new Fill({
+                color: [255, 255, 255, 1],
+              }),
+              stroke: new Stroke({ color: "black", width: 1 }),
+              backgroundFill: new Fill({
+                color: [168, 50, 153, 0],
+              }),
+              padding: [0, 0, 0, 0],
+            }),
+          }),
+          new Style({
+            text: new Text({
+              font: "14px Menlo",
+              textAlign: "middle",
+              textBaseline: "middle",
+              justify: "center",
+              text: "T",
+              offsetX: -gap,
+              offsetY: gap,
+              fill: new Fill({
+                color: [255, 255, 255, 1],
+              }),
+              stroke: new Stroke({ color: "black", width: 1 }),
+              backgroundFill: new Fill({
+                color: [168, 50, 153, 0],
+              }),
+              padding: [0, 0, 0, 0],
+            }),
+          }),
+          new Style({
+            text: new Text({
+              font: "14px Menlo",
+              textAlign: "middle",
+              textBaseline: "middle",
+              justify: "center",
+              text: "Td",
+              offsetX: 0,
+              offsetY: gap,
+              fill: new Fill({
+                color: [255, 255, 255, 1],
+              }),
+              stroke: new Stroke({ color: "black", width: 1 }),
+              backgroundFill: new Fill({
+                color: [168, 50, 153, 0],
+              }),
+              padding: [0, 0, 0, 0],
+            }),
+          }),
+          new Style({
+            text: new Text({
+              font: "14px Menlo",
+              textAlign: "middle",
+              textBaseline: "middle",
+              justify: "center",
+              text: "RH",
+              offsetX: gap,
+              offsetY: gap,
+              fill: new Fill({
+                color: [255, 255, 255, 1],
+              }),
+              stroke: new Stroke({ color: "black", width: 1 }),
+              backgroundFill: new Fill({
+                color: [168, 50, 153, 0],
+              }),
+              padding: [0, 0, 0, 0],
+            }),
+          }),
+        ]);
+        source3.addFeature(feature);
       }
     },
-    { deep: true }
+    { deep: true, immediate: true }
   );
-  station.FetchList();
-  const source = new VectorSource();
-  const source2 = new VectorSource();
-  map.addLayer(
-    new WebGLPointsLayer({
-      source: source2,
-      style: style2,
-    })
+  const setting = useSettingStore();
+  watch(
+    storeToRefs(setting).district,
+    (newVal) => {
+      if (newVal) {
+        map
+          .getLayers()
+          .getArray()
+          .find(function (layer) {
+            return layer.get("id") === "districtLayer";
+          })
+          .setVisible(true);
+      } else {
+        map
+          .getLayers()
+          .getArray()
+          .find(function (layer) {
+            return layer.get("id") === "districtLayer";
+          })
+          .setVisible(false);
+      }
+    },
+    { immediate: true }
   );
-  map.addLayer(
-    new WebGLPointsLayer({
-      source,
-      style,
-    })
+  watch(
+    storeToRefs(setting).loadmap,
+    (newVal) => {
+      if (newVal) {
+        map
+          .getLayers()
+          .getArray()
+          .find(function (layer) {
+            return layer.get("id") === "tileLayer";
+          })
+          .setVisible(true);
+      } else {
+        map
+          .getLayers()
+          .getArray()
+          .find(function (layer) {
+            return layer.get("id") === "tileLayer";
+          })
+          .setVisible(false);
+      }
+    },
+    { immediate: true }
+  );
+  watch(
+    storeToRefs(setting).station,
+    (newVal) => {
+      if (newVal) {
+        map
+          .getLayers()
+          .getArray()
+          .find(function (layer) {
+            return layer.get("id") === "station";
+          })
+          .setVisible(true);
+      } else {
+        map
+          .getLayers()
+          .getArray()
+          .find(function (layer) {
+            return layer.get("id") === "station";
+          })
+          .setVisible(false);
+      }
+    },
+    { immediate: true }
+  );
+  watch(
+    storeToRefs(setting).feather,
+    (newVal) => {
+      if (newVal) {
+        map
+          .getLayers()
+          .getArray()
+          .find(function (layer) {
+            return layer.get("id") === "feather";
+          })
+          .setVisible(true);
+      } else {
+        map
+          .getLayers()
+          .getArray()
+          .find(function (layer) {
+            return layer.get("id") === "feather";
+          })
+          .setVisible(false);
+      }
+    },
+    { immediate: true }
+  );
+  watch(
+    storeToRefs(setting).factor,
+    (newVal) => {
+      if (newVal) {
+        map
+          .getLayers()
+          .getArray()
+          .find(function (layer) {
+            return layer.get("id") === "factor";
+          })
+          .setVisible(true);
+        setTimeout(() => {
+          map
+            .getLayers()
+            .getArray()
+            .find(function (layer) {
+              return layer.get("id") === "factor";
+            })
+            .changed();
+        });
+      } else {
+        map
+          .getLayers()
+          .getArray()
+          .find(function (layer) {
+            return layer.get("id") === "factor";
+          })
+          .setVisible(false);
+      }
+    },
+    { immediate: true }
   );
   // timer = setInterval(()=>{
   //   source.getFeatures().forEach(feature=>{
@@ -509,27 +879,6 @@ onMounted(() => {
   //   })
   // },1000)
 
-  function processData(data) {
-    for (let i = 0; i < data.length; i++) {
-      let lngLat = [data[i].longitude, data[i].latitude];
-      const rad = (Math.PI / 180) * Math.random() * 360;
-      source.addFeature(
-        new Feature({
-          rad,
-          flag: getFeather(Math.random() * 60),
-          geometry: new Point(fromLonLat(lngLat)),
-        })
-      );
-      source2.addFeature(
-        new Feature({
-          coords: lngLat,
-          geometry: new Point(fromLonLat(lngLat)),
-        })
-      );
-    }
-  }
-  processData(station.result);
-
   onBeforeUnmount(() => {
     eventbus.off("将站点移动到屏幕中心");
     clearInterval(timer);
@@ -537,6 +886,7 @@ onMounted(() => {
     map.un("pointerdown", pointerdownFunc);
     map.un("moveend", moveendFunc);
   });
+  station.FetchList();
 });
 </script>
 
@@ -596,7 +946,6 @@ onMounted(() => {
     color: white;
   }
 }
-
 .right-drawer {
   z-index: 1;
   position: absolute;

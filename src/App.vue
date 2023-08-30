@@ -1,5 +1,9 @@
 <template>
-  <el-config-provider namespace="ep" :locale="setting.locale">
+  <el-config-provider
+    namespace="ep"
+    :locale="setting.locale"
+    :message="{ max: undefined }"
+  >
     <router-view v-slot="{ Component }">
       <keep-alive>
         <component :is="Component" />
@@ -8,6 +12,6 @@
   </el-config-provider>
 </template>
 <script lang="ts" setup>
-import { useSettingStore } from './stores/setting'
-const setting = useSettingStore()
+import { useSettingStore } from "./stores/setting";
+const setting = useSettingStore();
 </script>

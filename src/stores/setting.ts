@@ -11,6 +11,9 @@ export const useSettingStore = defineStore({
     navigation:false,
     tileUrl:'',
     radar:false,
+    station:true,
+    feather:true,
+    factor:true,
   }),
   getters:{
     locale: state => {

@@ -29,13 +29,16 @@ export const useStationStore = defineStore({
   }),
   actions: {
     FetchList(){
-      fetchList().then((res:any)=>{
-        let result = res.data.data
-        this.$patch({result})
-      }).catch(()=>{
-        this.$reset()
+      return new Promise((resolve,reject)=>{
+        fetchList().then((res:any)=>{
+          let result = res.data.data
+          this.$patch({result})
+          resolve(result)
+        }).catch((e)=>{
+          this.$reset()
+          reject(e)
+        })
       })
-
       /*
       let res = {
         "code": 200,
