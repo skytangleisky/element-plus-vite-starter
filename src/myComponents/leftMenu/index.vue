@@ -9,7 +9,7 @@
       class="el-menu-vertical-demo"
       default-active="2"
       text-color="#fff"
-      style="width: 100%; flex: 1"
+      style="width: 100%; flex: 1; border-right: 0"
     >
       <el-sub-menu index="1">
         <template #title>

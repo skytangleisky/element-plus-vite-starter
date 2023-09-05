@@ -1,5 +1,16 @@
 import request from '../../utils/request'
-export function fetchList(query) {
+
+export function 雷达统计接口(){
+  return request({
+    url: '/guangheng/api/radars/count',
+    method: 'post',
+    data: {
+      user_id: 'e13df6498a4e46bc8970b95ec47779f5'
+    }
+  })
+}
+
+export function 查询雷达列表接口(query) {
   return request({
     url: '/guangheng/api/radars',
     method: 'post',
@@ -9,9 +20,39 @@ export function fetchList(query) {
   })
 }
 
-export function 雷达统计接口(){
+export function 查询雷达在线列表接口(query) {
   return request({
-    url: '/guangheng/api/radars/count',
+    url: '/guangheng/api/radars/online',
+    method: 'post',
+    data: {
+      user_id: 'e13df6498a4e46bc8970b95ec47779f5'
+    }
+  })
+}
+
+export function 查询雷达离线列表接口(query) {
+  return request({
+    url: '/guangheng/api/radars/offline',
+    method: 'post',
+    data: {
+      user_id: 'e13df6498a4e46bc8970b95ec47779f5'
+    }
+  })
+}
+
+export function 查询近期新增雷达列表接口(query) {
+  return request({
+    url: '/guangheng/api/radars/new',
+    method: 'post',
+    data: {
+      user_id: 'e13df6498a4e46bc8970b95ec47779f5'
+    }
+  })
+}
+
+export function 查询平均风数据接口(query) {
+  return request({
+    url: '/guangheng/api/weather/wind/avg',
     method: 'post',
     data: {
       user_id: 'e13df6498a4e46bc8970b95ec47779f5'

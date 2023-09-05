@@ -8,7 +8,8 @@
 // import locale from './languages/zh-cn.mjs'
 
 import "~/styles/index.scss";
-import "~/composables/dark";
+import {toggleDark} from "~/composables/dark";
+toggleDark(false)
 import 'uno.css'
 // If you want to use ElMessage, import it.
 import "element-plus/theme-chalk/src/message.scss"

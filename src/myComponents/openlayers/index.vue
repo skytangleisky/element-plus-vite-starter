@@ -30,7 +30,7 @@
         "
       >
         <div class="title">{{ info.title }}</div>
-        <div class="latestTime">{{ info.time }}更新</div>
+        <div class="latestTime">{{ info.time }} 更新</div>
       </div>
       <div
         ref="popup_content"
@@ -447,10 +447,10 @@ onMounted(() => {
           info.value.time = feature.get("time");
           info.value.title = feature.get("name");
           info.value.status = feature.get("is_online");
-          info.value.speed = feature.get("speed").toFixed(2) + "m/s";
+          info.value.speed = feature.get("speed");
           info.value.longitude = feature.get("coords")[0] + "°";
           info.value.latitude = feature.get("coords")[1] + "°";
-          info.value.deg = ((feature.get("rad") * 180) / Math.PI).toFixed(2) + "°";
+          info.value.deg = ((feature.get("rad") * 180) / Math.PI).toFixed(2);
           overlay.setPosition(fromLonLat(feature.get("coords")));
           //   const datetime = feature.get('datetime');
           //   const duration = feature.get('duration');
@@ -487,19 +487,21 @@ onMounted(() => {
   vectorLayer.setSource(source3);
   stationLayer.setSource(source2);
   featherLayer.setSource(source);
+  const setting = useSettingStore();
+
   watch(
     storeToRefs(station).result,
-    (newVal) => {
+    (newVal, oldVal) => {
+      if (!oldVal) return;
       const data = newVal;
-      source.getFeatures().forEach((feature) => source.removeFeature(feature));
-      source2.getFeatures().forEach((feature) => source2.removeFeature(feature));
-      source3.getFeatures().forEach((feature) => source3.removeFeature(feature));
+      removeAllFeatures();
       for (let i = 0; i < data.length; i++) {
-        const speed = Math.random() * 60;
+        const speed = 0; // Math.random() * 60;
         const rad = (Math.PI / 180) * Math.random() * 360;
         let lngLat = [data[i].longitude, data[i].latitude];
         source.addFeature(
           new Feature({
+            radar_id: data[i].radar.radar_id,
             rad,
             flag: getFeather(speed),
             geometry: new Point(fromLonLat(lngLat)),
@@ -507,9 +509,10 @@ onMounted(() => {
         );
         source2.addFeature(
           new Feature({
-            time: data[i].data_time,
-            station: true,
+            radar_id: data[i].radar.radar_id,
+            time: "-",
             name: data[i].radar.name,
+            station: true,
             is_online: data[i].is_online ? "在线" : "离线",
             speed,
             rad,
@@ -519,6 +522,7 @@ onMounted(() => {
           })
         );
         let feature = new Feature({
+          radar_id: data[i].radar.radar_id,
           time: data[i].data_time,
           name: data[i].radar.name,
           is_online: data[i].is_online ? "在线" : "离线",
@@ -527,6 +531,8 @@ onMounted(() => {
           coords: lngLat,
           geometry: new Point(fromLonLat(lngLat)),
           opacity: 1.0,
+          T: "温度",
+          RH: "湿度",
         });
         const gap = 30;
         feature.setStyle([
@@ -536,7 +542,7 @@ onMounted(() => {
               textBaseline: "middle",
               textAlign: "middle",
               justify: "center",
-              text: "ZH",
+              text: undefined, //ZH-站号
               offsetX: 0,
               offsetY: -2 * gap,
               fill: new Fill({
@@ -555,7 +561,7 @@ onMounted(() => {
               textBaseline: "middle",
               textAlign: "middle",
               justify: "center",
-              text: "FY",
+              text: undefined, //FY-风羽
               offsetX: 2 * gap,
               offsetY: -2 * gap,
               fill: new Fill({
@@ -574,7 +580,7 @@ onMounted(() => {
               textBaseline: "middle",
               textAlign: "middle",
               justify: "center",
-              text: "SNR",
+              text: undefined, //SNR-信噪比
               offsetX: -gap,
               offsetY: -gap,
               fill: new Fill({
@@ -593,7 +599,7 @@ onMounted(() => {
               textAlign: "middle",
               textBaseline: "middle",
               justify: "center",
-              text: "ZM",
+              text: data[i].radar.name, //ZM-站名
               offsetX: 0,
               offsetY: -gap,
               fill: new Fill({
@@ -612,7 +618,7 @@ onMounted(() => {
               textAlign: "middle",
               textBaseline: "middle",
               justify: "center",
-              text: "W",
+              text: undefined, //W-垂直气流
               offsetX: gap,
               offsetY: -gap,
               fill: new Fill({
@@ -631,7 +637,7 @@ onMounted(() => {
               textAlign: "middle",
               textBaseline: "middle",
               justify: "center",
-              text: "4",
+              text: undefined, //4-?
               offsetX: -gap,
               offsetY: 0,
               fill: new Fill({
@@ -650,7 +656,7 @@ onMounted(() => {
               textAlign: "middle",
               textBaseline: "middle",
               justify: "center",
-              text: "N",
+              text: undefined, //N-站点
               offsetX: 0,
               offsetY: 0,
               fill: new Fill({
@@ -669,7 +675,7 @@ onMounted(() => {
               textAlign: "middle",
               textBaseline: "middle",
               justify: "center",
-              text: "SW",
+              text: undefined, //SW-谱宽
               offsetX: gap,
               offsetY: 0,
               fill: new Fill({
@@ -688,7 +694,7 @@ onMounted(() => {
               textAlign: "middle",
               textBaseline: "middle",
               justify: "center",
-              text: "T",
+              text: undefined, //T-温度
               offsetX: -gap,
               offsetY: gap,
               fill: new Fill({
@@ -707,7 +713,7 @@ onMounted(() => {
               textAlign: "middle",
               textBaseline: "middle",
               justify: "center",
-              text: "Td",
+              text: undefined, //Td-露点
               offsetX: 0,
               offsetY: gap,
               fill: new Fill({
@@ -726,7 +732,7 @@ onMounted(() => {
               textAlign: "middle",
               textBaseline: "middle",
               justify: "center",
-              text: "RH",
+              text: undefined, //RH-相对湿度
               offsetX: gap,
               offsetY: gap,
               fill: new Fill({
@@ -742,10 +748,212 @@ onMounted(() => {
         ]);
         source3.addFeature(feature);
       }
+
+      station.查询平均风数据接口().then((res) => {
+        watch(
+          storeToRefs(setting).factor.value[0],
+          (newVal) => {
+            if (newVal.val) {
+              source3.getFeatures().forEach((feature) => {
+                feature.getStyle()[0].getText().setText(feature.get("radar_id"));
+                feature.changed();
+              });
+            } else {
+              source3.getFeatures().forEach((feature) => {
+                feature.getStyle()[0].getText().setText(undefined);
+                feature.changed();
+              });
+            }
+          },
+          { immediate: true, deep: true }
+        );
+        watch(
+          storeToRefs(setting).factor.value[1],
+          (newVal) => {
+            if (newVal.val) {
+              // station.查询平均风数据接口();
+              source3.getFeatures().forEach((feature) => {
+                feature.getStyle()[3].getText().setText(feature.get("name"));
+                feature.changed();
+              });
+            } else {
+              source3.getFeatures().forEach((feature) => {
+                feature.getStyle()[3].getText().setText(undefined);
+                feature.changed();
+              });
+            }
+          },
+          { immediate: true, deep: true }
+        );
+        watch(
+          // storeToRefs(setting).factor.value[5],
+          storeToRefs(setting).station,
+          (newVal) => {
+            if (newVal) {
+              map
+                .getLayers()
+                .getArray()
+                .find(function (layer) {
+                  return layer.get("id") === "station";
+                })
+                .setVisible(true);
+            } else {
+              map
+                .getLayers()
+                .getArray()
+                .find(function (layer) {
+                  return layer.get("id") === "station";
+                })
+                .setVisible(false);
+            }
+          },
+          { immediate: true }
+        );
+        watch(
+          [storeToRefs(setting).factor.value[7], storeToRefs(setting).featherValue],
+          ([newVal, featherValue]) => {
+            // console.log(newVal, featherValue);
+            if (newVal.val) {
+              res.data.data.forEach((v, k) => {
+                source3.getFeatures().forEach((feature) => {
+                  let tmp = v[feature.get("radar_id")];
+                  if (tmp) {
+                    for (let k in tmp[0]) {
+                      let tmp2 = tmp[0][k][0];
+                      for (let kk in tmp2) {
+                        feature
+                          .getStyle()[8]
+                          .getText()
+                          .setText(tmp2[kk].temperature.toFixed(2));
+                        feature.changed();
+                      }
+                    }
+                  }
+                });
+                source.getFeatures().forEach((feature) => {
+                  let tmp = v[feature.get("radar_id")];
+                  if (tmp) {
+                    for (let k in tmp[0]) {
+                      let tmp2 = tmp[0][k][featherValue];
+                      if (tmp2) {
+                        for (let kk in tmp2) {
+                          feature.set("rad", (tmp2[kk].direction / 180) * Math.PI);
+                          feature.set("flag", getFeather(tmp2[kk].speed));
+                        }
+                      } else {
+                        feature.set("rad", 0);
+                        feature.set("flag", 0);
+                      }
+                    }
+                  }
+                });
+                source2.getFeatures().forEach((feature) => {
+                  let tmp = v[feature.get("radar_id")];
+                  if (tmp) {
+                    for (let k in tmp[0]) {
+                      let tmp2 = tmp[0][k][featherValue];
+                      if (tmp2) {
+                        for (let kk in tmp2) {
+                          feature.set("rad", (tmp2[kk].direction / 180) * Math.PI);
+                          feature.set("speed", tmp2[kk].speed + "m/s");
+                          feature.set("time", k);
+                        }
+                      } else {
+                        feature.set("rad", NaN);
+                        feature.set("speed", NaN);
+                        feature.set("time", k);
+                      }
+                    }
+                  }
+                });
+              });
+            } else {
+              source3.getFeatures().forEach((feature) => {
+                feature.getStyle()[8].getText().setText(undefined);
+                feature.changed();
+              });
+            }
+          },
+          { immediate: true, deep: true }
+        );
+        watch(
+          storeToRefs(setting).factor.value[9],
+          (newVal) => {
+            if (newVal.val) {
+              res.data.data.forEach((v, k) => {
+                source3.getFeatures().forEach((feature) => {
+                  let tmp = v[feature.get("radar_id")];
+                  if (tmp) {
+                    for (let k in tmp[0]) {
+                      let tmp2 = tmp[0][k][0];
+                      for (let kk in tmp2) {
+                        feature
+                          .getStyle()[10]
+                          .getText()
+                          .setText(tmp2[kk].humidity.toFixed(2));
+                        feature.changed();
+                      }
+                    }
+                  }
+                });
+              });
+            } else {
+              source3.getFeatures().forEach((feature) => {
+                feature.getStyle()[10].getText().setText(undefined);
+                feature.changed();
+              });
+            }
+          },
+          { immediate: true, deep: true }
+        );
+      });
     },
     { deep: true, immediate: true }
   );
-  const setting = useSettingStore();
+
+  watch(
+    storeToRefs(setting).checks.value[0],
+    (newVal) => {
+      if (newVal.select) {
+        station.查询雷达列表接口();
+      }
+      removeAllFeatures();
+    },
+    { deep: true, immediate: true }
+  );
+  watch(
+    storeToRefs(setting).checks.value[1],
+    (newVal) => {
+      if (newVal.select) {
+        station.查询雷达在线列表接口();
+      }
+      removeAllFeatures();
+    },
+    { deep: true, immediate: true }
+  );
+  watch(
+    storeToRefs(setting).checks.value[2],
+    (newVal) => {
+      if (newVal.select) {
+        station.查询雷达离线列表接口();
+      } else removeAllFeatures();
+    },
+    { deep: true, immediate: true }
+  );
+  watch(
+    storeToRefs(setting).checks.value[3],
+    (newVal) => {
+      if (newVal.select) {
+        station.查询近期新增雷达列表接口();
+      } else removeAllFeatures();
+    },
+    { deep: true, immediate: true }
+  );
+  function removeAllFeatures() {
+    source.getFeatures().forEach((feature) => source.removeFeature(feature));
+    source2.getFeatures().forEach((feature) => source2.removeFeature(feature));
+    source3.getFeatures().forEach((feature) => source3.removeFeature(feature));
+  }
   watch(
     storeToRefs(setting).district,
     (newVal) => {
@@ -793,29 +1001,6 @@ onMounted(() => {
     { immediate: true }
   );
   watch(
-    storeToRefs(setting).station,
-    (newVal) => {
-      if (newVal) {
-        map
-          .getLayers()
-          .getArray()
-          .find(function (layer) {
-            return layer.get("id") === "station";
-          })
-          .setVisible(true);
-      } else {
-        map
-          .getLayers()
-          .getArray()
-          .find(function (layer) {
-            return layer.get("id") === "station";
-          })
-          .setVisible(false);
-      }
-    },
-    { immediate: true }
-  );
-  watch(
     storeToRefs(setting).feather,
     (newVal) => {
       if (newVal) {
@@ -838,38 +1023,6 @@ onMounted(() => {
     },
     { immediate: true }
   );
-  watch(
-    storeToRefs(setting).factor,
-    (newVal) => {
-      if (newVal) {
-        map
-          .getLayers()
-          .getArray()
-          .find(function (layer) {
-            return layer.get("id") === "factor";
-          })
-          .setVisible(true);
-        setTimeout(() => {
-          map
-            .getLayers()
-            .getArray()
-            .find(function (layer) {
-              return layer.get("id") === "factor";
-            })
-            .changed();
-        });
-      } else {
-        map
-          .getLayers()
-          .getArray()
-          .find(function (layer) {
-            return layer.get("id") === "factor";
-          })
-          .setVisible(false);
-      }
-    },
-    { immediate: true }
-  );
   // timer = setInterval(()=>{
   //   source.getFeatures().forEach(feature=>{
   //     feature.set('rad',Math.PI/180*Math.random()*360)
@@ -886,7 +1039,6 @@ onMounted(() => {
     map.un("pointerdown", pointerdownFunc);
     map.un("moveend", moveendFunc);
   });
-  station.FetchList();
 });
 </script>
 

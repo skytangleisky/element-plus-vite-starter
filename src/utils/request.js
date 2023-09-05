@@ -45,7 +45,6 @@ service.interceptors.response.use(
     return response
   },
   error => {
-    console.log('err' + error) // for debug
     // Message({
     //   message: error.message,
     //   type: 'error',
