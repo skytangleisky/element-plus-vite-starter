@@ -440,35 +440,34 @@ import { rotateX } from '../../tools/gl-matrix/quat';
                 }).join(' ');
             }
 
-            function createDataAttrs(attr) {
-                attr = $.extend({}, attr);
+            // function createDataAttrs(attr) {
+            //     attr = $.extend({}, attr);
 
-                delete attr.children;
-                delete attr.classes;
-                delete attr.content;
+            //     delete attr.children;
+            //     delete attr.classes;
+            //     delete attr.content;
 
-                var data_attrs = {};
+            //     var data_attrs = {};
 
-                $.each(attr, function(key, value) {
-                    if (typeof value === 'object') {
-                        value = JSON.stringify(value);
-                    }
+            //     $.each(attr, function(key, value) {
+            //         if (typeof value === 'object') {
+            //             value = JSON.stringify(value);
+            //         }
 
-                    data_attrs["data-" + key] = escapeHtml(value);
-                });
+            //         data_attrs["data-" + key] = escapeHtml(value);
+            //     });
 
-                return data_attrs;
-            }
+            //     return data_attrs;
+            // }
 
-            var item_attrs = createDataAttrs(item);
+            // var item_attrs = createDataAttrs(item);
+            var item_attrs = {};
             item_attrs["class"] = createClassesString(item, options);
 
             var content = options.contentCallback(item);
             var children = this._buildList(item.children, options);
             var html = $(options.itemRenderer(item_attrs, content, children, options, item));
-
             this.setParent(html);
-
             return html[0].outerHTML;
         },
 
@@ -480,6 +479,7 @@ import { rotateX } from '../../tools/gl-matrix/quat';
                     var li = $(this),
                         item = $.extend({}, li.data()),
                         sub = li.children(list.options.listNodeName);
+                    console.log(li,li.data())
 
                     if (list.options.includeContent) {
                         var content = li.find('.' + list.options.contentClass).html();
@@ -706,10 +706,10 @@ import { rotateX } from '../../tools/gl-matrix/quat';
         setParent: function(li) {
             //Check if li is an element of itemNodeName type and has children
             if (li.is(this.options.itemNodeName) && li.children(this.options.listNodeName).length) {
-            // make sure NOT showing two or more sets data-action buttons
-            li.children('[data-action]').remove();
-            li.prepend($(this.options.expandBtnHTML));
-            // li.prepend($(this.options.collapseBtnHTML));
+                // make sure NOT showing two or more sets data-action buttons
+                li.children('[data-action]').remove();
+                li.prepend($(this.options.expandBtnHTML));
+                // li.prepend($(this.options.collapseBtnHTML));
             }
         },
 

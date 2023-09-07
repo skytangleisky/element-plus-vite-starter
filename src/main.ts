@@ -22,4 +22,4 @@ app.use(router)
 import './permission'
 app.directive('dialogDrag',dragable)
 app.use(VueDOMPurifyHTML)
-app.mount("#app")
+router.isReady().then(()=>app.mount("#app"))
