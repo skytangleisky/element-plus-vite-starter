@@ -27,7 +27,7 @@ import { useRouter } from "vue-router";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
 const router = useRouter();
-import SubMenu from "./submenu.vue";
+import SubMenu from "./SubMenu.vue";
 const change = (v: any) => {
   // console.log(languages.value[v])
 
