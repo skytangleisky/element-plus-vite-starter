@@ -285,9 +285,6 @@ onMounted(() => {
     };
 
     json = recursion(setting.routes);
-    $("#nestable").data("abcdef", json);
-    console.log("abcdef", $("#nestable").data("abcdef"));
-    var lastId = 12;
 
     // activate Nestable for list 1
     $("#nestable")
@@ -295,14 +292,15 @@ onMounted(() => {
         group: 1,
         json: json,
         contentCallback: function (item) {
-          var content = `<span style="background:cyan;">${item.id}</span> <i>${item.path}</i><span class="bg-green">${item.component}</span>`;
+          var content = `<span style="background:cyan;">${item.id}</span> <i class="bg-red">${item.path}</i> <span class="bg-green">${item.component}</span>`;
           return content;
         },
       })
-      .on("change", output);
+      .on("change", output)
+      .on("gainedItem", output)
+      .on("lostItem", output)
+      .on("change", updateOutput);
     function output() {
-      let arr = $(this).nestable("asNestedSet");
-      console.log("arr", arr);
       let result = $(this).nestable("serialize");
       let recursion = (array: []) => {
         const arr = JSON.parse(JSON.stringify(array));
@@ -351,25 +349,39 @@ onMounted(() => {
       }
       if (action === "add-item") {
         var newItem = {
-          id: ++lastId,
-          content: "Item " + lastId,
+          id: "11",
+          content: "Item 11",
+          label: "label",
+          component: "component",
+          path: "/path",
+          parent_id: "65e99b66-e340-4d4b-6b26-629f41dc63d9",
           children: [
             {
-              id: ++lastId,
-              content: "Item " + lastId,
+              id: "12",
+              content: "Item 12",
+              label: "label",
+              component: "component",
+              path: "path",
               children: [
                 {
-                  id: ++lastId,
-                  content: "Item " + lastId,
+                  id: "13",
+                  content: "Item 13",
+                  label: "label",
+                  component: "component",
+                  path: "path",
                 },
               ],
             },
           ],
         };
-        $("#nestable").nestable("add", newItem);
+        $("#nestable").nestable("add", newItem, () => {
+          console.log("added");
+        });
       }
       if (action === "remove-item") {
-        $("#nestable").nestable("remove", lastId--);
+        $("#nestable").nestable("remove", "11", () => {
+          console.log("removed");
+        });
 
         // router.addRoute(
         //     {
@@ -377,26 +389,37 @@ onMounted(() => {
         //     component:modules['/src/myComponents/openlayers/index.vue']
         //     }
         // )
-        router.push({ path: "/openlayers", replace: false });
+        // router.push({ path: "/openlayers", replace: false });
       }
       if (action === "replace-item") {
         var replacedItem = {
-          id: 10,
-          content: "New item 10",
+          id: "11",
+          content: "New item 11",
+          path: "/newPath",
+          label: "11",
+          component: "new component",
           children: [
             {
-              id: ++lastId,
-              content: "Item " + lastId,
+              id: "12",
+              content: "Item 12",
+              path: "path",
+              label: "12",
+              component: "component",
               children: [
                 {
-                  id: ++lastId,
-                  content: "Item " + lastId,
+                  id: "13",
+                  content: "Item 13",
+                  path: "path",
+                  label: "13",
+                  component: "component",
                 },
               ],
             },
           ],
         };
-        $("#nestable").nestable("replace", replacedItem);
+        $("#nestable").nestable("replace", replacedItem, () => {
+          console.log("replaced");
+        });
       }
     });
     $("#nestable3").nestable();

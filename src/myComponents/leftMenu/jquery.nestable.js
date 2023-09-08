@@ -68,27 +68,28 @@ import { rotateX } from '../../tools/gl-matrix/quat';
         onDragStart: function(l, e, p) {},
         beforeDragStop: function(l, e, p) {},
         listRenderer: function(children, options) {
-            var html = '<' + options.listNodeName + ' class="' + options.listClass + '">';
-            html += children;
-            html += '</' + options.listNodeName + '>';
-
-            return html;
+            let parent = $(`<${options.listNodeName} class="${options.listClass}"></${options.listNodeName}>`)
+            $.each(children,(k,v)=>{
+                parent.append(v)
+            })
+            return parent;
         },
         itemRenderer: function(item_attrs, content, children, options, item) {
-            var item_attrs_string = $.map(item_attrs, function(value, key) {
-                return ' ' + key + '="' + value + '"';
-            }).join(' ');
-
-            var html = '<' + options.itemNodeName + item_attrs_string + '>';
-            html += '<' + options.handleNodeName + ' class="' + options.handleClass + '">';
-            html += '<' + options.contentNodeName + ' class="' + options.contentClass + '">';
-            html += content;
-            html += '</' + options.contentNodeName + '>';
-            html += '</' + options.handleNodeName + '>';
-            html += children;
-            html += '</' + options.itemNodeName + '>';
-
-            return html;
+            let Item = $(`<${options.itemNodeName}>
+                <${options.handleNodeName} class="${options.handleClass}">
+                    <${options.contentNodeName} class="${this.contentClass}">
+                        ${content}
+                    </${options.contentNodeName}>
+                </${options.handleNodeName}>
+            </${options.itemNodeName}>`)
+            $.map(item_attrs, function(value, key) {
+                Item.attr(key,value)
+            })
+            $.each(children,(k,v)=>{
+                Item.append(v)
+            })
+            Item.data('itemData',item)
+            return Item;
         }
     };
 
@@ -260,32 +261,42 @@ import { rotateX } from '../../tools/gl-matrix/quat';
             this.el.trigger('destroy-nestable');
         },
 
-        add: function (item)
+        add: function (item, callback)
         {
-            var listClassSelector = '.' + this.options.listClass;
-            var tree = $(this.el).children(listClassSelector);
+            var tree = $(this.el).children('.' + this.options.listClass);
 
             if (item.parent_id !== undefined) {
-                tree = tree.find('[data-id="' + item.parent_id + '"]');
+                tree = tree.find(`[data-id="${item.parent_id}"]`);
                 delete item.parent_id;
 
-                if (tree.children(listClassSelector).length === 0) {
-                    tree = tree.append(this.options.listRenderer('', this.options));
+                if (tree.children('.' + this.options.listClass).length === 0) {
+                    tree = tree.append(this.options.listRenderer([], this.options));
                 }
 
-                tree = tree.find(listClassSelector + ':first');
+                tree = tree.find('.' + this.options.listClass + ':first');
                 this.setParent(tree.parent());
+
+                if(tree.length){
+                    tree.append(this._buildItem(item, this.options));
+                    if (callback) callback();
+                    this.el.trigger('change')
+                }
+            }else{
+                tree.append(this._buildItem(item, this.options));
+                if (callback) callback();
+                this.el.trigger('change')
             }
 
-            tree.append(this._buildItem(item, this.options));
         },
 
-        replace: function (item)
+        replace: function (item, callback)
         {
-            var html = this._buildItem(item, this.options);
-
-            this._getItemById(item.id)
-                .replaceWith(html);
+            let list = this._getItemById(item.id)
+            if(list.length){
+                list.replaceWith(this._buildItem(item, this.options));
+                if (callback) callback();
+                this.el.trigger('change')
+            }
         },
 
         //removes item and additional elements from list
@@ -334,8 +345,10 @@ import { rotateX } from '../../tools/gl-matrix/quat';
             else {
                 this.removeItem(item);
             }
-
-            if (callback) callback();
+            if(item.length){
+                this.el.trigger('change')
+                if (callback) callback();
+            }
         },
 
         //removes all items from the list and run callback at the end
@@ -369,6 +382,7 @@ import { rotateX } from '../../tools/gl-matrix/quat';
             else {
                 remove();
             }
+            this.el.trigger('change')
         },
 
         _getItemById: function(itemId) {
@@ -383,7 +397,7 @@ import { rotateX } from '../../tools/gl-matrix/quat';
                 json = JSON.parse(json);
             }
 
-            $(this.el).html(this._buildList(json, this.options));
+            $(this.el).append(this._buildList(json, this.options));
         },
 
         _buildList: function(items, options) {
@@ -391,11 +405,11 @@ import { rotateX } from '../../tools/gl-matrix/quat';
                 return '';
             }
 
-            var children = '';
+            var children = [];
             var that = this;
 
             $.each(items, function(index, sub) {
-                children += that._buildItem(sub, options);
+                children.push(that._buildItem(sub, options));
             });
             return options.listRenderer(children, options);
         },
@@ -461,14 +475,14 @@ import { rotateX } from '../../tools/gl-matrix/quat';
             // }
 
             // var item_attrs = createDataAttrs(item);
-            var item_attrs = {};
+            var item_attrs = {'data-id':item.id};
             item_attrs["class"] = createClassesString(item, options);
 
             var content = options.contentCallback(item);
             var children = this._buildList(item.children, options);
-            var html = $(options.itemRenderer(item_attrs, content, children, options, item));
-            this.setParent(html);
-            return html[0].outerHTML;
+            var li = options.itemRenderer(item_attrs, content, children, options, item);
+            this.setParent(li);
+            return li;
         },
 
         serialize: function() {
@@ -477,9 +491,8 @@ import { rotateX } from '../../tools/gl-matrix/quat';
                     items = level.children(list.options.itemNodeName);
                 items.each(function() {
                     var li = $(this),
-                        item = $.extend({}, li.data()),
+                        item = $.extend({}, li.data('itemData')),
                         sub = li.children(list.options.listNodeName);
-                    console.log(li,li.data())
 
                     if (list.options.includeContent) {
                         var content = li.find('.' + list.options.contentClass).html();
@@ -678,6 +691,13 @@ import { rotateX } from '../../tools/gl-matrix/quat';
 
         expandItem: function(li) {
             li.removeClass(this.options.collapsedClass);
+            const el = li.find('>.dd-list')
+            el.css('max-height',el.prop('scrollHeight')+'px')
+            el.off('transitionend')
+            el.on('transitionend',()=>{
+                el.css('max-height','')
+            })
+
         },
 
         collapseItem: function(li) {
@@ -687,6 +707,13 @@ import { rotateX } from '../../tools/gl-matrix/quat';
             //     li.addClass(this.options.collapsedClass);
             // }
             li.addClass(this.options.collapsedClass)
+            const el = li.find('>.dd-list')
+            el.off('transitionend')
+            if(el.css('max-height')=='none')
+                el.css('max-height',el.prop('scrollHeight')+'px')
+            setTimeout(()=>{
+                el.css('max-height','0px')
+            })
         },
 
         expandAll: function() {

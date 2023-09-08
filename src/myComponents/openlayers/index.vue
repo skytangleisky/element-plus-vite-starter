@@ -159,7 +159,6 @@ const vectorLayer = new VectorLayer({
 
 const mapContainer = ref(null);
 const popup = ref(null);
-const popup_content = ref(null);
 const popup_closer = ref(null);
 const disapper = (e) => {
   $(e.currentTarget).closest(".right-drawer").addClass("disapper");
@@ -372,7 +371,6 @@ const featherLayer = new WebGLPointsLayer({
 onMounted(() => {
   eventbus.on("将站点移动到屏幕中心", flyTo);
   const container = popup.value;
-  const content = popup_content.value;
   const closer = popup_closer.value;
   const overlay = new Overlay({
     element: container,
@@ -389,7 +387,7 @@ onMounted(() => {
     return false;
   };
   const map = new Map({
-    overlays: [overlay],
+    overlays: [],
     layers: [osm, webglLayer, stationLayer, featherLayer, vectorLayer],
     target: mapContainer.value,
     view: new View({
