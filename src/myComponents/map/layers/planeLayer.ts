@@ -61,7 +61,6 @@ import { wgs84togcj02 } from '../workers/mapUtil'
 import { lng2Pixel, lat2Pixel, pixel2Lng, pixel2Lat, pixel2LngLat } from '../js/core'
 import Eventbus,{ eventbus } from '~/eventbus'
 import Plane from './Plane'
-import { fetchList } from '~/api/光恒/station'
 export default class PlaneLayer{
   isMouseOver:Boolean
   myCursor:Rect

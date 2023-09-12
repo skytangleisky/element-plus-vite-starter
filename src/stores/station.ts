@@ -41,7 +41,8 @@ interface Station {
 export const useStationStore = defineStore({
   id: 'station',
   state: () => ({
-    result:new Array<Station>()
+    result:new Array<Station>(),
+    active:-1
   }),
   actions: {
     查询雷达列表接口(){

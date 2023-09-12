@@ -73,7 +73,7 @@ export default defineConfig({
   ],
   server:{
     host:'::',
-    port:80,
+    port:5173,
     proxy:{
       '/guangheng':{
         target:'http://tanglei.top:8000',//替换的服务端地址

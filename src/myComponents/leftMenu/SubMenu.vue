@@ -40,8 +40,7 @@
 defineProps({
   item: {
     type: Object,
-    required: true,
-    default: {},
+    default: { hide: true, name: "name", label: "label" },
   },
 });
 </script>

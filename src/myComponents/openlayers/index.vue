@@ -5,7 +5,7 @@
       height: 100%;
       overflow: hidden;
       position: absolute;
-      background: #2b2b2b;
+      background: grey;
     "
   >
     <div
@@ -51,7 +51,10 @@
       <div href="#" ref="popup_closer" class="ol-popup-closer"></div>
     </div>
     <radar-statistic></radar-statistic>
-    <div class="right-drawer disapper b-solid b-0 b-l-coolGray b-l-1px">
+    <div
+      class="right-drawer disapper b-solid b-0 b-l-coolGray b-l-1px relative"
+      style="overflow: auto; scroll-snap-type: y mandatory"
+    >
       <el-icon
         class="m-20px right-10px top-10px z-999"
         style="font-size: 2em; position: absolute"
@@ -71,7 +74,13 @@
           ></path>
         </svg>
       </el-icon>
+      <span style="font-size: 20px; scroll-snap-align: start; scroll-snap-stop: always">{{
+        station.result[station.active]?.radar.name
+      }}</span>
+      <chart-info></chart-info>
+      <chart-fkx></chart-fkx>
       <chart-dom></chart-dom>
+      <chart-th></chart-th>
     </div>
   </div>
 </template>
@@ -88,7 +97,6 @@ const info = ref({
   latitude: "",
   deg: "",
 });
-import { ElMessage } from "element-plus";
 import VectorLayer from "ol/layer/Vector";
 import GeoJSON from "ol/format/GeoJSON.js";
 import Layer from "ol/layer/Layer.js";
@@ -114,13 +122,17 @@ import { Circle, Fill, Stroke, Style, Text } from "ol/style.js";
 import { eventbus } from "~/eventbus";
 import { useStationStore } from "~/stores/station";
 import { ScaleLine, defaults as defaultControls } from "ol/control";
+import chartTh from "~/myComponents/echarts/T_H.vue";
 import chartDom from "~/myComponents/echarts/index.vue";
+import chartFkx from "~/myComponents/echarts/fkx.vue";
+import chartInfo from "~/myComponents/echarts/info.vue";
 import { useRoute } from "vue-router";
 const route = useRoute();
 import { linear, inAndOut } from "ol/easing";
 import radarStatistic from "./radarStatistic.vue";
 import { useSettingStore } from "~/stores/setting";
 import { storeToRefs } from "pinia";
+import { settings } from "nprogress";
 
 console.log("route.query", route.query);
 const station = useStationStore();
@@ -151,6 +163,9 @@ const osm = new TileLayer({
   source: new XYZ({
     // url: 'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}',
     url: "https://wprd0{1-4}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
+    // url: "https://tanglei.site:3210/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
+    // url: "http://tanglei.site:3211/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
+    // url: "https://tanglei.site/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
   }),
 });
 const vectorLayer = new VectorLayer({
@@ -285,7 +300,8 @@ const style = {
       "match",
       ["get", "flag"],
       0,
-      getCoord(0, 0),
+      // getCoord(0, 0),
+      getCoord(2, 3), //不显示
       1,
       getCoord(1, 0),
       2,
@@ -394,7 +410,7 @@ onMounted(() => {
       // center: fromLonLat([105,30]),
       // zoom:8,
       center: fromLonLat([115.43123283436979, 39.56864128657364]),
-      zoom: 12,
+      zoom: 6,
     }),
     //加载控件到地图容器中
     controls: defaultControls({
@@ -468,6 +484,12 @@ onMounted(() => {
       if (feature.get("station")) {
         const text = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
           $(".right-drawer").removeClass("disapper");
+          station.active = -1;
+          for (let i = 0; i < station.result.length; i++) {
+            if (station.result[i].radar.name == feature.get("name")) {
+              station.active = i;
+            }
+          }
         });
       }
     });
@@ -766,24 +788,6 @@ onMounted(() => {
           { immediate: true, deep: true }
         );
         watch(
-          storeToRefs(setting).factor.value[1],
-          (newVal) => {
-            if (newVal.val) {
-              // station.查询平均风数据接口();
-              source3.getFeatures().forEach((feature) => {
-                feature.getStyle()[3].getText().setText(feature.get("name"));
-                feature.changed();
-              });
-            } else {
-              source3.getFeatures().forEach((feature) => {
-                feature.getStyle()[3].getText().setText(undefined);
-                feature.changed();
-              });
-            }
-          },
-          { immediate: true, deep: true }
-        );
-        watch(
           // storeToRefs(setting).factor.value[5],
           storeToRefs(setting).station,
           (newVal) => {
@@ -795,6 +799,10 @@ onMounted(() => {
                   return layer.get("id") === "station";
                 })
                 .setVisible(true);
+              source3.getFeatures().forEach((feature) => {
+                feature.getStyle()[3].getText().setText(feature.get("name"));
+                feature.changed();
+              });
             } else {
               map
                 .getLayers()
@@ -803,6 +811,10 @@ onMounted(() => {
                   return layer.get("id") === "station";
                 })
                 .setVisible(false);
+              source3.getFeatures().forEach((feature) => {
+                feature.getStyle()[3].getText().setText(undefined);
+                feature.changed();
+              });
             }
           },
           { immediate: true }

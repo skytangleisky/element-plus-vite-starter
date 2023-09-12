@@ -28,15 +28,32 @@ import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
 const router = useRouter();
 import SubMenu from "./SubMenu.vue";
+import { array2components } from "~/tools";
 const change = (v: any) => {
-  // console.log(languages.value[v])
+  function fn(list: any[]) {
+    for (let i = 0; i < list.length; i++) {
+      if (list[i].children instanceof Array) {
+        fn(list[i].children);
+      }
+      if (list[i].name === "a7ef7b88-5e6b-0c62-129b-00a18980cdce") {
+        list[i] = {
+          ...list[i],
+          path: "map",
+          name: "a7ef7b88-5e6b-0c62-129b-00a18980cdce",
+          component: v,
+          label: "地图",
+        };
+      }
+    }
+  }
+  fn(setting.routes);
 
-  router.addRoute("top", {
-    path: "map",
-    name: "abcdefg",
-    component: languages.value[v],
+  router.getRoutes().forEach((v) => {
+    v.name && router.removeRoute(v.name);
+  });
+  array2components(setting.routes).map((v: any) => {
+    router.addRoute(v);
   });
   router.push({ path: "/map", replace: false });
-  console.log(router.getRoutes());
 };
 </script>

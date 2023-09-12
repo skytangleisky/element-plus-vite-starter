@@ -12,7 +12,13 @@
         title="threejs 实现烟雾特效2.0"
         class="loaded"
       ></iframe> -->
-      <a :href="'/tanglei/' + item.product_root + item.product_url" target="_blank" class="cover" id="penid_Go1cF4">threejs 实现烟雾特效2.0</a>
+      <a
+        :href="'/tanglei/' + item.product_root + item.product_url"
+        target="_blank"
+        class="cover"
+        id="penid_Go1cF4"
+        >threejs 实现烟雾特效2.0</a
+      >
     </div>
     <header class="pen-header">
       <img
@@ -53,15 +59,16 @@
   </article>
 </template>
 <script lang="ts" setup>
-interface Item {
-  product_root?: string;
-  product_image?: string;
-  product_url?: string;
-}
-type Props = {
-  item: Item
-}
-const {item} = defineProps<Props>()
+defineProps({
+  item: {
+    type: Object,
+    default: {
+      product_root: "root",
+      product_image: "/image",
+      product_url: "",
+    },
+  },
+});
 </script>
 <style lang="scss">
 .pen-item {
