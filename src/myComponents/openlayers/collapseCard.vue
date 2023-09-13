@@ -43,7 +43,7 @@ const click = () => {
 const props = defineProps({
   title: {
     type: String,
-    default: "title",
+    default: "Title",
   },
   show: {
     type: Boolean,

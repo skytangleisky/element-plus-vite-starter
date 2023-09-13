@@ -1,12 +1,14 @@
 <template>
   <my-header></my-header>
-  <div class="flex flex-row" style="width: 100%;height: calc(100% - 40px);">
+  <div class="flex flex-row" style="width: 100%; height: calc(100% - 40px)">
     <left-menu></left-menu>
-    <router-view v-slot="{ Component }">
-      <keep-alive>
-        <component :is="Component" />
-      </keep-alive>
-    </router-view>
+    <div class="relative w-full h-full">
+      <router-view v-slot="{ Component }">
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </router-view>
+    </div>
   </div>
   <!-- <search></search> -->
   <!-- Using <a href="https://cn.vuejs.org/" target="_blank">Vue</a> v{{ vueVersion }}, <a href="https://element-plus.org/zh-CN" target="_blank">Element-plus</a> v{{ elementplusVersion }}, <a href="https://pinia.web3doc.top/" target="_blank">Pinia</a> v{{ piniaVersion }} and <a href="https://router.vuejs.org/" target="_blank">Vue-router</a> v{{ vueRouterVersion }}. -->
@@ -24,7 +26,7 @@
   <!-- <remote-component></remote-component> -->
 </template>
 <script setup>
-import { ref } from 'vue'
+import { ref } from "vue";
 // import { version as piniaVersion } from 'pinia/package.json'
 // import { version as vueVersion } from 'vue/package.json'
 // import { version as elementplusVersion } from 'element-plus/package.json'
@@ -32,9 +34,9 @@ import { ref } from 'vue'
 // import RemoteComponent from './myComponents/remoteComponent.vue'
 // import TestButton from './elementplus/basic/button.vue'
 // import TestBorder from './elementplus/basic/border.vue'
-import Search from './myComponents/search.vue'
-import myHeader from './header.vue'
-import leftMenu from './myComponents/leftMenu/index.vue'
+import Search from "./myComponents/search.vue";
+import myHeader from "./header.vue";
+import leftMenu from "./myComponents/leftMenu/index.vue";
 
 // const list = ref([{name:'测试',left:true,children:[{name:'456',leftImgSrc:'checked.svg'},{name:'789',leftImgSrc:'checked.svg'}]}])
 // setTimeout(()=>{

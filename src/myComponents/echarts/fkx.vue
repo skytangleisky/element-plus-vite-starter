@@ -1,5 +1,5 @@
 <template>
-  <div ref="fkxContainer" class="fkxContainer"></div>
+  <div ref="fkxContainer" class="fkxContainer w-full h-full"></div>
 </template>
 <script lang="ts" setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";

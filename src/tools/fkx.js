@@ -359,6 +359,7 @@ export default function DBS() {
     yAxis: [{
       name: '高度（米）',
       type: 'category',
+      boundaryGap:false,
       nameLocation: 'end',
       axisLine: {
         lineStyle: {

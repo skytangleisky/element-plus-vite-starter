@@ -51,8 +51,8 @@
       >
     </box>
     <my-dialog></my-dialog>
-    <dialog-plan-request class="z-1" v-model:show="planShow"></dialog-plan-request>
-    <dialog-prev-request class="z-2" v-model:show="prevShow"></dialog-prev-request>
+    <dialog-plan-request v-model:show="planShow"></dialog-plan-request>
+    <dialog-prev-request v-model:show="prevShow"></dialog-prev-request>
     <li
       class="li_item"
       tabindex="-1"

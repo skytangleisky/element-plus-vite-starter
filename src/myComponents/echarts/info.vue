@@ -1,5 +1,8 @@
 <template>
-  <div ref="infoContainer" class="infoContainer grid grid-cols-3 grid-rows-4">
+  <div
+    ref="infoContainer"
+    class="infoContainer grid grid-cols-3 grid-rows-4 w-full h-full"
+  >
     <div class="item">
       <span>时间</span>:<span>{{ station.result[station.active]?.data_time }}</span>
     </div>

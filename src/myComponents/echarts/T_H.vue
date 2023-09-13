@@ -1,5 +1,8 @@
 <template>
-  <div ref="thContainer" class="thContainer grid grid-cols-3 grid-rows-4"></div>
+  <div
+    ref="thContainer"
+    class="thContainer grid grid-cols-3 grid-rows-4 w-full h-full"
+  ></div>
 </template>
 <script lang="ts" setup>
 import { ref, onMounted, onBeforeMount } from "vue";
@@ -7,7 +10,11 @@ import * as echarts from "echarts";
 
 var thContainer = ref(null);
 onMounted(() => {
+  if (!thContainer.value) throw Error("invalid thContainer!");
   var myChart = echarts.init(thContainer.value);
+  new ResizeObserver(() => {
+    myChart.resize();
+  }).observe(thContainer.value);
   var option;
   option = {
     title: {
@@ -29,10 +36,12 @@ onMounted(() => {
     },
     yAxis: [
       {
+        name: "温度(℃)",
         type: "value",
         stack: "Total",
       },
       {
+        name: "湿度(%)",
         type: "value",
         position: "right",
       },

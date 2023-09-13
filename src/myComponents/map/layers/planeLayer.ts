@@ -55,7 +55,6 @@ function getColor(v:number){
   v>=4?colors[4]:
   colors[0]
 }
-import { reactive } from 'vue'
 import Quadtree, { Rect } from '~/tools/quadtree'
 import { wgs84togcj02 } from '../workers/mapUtil'
 import { lng2Pixel, lat2Pixel, pixel2Lng, pixel2Lat, pixel2LngLat } from '../js/core'
@@ -68,7 +67,7 @@ export default class PlaneLayer{
   spirits:Array<Plane>
   preTime:number
   event:Eventbus
-  constructor(stations:any[]){
+  constructor(){
     this.event = new Eventbus()
     this.event.on('mousedown',(event:MouseEvent)=>{
       let overlap = false
@@ -103,8 +102,7 @@ export default class PlaneLayer{
       width:800,
       height:800,
     })
-    // this.spirits=Array<Plane>()
-    this.spirits = stations
+    this.spirits=Array<Plane>()
     let boundary=[110,120,41,38]
     let POINT = {lng:116.39139324235674,lat:39.90723893689098}
     this.preTime=performance.now()
@@ -114,143 +112,141 @@ export default class PlaneLayer{
     image.height=32*4+20*(4-1)
     image.onload = () => {
       this.preTime=performance.now()
-      fetchList().then((res:any)=>{
-        for(let k=0;k<100;k++) {
-          // const item = res.data.data[k]
-          // console.log(item)
-          let plane = reactive(new Plane())
-          plane.showToolTips=false
-          plane.name=k.toString()
-          plane.mouseenter=(e:MouseEvent)=>{
-            this.spirits.push(this.spirits.splice(this.spirits.indexOf(plane),1)[0])
-          }
-          plane.mousedown = (e:PointerEvent)=>{
-            this.spirits.forEach(v=>{
-              if(v!==plane){
-                v.showToolTips=false
-              }
-            })
-            plane.showToolTips=!plane.showToolTips
-            plane.isMouseDown = true
-          }
-          // plane.name=item.name
-          // plane.vx = this.randMinMax(-300,300)
-          // plane.vy = this.randMinMax(-300,300)
-          plane.vx = this.randMinMax(-20,20)
-          plane.vy = this.randMinMax(-20,20)
-          plane.vx=0
-          plane.vy=0
-          plane.v = this.randMinMax(-1,60)
-          plane.lng=this.randMinMax(boundary[0],boundary[1])
-          plane.lat=this.randMinMax(boundary[3],boundary[2])
-          // let convert = wgs84togcj02(POINT.lng,POINT.lat)
-          // let convert = wgs84togcj02(item.longitude,item.latitude)
-          // plane.lng=convert[0]
-          // plane.lat=convert[1]
-
-
-          plane.cvs = document.createElement('canvas')
-          if(plane.vx==0&&plane.vy==0){
-            plane.rad = Math.random()*360/180*Math.PI
-            // plane.rad = Math.PI/180*0
-          }else{
-            plane.rad = Math.atan2(-plane.vx,plane.vy)+Math.PI
-          }
-          // plane.w=16*2
-          // plane.h=17*2
-          plane.w=16
-          plane.h=32
-          // plane.anchor={x:0,y:0}
-          if(plane.v<=0){
-            plane.anchor={x:0,y:0}
-          }else{
-            plane.anchor={x:-0.5,y:0.5}
-          }
-          plane.compute_width_height()
-          plane.cvs.width=plane.width
-          plane.cvs.height=plane.height
-          plane.x=this.randMinMax(0, 640)
-          plane.y=this.randMinMax(0, 480)
-          // plane.x=100+i*10
-          // plane.y=100+i*10
-
-          let angle = (plane.rad/Math.PI*180).toFixed(2)
-          let speed = (Math.sqrt(plane.vx**2+plane.vy**2)*3.6).toFixed(2)
-          let speed1 = Math.sqrt(plane.vx**2+plane.vy**2).toFixed(2)
-          let speed2 = plane.v.toFixed(2)
-
-          let text = `雷达:${plane.name}\n方向角:${angle}°\n速度:${speed2}m/s`
-          plane.event.on('enter',(plane:Plane)=>{
-            // plane.showToolTips=true
-            console.log('enter',plane)
-          })
-          plane.event.on('leave',(plane:Plane)=>{
-            // plane.showToolTips=false
-            console.log('leave',plane)
-          })
-          plane.event.on('mousemove',()=>{
-            console.log('move',this)
-          })
-          // plane.event.on('mousedown',(event:MouseEvent)=>{
-          //   console.log('mousedown',event)
-          //   this.spirits.forEach(v=>{
-          //     if(v!==plane){
-          //       v.showToolTips=false
-          //     }
-          //   })
-          //   plane.showToolTips=!plane.showToolTips
-          //   plane.isMouseDown = true
-          // })
-          plane.event.on('mouseup',(event:MouseEvent)=>{
-            console.log('up',plane,event)
-            this.spirits.forEach((v:Plane)=>{
-              if(v.isMouseDown&&v.overlap){
-                plane.event.emit('click')
-              }
-              v.isMouseDown=false
-            })
-          })
-          plane.event.on('click',()=>{
-            console.log('click',this)
-          })
-          plane.event.on('move',(lng:number,lat:number)=>{
-            eventbus.emit('move',lng,lat)
-          })
-          this.spirits.push(plane)
-  
-  
-          let planeCvs = document.createElement('canvas')
-          planeCvs.width = image.width
-          planeCvs.height = image.height
-          let planeCtx = planeCvs.getContext('2d')
-          if(!planeCtx)throw Error('invalid planeCtx')
-          planeCtx.drawImage(image,0,0)
-            let ctx = plane.cvs.getContext('2d', { willReadFrequently:true })
-            if(!ctx)throw Error('invalid ctx!')
-            let preCompositeOperation = ctx.globalCompositeOperation
-            ctx.save()
-            {
-              ctx.fillStyle=getColor(plane.v)
-              ctx.fillRect(0,0,plane.cvs.width,plane.cvs.height)
-              ctx.globalCompositeOperation='destination-in'
-            }
-            ctx.translate(plane.cvs.width/2,plane.cvs.height/2)
-            ctx.rotate(plane.rad)
-            const {i,j} = getFeather(plane.v)
-            ctx.drawImage(planeCvs,36*i,52*j,16,32,-plane.w/2,-plane.h/2,plane.w,plane.h)
-            ctx.globalCompositeOperation=preCompositeOperation
-            // {
-            //   ctx.fillStyle='#ffffff88'
-            //   ctx.strokeStyle='white'
-            //   ctx.lineWidth=1
-            //   ctx.fillRect(-plane.w/2,-plane.h/2,plane.w,plane.h)
-            //   ctx.strokeRect(-plane.w/2+ctx.lineWidth,-plane.h/2+ctx.lineWidth,plane.w-ctx.lineWidth*2,plane.h-ctx.lineWidth*2)
-            //   ctx.stroke()
-            // }
-            ctx.restore()
-          plane.imgPixel= ctx.getImageData(0,0,plane.width,plane.height)
+      for(let k=0;k<10;k++) {
+        // const item = res.data.data[k]
+        // console.log(item)
+        let plane = new Plane()
+        plane.showToolTips=false
+        plane.name=k.toString()
+        plane.mouseenter=(e:MouseEvent)=>{
+          this.spirits.push(this.spirits.splice(this.spirits.indexOf(plane),1)[0])
         }
-      })
+        plane.mousedown = (e:PointerEvent)=>{
+          this.spirits.forEach(v=>{
+            if(v!==plane){
+              v.showToolTips=false
+            }
+          })
+          plane.showToolTips=!plane.showToolTips
+          plane.isMouseDown = true
+        }
+        // plane.name=item.name
+        // plane.vx = this.randMinMax(-300,300)
+        // plane.vy = this.randMinMax(-300,300)
+        plane.vx = this.randMinMax(-20,20)
+        plane.vy = this.randMinMax(-20,20)
+        plane.vx=0
+        plane.vy=0
+        plane.v = this.randMinMax(-1,60)
+        plane.lng=this.randMinMax(boundary[0],boundary[1])
+        plane.lat=this.randMinMax(boundary[3],boundary[2])
+        // let convert = wgs84togcj02(POINT.lng,POINT.lat)
+        // let convert = wgs84togcj02(item.longitude,item.latitude)
+        // plane.lng=convert[0]
+        // plane.lat=convert[1]
+
+
+        plane.cvs = document.createElement('canvas')
+        if(plane.vx==0&&plane.vy==0){
+          plane.rad = Math.random()*360/180*Math.PI
+          // plane.rad = Math.PI/180*0
+        }else{
+          plane.rad = Math.atan2(-plane.vx,plane.vy)+Math.PI
+        }
+        // plane.w=16*2
+        // plane.h=17*2
+        plane.w=16
+        plane.h=32
+        // plane.anchor={x:0,y:0}
+        if(plane.v<=0){
+          plane.anchor={x:0,y:0}
+        }else{
+          plane.anchor={x:-0.5,y:0.5}
+        }
+        plane.compute_width_height()
+        plane.cvs.width=plane.width
+        plane.cvs.height=plane.height
+        plane.x=this.randMinMax(0, 640)
+        plane.y=this.randMinMax(0, 480)
+        // plane.x=100+i*10
+        // plane.y=100+i*10
+
+        let angle = (plane.rad/Math.PI*180).toFixed(2)
+        let speed = (Math.sqrt(plane.vx**2+plane.vy**2)*3.6).toFixed(2)
+        let speed1 = Math.sqrt(plane.vx**2+plane.vy**2).toFixed(2)
+        let speed2 = plane.v.toFixed(2)
+
+        let text = `雷达:${plane.name}\n方向角:${angle}°\n速度:${speed2}m/s`
+        plane.event.on('enter',(plane:Plane)=>{
+          // plane.showToolTips=true
+          console.log('enter',plane)
+        })
+        plane.event.on('leave',(plane:Plane)=>{
+          // plane.showToolTips=false
+          console.log('leave',plane)
+        })
+        plane.event.on('mousemove',()=>{
+          console.log('move',this)
+        })
+        // plane.event.on('mousedown',(event:MouseEvent)=>{
+        //   console.log('mousedown',event)
+        //   this.spirits.forEach(v=>{
+        //     if(v!==plane){
+        //       v.showToolTips=false
+        //     }
+        //   })
+        //   plane.showToolTips=!plane.showToolTips
+        //   plane.isMouseDown = true
+        // })
+        plane.event.on('mouseup',(event:MouseEvent)=>{
+          console.log('up',plane,event)
+          this.spirits.forEach((v:Plane)=>{
+            if(v.isMouseDown&&v.overlap){
+              plane.event.emit('click')
+            }
+            v.isMouseDown=false
+          })
+        })
+        plane.event.on('click',()=>{
+          console.log('click',this)
+        })
+        plane.event.on('move',(lng:number,lat:number)=>{
+          eventbus.emit('move',lng,lat)
+        })
+        this.spirits.push(plane)
+
+
+        let planeCvs = document.createElement('canvas')
+        planeCvs.width = image.width
+        planeCvs.height = image.height
+        let planeCtx = planeCvs.getContext('2d')
+        if(!planeCtx)throw Error('invalid planeCtx')
+        planeCtx.drawImage(image,0,0)
+          let ctx = plane.cvs.getContext('2d', { willReadFrequently:true })
+          if(!ctx)throw Error('invalid ctx!')
+          let preCompositeOperation = ctx.globalCompositeOperation
+          ctx.save()
+          {
+            ctx.fillStyle=getColor(plane.v)
+            ctx.fillRect(0,0,plane.cvs.width,plane.cvs.height)
+            ctx.globalCompositeOperation='destination-in'
+          }
+          ctx.translate(plane.cvs.width/2,plane.cvs.height/2)
+          ctx.rotate(plane.rad)
+          const {i,j} = getFeather(plane.v)
+          ctx.drawImage(planeCvs,36*i,52*j,16,32,-plane.w/2,-plane.h/2,plane.w,plane.h)
+          ctx.globalCompositeOperation=preCompositeOperation
+          // {
+          //   ctx.fillStyle='#ffffff88'
+          //   ctx.strokeStyle='white'
+          //   ctx.lineWidth=1
+          //   ctx.fillRect(-plane.w/2,-plane.h/2,plane.w,plane.h)
+          //   ctx.strokeRect(-plane.w/2+ctx.lineWidth,-plane.h/2+ctx.lineWidth,plane.w-ctx.lineWidth*2,plane.h-ctx.lineWidth*2)
+          //   ctx.stroke()
+          // }
+          ctx.restore()
+        plane.imgPixel= ctx.getImageData(0,0,plane.width,plane.height)
+      }
     }
     image.src = featherUrl
   }
@@ -277,12 +273,13 @@ export default class PlaneLayer{
       item.lat = pixel2Lat(item.y+item.vy*deltaTime/1000/(2*Math.PI*6378137)*2**obj.L*256+item.height/2,obj.imgY,2**obj.L,256)
       item.x -= item.pt.x
       item.y -= item.pt.y
-      // ctx.beginPath()
-      // ctx.fillStyle='blue'
-      // ctx.arc(item.x+item.width/2+item.pt.x,item.y+item.height/2+item.pt.y,4,0,Math.PI*2)
-      // ctx.fill()
-      // item.lng += item.vx*deltaTime/1000;
-      // item.lat -= item.vy*deltaTime/1000;
+
+      ctx.beginPath()
+      ctx.fillStyle='blue'
+      ctx.arc(item.x+item.width/2+item.pt.x,item.y+item.height/2+item.pt.y,4,0,Math.PI*2)
+      ctx.fill()
+      item.lng += item.vx*deltaTime/1000;
+      item.lat -= item.vy*deltaTime/1000;
 
       item.check = false
       item.overlap = false

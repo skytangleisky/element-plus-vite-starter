@@ -1,5 +1,5 @@
 <template>
-  <div ref="chartDom" class="chartDom"></div>
+  <div ref="chartDom" class="chartDom w-full h-full"></div>
 </template>
 <script setup>
 import { onMounted, ref } from "vue";

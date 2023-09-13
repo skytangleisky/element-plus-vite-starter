@@ -1,89 +1,47 @@
 <template>
-  <div>
-    <canvas
-      ref="canvas"
-      style="
-        position: absolute;
-        outline: none;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-      "
-      @mousewheel.prevent
-    ></canvas>
-    <canvas
-      ref="webgpu"
-      style="
-        position: absolute;
-        outline: none;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-      "
-    ></canvas>
+  <canvas
+    ref="canvas"
+    style="position: absolute; outline: none; left: 0; top: 0; width: 100%; height: 100%"
+    @mousewheel.prevent
+  ></canvas>
+  <canvas
+    ref="webgpu"
+    style="
+      position: absolute;
+      outline: none;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    "
+  ></canvas>
+  <div
+    tabindex="-1"
+    class="tileSelect absolute right-20px top-20px"
+    style="outline: none"
+  >
     <div
-      tabindex="-1"
-      class="tileSelect absolute right-20px top-20px"
-      style="outline: none"
-    >
+      :style="
+        'border-radius:50%;border:1px solid grey;background-position:-0px -0px;background-repeat:no-repeat;width:58px;height:58px;' +
+        'background-image:url(' +
+        setting.tileUrl.replace('{x}', '105').replace('{y}', '48').replace('{z}', '7') +
+        ');'
+      "
+      @click.native="testClick"
+    ></div>
+    <div class="tileList">
       <div
+        v-for="(v, k) in urls"
+        :key="k"
         :style="
-          'border-radius:50%;border:1px solid grey;background-position:-0px -0px;background-repeat:no-repeat;width:58px;height:58px;' +
+          'border:1px solid grey;background-position:-0px -0px;background-repeat:no-repeat;width:50px;height:50px;' +
           'background-image:url(' +
-          setting.tileUrl.replace('{x}', '105').replace('{y}', '48').replace('{z}', '7') +
+          v.url.replace('{x}', '105').replace('{y}', '48').replace('{z}', '7') +
           ');'
         "
-        @click.native="testClick"
+        @click.native="tileSelect(v)"
       ></div>
-      <div class="tileList">
-        <div
-          v-for="(v, k) in urls"
-          :key="k"
-          :style="
-            'border:1px solid grey;background-position:-0px -0px;background-repeat:no-repeat;width:50px;height:50px;' +
-            'background-image:url(' +
-            v.url.replace('{x}', '105').replace('{y}', '48').replace('{z}', '7') +
-            ');'
-          "
-          @click.native="tileSelect(v)"
-        ></div>
-      </div>
-    </div>
-    <div
-      v-for="(v, k) in stations"
-      :key="v.radar_id"
-      :style="{
-        left: v.x + v.width / 2 + v.pt.x + 'px',
-        top: v.y + v.height / 2 + v.pt.y + 'px',
-        border: '1px solid red',
-        position: 'absolute',
-      }"
-    >
-      <div
-        class="w-8px h-8px bg-blue hover:bg-red absolute"
-        :style="{ left: -4 + 'px', top: -4 + 'px', 'border-radius': '50%' }"
-        @mousedown="v.mousedown"
-        @mouseenter="v.mouseenter"
-      ></div>
-      <div
-        v-if="v.showToolTips"
-        class="station_details"
-        :style="{ top: -v.height / 2 - v.pt.y + 'px' }"
-      >
-        <span>雷达:{{ v.name }}</span>
-        <span>方向角:{{ ((v.rad / Math.PI) * 180).toFixed(2) }}°</span>
-        <span>风速:{{ v.v.toFixed(2) }}m/s</span>
-        <div>
-          状态:<span
-            :style="{ color: v.is_online ? '#0f0' : '#f00' }"
-            v-text="v.is_online ? '在线' : '离线'"
-          ></span>
-        </div>
-      </div>
-      <!-- <div class="feather" :style="{'left':v.x+v.width/2+v.pt.x+'px','top':v.y+v.height/2+v.pt.y+'px','pointer-events':'none'}"/> -->
     </div>
   </div>
 </template>
@@ -116,7 +74,6 @@ import Task from "./layers/task";
 let needRedraw = false;
 let aid: number;
 import { eventbus } from "~/eventbus";
-let stations: any = ref([] as any[]);
 const setting = useSettingStore();
 let mapLayer: MapLayer;
 let borderLayer: BorderLayer;
@@ -195,7 +152,7 @@ onMounted(async () => {
   radarLayer = new RadarLayer(task);
   pointLayer = new PointLayer();
   routeLayer = new RouteLayer(task);
-  planeLayer = new PlaneLayer(stations.value);
+  planeLayer = new PlaneLayer();
   stationLayer = new StationLayer();
   let has = false;
   urls.value.forEach((v, k) => {
@@ -268,7 +225,7 @@ onMounted(async () => {
     draw();
   }).observe(cvs);
   cvs.addEventListener("mousewheel", mousewheelFunc, { passive: true });
-  document.addEventListener("mousewheel", mousewheelFunc, { passive: true });
+  // document.addEventListener("mousewheel", mousewheelFunc, { passive: true });
   cvs.addEventListener("mousedown", mousedownFunc, { passive: true });
   document.addEventListener("mouseup", mouseupFunc, { passive: true });
   document.addEventListener("mousemove", mousemoveFunc, { passive: true });
@@ -281,7 +238,7 @@ onBeforeUnmount(() => {
   cvs.removeEventListener("mousemove", mousemoveFunc);
   document.removeEventListener("mousemove", mousemoveFunc);
   cvs.removeEventListener("mousewheel", mousewheelFunc);
-  document.removeEventListener("mousewheel", mousewheelFunc);
+  // document.removeEventListener("mousewheel", mousewheelFunc);
   cancelAnimationFrame(aid);
   removeEventListener("message", test);
   cancel();
@@ -836,20 +793,6 @@ const testClick = () => {
   &:focus-within > .tileList {
     display: block;
   }
-}
-.feather {
-  background-image: url("/src/assets/feather.svg");
-  background-repeat: no-repeat;
-  background-position: -90px -90px;
-  background-size: 105px 150px;
-  transform-origin: 0 60px;
-  transform: translateY(-60px) rotate(360deg);
-  filter: drop-shadow(rgba(255, 255, 255, 1) 0 30px);
-  width: 15px;
-  height: 30px;
-  left: 100px;
-  top: 100px;
-  position: absolute;
 }
 .station_details {
   border: 1px solid #df0;
