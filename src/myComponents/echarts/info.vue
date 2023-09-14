@@ -7,8 +7,13 @@
       <span>时间</span>:<span>{{ station.result[station.active]?.data_time }}</span>
     </div>
     <div class="item">
-      <span>舱内温度</span>:<span>{{
+      <span>edfa模块温度</span>:<span>{{
         station.result[station.active]?.edfa_temperature
+      }}</span>
+    </div>
+    <div class="item">
+      <span>舱内温度</span>:<span>{{
+        station.result[station.active]?.internal_temperature
       }}</span>
     </div>
     <div class="item">

@@ -2,19 +2,23 @@
   <div ref="chartDom" class="chartDom w-full h-full"></div>
 </template>
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, onBeforeUnmount } from "vue";
 import * as echarts from "echarts";
 import Showers from "./data/showers_128.png?url";
 import Sunny from "./data/sunny_128.png?url";
 import Cloudy from "./data/cloudy_128.png?url";
 import url from "./data/wind-barb-hobart.json?url";
-
 const chartDom = ref(null);
 onMounted(() => {
+  console.log("MOUNTED");
   var myChart = echarts.init(chartDom.value);
-  new ResizeObserver((entries) => {
+  const resizeObserver = new ResizeObserver((entries) => {
     myChart.resize();
-  }).observe(chartDom.value);
+  });
+  resizeObserver.observe(chartDom.value);
+  onBeforeUnmount(() => {
+    resizeObserver.disconnect();
+  });
   var option;
 
   $.getJSON(url, function (rawData) {

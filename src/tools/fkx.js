@@ -296,7 +296,6 @@ export default function DBS() {
   var hours = [
     '0', '1', '2', '3', '4', '5'
   ]
-
   option = {
     animation: false,
     tooltip: {
@@ -320,7 +319,7 @@ export default function DBS() {
     },
     xAxis: {
       type: 'category',
-      boundaryGap: false,
+      boundaryGap: true,
       // type: 'time',
       // boundaryGap:true,
       // minInterval:5000,
@@ -347,6 +346,13 @@ export default function DBS() {
         // formatter: function(value, index){
         // 	return echarts.format.formatTime('hh:mm:ss', new Date(value));
         // }
+      },
+      splitLine:{
+        show:true,
+        color:'#ddd'
+      },
+      splitArea:{
+        show:true
       }
     },
     // yAxis: {
@@ -359,7 +365,7 @@ export default function DBS() {
     yAxis: [{
       name: '高度（米）',
       type: 'category',
-      boundaryGap:false,
+      boundaryGap:true,
       nameLocation: 'end',
       axisLine: {
         lineStyle: {
@@ -367,6 +373,7 @@ export default function DBS() {
         }
       },
       splitLine: {
+        show:true,
         lineStyle: {
           color: '#ddd'
         }
@@ -575,7 +582,6 @@ export default function DBS() {
   }
   this.process = function(fData) {
     option.series[0].data = []
-    console.log(fData.timestamp)
         for (let index = 0; index < fData.data.length; index++) {
           fData.data[index].time = fData.timestamp
           var fHei = fData.data[index].fHei
@@ -599,15 +605,20 @@ export default function DBS() {
     }
   }
   var myChart
+  var resizeObserver
   this.init = function(setting) {
     // size = setting.size;
     myChart = echarts.init(setting.el)
+    resizeObserver = new ResizeObserver((entries) => {
+      myChart.resize();
+    });
+    resizeObserver.observe(setting.el);
     myChart.group = 'group'
     echarts.connect('group')
     myChart.setOption(option, false)
-    new ResizeObserver(entries => {
-      myChart.resize()
-    }).observe(setting.el)
+  }
+  this.disconnect=function(){
+    resizeObserver.disconnect()
   }
 }
 

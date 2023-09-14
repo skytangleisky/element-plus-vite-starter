@@ -191,7 +191,7 @@ onMounted(async () => {
   init();
   lastTime = performance.now();
   loop(lastTime);
-  new ResizeObserver(() => {
+  const resizeObserver = new ResizeObserver(() => {
     let rect = cvs.getBoundingClientRect();
     if (rect.width == 0 || rect.height == 0) return;
     cvs.width = rect.width;
@@ -223,13 +223,17 @@ onMounted(async () => {
     needRedraw = true;
     // windy.start([[0,0],[cvs.width,cvs.height]],cvs.width,cvs.height,[[pixel2Lng(0,obj.imgX,2**obj.L,256), pixel2Lat(cvs.height,obj.imgY,2**obj.L,256)],[pixel2Lng(cvs.width,obj.imgX,2**obj.L,256), pixel2Lat(0,obj.imgY,2**obj.L,256)]])
     draw();
-  }).observe(cvs);
+  });
+  resizeObserver.observe(cvs);
   cvs.addEventListener("mousewheel", mousewheelFunc, { passive: true });
   // document.addEventListener("mousewheel", mousewheelFunc, { passive: true });
   cvs.addEventListener("mousedown", mousedownFunc, { passive: true });
   document.addEventListener("mouseup", mouseupFunc, { passive: true });
   document.addEventListener("mousemove", mousemoveFunc, { passive: true });
   eventbus.on("move", moveFunc);
+  onBeforeUnmount(() => {
+    resizeObserver.disconnect();
+  });
 });
 const moveFunc = (lng: number, lat: number) => {
   flyTo(lng, lat, { duration: 0 });

@@ -273,9 +273,11 @@ function draw(
 }
 export function cancel(){
     window.cancelAnimationFrame(aid)
+    resizeObserver.disconnect()
 }
 // total objects
 const NUM = 10000
+var resizeObserver:ResizeObserver
 export default async function run(canvas:HTMLCanvasElement){
     if (!canvas)
         throw new Error('No Canvas')
@@ -398,7 +400,7 @@ export default async function run(canvas:HTMLCanvasElement){
         device.queue.writeBuffer(pipelineObj.mvpBufferTriangle, 0, mvpBufferTriangle)
     }
 
-    new ResizeObserver(()=>{
+    resizeObserver = new ResizeObserver(()=>{
         let rect = canvas.getBoundingClientRect()
         if(rect.width==0||rect.height==0)return
         size.width = canvas.width = rect.width * devicePixelRatio
@@ -429,7 +431,8 @@ export default async function run(canvas:HTMLCanvasElement){
         }
         logic()
         draw(device, context, pipelineObj,textureGroup)
-    }).observe(canvas)
+    })
+    resizeObserver.observe(canvas)
     function getGPUcoord(x:number,y:number,size:{width:number,height:number}){
         return {
             x:(x-size.width/2)/(size.width/2)*size.width/size.height,

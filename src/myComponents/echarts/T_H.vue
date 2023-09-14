@@ -5,16 +5,20 @@
   ></div>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted, onBeforeMount } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import * as echarts from "echarts";
 
 var thContainer = ref(null);
 onMounted(() => {
   if (!thContainer.value) throw Error("invalid thContainer!");
   var myChart = echarts.init(thContainer.value);
-  new ResizeObserver(() => {
+  const resizeObserver = new ResizeObserver((entries) => {
     myChart.resize();
-  }).observe(thContainer.value);
+  });
+  resizeObserver.observe(thContainer.value);
+  onBeforeUnmount(() => {
+    resizeObserver.disconnect();
+  });
   var option;
   option = {
     title: {

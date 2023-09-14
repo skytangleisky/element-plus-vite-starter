@@ -20,6 +20,7 @@ onMounted(() => {
   }, 5000);
   onBeforeUnmount(() => {
     clearInterval(timer);
+    dbs.disconnect();
   });
 });
 </script>
