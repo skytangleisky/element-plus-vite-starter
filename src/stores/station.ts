@@ -52,7 +52,6 @@ export const useStationStore = defineStore({
           this.$patch({result})
           resolve(result)
         }).catch((e)=>{
-          this.$reset()
           reject(e)
         })
 
@@ -145,7 +144,6 @@ export const useStationStore = defineStore({
           this.$patch({result})
           resolve(result)
         }).catch((e)=>{
-          this.$reset()
           reject(e)
         })
       })
@@ -157,7 +155,6 @@ export const useStationStore = defineStore({
           this.$patch({result})
           resolve(result)
         }).catch((e)=>{
-          this.$reset()
           reject(e)
         })
       })
@@ -169,7 +166,6 @@ export const useStationStore = defineStore({
           this.$patch({result})
           resolve(result)
         }).catch((e)=>{
-          this.$reset()
           reject(e)
         })
       })
@@ -179,7 +175,6 @@ export const useStationStore = defineStore({
         查询平均风数据接口().then((res:any)=>{
           resolve(res)
         }).catch((e)=>{
-          this.$reset()
           reject(e)
         })
       })

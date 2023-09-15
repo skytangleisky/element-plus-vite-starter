@@ -508,10 +508,26 @@ onMounted(() => {
   stationLayer.setSource(source2);
   featherLayer.setSource(source);
   const setting = useSettingStore();
-
   watch(
-    storeToRefs(station).result,
-    (newVal, oldVal) => {
+    storeToRefs(setting).factor.value[0],
+    (newVal) => {
+      if (newVal.val) {
+        source3.getFeatures().forEach((feature) => {
+          feature.getStyle()[0].getText().setText(feature.get("radar_id"));
+          feature.changed();
+        });
+      } else {
+        source3.getFeatures().forEach((feature) => {
+          feature.getStyle()[0].getText().setText(undefined);
+          feature.changed();
+        });
+      }
+    },
+    { immediate: true, deep: true }
+  );
+  watch(
+    [storeToRefs(station).result, storeToRefs(setting).featherValue],
+    ([newVal, featherValue], [oldVal]) => {
       if (!oldVal) return;
       const data = newVal;
       removeAllFeatures();
@@ -770,170 +786,164 @@ onMounted(() => {
       }
 
       station.查询平均风数据接口().then((res) => {
-        watch(
-          storeToRefs(setting).factor.value[0],
-          (newVal) => {
-            if (newVal.val) {
-              source3.getFeatures().forEach((feature) => {
-                feature.getStyle()[0].getText().setText(feature.get("radar_id"));
-                feature.changed();
-              });
-            } else {
-              source3.getFeatures().forEach((feature) => {
-                feature.getStyle()[0].getText().setText(undefined);
-                feature.changed();
-              });
-            }
-          },
-          { immediate: true, deep: true }
-        );
-        watch(
-          // storeToRefs(setting).factor.value[5],
-          storeToRefs(setting).station,
-          (newVal) => {
-            if (newVal) {
-              map
-                .getLayers()
-                .getArray()
-                .find(function (layer) {
-                  return layer.get("id") === "station";
-                })
-                .setVisible(true);
-              source3.getFeatures().forEach((feature) => {
-                feature.getStyle()[3].getText().setText(feature.get("name"));
-                feature.changed();
-              });
-            } else {
-              map
-                .getLayers()
-                .getArray()
-                .find(function (layer) {
-                  return layer.get("id") === "station";
-                })
-                .setVisible(false);
-              source3.getFeatures().forEach((feature) => {
-                feature.getStyle()[3].getText().setText(undefined);
-                feature.changed();
-              });
-            }
-          },
-          { immediate: true }
-        );
-        watch(
-          [storeToRefs(setting).factor.value[7], storeToRefs(setting).featherValue],
-          ([newVal, featherValue]) => {
-            // console.log(newVal, featherValue);
-            if (newVal.val) {
-              res.data.data.forEach((v, k) => {
-                source3.getFeatures().forEach((feature) => {
-                  let tmp = v[feature.get("radar_id")];
-                  if (tmp) {
-                    for (let k in tmp[0]) {
-                      let tmp2 = tmp[0][k][0];
-                      for (let kk in tmp2) {
-                        feature
-                          .getStyle()[8]
-                          .getText()
-                          .setText(tmp2[kk].temperature.toFixed(2));
-                        feature.changed();
-                      }
-                    }
+        res.data.data.forEach((v, k) => {
+          source.getFeatures().forEach((feature) => {
+            let tmp = v[feature.get("radar_id")];
+            if (tmp) {
+              for (let k in tmp[0]) {
+                let tmp2 = tmp[0][k][featherValue];
+                if (tmp2) {
+                  for (let kk in tmp2) {
+                    feature.set("rad", (tmp2[kk].direction / 180) * Math.PI);
+                    feature.set("flag", getFeather(tmp2[kk].speed));
                   }
-                });
-                source.getFeatures().forEach((feature) => {
-                  let tmp = v[feature.get("radar_id")];
-                  if (tmp) {
-                    for (let k in tmp[0]) {
-                      let tmp2 = tmp[0][k][featherValue];
-                      if (tmp2) {
-                        for (let kk in tmp2) {
-                          feature.set("rad", (tmp2[kk].direction / 180) * Math.PI);
-                          feature.set("flag", getFeather(tmp2[kk].speed));
-                        }
-                      } else {
-                        feature.set("rad", 0);
-                        feature.set("flag", 0);
-                      }
-                    }
-                  }
-                });
-                source2.getFeatures().forEach((feature) => {
-                  let tmp = v[feature.get("radar_id")];
-                  if (tmp) {
-                    for (let k in tmp[0]) {
-                      let tmp2 = tmp[0][k][featherValue];
-                      if (tmp2) {
-                        for (let kk in tmp2) {
-                          feature.set("rad", (tmp2[kk].direction / 180) * Math.PI);
-                          feature.set("speed", tmp2[kk].speed + "m/s");
-                          feature.set("time", k);
-                        }
-                      } else {
-                        feature.set("rad", NaN);
-                        feature.set("speed", NaN);
-                        feature.set("time", k);
-                      }
-                    }
-                  }
-                });
-              });
-            } else {
-              source3.getFeatures().forEach((feature) => {
-                feature.getStyle()[8].getText().setText(undefined);
-                feature.changed();
-              });
+                } else {
+                  feature.set("rad", 0);
+                  feature.set("flag", 0);
+                }
+              }
             }
-          },
-          { immediate: true, deep: true }
-        );
-        watch(
-          storeToRefs(setting).factor.value[9],
-          (newVal) => {
-            if (newVal.val) {
-              res.data.data.forEach((v, k) => {
-                source3.getFeatures().forEach((feature) => {
-                  let tmp = v[feature.get("radar_id")];
-                  if (tmp) {
-                    for (let k in tmp[0]) {
-                      let tmp2 = tmp[0][k][0];
-                      for (let kk in tmp2) {
-                        feature
-                          .getStyle()[10]
-                          .getText()
-                          .setText(tmp2[kk].humidity.toFixed(2));
-                        feature.changed();
-                      }
-                    }
+          });
+          source2.getFeatures().forEach((feature) => {
+            let tmp = v[feature.get("radar_id")];
+            if (tmp) {
+              for (let k in tmp[0]) {
+                let tmp2 = tmp[0][k][featherValue];
+                if (tmp2) {
+                  for (let kk in tmp2) {
+                    feature.set("rad", (tmp2[kk].direction / 180) * Math.PI);
+                    feature.set("speed", tmp2[kk].speed + "m/s");
+                    feature.set("time", k);
                   }
-                });
-              });
-            } else {
-              source3.getFeatures().forEach((feature) => {
-                feature.getStyle()[10].getText().setText(undefined);
-                feature.changed();
-              });
+                } else {
+                  feature.set("rad", NaN);
+                  feature.set("speed", NaN);
+                  feature.set("time", k);
+                }
+              }
             }
-          },
-          { immediate: true, deep: true }
-        );
+          });
+          source3.getFeatures().forEach((feature) => {
+            let tmp = v[feature.get("radar_id")];
+            if (tmp) {
+              for (let k in tmp[0]) {
+                let tmp2 = tmp[0][k][0];
+                for (let kk in tmp2) {
+                  if (setting.factor[7]) {
+                    feature.set("temperature", tmp2[kk].temperature.toFixed(2));
+                    feature.getStyle()[8].getText().setText(feature.get("temperature"));
+                    feature.changed();
+                  } else {
+                    feature.getStyle()[8].getText().setText(undefined);
+                    feature.changed();
+                  }
+                  if (setting.factor[9]) {
+                    feature.set("humidity", tmp2[kk].humidity.toFixed(2));
+                    feature.getStyle()[10].getText().setText(feature.get("humidity"));
+                    feature.changed();
+                  } else {
+                    feature.getStyle()[10].getText().setText(undefined);
+                    feature.changed();
+                  }
+                }
+              }
+            }
+          });
+        });
       });
     },
     { deep: true, immediate: true }
   );
-
+  watch(
+    storeToRefs(setting).factor.value[7],
+    (newVal) => {
+      if (newVal.val) {
+        source3.getFeatures().forEach((feature) => {
+          feature.getStyle()[8].getText().setText(feature.get("temperature"));
+          feature.changed();
+        });
+        // source.getFeatures().forEach((feature) => {
+        //   feature.set("rad", feature.get("rad"));
+        //   feature.set("flag", getFeather(feature.get("speed")));
+        // });
+        // source2.getFeatures().forEach((feature) => {
+        //   feature.set("rad", feature.get("rad"));
+        //   feature.set("speed", feature.get("speed"));
+        //   feature.set("time", feature.get("time"));
+        // });
+      } else {
+        source3.getFeatures().forEach((feature) => {
+          feature.getStyle()[8].getText().setText(undefined);
+          feature.changed();
+        });
+      }
+    },
+    { immediate: true, deep: true }
+  );
+  watch(
+    storeToRefs(setting).factor.value[9],
+    (newVal) => {
+      if (newVal.val) {
+        source3.getFeatures().forEach((feature) => {
+          feature.getStyle()[10].getText().setText(feature.get("humidity"));
+          feature.changed();
+        });
+      } else {
+        source3.getFeatures().forEach((feature) => {
+          feature.getStyle()[10].getText().setText(undefined);
+          feature.changed();
+        });
+      }
+    },
+    { immediate: true, deep: true }
+  );
+  watch(
+    // storeToRefs(setting).factor.value[5],
+    storeToRefs(setting).station,
+    (newVal) => {
+      if (newVal) {
+        map
+          .getLayers()
+          .getArray()
+          .find(function (layer) {
+            return layer.get("id") === "station";
+          })
+          .setVisible(true);
+        source3.getFeatures().forEach((feature) => {
+          feature.getStyle()[3].getText().setText(feature.get("name"));
+          feature.changed();
+        });
+      } else {
+        map
+          .getLayers()
+          .getArray()
+          .find(function (layer) {
+            return layer.get("id") === "station";
+          })
+          .setVisible(false);
+        source3.getFeatures().forEach((feature) => {
+          feature.getStyle()[3].getText().setText(undefined);
+          feature.changed();
+        });
+      }
+    },
+    { immediate: true }
+  );
   watch(
     storeToRefs(setting).checks.value[0],
-    (newVal) => {
+    (newVal, oldVal) => {
+      if (!oldVal) return;
+      removeAllFeatures();
       if (newVal.select) {
         station.查询雷达列表接口();
       }
-      removeAllFeatures();
     },
     { deep: true, immediate: true }
   );
   watch(
     storeToRefs(setting).checks.value[1],
-    (newVal) => {
+    (newVal, oldVal) => {
+      if (!oldVal) return;
       if (newVal.select) {
         station.查询雷达在线列表接口();
       }
@@ -943,7 +953,8 @@ onMounted(() => {
   );
   watch(
     storeToRefs(setting).checks.value[2],
-    (newVal) => {
+    (newVal, oldVal) => {
+      if (!oldVal) return;
       if (newVal.select) {
         station.查询雷达离线列表接口();
       } else removeAllFeatures();
@@ -952,7 +963,8 @@ onMounted(() => {
   );
   watch(
     storeToRefs(setting).checks.value[3],
-    (newVal) => {
+    (newVal, oldVal) => {
+      if (!oldVal) return;
       if (newVal.select) {
         station.查询近期新增雷达列表接口();
       } else removeAllFeatures();

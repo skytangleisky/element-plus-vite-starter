@@ -10,7 +10,6 @@ import Cloudy from "./data/cloudy_128.png?url";
 import url from "./data/wind-barb-hobart.json?url";
 const chartDom = ref(null);
 onMounted(() => {
-  console.log("MOUNTED");
   var myChart = echarts.init(chartDom.value);
   const resizeObserver = new ResizeObserver((entries) => {
     myChart.resize();

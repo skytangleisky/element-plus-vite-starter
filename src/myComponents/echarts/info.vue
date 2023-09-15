@@ -95,14 +95,8 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { watch } from "vue";
 import { useStationStore } from "~/stores/station";
-import { storeToRefs } from "pinia";
 const station = useStationStore();
-console.log(station.result);
-watch(storeToRefs(station).result, (newVal) => {
-  console.log(newVal);
-});
 </script>
 <style>
 .infoContainer {
