@@ -63,8 +63,8 @@ defineProps({
   item: {
     type: Object,
     default: {
-      product_root: "root",
-      product_image: "/image",
+      product_root: "demos/project/html5/three.js-master",
+      product_image: "/examples/preview.jpg",
       product_url: "",
     },
   },

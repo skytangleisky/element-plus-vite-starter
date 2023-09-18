@@ -87,7 +87,7 @@ export default defineConfig({
         ws:true,
       },
       '/tanglei':{
-        target:'http://tanglei.top:5101',//替换的服务端地址
+        target:'http://tanglei.top:81',//替换的服务端地址
         changeOrigin:true,//开启代理，允许跨域
         rewrite:path=>path.replace(/^\/tanglei/,'') // 设置重写的路径
       },
