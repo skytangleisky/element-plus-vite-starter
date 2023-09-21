@@ -110,7 +110,7 @@ export const useSettingStore = defineStore({
       })
     }
   },
-  persist: false
+  persist: true
 })
 
 if (import.meta.hot) {

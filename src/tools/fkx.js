@@ -47,7 +47,7 @@ export default function DBS() {
   // weatherData[0] = ["2017-06-28", 0, "images/cloudy_128.png", 4, 13]
   const colors = ['#0000FF', '#001BFE', '#0135FF', '#0054FF', '#006FFF', '#008CFF', '#00A8FF', '#00C4FE', '#00E0FF', '#14D473', '#A6DC00', '#FFE600', '#FFBE00', '#FF9800', '#FF7100', '#FF4A00', '#FF2300', '#FB0000', '#D40000', '#AD0000']
   option = {
-    animation: false,
+    animation: true,
     visualMap: [{
       type: 'piecewise',
       show: false,
@@ -297,7 +297,7 @@ export default function DBS() {
     '0', '1', '2', '3', '4', '5'
   ]
   option = {
-    animation: false,
+    animation: true,
     tooltip: {
       hideDelay:0,
       position: 'top',
@@ -319,6 +319,7 @@ export default function DBS() {
     },
     xAxis: {
       type: 'category',
+      inverse:false,
       boundaryGap: true,
       // type: 'time',
       // boundaryGap:true,
@@ -580,28 +581,63 @@ export default function DBS() {
       }, false, true)
     }
   }
+  // this.process = function(fData) {
+  //   option.series[0].data = []
+  //       for (let index = 0; index < fData.data.length; index++) {
+  //         fData.data[index].time = fData.timestamp
+  //         var fHei = fData.data[index].fHei
+  //         // var fHorChange = fData[index].fHorChange
+  //         // var fHAngle = fData.data[index].fHAngle
+  //         var fHSpeed = fData.data[index].fHSpeed
+  //         // var fSDev = fData.data[index].fSDev
+  //         var fVSpeed = fData.data[index].fVSpeed
+  //         // var fVerChange = fData.data[index].fVerChange
+  //         // var iBelieveable = fData.data[index].iBelieveable
+  //         if (Number(fHSpeed) === 999) continue
+  //         // option.series[1].data.push([1, fHei, fVSpeed, fData.data[index]])
+  //         option.series[0].data.push([0, fHei,fData.data[index]])
+  //         option.xAxis.data[0] = fData.timestamp.substr(11,8)
+  //       }
+  //   if (myChart) {
+  //     myChart.setOption({
+  //       series: option.series,
+  //       xAxis: option.xAxis
+  //     }, false, true)
+  //   }
+  // }
+  let arr = []
   this.process = function(fData) {
-    option.series[0].data = []
-        for (let index = 0; index < fData.data.length; index++) {
-          fData.data[index].time = fData.timestamp
-          var fHei = fData.data[index].fHei
-          // var fHorChange = fData[index].fHorChange
-          // var fHAngle = fData.data[index].fHAngle
-          var fHSpeed = fData.data[index].fHSpeed
-          // var fSDev = fData.data[index].fSDev
-          var fVSpeed = fData.data[index].fVSpeed
-          // var fVerChange = fData.data[index].fVerChange
-          // var iBelieveable = fData.data[index].iBelieveable
-          if (Number(fHSpeed) === 999) continue
-          // option.series[1].data.push([1, fHei, fVSpeed, fData.data[index]])
-          option.series[0].data.push([0, fHei,fData.data[index]])
-          option.xAxis.data[0] = fData.timestamp.substr(11,8)
-        }
+    if(!Array.isArray(fData)){
+      fData = [fData]
+    }
+    fData.forEach(item=>{
+      arr.unshift(item)
+    })
+    option.series[0].data=[]
+    myChart.setOption(option)
+    while(arr.length>6)arr.pop()
+    arr.map((v,k)=>{
+      for (let index = 0; index < v.data.length; index++) {
+        v.data[index].time = v.timestamp
+        var fHei = v.data[index].fHei
+        // var fHorChange = v.data[index].fHorChange
+        // var fHAngle = v.data[index].fHAngle
+        var fHSpeed = v.data[index].fHSpeed
+        // var fSDev = v.data[index].fSDev
+        var fVSpeed = v.data[index].fVSpeed
+        // var fVerChange = v.data[index].fVerChange
+        // var iBelieveable = v.data[index].iBelieveable
+        if (Number(fHSpeed) === 999) continue
+        // option.series[1].data.push([1, fHei, fVSpeed, fData.data[index]])
+        option.series[0].data.push([k, fHei,v.data[index]])
+      }
+      option.xAxis.data[k] = v.timestamp.substr(11,8)
+    })
     if (myChart) {
       myChart.setOption({
         series: option.series,
         xAxis: option.xAxis
-      }, false, true)
+      })
     }
   }
   var myChart

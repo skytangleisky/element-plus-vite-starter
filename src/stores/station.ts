@@ -38,10 +38,29 @@ interface Station {
     pull_url:string
   }
 }
+interface Wind {
+  [key:string]:Array<{
+    [key:string]:Array<{
+      [key:string]:{
+        height:number
+        layers:number
+        speed:number
+        direction:number
+        min_speed:number
+        max_speed:number
+        rsd:number
+        reliability:number
+        temperature:number
+        humidity:number
+      }
+    }>
+  }>;
+}
 export const useStationStore = defineStore({
   id: 'station',
   state: () => ({
-    result:new Array<Station>(),
+    result:new Array<Station>(),//设备信息列表
+    avgWindData: new Array<Wind>(),//平均风数据
     active:-1
   }),
   actions: {
@@ -180,7 +199,7 @@ export const useStationStore = defineStore({
       })
     },
   },
-  persist: false,
+  persist: true,
 })
 if (import.meta.hot) {
   import.meta.hot.accept(acceptHMRUpdate(useStationStore, import.meta.hot))

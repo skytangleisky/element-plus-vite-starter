@@ -1,6 +1,6 @@
 <template>
   <div
-    class="absolute left-0 top-0 w-240px box-border bg-blue-9 dark:bg-gray-8"
+    class="radarStatistic absolute left-0 top-0 w-240px box-border bg-blue-9 dark:bg-gray-8"
     style="background-color: transparent; overflow: auto; max-height: 100%"
   >
     <div class="item">
@@ -150,41 +150,47 @@ onBeforeUnmount(() => {
 });
 const options = [
   {
-    value: 0,
-    label: "220",
+    value: "570.0",
+    label: "570",
   },
   {
-    value: 1,
-    label: "190",
+    value: "490.0",
+    label: "490",
   },
   {
-    value: 2,
-    label: "160",
+    value: "410.0",
+    label: "410",
   },
   {
-    value: 3,
-    label: "130",
+    value: "330.0",
+    label: "330",
   },
   {
-    value: 4,
-    label: "100",
+    value: "250.0",
+    label: "250",
   },
   {
-    value: 5,
-    label: "70",
+    value: "170.0",
+    label: "170",
+  },
+  {
+    value: "90.0",
+    label: "90",
   },
 ];
 </script>
 <style lang="scss">
-.item {
-  border-radius: 8px;
-  margin: 8px 10px;
-  padding-right: 10px;
-  background: #ffffff;
-  box-shadow: 0 0 10px 10px #00000011;
-  border-color: #00000011;
-}
-.dark .item {
-  background: #000000;
+.radarStatistic {
+  .item {
+    border-radius: 8px;
+    margin: 8px 10px;
+    padding-right: 10px;
+    background: #ffffff;
+    box-shadow: 0 0 10px 10px #00000011;
+    border-color: #00000011;
+  }
+  .dark .item {
+    background: #000000;
+  }
 }
 </style>

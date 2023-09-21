@@ -25,6 +25,7 @@
             autocomplete="off"
             placeholder="密码"
             :prefix-icon="Lock"
+            @keyup.enter.native="submitForm(formEl)"
           >
             <template #append>
               <div
@@ -69,7 +70,6 @@ const numberValidateForm = reactive({
   secure: window.location.protocol == "https:",
 });
 const loading = ref(false);
-
 const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   loading.value = true;

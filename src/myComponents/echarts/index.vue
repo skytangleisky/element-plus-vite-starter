@@ -1,13 +1,33 @@
 <template>
-  <div ref="chartDom" class="chartDom w-full h-full"></div>
+  <div
+    style="
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      width: 100%;
+      min-height: 400px;
+      display: flex;
+      flex-direction: column;
+    "
+  >
+    <div style="color: rgb(78, 129, 184); font-size: 20px; background: #eee">
+      风速风向
+    </div>
+    <div ref="chartDom" class="w-full flex-1"></div>
+  </div>
 </template>
 <script setup>
-import { onMounted, ref, onBeforeUnmount } from "vue";
+import { onMounted, ref, onBeforeUnmount, watch } from "vue";
 import * as echarts from "echarts";
 import Showers from "./data/showers_128.png?url";
 import Sunny from "./data/sunny_128.png?url";
 import Cloudy from "./data/cloudy_128.png?url";
 import url from "./data/wind-barb-hobart.json?url";
+import { useSettingStore } from "~/stores/setting";
+const setting = useSettingStore();
+import { useStationStore } from "~/stores/station";
+const station = useStationStore();
+import { storeToRefs } from "pinia";
+import { Fdata } from "~/tools/fkx";
 const chartDom = ref(null);
 onMounted(() => {
   var myChart = echarts.init(chartDom.value);
@@ -18,302 +38,341 @@ onMounted(() => {
   onBeforeUnmount(() => {
     resizeObserver.disconnect();
   });
-  var option;
-
-  $.getJSON(url, function (rawData) {
-    const weatherIcons = {
-      Showers,
-      Sunny,
-      Cloudy,
-    };
-    const directionMap = {};
-    // prettier-ignore
-    ['W', 'WSW', 'SW', 'SSW', 'S', 'SSE', 'SE', 'ESE', 'E', 'ENE', 'NE', 'NNE', 'N', 'NNW', 'NW', 'WNW'].forEach(function (name, index) {
-          directionMap[name] = Math.PI / 8 * index;
-      });
-    const data = rawData.data.map(function (entry) {
-      return [entry.time, entry.windSpeed, entry.R, entry.waveHeight];
+  const dims = {
+    time: 0,
+    windSpeed: 1,
+    R: 2,
+    waveHeight: 3,
+    weatherIcon: 2,
+    minTemp: 3,
+    maxTemp: 4,
+  };
+  const weatherIcons = {
+    Showers,
+    Sunny,
+    Cloudy,
+  };
+  const directionMap = {};
+  // prettier-ignore
+  ['W', 'WSW', 'SW', 'SSW', 'S', 'SSE', 'SE', 'ESE', 'E', 'ENE', 'NE', 'NNE', 'N', 'NNW', 'NW', 'WNW'].forEach(function (name, index) {
+      directionMap[name] = Math.PI / 8 * index;
     });
-    const weatherData = rawData.forecast.map(function (entry) {
-      return [
-        entry.localDate,
-        0,
-        weatherIcons[entry.skyIcon],
-        entry.minTemp,
-        entry.maxTemp,
-      ];
-    });
-    const dims = {
-      time: 0,
-      windSpeed: 1,
-      R: 2,
-      waveHeight: 3,
-      weatherIcon: 2,
-      minTemp: 3,
-      maxTemp: 4,
-    };
-    const arrowSize = 18;
-    const weatherIconSize = 45;
-    const renderArrow = function (param, api) {
-      const point = api.coord([api.value(dims.time), api.value(dims.windSpeed)]);
-      return {
-        type: "path",
-        shape: {
-          pathData: "M31 16l-15-15v9h-26v12h26v9z",
-          x: -arrowSize / 2,
-          y: -arrowSize / 2,
-          width: arrowSize,
-          height: arrowSize,
-        },
-        rotation: directionMap[api.value(dims.R)],
-        position: point,
-        style: api.style({
-          stroke: "#555",
-          lineWidth: 1,
-        }),
-      };
-    };
-    const renderWeather = function (param, api) {
-      const point = api.coord([api.value(dims.time) + (3600 * 24 * 1000) / 2, 0]);
-      return {
-        type: "group",
-        children: [
-          {
-            type: "image",
-            style: {
-              image: api.value(dims.weatherIcon),
-              x: -weatherIconSize / 2,
-              y: -weatherIconSize / 2,
-              width: weatherIconSize,
-              height: weatherIconSize,
-            },
-            position: [point[0], 110],
-          },
-          {
-            type: "text",
-            style: {
-              text: api.value(dims.minTemp) + " - " + api.value(dims.maxTemp) + "°",
-              textFont: api.font({ fontSize: 14 }),
-              textAlign: "center",
-              textVerticalAlign: "bottom",
-            },
-            position: [point[0], 80],
-          },
-        ],
-      };
-    };
-    option = {
-      title: {
-        text: "风向 风速",
-        subtext: "",
-        left: "center",
+  const arrowSize = 18;
+  const weatherIconSize = 45;
+  const renderArrow = function (param, api) {
+    const point = api.coord([api.value(dims.time), api.value(dims.windSpeed)]);
+    return {
+      type: "path",
+      shape: {
+        pathData: "M31 16l-15-15v9h-26v12h26v9z",
+        x: -arrowSize / 2,
+        y: -arrowSize / 2,
+        width: arrowSize,
+        height: arrowSize,
       },
-      tooltip: {
-        trigger: "axis",
-        formatter: function (params) {
-          return [
-            echarts.format.formatTime("yyyy-MM-dd", params[0].value[dims.time]) +
-              " " +
-              echarts.format.formatTime("hh:mm", params[0].value[dims.time]),
-            "风速：" + params[0].value[dims.windSpeed],
-            "风向：" + params[0].value[dims.R],
-            "浪高：" + params[0].value[dims.waveHeight],
-          ].join("<br>");
+      // rotation: directionMap[api.value(dims.R)],
+      rotation: api.value(dims.R),
+      position: point,
+      style: api.style({
+        stroke: "#555",
+        lineWidth: 1,
+      }),
+    };
+  };
+  const renderWeather = function (param, api) {
+    const point = api.coord([api.value(dims.time) + (3600 * 24 * 1000) / 2, 0]);
+    return {
+      type: "group",
+      children: [
+        {
+          type: "image",
+          style: {
+            image: api.value(dims.weatherIcon),
+            x: -weatherIconSize / 2,
+            y: -weatherIconSize / 2,
+            width: weatherIconSize,
+            height: weatherIconSize,
+          },
+          position: [point[0], 110],
+        },
+        {
+          type: "text",
+          style: {
+            text: api.value(dims.minTemp) + " - " + api.value(dims.maxTemp) + "°",
+            textFont: api.font({ fontSize: 14 }),
+            textAlign: "center",
+            textVerticalAlign: "bottom",
+          },
+          position: [point[0], 80],
+        },
+      ],
+    };
+  };
+  var option = {
+    title: {
+      text: "风速风向",
+      subtext: "",
+      left: "center",
+      show: false,
+    },
+    tooltip: {
+      trigger: "axis",
+      formatter: function (params) {
+        return [
+          echarts.format.formatTime("yyyy-MM-dd", params[0].value[dims.time]) +
+            " " +
+            echarts.format.formatTime("hh:mm", params[0].value[dims.time]),
+          "风速：" + params[0].value[dims.windSpeed],
+          "风向：" + params[0].value[dims.R],
+          "浪高：" + params[0].value[dims.waveHeight],
+        ].join("<br>");
+      },
+    },
+    grid: {
+      top: 40,
+      bottom: 125,
+    },
+    xAxis: {
+      type: "time",
+      maxInterval: 3600 * 1000 * 24,
+      show: true,
+      inverse: true,
+      splitLine: {
+        lineStyle: {
+          color: "#ddd",
         },
       },
-      grid: {
-        top: 160,
-        bottom: 125,
-      },
-      xAxis: {
-        type: "time",
-        maxInterval: 3600 * 1000 * 24,
+    },
+    yAxis: [
+      {
+        name: "风速（m/s）",
+        nameLocation: "middle",
+        nameGap: 35,
+        axisLine: {
+          lineStyle: {
+            color: "#666",
+          },
+        },
         splitLine: {
           lineStyle: {
             color: "#ddd",
           },
         },
       },
-      yAxis: [
-        {
-          name: "风速（节）",
-          nameLocation: "middle",
-          nameGap: 35,
-          axisLine: {
-            lineStyle: {
-              color: "#666",
-            },
-          },
-          splitLine: {
-            lineStyle: {
-              color: "#ddd",
-            },
+      {
+        name: "浪高（米）",
+        nameLocation: "middle",
+        nameGap: 35,
+        max: 6,
+        axisLine: {
+          lineStyle: {
+            color: "#015DD5",
           },
         },
-        {
-          name: "浪高（米）",
-          nameLocation: "middle",
-          nameGap: 35,
-          max: 6,
-          axisLine: {
-            lineStyle: {
-              color: "#015DD5",
-            },
-          },
-          show: false,
-          splitLine: { show: false },
-        },
-        {
-          axisLine: { show: false },
-          axisTick: { show: false },
-          axisLabel: { show: false },
-          splitLine: { show: false },
-        },
-      ],
-      visualMap: {
-        type: "piecewise",
-        // show: false,
-        orient: "horizontal",
-        left: "center",
-        bottom: 10,
-        pieces: [
-          {
-            gte: 17,
-            color: "#18BF12",
-            label: "大风（>=17节）",
-          },
-          {
-            gte: 11,
-            lt: 17,
-            color: "#f4e9a3",
-            label: "中风（11  ~ 17 节）",
-          },
-          {
-            lt: 11,
-            color: "#D33C3E",
-            label: "微风（小于 11 节）",
-          },
-        ],
-        seriesIndex: 1,
-        dimension: 1,
+        show: false,
+        splitLine: { show: false },
       },
-      dataZoom: [
+      {
+        axisLine: { show: false },
+        axisTick: { show: false },
+        axisLabel: { show: false },
+        splitLine: { show: false },
+      },
+    ],
+    visualMap: {
+      type: "piecewise",
+      // show: false,
+      orient: "horizontal",
+      left: "center",
+      bottom: 10,
+      pieces: [
         {
-          type: "inside",
-          xAxisIndex: 0,
-          minSpan: 5,
+          gte: 7.9,
+          color: "#18BF12",
+          label: "大风（>= 7.9 m/s）",
         },
         {
-          type: "slider",
-          xAxisIndex: 0,
-          minSpan: 5,
-          bottom: 50,
-        },
-      ],
-      series: [
-        {
-          type: "line",
-          yAxisIndex: 1,
-          showSymbol: false,
-          emphasis: {
-            scale: false,
-          },
-          symbolSize: 10,
-          areaStyle: {
-            color: {
-              type: "linear",
-              x: 0,
-              y: 0,
-              x2: 0,
-              y2: 1,
-              global: false,
-              colorStops: [
-                {
-                  offset: 0,
-                  color: "rgba(88,160,253,1)",
-                },
-                {
-                  offset: 0.5,
-                  color: "rgba(88,160,253,0.7)",
-                },
-                {
-                  offset: 1,
-                  color: "rgba(88,160,253,0)",
-                },
-              ],
-            },
-          },
-          lineStyle: {
-            color: "rgba(88,160,253,1)",
-          },
-          itemStyle: {
-            color: "rgba(88,160,253,1)",
-          },
-          encode: {
-            x: dims.time,
-            y: dims.waveHeight,
-          },
-          data: data,
-          z: 2,
+          gte: 5.4,
+          lt: 7.9,
+          color: "#f4e9a3",
+          label: "中风（5.4  ~ 7.9 m/s）",
         },
         {
-          type: "custom",
-          renderItem: renderArrow,
-          encode: {
-            x: dims.time,
-            y: dims.windSpeed,
-          },
-          data: data,
-          z: 10,
-        },
-        {
-          type: "line",
-          symbol: "none",
-          encode: {
-            x: dims.time,
-            y: dims.windSpeed,
-          },
-          lineStyle: {
-            color: "#aaa",
-            type: "dotted",
-          },
-          data: data,
-          z: 1,
-        },
-        {
-          type: "custom",
-          renderItem: renderWeather,
-          data: weatherData,
-          tooltip: {
-            trigger: "item",
-            formatter: function (param) {
-              return (
-                param.value[dims.time] +
-                ": " +
-                param.value[dims.minTemp] +
-                " - " +
-                param.value[dims.maxTemp] +
-                "°"
-              );
-            },
-          },
-          yAxisIndex: 2,
-          z: 11,
+          lt: 5.4,
+          color: "#D33C3E",
+          label: "微风（小于 5.4 m/s）",
         },
       ],
-    };
-    myChart.setOption(option);
-  });
+      seriesIndex: 1,
+      dimension: 1,
+    },
+    dataZoom: [
+      {
+        type: "inside",
+        xAxisIndex: 0,
+        minSpan: 5,
+      },
+      {
+        type: "slider",
+        xAxisIndex: 0,
+        minSpan: 5,
+        bottom: 50,
+      },
+    ],
+    series: [
+      {
+        type: "line",
+        yAxisIndex: 1,
+        showSymbol: false,
+        emphasis: {
+          scale: false,
+        },
+        symbolSize: 10,
+        areaStyle: {
+          color: {
+            type: "linear",
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            global: false,
+            colorStops: [
+              {
+                offset: 0,
+                color: "rgba(88,160,253,1)",
+              },
+              {
+                offset: 0.5,
+                color: "rgba(88,160,253,0.7)",
+              },
+              {
+                offset: 1,
+                color: "rgba(88,160,253,0)",
+              },
+            ],
+          },
+        },
+        lineStyle: {
+          color: "rgba(88,160,253,1)",
+        },
+        itemStyle: {
+          color: "rgba(88,160,253,1)",
+        },
+        encode: {
+          x: dims.time,
+          y: dims.waveHeight,
+        },
+        data: [],
+        z: 2,
+      },
+      {
+        type: "custom",
+        renderItem: renderArrow,
+        encode: {
+          x: dims.time,
+          y: dims.windSpeed,
+        },
+        data: [],
+        z: 10,
+      },
+      {
+        type: "line",
+        symbol: "none",
+        encode: {
+          x: dims.time,
+          y: dims.windSpeed,
+        },
+        lineStyle: {
+          color: "#aaa",
+          type: "dotted",
+        },
+        data: [],
+        z: 1,
+      },
+      {
+        type: "custom",
+        renderItem: renderWeather,
+        // data: weatherData,
+        tooltip: {
+          trigger: "item",
+          formatter: function (param) {
+            return (
+              param.value[dims.time] +
+              ": " +
+              param.value[dims.minTemp] +
+              " - " +
+              param.value[dims.maxTemp] +
+              "°"
+            );
+          },
+        },
+        yAxisIndex: 2,
+        z: 11,
+      },
+    ],
+  };
+  // $.getJSON(url, function (rawData) {
+  //   console.log(rawData);
+  //   const weatherData = rawData.forecast.map(function (entry) {
+  //     return [
+  //       entry.localDate,
+  //       0,
+  //       weatherIcons[entry.skyIcon],
+  //       entry.minTemp,
+  //       entry.maxTemp,
+  //     ];
+  //   });
+  //   const data = rawData.data.map(function (entry) {
+  //     return [entry.time, entry.windSpeed, entry.R, entry.waveHeight];
+  //   });
+  //   option.series[0].data = data;
+  //   option.series[1].data = data;
+  //   option.series[2].data = data;
+  //   // option.series[3].data = weatherData;
+  //   myChart.setOption(option);
+  // });
+  watch(
+    [
+      storeToRefs(station).avgWindData,
+      storeToRefs(setting).featherValue,
+      storeToRefs(station).result,
+      storeToRefs(station).active,
+    ],
+    ([avgWindData, featherValue, result, active]) => {
+      avgWindData.map((v, k) => {
+        for (let key in v) {
+          if (key == result[active].radar.radar_id) {
+            let data = v[key];
+            let Fdatas = [];
+            data.map((v, k) => {
+              for (let k in v) {
+                let fData = [];
+                fData[0] = k;
+                v[k].map((v) => {
+                  for (let k in v) {
+                    if (k == featherValue) {
+                      fData[1] = v[k].speed;
+                      fData[2] = -(v[k].direction / 180) * Math.PI - Math.PI / 2;
+                      fData[3] = 2.57;
+                    }
+                  }
+                });
+                if (fData.length > 1) {
+                  Fdatas.unshift(fData);
+                }
+              }
+            });
+            // option.series[0].data = Fdatas;
+            option.series[1].data = Fdatas;
+            option.series[2].data = Fdatas;
+            myChart.setOption(option);
+          }
+        }
+      });
+    },
+    { immediate: true }
+  );
 
   option && myChart.setOption(option);
 });
 </script>
-<style lang="scss">
-.chartDom {
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-  background-color: #eee;
-  width: 100%;
-  min-height: 400px;
-}
-</style>

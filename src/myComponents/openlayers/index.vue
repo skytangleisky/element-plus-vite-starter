@@ -51,36 +51,39 @@
       <div href="#" ref="popup_closer" class="ol-popup-closer"></div>
     </div>
     <radar-statistic></radar-statistic>
-    <div
-      class="right-drawer disapper b-solid b-0 b-l-coolGray b-l-1px relative"
-      style="overflow: auto; scroll-snap-type: y mandatory"
-    >
+    <div class="right-drawer disapper b-solid b-0 b-l-coolGray b-l-1px">
+      <div style="overflow: auto; scroll-snap-type: y mandatory">
+        <chart-info></chart-info>
+        <chart-fkx></chart-fkx>
+        <chart-dom></chart-dom>
+        <chart-th></chart-th>
+      </div>
       <el-icon
-        class="m-20px right-10px top-10px z-999"
-        style="font-size: 2em; position: absolute"
+        class="left--28px z-999"
+        style="
+          font-size: 28px;
+          position: absolute;
+          background-color: #eee;
+          border-bottom-left-radius: 50%;
+        "
         @click="disapper"
       >
         <svg
-          class="icon color-blue hover:color-orange"
-          t="1692175718614"
+          t="1695093760888"
+          class="icon"
           viewBox="0 0 1024 1024"
           version="1.1"
           xmlns="http://www.w3.org/2000/svg"
-          p-id="7426"
+          p-id="5105"
+          width="200"
+          height="200"
         >
           <path
-            d="M861.012317 164.091494C765.809507 68.885661 639.229448 16.455901 504.590713 16.455901S243.372927 68.885661 148.170117 164.091494C52.965291 259.293296 0.534525 385.874363 0.534525 520.51209c0 134.639743 52.430767 261.217786 147.635592 356.422612 95.20281 95.20281 221.782869 147.633577 356.420596 147.633577s261.217786-52.430767 356.420596-147.633577c95.204825-95.204825 147.635592-221.783877 147.635592-356.422612C1008.646902 385.874363 956.217143 259.293296 861.012317 164.091494zM791.219829 810.54584c-4.394084 4.393077-10.152441 6.590623-15.910797 6.590623-5.759364 0-11.518728-2.197546-15.911805-6.590623L504.590713 555.740334 249.785207 810.54584c-4.394084 4.393077-10.152441 6.590623-15.911805 6.590623-5.758356 0-11.516713-2.197546-15.910797-6.590623-8.788169-8.788169-8.788169-23.036448 0-31.824617L472.767104 523.916725 219.336953 270.485566c-8.788169-8.788169-8.788169-23.036448 0-31.824617 8.788169-8.785146 23.035441-8.785146 31.823609 0l253.431158 253.431158 253.431158-253.431158c8.788169-8.785146 23.035441-8.785146 31.823609 0 8.788169 8.788169 8.788169 23.036448 0 31.824617L536.41533 523.916725l254.804499 254.805506C800.007998 787.509392 800.007998 801.757672 791.219829 810.54584z"
-            p-id="7427"
+            d="M557.397333 167.204571l293.059048 293.059048L902.192762 512l-51.712 51.712-293.059048 293.083429-51.736381-51.712L762.148571 548.571429H121.904762v-73.142858h640.243809L505.660952 218.940952l51.736381-51.736381z"
+            p-id="5106"
           ></path>
         </svg>
       </el-icon>
-      <span style="font-size: 20px; scroll-snap-align: start; scroll-snap-stop: always">{{
-        station.result[station.active]?.radar.name
-      }}</span>
-      <chart-info></chart-info>
-      <chart-fkx></chart-fkx>
-      <chart-dom></chart-dom>
-      <chart-th></chart-th>
     </div>
   </div>
 </template>
@@ -162,8 +165,8 @@ const osm = new TileLayer({
   preload: Infinity,
   source: new XYZ({
     // url: 'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}',
-    url: "https://wprd0{1-4}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
-    // url: "https://tanglei.site:3210/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
+    // url: "https://wprd0{1-4}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
+    url: "https://tanglei.site:3210/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
     // url: "http://tanglei.site:3211/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
     // url: "https://tanglei.site/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
   }),
@@ -526,9 +529,119 @@ onMounted(() => {
     { immediate: true, deep: true }
   );
   watch(
+    // storeToRefs(setting).factor.value[5],
+    storeToRefs(setting).station,
+    (newVal) => {
+      if (newVal) {
+        map
+          .getLayers()
+          .getArray()
+          .find(function (layer) {
+            return layer.get("id") === "station";
+          })
+          .setVisible(true);
+        vectorLayer.setOpacity(1.0);
+        featherLayer.setVisible(true);
+        // source3.getFeatures().forEach((feature) => {
+        //   feature.getStyle()[3].getText().setText(feature.get("name"));
+        //   feature.changed();
+        // });
+      } else {
+        map
+          .getLayers()
+          .getArray()
+          .find(function (layer) {
+            return layer.get("id") === "station";
+          })
+          .setVisible(false);
+        vectorLayer.setOpacity(0);
+        featherLayer.setVisible(false);
+        // source3.getFeatures().forEach((feature) => {
+        //   feature.getStyle()[3].getText().setText(undefined);
+        //   feature.changed();
+        // });
+      }
+    },
+    { immediate: true }
+  );
+  watch(
+    [storeToRefs(station).avgWindData, storeToRefs(setting).featherValue],
+    ([avgWindData, featherValue]) => {
+      avgWindData.forEach((v, k) => {
+        source.getFeatures().forEach((feature) => {
+          let tmp = v[feature.get("radar_id")];
+          if (tmp) {
+            for (let k in tmp[0]) {
+              let tmp2;
+              for (let key in tmp[0][k]) {
+                if (tmp[0][k][key][featherValue]) {
+                  tmp2 = tmp[0][k][key][featherValue];
+                }
+              }
+              if (tmp2) {
+                feature.set("rad", (tmp2.direction / 180) * Math.PI);
+                feature.set("flag", getFeather(tmp2.speed));
+              } else {
+                feature.set("rad", 0);
+                feature.set("flag", 0);
+              }
+            }
+          }
+        });
+        source2.getFeatures().forEach((feature) => {
+          let tmp = v[feature.get("radar_id")];
+          if (tmp) {
+            for (let k in tmp[0]) {
+              let tmp2;
+              for (let key in tmp[0][k]) {
+                if (tmp[0][k][key][featherValue]) {
+                  tmp2 = tmp[0][k][key][featherValue];
+                }
+              }
+              if (tmp2) {
+                feature.set("rad", (tmp2.direction / 180) * Math.PI);
+                feature.set("speed", tmp2.speed + "m/s");
+                feature.set("time", k);
+              } else {
+                feature.set("rad", NaN);
+                feature.set("speed", NaN);
+                feature.set("time", k);
+              }
+            }
+          }
+        });
+        source3.getFeatures().forEach((feature) => {
+          let tmp = v[feature.get("radar_id")];
+          if (tmp) {
+            for (let k in tmp[0]) {
+              let tmp2 = tmp[0][k][0];
+              for (let kk in tmp2) {
+                if (setting.factor[7]) {
+                  feature.set("temperature", tmp2[kk].temperature.toFixed(2));
+                  feature.getStyle()[8].getText().setText(feature.get("temperature"));
+                  feature.changed();
+                } else {
+                  feature.getStyle()[8].getText().setText(undefined);
+                  feature.changed();
+                }
+                if (setting.factor[9]) {
+                  feature.set("humidity", tmp2[kk].humidity.toFixed(2));
+                  feature.getStyle()[10].getText().setText(feature.get("humidity"));
+                  feature.changed();
+                } else {
+                  feature.getStyle()[10].getText().setText(undefined);
+                  feature.changed();
+                }
+              }
+            }
+          }
+        });
+      });
+    }
+  );
+  watch(
     [storeToRefs(station).result, storeToRefs(setting).featherValue],
     ([newVal, featherValue], [oldVal]) => {
-      if (!oldVal) return;
       const data = newVal;
       removeAllFeatures();
       for (let i = 0; i < data.length; i++) {
@@ -784,72 +897,8 @@ onMounted(() => {
         ]);
         source3.addFeature(feature);
       }
-
       station.查询平均风数据接口().then((res) => {
-        res.data.data.forEach((v, k) => {
-          source.getFeatures().forEach((feature) => {
-            let tmp = v[feature.get("radar_id")];
-            if (tmp) {
-              for (let k in tmp[0]) {
-                let tmp2 = tmp[0][k][featherValue];
-                if (tmp2) {
-                  for (let kk in tmp2) {
-                    feature.set("rad", (tmp2[kk].direction / 180) * Math.PI);
-                    feature.set("flag", getFeather(tmp2[kk].speed));
-                  }
-                } else {
-                  feature.set("rad", 0);
-                  feature.set("flag", 0);
-                }
-              }
-            }
-          });
-          source2.getFeatures().forEach((feature) => {
-            let tmp = v[feature.get("radar_id")];
-            if (tmp) {
-              for (let k in tmp[0]) {
-                let tmp2 = tmp[0][k][featherValue];
-                if (tmp2) {
-                  for (let kk in tmp2) {
-                    feature.set("rad", (tmp2[kk].direction / 180) * Math.PI);
-                    feature.set("speed", tmp2[kk].speed + "m/s");
-                    feature.set("time", k);
-                  }
-                } else {
-                  feature.set("rad", NaN);
-                  feature.set("speed", NaN);
-                  feature.set("time", k);
-                }
-              }
-            }
-          });
-          source3.getFeatures().forEach((feature) => {
-            let tmp = v[feature.get("radar_id")];
-            if (tmp) {
-              for (let k in tmp[0]) {
-                let tmp2 = tmp[0][k][0];
-                for (let kk in tmp2) {
-                  if (setting.factor[7]) {
-                    feature.set("temperature", tmp2[kk].temperature.toFixed(2));
-                    feature.getStyle()[8].getText().setText(feature.get("temperature"));
-                    feature.changed();
-                  } else {
-                    feature.getStyle()[8].getText().setText(undefined);
-                    feature.changed();
-                  }
-                  if (setting.factor[9]) {
-                    feature.set("humidity", tmp2[kk].humidity.toFixed(2));
-                    feature.getStyle()[10].getText().setText(feature.get("humidity"));
-                    feature.changed();
-                  } else {
-                    feature.getStyle()[10].getText().setText(undefined);
-                    feature.changed();
-                  }
-                }
-              }
-            }
-          });
-        });
+        station.avgWindData = res.data.data;
       });
     },
     { deep: true, immediate: true }
@@ -896,38 +945,6 @@ onMounted(() => {
       }
     },
     { immediate: true, deep: true }
-  );
-  watch(
-    // storeToRefs(setting).factor.value[5],
-    storeToRefs(setting).station,
-    (newVal) => {
-      if (newVal) {
-        map
-          .getLayers()
-          .getArray()
-          .find(function (layer) {
-            return layer.get("id") === "station";
-          })
-          .setVisible(true);
-        source3.getFeatures().forEach((feature) => {
-          feature.getStyle()[3].getText().setText(feature.get("name"));
-          feature.changed();
-        });
-      } else {
-        map
-          .getLayers()
-          .getArray()
-          .find(function (layer) {
-            return layer.get("id") === "station";
-          })
-          .setVisible(false);
-        source3.getFeatures().forEach((feature) => {
-          feature.getStyle()[3].getText().setText(undefined);
-          feature.changed();
-        });
-      }
-    },
-    { immediate: true }
   );
   watch(
     storeToRefs(setting).checks.value[0],
@@ -1133,7 +1150,7 @@ onMounted(() => {
   transition: all 250ms;
 }
 .disapper.right-drawer {
-  transform: translateX(100%);
+  transform: translateX(calc(100% + 28px));
   transition: all 250ms;
 }
 </style>
