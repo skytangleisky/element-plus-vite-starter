@@ -71,7 +71,7 @@ onMounted(() => {
         height: arrowSize,
       },
       // rotation: directionMap[api.value(dims.R)],
-      rotation: api.value(dims.R),
+      rotation: -Number(api.value(dims.R) / 180) * Math.PI - Math.PI / 2,
       position: point,
       style: api.style({
         stroke: "#555",
@@ -124,7 +124,7 @@ onMounted(() => {
             echarts.format.formatTime("hh:mm", params[0].value[dims.time]),
           "风速：" + params[0].value[dims.windSpeed],
           "风向：" + params[0].value[dims.R],
-          "浪高：" + params[0].value[dims.waveHeight],
+          // "浪高：" + params[0].value[dims.waveHeight],
         ].join("<br>");
       },
     },
@@ -352,7 +352,7 @@ onMounted(() => {
                   for (let k in v) {
                     if (k == featherValue) {
                       fData[1] = v[k].speed;
-                      fData[2] = -(v[k].direction / 180) * Math.PI - Math.PI / 2;
+                      fData[2] = v[k].direction;
                       fData[3] = 2.57;
                     }
                   }

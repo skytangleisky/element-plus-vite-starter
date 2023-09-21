@@ -67,7 +67,7 @@ onMounted(() => {
                     // }
                     fData.data.push({
                       fHei: v[k].height.toString(),
-                      fHAngle: (v[k].direction + 180).toString(),
+                      fHAngle: v[k].direction.toString(),
                       fHSpeed: v[k].speed.toString(),
                       fVSpeed: 0,
                       iBelieveable: v[k].reliability,

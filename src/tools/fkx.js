@@ -306,9 +306,9 @@ export default function DBS() {
         return [
           '时间：' + params.value[2].time,
           '高度：' + params.value[1] + 'm',
-          '风向：' + params.value[2].fHAngle + '°',
-          '风速：' + params.value[2].fHSpeed + 'm/s',
-          '垂直气流：' + params.value[2].fVSpeed + 'm/s'
+          '风向：' + Number(params.value[2].fHAngle).toFixed(2) + '°',
+          '风速：' + Number(params.value[2].fHSpeed).toFixed(2) + 'm/s',
+          '垂直气流：' + Number(params.value[2].fVSpeed).toFixed(2) + 'm/s'
         ].join('<br />')
       }
     },
@@ -521,7 +521,7 @@ export default function DBS() {
       },
       symbolOffset: function(value) {
         const obj = value[2]
-        const symbolRotate = -(Number(obj.fHAngle) === undefined ? 330 : Number(obj.fHAngle)) + 180
+        const symbolRotate = -Number(obj.fHAngle)
         const cos = Math.cos(symbolRotate / 180 * Math.PI)
         const sin = Math.sin(symbolRotate / 180 * Math.PI)
         if (getFeather(Number(obj.fHSpeed) === 0)) {
@@ -536,7 +536,7 @@ export default function DBS() {
       },
       symbolRotate: function(value) {
         const obj = value[2]
-        return 180 - Number(obj.fHAngle)
+        return - Number(obj.fHAngle)
       },
       itemStyle: {
         color: function(params) {
