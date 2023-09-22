@@ -49,14 +49,13 @@ export function 查询近期新增雷达列表接口(query) {
     }
   })
 }
-
 export function 查询平均风数据接口(query) {
   return request({
     url: '/guangheng/api/weather/wind/avg',
     method: 'post',
     data: {
       user_id: "e13df6498a4e46bc8970b95ec47779f5",
-      date: "20230919"
+      date: new Date().Format('yyyyMMdd')
     }
   })
 }

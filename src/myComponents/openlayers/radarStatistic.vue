@@ -51,7 +51,7 @@
               <el-option
                 v-for="item in options"
                 :key="item.value"
-                :label="item.label + '米'"
+                :label="item.label"
                 :value="item.value"
               />
             </el-select>
@@ -150,32 +150,32 @@ onBeforeUnmount(() => {
 });
 const options = [
   {
-    value: "570.0",
-    label: "570",
+    value: 6,
+    label: "7层",
   },
   {
-    value: "490.0",
-    label: "490",
+    value: 5,
+    label: "6层",
   },
   {
-    value: "410.0",
-    label: "410",
+    value: 4,
+    label: "5层",
   },
   {
-    value: "330.0",
-    label: "330",
+    value: 3,
+    label: "4层",
   },
   {
-    value: "250.0",
-    label: "250",
+    value: 2,
+    label: "3层",
   },
   {
-    value: "170.0",
-    label: "170",
+    value: 1,
+    label: "2层",
   },
   {
-    value: "90.0",
-    label: "90",
+    value: 0,
+    label: "1层",
   },
 ];
 </script>

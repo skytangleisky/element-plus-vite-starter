@@ -320,7 +320,7 @@ export default function DBS() {
     xAxis: {
       type: 'category',
       inverse:false,
-      boundaryGap: true,
+      boundaryGap: 1,
       // type: 'time',
       // boundaryGap:true,
       // minInterval:5000,
@@ -606,6 +606,13 @@ export default function DBS() {
   //   }
   // }
   let arr = []
+  this.clear = function(){
+    option.series[0].data=[]
+    option.xAxis.data.map((v,k)=>{
+      option.xAxis.data[k]=''
+    })
+    myChart.setOption(option,false,true)
+  }
   this.process = function(fData) {
     if(!Array.isArray(fData)){
       fData = [fData]
@@ -614,7 +621,7 @@ export default function DBS() {
       arr.unshift(item)
     })
     option.series[0].data=[]
-    myChart.setOption(option)
+    myChart.setOption(option,false,true)
     while(arr.length>6)arr.pop()
     arr.map((v,k)=>{
       for (let index = 0; index < v.data.length; index++) {

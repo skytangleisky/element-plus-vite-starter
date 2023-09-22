@@ -9,7 +9,7 @@
       flex-direction: column;
     "
   >
-    <div style="font-size: 20px; color: rgb(78, 129, 184); background: #eee">风廓线</div>
+    <div style="font-size: 20px; color: rgb(78, 129, 184)">风廓线</div>
     <div ref="fkxContainer" class="w-full flex-1"></div>
   </div>
 </template>
@@ -44,43 +44,48 @@ onMounted(() => {
     ],
     ([avgWindData, featherValue, result, active]) => {
       avgWindData.map((v, k) => {
+        let data;
         for (let key in v) {
-          if (key == result[active].radar.radar_id) {
-            let data = v[key];
-            let Fdatas: any[] = [];
-            data.map((v, k) => {
-              for (let k in v) {
-                let fData: { [key: string]: any } = {};
-                fData.timestamp = k;
-                fData.data = [];
-                v[k].map((v) => {
-                  for (let k in v) {
-                    //{
-                    //   'fHei': '436.00',
-                    //   'fHorChange': '999.00',
-                    //   'fHAngle': '40.40',
-                    //   'fHSpeed': '21.37',
-                    //   'fSDev': '0.00',
-                    //   'fVSpeed': '-1.79',
-                    //   'fVerChange': '999.00',
-                    //   'iBelieveable': '1'
-                    // }
-                    fData.data.push({
-                      fHei: v[k].height.toString(),
-                      fHAngle: v[k].direction.toString(),
-                      fHSpeed: v[k].speed.toString(),
-                      fVSpeed: 0,
-                      iBelieveable: v[k].reliability,
-                    });
-                  }
-                });
-                fData.data.reverse();
-                Fdatas.unshift(fData);
-                // console.log(fData);
-              }
-            });
-            dbs.process(Fdatas);
+          if (result[active] && key == result[active].radar.radar_id) {
+            data = v[key];
           }
+        }
+        if (data) {
+          let Fdatas: any[] = [];
+          data.map((v, k) => {
+            for (let k in v) {
+              let fData: { [key: string]: any } = {};
+              fData.timestamp = k;
+              fData.data = [];
+              v[k].map((v) => {
+                for (let k in v) {
+                  //{
+                  //   'fHei': '436.00',
+                  //   'fHorChange': '999.00',
+                  //   'fHAngle': '40.40',
+                  //   'fHSpeed': '21.37',
+                  //   'fSDev': '0.00',
+                  //   'fVSpeed': '-1.79',
+                  //   'fVerChange': '999.00',
+                  //   'iBelieveable': '1'
+                  // }
+                  fData.data.push({
+                    fHei: v[k].height.toString(),
+                    fHAngle: v[k].direction.toString(),
+                    fHSpeed: v[k].speed.toString(),
+                    fVSpeed: 0,
+                    iBelieveable: v[k].reliability,
+                  });
+                }
+              });
+              fData.data.reverse();
+              Fdatas.unshift(fData);
+              // console.log(fData);
+            }
+          });
+          dbs.process(Fdatas);
+        } else {
+          dbs.clear();
         }
       });
     },

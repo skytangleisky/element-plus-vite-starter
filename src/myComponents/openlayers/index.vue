@@ -51,8 +51,8 @@
       <div href="#" ref="popup_closer" class="ol-popup-closer"></div>
     </div>
     <radar-statistic></radar-statistic>
-    <div class="right-drawer disapper b-solid b-0 b-l-coolGray b-l-1px">
-      <div style="overflow: auto; scroll-snap-type: y mandatory">
+    <div class="right-drawer disapper b-solid b-0 b-l-1px">
+      <div style="overflow: auto; scroll-snap-type: none">
         <chart-info></chart-info>
         <chart-fkx></chart-fkx>
         <chart-dom></chart-dom>
@@ -572,18 +572,17 @@ onMounted(() => {
           let tmp = v[feature.get("radar_id")];
           if (tmp) {
             for (let k in tmp[0]) {
-              let tmp2;
-              for (let key in tmp[0][k]) {
-                if (tmp[0][k][key][featherValue]) {
-                  tmp2 = tmp[0][k][key][featherValue];
-                }
-              }
+              let tmp2 = tmp[0][k].slice().reverse()[featherValue];
               if (tmp2) {
-                feature.set("rad", (tmp2.direction / 180) * Math.PI);
-                feature.set("flag", getFeather(tmp2.speed));
+                for (let key in tmp2) {
+                  feature.set("rad", (tmp2[key].direction / 180) * Math.PI);
+                  feature.set("flag", getFeather(tmp2[key].speed));
+                }
               } else {
-                feature.set("rad", 0);
-                feature.set("flag", 0);
+                for (let key in tmp2) {
+                  feature.set("rad", 0);
+                  feature.set("flag", 0);
+                }
               }
             }
           }
@@ -592,20 +591,19 @@ onMounted(() => {
           let tmp = v[feature.get("radar_id")];
           if (tmp) {
             for (let k in tmp[0]) {
-              let tmp2;
-              for (let key in tmp[0][k]) {
-                if (tmp[0][k][key][featherValue]) {
-                  tmp2 = tmp[0][k][key][featherValue];
-                }
-              }
+              let tmp2 = tmp[0][k].slice().reverse()[featherValue];
               if (tmp2) {
-                feature.set("rad", (tmp2.direction / 180) * Math.PI);
-                feature.set("speed", tmp2.speed + "m/s");
-                feature.set("time", k);
+                for (let key in tmp2) {
+                  feature.set("rad", (tmp2[key].direction / 180) * Math.PI);
+                  feature.set("speed", tmp2[key].speed + "m/s");
+                  feature.set("time", k);
+                }
               } else {
-                feature.set("rad", NaN);
-                feature.set("speed", NaN);
-                feature.set("time", k);
+                for (let key in tmp2) {
+                  feature.set("rad", NaN);
+                  feature.set("speed", NaN);
+                  feature.set("time", k);
+                }
               }
             }
           }
@@ -614,21 +612,33 @@ onMounted(() => {
           let tmp = v[feature.get("radar_id")];
           if (tmp) {
             for (let k in tmp[0]) {
-              let tmp2 = tmp[0][k][0];
-              for (let kk in tmp2) {
-                if (setting.factor[7]) {
-                  feature.set("temperature", tmp2[kk].temperature.toFixed(2));
-                  feature.getStyle()[8].getText().setText(feature.get("temperature"));
-                  feature.changed();
-                } else {
-                  feature.getStyle()[8].getText().setText(undefined);
+              let tmp2 = tmp[0][k].slice().reverse()[featherValue];
+              if (tmp2) {
+                for (let key in tmp2) {
+                  feature.set("height", tmp2[key].height.toFixed(1));
+                  feature.set("temperature", tmp2[key].temperature.toFixed(2));
+                  feature.set("humidity", tmp2[key].humidity.toFixed(2));
+                  if (setting.factor[10].val) {
+                    feature.getStyle()[5].getText().setText(feature.get("height"));
+                  } else {
+                    feature.getStyle()[5].getText().setText(undefined);
+                  }
+                  if (setting.factor[7].val) {
+                    feature.getStyle()[8].getText().setText(feature.get("temperature"));
+                  } else {
+                    feature.getStyle()[8].getText().setText(undefined);
+                  }
+                  if (setting.factor[9].val) {
+                    feature.getStyle()[10].getText().setText(feature.get("humidity"));
+                  } else {
+                    feature.getStyle()[10].getText().setText(undefined);
+                  }
                   feature.changed();
                 }
-                if (setting.factor[9]) {
-                  feature.set("humidity", tmp2[kk].humidity.toFixed(2));
-                  feature.getStyle()[10].getText().setText(feature.get("humidity"));
-                  feature.changed();
-                } else {
+              } else {
+                for (let key in tmp2) {
+                  feature.getStyle()[5].getText().setText(undefined);
+                  feature.getStyle()[8].getText().setText(undefined);
                   feature.getStyle()[10].getText().setText(undefined);
                   feature.changed();
                 }
@@ -686,6 +696,7 @@ onMounted(() => {
         const gap = 30;
         feature.setStyle([
           new Style({
+            //0
             text: new Text({
               font: "14px Menlo",
               textBaseline: "middle",
@@ -705,6 +716,7 @@ onMounted(() => {
             }),
           }),
           new Style({
+            //1
             text: new Text({
               font: "14px Menlo",
               textBaseline: "middle",
@@ -724,6 +736,7 @@ onMounted(() => {
             }),
           }),
           new Style({
+            //2
             text: new Text({
               font: "14px Menlo",
               textBaseline: "middle",
@@ -743,6 +756,7 @@ onMounted(() => {
             }),
           }),
           new Style({
+            //3
             text: new Text({
               font: "14px Menlo",
               textAlign: "middle",
@@ -762,6 +776,7 @@ onMounted(() => {
             }),
           }),
           new Style({
+            //4
             text: new Text({
               font: "14px Menlo",
               textAlign: "middle",
@@ -781,12 +796,13 @@ onMounted(() => {
             }),
           }),
           new Style({
+            //5
             text: new Text({
               font: "14px Menlo",
-              textAlign: "middle",
+              textAlign: "right",
               textBaseline: "middle",
               justify: "center",
-              text: undefined, //4-?
+              text: undefined, //H-高度
               offsetX: -gap,
               offsetY: 0,
               fill: new Fill({
@@ -800,6 +816,7 @@ onMounted(() => {
             }),
           }),
           new Style({
+            //6
             text: new Text({
               font: "14px Menlo",
               textAlign: "middle",
@@ -819,6 +836,7 @@ onMounted(() => {
             }),
           }),
           new Style({
+            //7
             text: new Text({
               font: "14px Menlo",
               textAlign: "middle",
@@ -838,9 +856,10 @@ onMounted(() => {
             }),
           }),
           new Style({
+            //8
             text: new Text({
               font: "14px Menlo",
-              textAlign: "middle",
+              textAlign: "right",
               textBaseline: "middle",
               justify: "center",
               text: undefined, //T-温度
@@ -857,6 +876,7 @@ onMounted(() => {
             }),
           }),
           new Style({
+            //9
             text: new Text({
               font: "14px Menlo",
               textAlign: "middle",
@@ -876,9 +896,10 @@ onMounted(() => {
             }),
           }),
           new Style({
+            //10
             text: new Text({
               font: "14px Menlo",
-              textAlign: "middle",
+              textAlign: "left",
               textBaseline: "middle",
               justify: "center",
               text: undefined, //RH-相对湿度
@@ -940,6 +961,23 @@ onMounted(() => {
       } else {
         source3.getFeatures().forEach((feature) => {
           feature.getStyle()[10].getText().setText(undefined);
+          feature.changed();
+        });
+      }
+    },
+    { immediate: true, deep: true }
+  );
+  watch(
+    storeToRefs(setting).factor.value[10],
+    (newVal) => {
+      if (newVal.val) {
+        source3.getFeatures().forEach((feature) => {
+          feature.getStyle()[5].getText().setText(feature.get("height"));
+          feature.changed();
+        });
+      } else {
+        source3.getFeatures().forEach((feature) => {
+          feature.getStyle()[5].getText().setText(undefined);
           feature.changed();
         });
       }
@@ -1062,14 +1100,17 @@ onMounted(() => {
     },
     { immediate: true }
   );
-  // timer = setInterval(()=>{
-  //   source.getFeatures().forEach(feature=>{
-  //     feature.set('rad',Math.PI/180*Math.random()*360)
-  //     // let geometry = feature.get('geometry')
-  //     // geometry.setCoordinates(fromLonLat([110,30]))
-  //     // feature.set('geometry',geometry)
-  //   })
-  // },1000)
+  timer = setInterval(() => {
+    //   source.getFeatures().forEach(feature=>{
+    //     feature.set('rad',Math.PI/180*Math.random()*360)
+    //     // let geometry = feature.get('geometry')
+    //     // geometry.setCoordinates(fromLonLat([110,30]))
+    //     // feature.set('geometry',geometry)
+    //   })
+    station.查询平均风数据接口().then((res) => {
+      station.avgWindData = res.data.data;
+    });
+  }, 1000);
 
   onBeforeUnmount(() => {
     eventbus.off("将站点移动到屏幕中心");
@@ -1148,6 +1189,13 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   transition: all 250ms;
+  & > div > div {
+    padding: 20px 10px;
+    box-sizing: border-box;
+  }
+  & > div > div:nth-child(odd) {
+    background: #eee;
+  }
 }
 .disapper.right-drawer {
   transform: translateX(calc(100% + 28px));

@@ -9,9 +9,7 @@
       flex-direction: column;
     "
   >
-    <div style="color: rgb(78, 129, 184); font-size: 20px; background: #eee">
-      风速风向
-    </div>
+    <div style="color: rgb(78, 129, 184); font-size: 20px">风速风向</div>
     <div ref="chartDom" class="w-full flex-1"></div>
   </div>
 </template>
@@ -124,7 +122,7 @@ onMounted(() => {
             echarts.format.formatTime("hh:mm", params[0].value[dims.time]),
           "风速：" + params[0].value[dims.windSpeed],
           "风向：" + params[0].value[dims.R],
-          // "浪高：" + params[0].value[dims.waveHeight],
+          "高度：" + params[0].value[dims.waveHeight],
         ].join("<br>");
       },
     },
@@ -134,6 +132,7 @@ onMounted(() => {
     },
     xAxis: {
       type: "time",
+      boundaryGap: 0.15,
       maxInterval: 3600 * 1000 * 24,
       show: true,
       inverse: true,
@@ -160,7 +159,7 @@ onMounted(() => {
         },
       },
       {
-        name: "浪高（米）",
+        name: "高度（米）",
         nameLocation: "middle",
         nameGap: 35,
         max: 6,
@@ -188,7 +187,7 @@ onMounted(() => {
       pieces: [
         {
           gte: 7.9,
-          color: "#18BF12",
+          color: "#D33C3E",
           label: "大风（>= 7.9 m/s）",
         },
         {
@@ -199,7 +198,7 @@ onMounted(() => {
         },
         {
           lt: 5.4,
-          color: "#D33C3E",
+          color: "#18BF12",
           label: "微风（小于 5.4 m/s）",
         },
       ],
@@ -340,33 +339,37 @@ onMounted(() => {
     ],
     ([avgWindData, featherValue, result, active]) => {
       avgWindData.map((v, k) => {
+        let data;
         for (let key in v) {
-          if (key == result[active].radar.radar_id) {
-            let data = v[key];
-            let Fdatas = [];
-            data.map((v, k) => {
-              for (let k in v) {
-                let fData = [];
-                fData[0] = k;
-                v[k].map((v) => {
-                  for (let k in v) {
-                    if (k == featherValue) {
-                      fData[1] = v[k].speed;
-                      fData[2] = v[k].direction;
-                      fData[3] = 2.57;
-                    }
-                  }
-                });
-                if (fData.length > 1) {
-                  Fdatas.unshift(fData);
-                }
-              }
-            });
-            // option.series[0].data = Fdatas;
-            option.series[1].data = Fdatas;
-            option.series[2].data = Fdatas;
-            myChart.setOption(option);
+          if (result[active] && key == result[active].radar.radar_id) {
+            data = v[key];
           }
+        }
+        if (data) {
+          let Fdatas = [];
+          data.map((v, k) => {
+            for (let k in v) {
+              let fData = [];
+              fData[0] = k;
+              let tmp2 = v[k].slice().reverse()[featherValue];
+              if (tmp2) {
+                for (let key in tmp2) {
+                  fData[1] = tmp2[key].speed;
+                  fData[2] = tmp2[key].direction;
+                  fData[3] = tmp2[key].height;
+                }
+                Fdatas.unshift(fData);
+              }
+            }
+          });
+          // option.series[0].data = Fdatas;
+          option.series[1].data = Fdatas;
+          option.series[2].data = Fdatas;
+          myChart.setOption(option);
+        } else {
+          option.series[1].data = [];
+          option.series[2].data = [];
+          myChart.setOption(option);
         }
       });
     },

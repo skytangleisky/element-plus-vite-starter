@@ -13,7 +13,7 @@ export const useSettingStore = defineStore({
     radar:false,
     station:true,
     feather:true,
-    featherValue:5,
+    featherValue:0,
     factor:[
       {toolTips:'站号',name:'ZH',val:false,visible:false},
       {toolTips:'站名',name:'ZN',val:true,visible:false},
@@ -25,6 +25,7 @@ export const useSettingStore = defineStore({
       {toolTips:'温度',name:'T',val:true,visible:true},
       {toolTips:'露点',name:'Td',val:true,visible:false},
       {toolTips:'湿度',name:'RH',val:true,visible:true},
+      {toolTips:'高度',name:'H',val:true,visible:true},
     ],
     checks:[
       { name: "雷达总数", val: "", select: true },

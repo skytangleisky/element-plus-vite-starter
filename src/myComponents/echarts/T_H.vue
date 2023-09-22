@@ -9,9 +9,7 @@
       flex-direction: column;
     "
   >
-    <div style="color: rgb(78, 129, 184); font-size: 20px; background-color: #eee">
-      温湿度曲线
-    </div>
+    <div style="color: rgb(78, 129, 184); font-size: 20px">温湿度曲线</div>
     <div ref="thContainer" class="w-full h-full flex-1"></div>
   </div>
 </template>
@@ -41,6 +39,16 @@ onMounted(() => {
       show: false,
       text: "温湿度曲线图",
     },
+    tooltip: {
+      trigger: "axis",
+      formatter: function (params: any) {
+        return [
+          params[0].axisValueLabel,
+          "温度：" + params[0].value,
+          "湿度：" + params[1].value,
+        ].join("<br>");
+      },
+    },
     xAxis: {
       type: "category",
       boundaryGap: false,
@@ -50,11 +58,15 @@ onMounted(() => {
       data: ["温度(℃)", "湿度(%)"],
     },
     grid: {
-      left: "3%",
-      right: "4%",
-      bottom: "3%",
-      containLabel: true,
+      top: 60,
+      bottom: 20,
     },
+    // grid: {
+    //   left: "3%",
+    //   right: "4%",
+    //   bottom: "3%",
+    //   containLabel: true,
+    // },
     yAxis: [
       {
         name: "温度(℃)",
@@ -98,22 +110,32 @@ onMounted(() => {
       option.series[0].data = [];
       option.series[1].data = [];
       avgWindData.map((v, k) => {
+        let data;
         for (let key in v) {
-          if (key == result[active].radar.radar_id) {
-            let data = v[key];
-            data.map((v, k) => {
-              for (let k in v) {
-                option.xAxis.data.push(k.substring(10));
-                for (let key in v[k][0]) {
-                  let temperature = v[k][0][key].temperature;
-                  let humidity = v[k][0][key].humidity;
+          if (result[active] && key == result[active].radar.radar_id) {
+            data = v[key];
+          }
+        }
+        if (data) {
+          data.map((v, k) => {
+            for (let k in v) {
+              option.xAxis.data.push(k.substring(10));
+              let tmp2 = v[k].slice().reverse()[featherValue];
+              if (tmp2) {
+                for (let key in tmp2) {
+                  let temperature = tmp2[key].temperature;
+                  let humidity = tmp2[key].humidity;
                   option.series[0].data.push(temperature);
                   option.series[1].data.push(humidity);
                 }
               }
-            });
-            myChart.setOption(option);
-          }
+            }
+          });
+          myChart.setOption(option);
+        } else {
+          option.series[0].data = [];
+          option.series[1].data = [];
+          myChart.setOption(option);
         }
       });
     },
