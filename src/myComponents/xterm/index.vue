@@ -26,6 +26,10 @@ onMounted(() => {
     resizeObserver.disconnect();
   });
   let ws;
+  term.onData((data) => ws && ws.send(JSON.stringify({ input: data })));
+  term.onResize((size) => {
+    ws && ws.send(JSON.stringify({ resize: { cols: size.cols, rows: size.rows } }));
+  });
   connect();
   function connect() {
     // ws = new WebSocket('ws://websocket.tanglei.top')
@@ -35,10 +39,6 @@ onMounted(() => {
       // ws.send(
       //   JSON.stringify({ type: "login", content: Math.ceil(Math.random() * 10000) })
       // );
-      term.onData((data) => ws.send(JSON.stringify({ input: data })));
-      term.onResize((size) => {
-        ws.send(JSON.stringify({ resize: { cols: size.cols, rows: size.rows } }));
-      });
       ws.send(JSON.stringify({ resize: { cols: term.cols, rows: term.rows } }));
     };
     ws.onmessage = function (event) {
