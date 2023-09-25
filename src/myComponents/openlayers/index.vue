@@ -1100,6 +1100,7 @@ onMounted(() => {
     },
     { immediate: true }
   );
+  /*
   timer = setInterval(() => {
     //   source.getFeatures().forEach(feature=>{
     //     feature.set('rad',Math.PI/180*Math.random()*360)
@@ -1111,7 +1112,7 @@ onMounted(() => {
       station.avgWindData = res.data.data;
     });
   }, 1000);
-
+  */
   onBeforeUnmount(() => {
     eventbus.off("将站点移动到屏幕中心");
     clearInterval(timer);

@@ -82,14 +82,14 @@ onMounted(() => {
     series: [
       {
         name: "温度(℃)",
-        data: [10, 12, 15, 20, 25, 18, 14],
+        data: [],
         type: "line",
         smooth: true,
         yAxisIndex: 0,
       },
       {
         name: "湿度(%)",
-        data: [40, 45, 30, 20, 25, 30, 20],
+        data: [],
         type: "line",
         smooth: true,
         yAxisIndex: 1,
