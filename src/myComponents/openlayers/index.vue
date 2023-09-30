@@ -51,6 +51,7 @@
       <div href="#" ref="popup_closer" class="ol-popup-closer"></div>
     </div>
     <radar-statistic></radar-statistic>
+    <Legend></Legend>
     <div class="right-drawer disapper b-solid b-0 b-l-1px">
       <div style="overflow: auto; scroll-snap-type: none">
         <chart-info></chart-info>
@@ -135,7 +136,7 @@ import { linear, inAndOut } from "ol/easing";
 import radarStatistic from "./radarStatistic.vue";
 import { useSettingStore } from "~/stores/setting";
 import { storeToRefs } from "pinia";
-import { settings } from "nprogress";
+import Legend from "./legend.vue";
 
 console.log("route.query", route.query);
 const station = useStationStore();
@@ -1100,8 +1101,7 @@ onMounted(() => {
     },
     { immediate: true }
   );
-  /*
-  timer = setInterval(() => {
+  /*timer = setInterval(() => {
     //   source.getFeatures().forEach(feature=>{
     //     feature.set('rad',Math.PI/180*Math.random()*360)
     //     // let geometry = feature.get('geometry')
@@ -1111,8 +1111,7 @@ onMounted(() => {
     station.查询平均风数据接口().then((res) => {
       station.avgWindData = res.data.data;
     });
-  }, 1000);
-  */
+  }, 1000);*/
   onBeforeUnmount(() => {
     eventbus.off("将站点移动到屏幕中心");
     clearInterval(timer);

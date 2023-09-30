@@ -14,6 +14,7 @@ export const useSettingStore = defineStore({
     station:true,
     feather:true,
     featherValue:0,
+    component:'/src/myComponents/menu/index.vue',
     factor:[
       {toolTips:'站号',name:'ZH',val:false,visible:false},
       {toolTips:'站名',name:'ZN',val:true,visible:false},

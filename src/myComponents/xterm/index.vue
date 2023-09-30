@@ -1,22 +1,31 @@
 <template>
-  <div ref="terminal" class="terminal"></div>
+  <div
+    ref="termRef"
+    style="
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: black;
+    "
+  ></div>
 </template>
 <script setup>
 import { onMounted, ref, onBeforeUnmount } from "vue";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import "xterm/css/xterm.css";
-let terminal = ref(null);
+let termRef = ref(null);
 onMounted(() => {
   let term = new Terminal();
   let fitAddon = new FitAddon();
   term.loadAddon(fitAddon);
-  term.open(terminal.value);
+  term.open(termRef.value);
   // term.write("Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ");
   let resizeObserver = new ResizeObserver(() => {
     fitAddon.fit();
   });
-  resizeObserver.observe(terminal.value);
+  resizeObserver.observe(termRef.value);
   onBeforeUnmount(() => {
     term.dispose();
     if (ws) {
@@ -28,7 +37,9 @@ onMounted(() => {
   let ws;
   term.onData((data) => ws && ws.send(JSON.stringify({ input: data })));
   term.onResize((size) => {
-    ws && ws.send(JSON.stringify({ resize: { cols: size.cols, rows: size.rows } }));
+    ws &&
+      ws.readyState == 1 &&
+      ws.send(JSON.stringify({ resize: { cols: size.cols, rows: size.rows } }));
   });
   connect();
   function connect() {
@@ -43,6 +54,7 @@ onMounted(() => {
     };
     ws.onmessage = function (event) {
       let output = JSON.parse(event.data);
+      console.log(event.data);
       term.write(output.output);
     };
     ws.onerror = function () {};
@@ -58,11 +70,3 @@ onMounted(() => {
   }
 });
 </script>
-<style lang="scss">
-.terminal {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-}
-</style>

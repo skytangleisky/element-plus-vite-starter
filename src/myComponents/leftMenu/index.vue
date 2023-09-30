@@ -13,14 +13,18 @@
     >
       <SubMenu v-for="route in setting.routes" :key="route.name" :item="route"></SubMenu>
     </el-menu>
-    <el-select v-model="lang" filterable style="width: 100%" @change="change">
+    <el-select
+      v-model="setting.component"
+      filterable
+      style="width: 100%"
+      @change="change"
+    >
       <el-option v-for="(k, v) in languages" :key="v" :label="v" :value="v" />
     </el-select>
   </div>
 </template>
 <script lang="ts" setup>
 import { ref } from "vue";
-const lang = ref("/src/myComponents/openlayers/index.vue");
 const modules = import.meta.glob("~/**/*.vue");
 const languages = ref(modules);
 import { useRouter } from "vue-router";
