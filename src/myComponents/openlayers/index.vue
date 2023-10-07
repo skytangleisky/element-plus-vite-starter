@@ -167,9 +167,9 @@ const osm = new TileLayer({
   source: new XYZ({
     // url: 'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}',
     // url: "https://wprd0{1-4}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
-    url: "https://tanglei.site:3210/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
+    // url: "https://tanglei.site:3210/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
     // url: "http://tanglei.site:3211/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
-    // url: "https://tanglei.site/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
+    url: "https://tanglei.site/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
   }),
 });
 const vectorLayer = new VectorLayer({
