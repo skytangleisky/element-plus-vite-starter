@@ -156,15 +156,43 @@ onMounted(() => {
       bottom: 125,
     },
     xAxis: {
+      // type: "category",
       type: "time",
-      boundaryGap: 0.15,
-      maxInterval: 3600 * 1000 * 24,
-      show: true,
       inverse: true,
+      boundaryGap: 0.15,
+      // type: 'time',
+      // boundaryGap:true,
+      // minInterval:5000,
+      // maxInterval:5000,
+      // interval:5000,
+      // inverse:true,
+      // min: function(value) {
+      // 	return value.min - 1000;
+      // },
+      // max: function(value) {
+      // 	return value.max + 1000;
+      // },
+      // splitLine: {
+      // 	show: true,
+      // 	lineStyle: {
+      // 		color: '#ddd'
+      // 	},
+      // 	interval:'5000'
+      // },
+      // data: hours,
+      axisLabel: {
+        rotate: 360,
+        color: "black",
+        // formatter: function(value, index){
+        // 	return echarts.format.formatTime('hh:mm:ss', new Date(value));
+        // }
+      },
       splitLine: {
-        lineStyle: {
-          color: "#ddd",
-        },
+        show: true,
+        color: "#ddd",
+      },
+      splitArea: {
+        show: false,
       },
     },
     yAxis: [
@@ -398,9 +426,9 @@ onMounted(() => {
                   fData[3] = tmp2[key].height;
                 }
                 if (fData[1] === -1000) {
-                  continue;
+                } else {
+                  Fdatas.unshift(fData);
                 }
-                Fdatas.unshift(fData);
               }
             }
           });
