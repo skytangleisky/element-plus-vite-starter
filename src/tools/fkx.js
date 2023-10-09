@@ -524,7 +524,7 @@ export default function DBS() {
         const symbolRotate = -Number(obj.fHAngle)
         const cos = Math.cos(symbolRotate / 180 * Math.PI)
         const sin = Math.sin(symbolRotate / 180 * Math.PI)
-        if (getFeather(Number(obj.fHSpeed) === 0)) {
+        if (getFeather(Number(obj.fHSpeed) <= 0)) {
           return [0, 0]
         } else if (getFeather(Number(obj.fHSpeed)) === 1) {
           return [0.5 * cos - 15 * sin, -0.5 * sin - 15 * cos]
@@ -634,7 +634,7 @@ export default function DBS() {
         var fVSpeed = v.data[index].fVSpeed
         // var fVerChange = v.data[index].fVerChange
         // var iBelieveable = v.data[index].iBelieveable
-        if (Number(fHSpeed) === 999) continue
+        if (Number(fHSpeed) === 999||Number(fHSpeed) === -1000) continue
         // option.series[1].data.push([1, fHei, fVSpeed, fData.data[index]])
         option.series[0].data.push([k, fHei,v.data[index]])
       }

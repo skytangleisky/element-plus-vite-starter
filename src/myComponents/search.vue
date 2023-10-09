@@ -66,7 +66,7 @@
         </div>
         <div @click.native="search_click" class="search" tabindex="-1"></div>
         <div class="absolute right-0 items-center hidden lg:flex">
-          <div style="display: flex; align-items: center">
+          <div style="display: flex; align-items: center; color: white">
             <el-dropdown v-if="user.logined" trigger="click" size="small">
               <el-avatar :size="32" :src="user.avatar">
                 <!-- <span class="el-dropdown-link"><User style="width:24px;height:24px;"></User></span> -->
@@ -217,11 +217,23 @@ let tmpWindow;
 const login = () => {
   // user.Login({username:'admin',password:'admin'})
   tmpWindow && tmpWindow.close();
-  tmpWindow = window.open(
-    `https://graph.qq.com/oauth2.0/authorize?response_type=token&client_id=101875878&redirect_uri=http://tanglei.top/qqlogin&state=123456`,
-    "_blank"
-    // "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=400, height=400"
-  );
+  if (process.env.NODE_ENV == "production") {
+    tmpWindow = window.open(
+      `https://graph.qq.com/oauth2.0/authorize?response_type=token&client_id=101875878&redirect_uri=${
+        window.location.protocol == "https:" ? "https:" : "http:"
+      }//pro.tanglei.top/qqlogin&state=123456`,
+      "_blank"
+      // "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=400, height=400"
+    );
+  } else if (process.env.NODE_ENV == "development") {
+    tmpWindow = window.open(
+      `https://graph.qq.com/oauth2.0/authorize?response_type=token&client_id=101875878&redirect_uri=${
+        window.location.protocol == "https:" ? "https:" : "http:"
+      }//dev.tanglei.top/qqlogin&state=123456`,
+      "_blank"
+      // "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=400, height=400"
+    );
+  }
 };
 const logout = () => {
   user.logout();
@@ -303,6 +315,7 @@ onMounted(() => {
   display: flex;
   width: 100%;
   height: 100%;
+  overflow: auto;
   position: relative;
   &:after {
     content: "";

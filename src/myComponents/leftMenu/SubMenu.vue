@@ -7,7 +7,9 @@
       </template>
       <SubMenu v-for="route in item.children" :key="route.name" :item="route"></SubMenu>
     </el-sub-menu>
-    <el-menu-item v-else :index="item.name">{{ item.label }}</el-menu-item>
+    <router-link v-else :to="item.path">
+      <el-menu-item :index="item.name">{{ item.label }}</el-menu-item>
+    </router-link>
 
     <!-- <el-sub-menu index="1">
       <template #title>

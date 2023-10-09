@@ -52,7 +52,9 @@
     </div>
     <radar-statistic></radar-statistic>
     <Legend></Legend>
-    <div class="right-drawer disapper b-solid b-0 b-l-1px">
+    <div
+      :class="`right-drawer ${setting.disappear ? 'disappear' : ''} b-solid b-0 b-l-1px`"
+    >
       <div style="overflow: auto; scroll-snap-type: none">
         <chart-info></chart-info>
         <chart-fkx></chart-fkx>
@@ -67,7 +69,7 @@
           background-color: #eee;
           border-bottom-left-radius: 50%;
         "
-        @click="disapper"
+        @click="disappear"
       >
         <svg
           t="1695093760888"
@@ -135,6 +137,7 @@ const route = useRoute();
 import { linear, inAndOut } from "ol/easing";
 import radarStatistic from "./radarStatistic.vue";
 import { useSettingStore } from "~/stores/setting";
+const setting = useSettingStore();
 import { storeToRefs } from "pinia";
 import Legend from "./legend.vue";
 
@@ -179,8 +182,8 @@ const vectorLayer = new VectorLayer({
 const mapContainer = ref(null);
 const popup = ref(null);
 const popup_closer = ref(null);
-const disapper = (e) => {
-  $(e.currentTarget).closest(".right-drawer").addClass("disapper");
+const disappear = (e) => {
+  setting.disappear = !setting.disappear;
 };
 let timer;
 const getCoord = (i, j) => [
@@ -298,6 +301,7 @@ const style = {
       60,
       "#b30000",
     ],
+    opacity: ["get", "opacity", "number"],
     rotateWithView: true,
     offset: ["match", ["get", "flag"], 0, [0, 0], [8, 16]],
     textureCoord: [
@@ -487,7 +491,7 @@ onMounted(() => {
     map.forEachFeatureAtPixel(evt.pixel, (feature) => {
       if (feature.get("station")) {
         const text = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
-          $(".right-drawer").removeClass("disapper");
+          setting.disappear = false;
           station.active = -1;
           for (let i = 0; i < station.result.length; i++) {
             if (station.result[i].radar.name == feature.get("name")) {
@@ -511,7 +515,6 @@ onMounted(() => {
   vectorLayer.setSource(source3);
   stationLayer.setSource(source2);
   featherLayer.setSource(source);
-  const setting = useSettingStore();
   watch(
     storeToRefs(setting).factor.value[0],
     (newVal) => {
@@ -665,6 +668,7 @@ onMounted(() => {
             rad,
             flag: getFeather(speed),
             geometry: new Point(fromLonLat(lngLat)),
+            opacity: 1.0,
           })
         );
         source2.addFeature(
@@ -992,6 +996,8 @@ onMounted(() => {
       removeAllFeatures();
       if (newVal.select) {
         station.查询雷达列表接口();
+      } else {
+        station.result = [];
       }
     },
     { deep: true, immediate: true }
@@ -1002,6 +1008,8 @@ onMounted(() => {
       if (!oldVal) return;
       if (newVal.select) {
         station.查询雷达在线列表接口();
+      } else {
+        station.result = [];
       }
       removeAllFeatures();
     },
@@ -1013,7 +1021,9 @@ onMounted(() => {
       if (!oldVal) return;
       if (newVal.select) {
         station.查询雷达离线列表接口();
-      } else removeAllFeatures();
+      } else {
+        station.result = [];
+      }
     },
     { deep: true, immediate: true }
   );
@@ -1023,7 +1033,9 @@ onMounted(() => {
       if (!oldVal) return;
       if (newVal.select) {
         station.查询近期新增雷达列表接口();
-      } else removeAllFeatures();
+      } else {
+        station.result = [];
+      }
     },
     { deep: true, immediate: true }
   );
@@ -1082,26 +1094,18 @@ onMounted(() => {
     storeToRefs(setting).feather,
     (newVal) => {
       if (newVal) {
-        map
-          .getLayers()
-          .getArray()
-          .find(function (layer) {
-            return layer.get("id") === "feather";
-          })
-          .setVisible(true);
+        source.getFeatures().forEach((item) => {
+          item.set("opacity", 1.0);
+        });
       } else {
-        map
-          .getLayers()
-          .getArray()
-          .find(function (layer) {
-            return layer.get("id") === "feather";
-          })
-          .setVisible(false);
+        source.getFeatures().forEach((item) => {
+          item.set("opacity", 0);
+        });
       }
     },
     { immediate: true }
   );
-  /*timer = setInterval(() => {
+  timer = setInterval(() => {
     //   source.getFeatures().forEach(feature=>{
     //     feature.set('rad',Math.PI/180*Math.random()*360)
     //     // let geometry = feature.get('geometry')
@@ -1111,7 +1115,7 @@ onMounted(() => {
     station.查询平均风数据接口().then((res) => {
       station.avgWindData = res.data.data;
     });
-  }, 1000);*/
+  }, 5000);
   onBeforeUnmount(() => {
     eventbus.off("将站点移动到屏幕中心");
     clearInterval(timer);
@@ -1197,7 +1201,7 @@ onMounted(() => {
     background: #eee;
   }
 }
-.disapper.right-drawer {
+.disappear.right-drawer {
   transform: translateX(calc(100% + 28px));
   transition: all 250ms;
 }

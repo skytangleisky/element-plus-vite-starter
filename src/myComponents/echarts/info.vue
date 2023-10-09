@@ -11,6 +11,8 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        padding-bottom: 20px;
+        min-height: 60px;
       "
     >
       {{ station.result[station.active]?.radar.name }}

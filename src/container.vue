@@ -2,7 +2,7 @@
   <my-header></my-header>
   <div class="flex flex-row" style="width: 100%; height: calc(100% - 40px)">
     <left-menu></left-menu>
-    <div class="relative w-full h-full">
+    <div class="relative w-full h-full" style="overflow: auto">
       <router-view v-slot="{ Component }">
         <keep-alive>
           <component :is="Component" />

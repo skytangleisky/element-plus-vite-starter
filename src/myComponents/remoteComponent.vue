@@ -37,7 +37,7 @@ export default {
   components: {
     "my-component": Vue.defineAsyncComponent(() =>
       loadModule(
-        "http://tanglei.top:81/demos/project/html5/vue3-sfc-loader/myComponent.vue",
+        "https://tanglei.top/demos/project/html5/vue3-sfc-loader/myComponent.vue",
         options
       )
     ),

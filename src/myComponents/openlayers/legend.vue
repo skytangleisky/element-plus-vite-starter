@@ -1,14 +1,21 @@
 <template>
   <div @click="click" class="legendContainer absolute bg-light">
-    <div v-show="show" @click.stop ref="legend">test</div>
+    <div v-show="setting.legend" @click.stop ref="legend">
+      <color title="风速(m/s)" demo="风速"></color>
+      <hr />
+      <features title="要素填图"></features>
+    </div>
     <span>图例</span>
   </div>
 </template>
 <script lang="ts" setup>
 import { ref } from "vue";
-const show = ref(true);
+import color from "./color.vue";
+import features from "./features.vue";
+import { useSettingStore } from "~/stores/setting";
+const setting = useSettingStore();
 const click = () => {
-  show.value = !show.value;
+  setting.legend = !setting.legend;
 };
 </script>
 <style lang="scss">
@@ -24,8 +31,8 @@ const click = () => {
   color: black;
   background: white;
   position: absolute;
-  bottom: 40px;
-  left: 20px;
+  bottom: 10px;
+  left: 10px;
   padding: 10px;
   border-radius: 4px;
   cursor: pointer;

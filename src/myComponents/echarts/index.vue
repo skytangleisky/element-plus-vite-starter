@@ -9,7 +9,30 @@
       flex-direction: column;
     "
   >
-    <div style="color: rgb(78, 129, 184); font-size: 20px">风速风向</div>
+    <div
+      style="
+        color: rgb(78, 129, 184);
+        font-size: 20px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+      "
+    >
+      风速风向
+      <el-select
+        v-model="layerIndex"
+        placeholder="Select"
+        size="small"
+        style="width: 100px"
+      >
+        <el-option
+          v-for="item in options"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        />
+      </el-select>
+    </div>
     <div ref="chartDom" class="w-full flex-1"></div>
   </div>
 </template>
@@ -27,6 +50,8 @@ const station = useStationStore();
 import { storeToRefs } from "pinia";
 import { Fdata } from "~/tools/fkx";
 const chartDom = ref(null);
+const layerIndex = ref(null);
+const options = ref([]);
 onMounted(() => {
   var myChart = echarts.init(chartDom.value);
   const resizeObserver = new ResizeObserver((entries) => {
@@ -333,11 +358,11 @@ onMounted(() => {
   watch(
     [
       storeToRefs(station).avgWindData,
-      storeToRefs(setting).featherValue,
+      layerIndex,
       storeToRefs(station).result,
       storeToRefs(station).active,
     ],
-    ([avgWindData, featherValue, result, active]) => {
+    ([avgWindData, layerIdx, result, active]) => {
       avgWindData.map((v, k) => {
         let data;
         for (let key in v) {
@@ -346,17 +371,34 @@ onMounted(() => {
           }
         }
         if (data) {
+          options.value = [];
+          for (let K in data[0]) {
+            for (let i = 0; i < data[0][K].length; i++) {
+              for (let key in data[0][K][i]) {
+                options.value.push({
+                  value: i,
+                  label: `${key}米`,
+                });
+              }
+            }
+            if (layerIndex.value == null) {
+              layerIndex.value = data[0][K].length - 1;
+            }
+          }
           let Fdatas = [];
           data.map((v, k) => {
             for (let k in v) {
               let fData = [];
               fData[0] = k;
-              let tmp2 = v[k].slice().reverse()[featherValue];
+              let tmp2 = v[k][layerIdx];
               if (tmp2) {
                 for (let key in tmp2) {
                   fData[1] = tmp2[key].speed;
                   fData[2] = tmp2[key].direction;
                   fData[3] = tmp2[key].height;
+                }
+                if (fData[1] === -1000) {
+                  continue;
                 }
                 Fdatas.unshift(fData);
               }
