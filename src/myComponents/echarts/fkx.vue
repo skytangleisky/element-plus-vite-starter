@@ -9,7 +9,7 @@
       flex-direction: column;
     "
   >
-    <div style="font-size: 20px; color: rgb(78, 129, 184)">风廓线</div>
+    <div style="font-size: 20px; color: rgb(78, 129, 184)">水平风</div>
     <div ref="fkxContainer" class="w-full flex-1"></div>
   </div>
 </template>

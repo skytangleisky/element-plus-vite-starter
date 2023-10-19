@@ -5,18 +5,16 @@
   >
     <div class="icons">
       <span v-for="v in icon.results"
-        ><i
-          class="icon"
-          style="margin-right: 10px; width: 2em; height: 2em"
-          v-html="v.svg"
-        ></i
-        >{{ v.name }}</span
+        ><el-icon
+          style="font-size: 2em"
+          v-dompurify-html="v.svg"
+          @click="storeIcon(v)"
+        ></el-icon>
+        {{ v.name }}</span
       >
     </div>
     <h1>Nestable2</h1>
-    <el-button text @click="dialogFormVisible = true"
-      >open a Form nested Dialog</el-button
-    >
+    <el-button text @click="addIcon">open a Form nested Dialog</el-button>
     <el-dialog v-model="dialogFormVisible" title="Icon">
       <el-form :model="form" label-width="120px" ref="ruleFormRef" :rules="rules">
         <el-form-item label="id">
@@ -29,13 +27,18 @@
           <el-input v-model="form.createtime" placeholder="autogeneration" />
         </el-form-item>
         <el-form-item label="updatetime">
-          <el-input v-model="form.updatetime" placeholder="autogeneration" />
+          <el-input
+            v-model="form.updatetime"
+            placeholder="autogeneration"
+            :clearable="true"
+          />
         </el-form-item>
         <el-form-item label="name">
           <el-input v-model="form.name" />
         </el-form-item>
         <el-form-item label="svg">
-          <el-input v-model="form.svg" />
+          <el-icon style="font-size: 2em" v-dompurify-html="form.svg"></el-icon>
+          <el-input v-model="form.svg" style="width: calc(100% - 2em)" />
         </el-form-item>
         <el-form-item>
           <el-button @click="dialogFormVisible = false">Cancel</el-button>
@@ -61,26 +64,30 @@
     </menu>
 
     <div class="cf nestable-lists">
-      <div v-show="show" class="dd" id="nestable"></div>
+      <div ref="nestable" v-show="show" class="dd" id="nestable">
+        <ol class="dd-list">
+          <subEditMenu :json="json"></subEditMenu>
+        </ol>
+      </div>
 
       <div class="dd" id="nestable2">
         <ol class="dd-list">
-          <li class="dd-item" data-id="13">
+          <li class="dd-item" data-id="13" :data-item="JSON.stringify({ id: 13 })">
             <div class="dd-handle">Item 13</div>
           </li>
-          <li class="dd-item" data-id="14">
+          <li class="dd-item" data-id="14" :data-item="JSON.stringify({ id: 14 })">
             <div class="dd-handle">Item 14</div>
           </li>
-          <li class="dd-item" data-id="15">
+          <li class="dd-item" data-id="15" :data-item="JSON.stringify({ id: 15 })">
             <div class="dd-handle">Item 15</div>
             <ol class="dd-list">
-              <li class="dd-item" data-id="16">
+              <li class="dd-item" data-id="16" :data-item="JSON.stringify({ id: 16 })">
                 <div class="dd-handle">Item 16</div>
               </li>
-              <li class="dd-item" data-id="17">
+              <li class="dd-item" data-id="17" :data-item="JSON.stringify({ id: 17 })">
                 <div class="dd-handle">Item 17</div>
               </li>
-              <li class="dd-item" data-id="18">
+              <li class="dd-item" data-id="18" :data-item="JSON.stringify({ id: 18 })">
                 <div class="dd-handle">Item 18</div>
               </li>
             </ol>
@@ -143,7 +150,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, reactive, onMounted, onBeforeUnmount } from "vue";
+import { ref, reactive, onMounted, onBeforeUnmount, nextTick } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
 import "./jquery.nestable.js";
 import "./jquery.nestable.scss";
@@ -152,6 +159,7 @@ import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
 import { array2components } from "~/tools/index";
 const router = useRouter();
+import subEditMenu from "./subEditMenu.vue";
 // router.getRoutes().forEach((v) => {
 //   v.name && router.removeRoute(v.name);
 // });
@@ -166,6 +174,19 @@ icon.FetchList();
 const ruleFormRef = ref<FormInstance>();
 const rules = reactive<FormRules<typeof form>>({});
 const show = ref(true);
+const addIcon = () => {
+  form.id = undefined;
+  form.uuid = undefined;
+  form.svg = "";
+  form.name = "";
+  form.createtime = undefined;
+  form.updatetime = undefined;
+  dialogFormVisible.value = true;
+};
+const storeIcon = (v: any) => {
+  Object.assign(form, v);
+  dialogFormVisible.value = true;
+};
 const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   dialogFormVisible.value = false;
@@ -177,6 +198,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
         .saveData([form])
         .then((res: any) => {
           console.log(res);
+          icon.FetchList();
         })
         .catch((e: any) => {
           throw e;
@@ -193,9 +215,10 @@ const form = reactive({
   uuid: undefined,
   createtime: undefined,
   updatetime: undefined,
-  name: null,
-  svg: null,
+  name: "",
+  svg: "",
 });
+const json = ref([]);
 onMounted(() => {
   $(document).ready(function () {
     var updateOutput = function (e: any) {
@@ -207,68 +230,6 @@ onMounted(() => {
         output.val("JSON browser support required for this demo.");
       }
     };
-
-    var json = [
-      {
-        id: 1,
-        content: "First item",
-        classes: ["dd-nochildren"],
-      },
-      {
-        id: 1,
-        content: "Second item",
-        children: [
-          {
-            id: 1,
-            content: "Item 3",
-          },
-          {
-            id: 4,
-            content: "Item 4",
-          },
-          {
-            id: 5,
-            content: "Item 5",
-            value: "Item 5 value",
-            foo: "Bar",
-            children: [
-              {
-                id: 6,
-                content: "Item 6",
-              },
-              {
-                id: 7,
-                content: "Item 7",
-              },
-              {
-                id: 8,
-                content: "Item 8",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        id: 9,
-        content: "Item 9",
-      },
-      {
-        id: 10,
-        content: "Item 10",
-        children: [
-          {
-            id: 11,
-            content: "Item 11",
-            children: [
-              {
-                id: 12,
-                content: "Item 12",
-              },
-            ],
-          },
-        ],
-      },
-    ];
     let recursion = (array: []) => {
       const arr = JSON.parse(JSON.stringify(array));
       const fn = (l: any) => {
@@ -284,24 +245,24 @@ onMounted(() => {
       return arr;
     };
 
-    json = recursion(setting.routes);
+    json.value = recursion(setting.routes);
 
     // activate Nestable for list 1
-    $("#nestable")
-      .nestable({
-        group: 1,
-        json: json,
-        contentCallback: function (item) {
-          var content = `<span style="background:cyan;">${item.id}</span> <i class="bg-red">${item.path}</i> <span class="bg-green">${item.component}</span>`;
-          return content;
-        },
-      })
-      .on("change", output)
-      .on("gainedItem", output)
-      .on("lostItem", output)
-      .on("change", updateOutput);
+    nextTick(() => {
+      $("#nestable")
+        .nestable({
+          group: 1,
+        })
+        .on("change", output)
+        .on("gainedItem", output)
+        .on("lostItem", output)
+        .on("change", updateOutput)
+        .on("gainedItem", updateOutput)
+        .on("lostItem", updateOutput);
+    });
     function output() {
       let result = $(this).nestable("serialize");
+      console.log(result);
       let recursion = (array: []) => {
         const arr = JSON.parse(JSON.stringify(array));
         const fn = (l: any) => {
@@ -332,10 +293,14 @@ onMounted(() => {
       .nestable({
         group: 1,
       })
+      .on("gainedItem", updateOutput)
+      .on("lostItem", updateOutput)
       .on("change", updateOutput);
 
     // output initial serialised data
-    updateOutput($("#nestable").data("output", $("#nestable-output")));
+    nextTick(() => {
+      updateOutput($("#nestable").data("output", $("#nestable-output")));
+    });
     updateOutput($("#nestable2").data("output", $("#nestable2-output")));
 
     $("#nestable-menu").on("click", function (e) {
@@ -625,23 +590,6 @@ p {
     display: flex;
     justify-content: center;
     align-items: center;
-  }
-}
-
-.icon {
-  height: 1em;
-  width: 1em;
-  line-height: 1em;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  // color:red;
-  fill: currentColor;
-  font-size: inherit;
-  svg {
-    width: inherit;
-    height: inherit;
   }
 }
 </style>

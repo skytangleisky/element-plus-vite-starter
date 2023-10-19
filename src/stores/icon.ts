@@ -4,6 +4,7 @@ import { fetchList, saveData } from '~/api/icon'
 interface Icon {
   name:string
   svg:string
+  uuid:string
 }
 export const useIconStore = defineStore({
   id: 'icon',
@@ -20,7 +21,7 @@ export const useIconStore = defineStore({
     },
     saveData
   },
-  persist: false,
+  persist: true,
 })
 if (import.meta.hot) {
   import.meta.hot.accept(acceptHMRUpdate(useIconStore, import.meta.hot))

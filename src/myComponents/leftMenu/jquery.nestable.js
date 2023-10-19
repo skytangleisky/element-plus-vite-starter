@@ -43,7 +43,7 @@ import { rotateX } from '../../tools/gl-matrix/quat';
         emptyClass: 'dd-empty',
         //expandBtnHTML: '<button class="dd-expand" data-action="expand" type="button">Expand</button>',
         //collapseBtnHTML: '<button class="dd-collapse" data-action="collapse" type="button">Collapse</button>',
-        expandBtnHTML: '<button class="dd-expand" data-action="expand" type="button"><i class="icon"><svg t="1692368742984" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7220" width="200" height="200"><path d="M490.061576 311.947636a31.030303 31.030303 0 0 1 43.876848 0l310.303031 310.303031a31.030303 31.030303 0 0 1-43.876849 43.876848L512 377.762909l-288.364606 288.364606a31.030303 31.030303 0 0 1-43.876849-43.876848l310.303031-310.303031z" fill="#303133" p-id="7221"></path></svg></i></button>',
+        expandBtnHTML: '<button class="dd-expand" data-action="expand" type="button"><i class="ep-icon"><svg t="1692368742984" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7220" width="200" height="200"><path d="M490.061576 311.947636a31.030303 31.030303 0 0 1 43.876848 0l310.303031 310.303031a31.030303 31.030303 0 0 1-43.876849 43.876848L512 377.762909l-288.364606 288.364606a31.030303 31.030303 0 0 1-43.876849-43.876848l310.303031-310.303031z" fill="#303133" p-id="7221"></path></svg></i></button>',
         // collapseBtnHTML: '<button class="dd-collapse" data-action="collapse" type="button"><i class="icon"><svg t="1692368742984" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7220" width="200" height="200"><path d="M490.061576 311.947636a31.030303 31.030303 0 0 1 43.876848 0l310.303031 310.303031a31.030303 31.030303 0 0 1-43.876849 43.876848L512 377.762909l-288.364606 288.364606a31.030303 31.030303 0 0 1-43.876849-43.876848l310.303031-310.303031z" p-id="7221"></path></svg></i></button>',
         group: 0,
         maxDepth: 5,
@@ -88,7 +88,7 @@ import { rotateX } from '../../tools/gl-matrix/quat';
             $.each(children,(k,v)=>{
                 Item.append(v)
             })
-            Item.data('itemData',item)
+            Item.data('item',item)
             return Item;
         }
     };
@@ -128,7 +128,6 @@ import { rotateX } from '../../tools/gl-matrix/quat';
             list.reset();
             list.el.data('nestable-group', this.options.group);
             list.placeEl = $('<div class="' + list.options.placeClass + '"/>');
-
             var items = this.el.find(list.options.itemNodeName);
             $.each(items, function(k, el) {
                 var item = $(el),
@@ -491,9 +490,8 @@ import { rotateX } from '../../tools/gl-matrix/quat';
                     items = level.children(list.options.itemNodeName);
                 items.each(function() {
                     var li = $(this),
-                        item = $.extend({}, li.data('itemData')),
+                        item = $.extend({}, li.data('item')),
                         sub = li.children(list.options.listNodeName);
-
                     if (list.options.includeContent) {
                         var content = li.find('.' + list.options.contentClass).html();
 

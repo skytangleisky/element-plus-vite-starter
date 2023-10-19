@@ -52,4 +52,14 @@ const click = () => {
     }
   }
 }
+.dark .legendContainer {
+  background-color: #304156;
+  color: #fff;
+  hr {
+    border-color: grey;
+  }
+  & > div {
+    background: #304156;
+  }
+}
 </style>

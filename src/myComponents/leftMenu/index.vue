@@ -1,15 +1,20 @@
 <template>
   <div
     class="flex flex-col"
-    style="color: black; background-color: #fff; overflow: auto; min-width: 240px"
+    style="color: black; background-color: #304156; overflow: auto; min-width: 240px"
   >
     <el-menu
-      active-text-color="#ffd04b"
-      background-color="#545c64"
+      :key="setting.menuKey"
+      background-color="#304156"
+      text-color="#bfcbd9"
+      active-text-color="#409eff"
       class="el-menu-vertical-demo"
-      default-active="2"
-      text-color="#fff"
+      :default-openeds="setting.defaultOpends"
+      :default-active="setting.defaultActive"
       style="width: 100%; flex: 1; border-right: 0"
+      @open="open"
+      @close="close"
+      @select="select"
     >
       <SubMenu v-for="route in setting.routes" :key="route.name" :item="route"></SubMenu>
     </el-menu>
@@ -24,7 +29,9 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from "vue";
+import { ref, onMounted, onActivated } from "vue";
+import { useIconStore } from "~/stores/icon";
+const icon = useIconStore();
 const modules = import.meta.glob("~/**/*.vue");
 const languages = ref(modules);
 import { useRouter } from "vue-router";
@@ -33,6 +40,14 @@ const setting = useSettingStore();
 const router = useRouter();
 import SubMenu from "./SubMenu.vue";
 import { array2components } from "~/tools";
+setting.menuKey++;
+onMounted(() => {
+  icon.FetchList();
+});
+onActivated(() => {
+  setting.menuKey++;
+  icon.FetchList();
+});
 const change = (v: any) => {
   function fn(list: any[]) {
     for (let i = 0; i < list.length; i++) {
@@ -60,4 +75,33 @@ const change = (v: any) => {
   });
   router.push({ path: "/map", replace: false });
 };
+const open = (id: string) => {
+  setting.defaultOpends.push(id);
+};
+const close = (id: string) => {
+  setting.defaultOpends = setting.defaultOpends.filter((item) => item != id);
+};
+const select = (id: string) => {
+  setting.defaultActive = id;
+};
 </script>
+<style lang="scss">
+.submenu-title-noDropdown,
+.ep-sub-menu__title {
+  &:hover {
+    background-color: #263445 !important;
+  }
+}
+
+.is-active > .ep-submenu__title {
+  color: #f4f4f5 !important;
+}
+.ep-sub-menu {
+  .ep-menu {
+    background-color: #1f2d3d !important;
+    .ep-menu-item:hover {
+      background-color: #001528 !important;
+    }
+  }
+}
+</style>

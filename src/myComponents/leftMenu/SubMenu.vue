@@ -2,13 +2,16 @@
   <template v-if="!item.hide">
     <el-sub-menu v-if="item.children" :index="item.name">
       <template #title>
-        <el-icon v-dompurify-html="item.svg"></el-icon>
+        <el-icon v-dompurify-html="format(item.svg)"></el-icon>
         <span>{{ item.label }}</span>
       </template>
       <SubMenu v-for="route in item.children" :key="route.name" :item="route"></SubMenu>
     </el-sub-menu>
-    <router-link v-else :to="item.path">
-      <el-menu-item :index="item.name">{{ item.label }}</el-menu-item>
+    <router-link v-else :to="item.path" :replace="item.replace">
+      <el-menu-item :index="item.name"
+        ><el-icon v-dompurify-html="format(item.svg)"></el-icon
+        >{{ item.label }}</el-menu-item
+      >
     </router-link>
 
     <!-- <el-sub-menu index="1">
@@ -39,11 +42,23 @@
   </template>
 </template>
 <script lang="ts" setup>
-defineProps({
+import { useIconStore } from "~/stores/icon";
+const icon = useIconStore();
+const { item } = defineProps({
   item: {
     type: Object,
     default: { hide: true, name: "name", label: "label" },
   },
 });
+const format = (svg: string) => {
+  let res = icon.results.filter((it) => it.uuid == svg);
+  if (res.length <= 0) {
+    return "";
+  } else if (res.length == 1) {
+    return res[0].svg;
+  } else {
+    throw Error("uuid duplication!");
+  }
+};
 </script>
 <style lang="scss"></style>

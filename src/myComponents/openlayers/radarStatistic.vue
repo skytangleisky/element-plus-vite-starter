@@ -22,7 +22,7 @@
       </collapse-card>
     </div>
     <div class="item">
-      <collapse-card title="气象要素" v-model:show="show2">
+      <collapse-card title="机舱雷达" v-model:show="show2">
         <template v-for="(v, k) in setting.factor">
           <div
             v-if="v.visible"
@@ -189,8 +189,10 @@ const options = [
     box-shadow: 0 0 10px 10px #00000011;
     border-color: #00000011;
   }
-  .dark .item {
-    background: #000000;
+}
+.dark .radarStatistic {
+  .item {
+    background: #304156;
   }
 }
 </style>

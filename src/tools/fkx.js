@@ -197,7 +197,7 @@ export default function DBS() {
       formatter: function(params) {
         return [
           echarts.format.formatTime('yyyy-MM-dd hh:mm:ss', params.value[0]),
-          '高度：' + params.value[1].toFixed(2) + 'm',
+          '距离：' + params.value[1].toFixed(2) + 'm',
           '风向：' + params.value[2].toFixed(2) + '°',
           '风速：' + params.value[3].toFixed(2) + 'm/s'
         ].join('<br />')
@@ -238,7 +238,7 @@ export default function DBS() {
       }
     },
     yAxis: [{
-      name: '高度（米）',
+      name: '距离（米）',
       nameLocation: 'end',
       nameGap: 35,
       axisLine: {
@@ -305,7 +305,7 @@ export default function DBS() {
       formatter: function(params) {
         return [
           '时间：' + params.value[2].time,
-          '高度：' + params.value[1] + 'm',
+          '距离：' + params.value[1] + 'm',
           '风向：' + Number(params.value[2].fHAngle).toFixed(2) + '°',
           '风速：' + Number(params.value[2].fHSpeed).toFixed(2) + 'm/s',
           '垂直气流：' + Number(params.value[2].fVSpeed).toFixed(2) + 'm/s'
@@ -364,7 +364,7 @@ export default function DBS() {
     //   }
     // },
     yAxis: [{
-      name: '高度（米）',
+      name: '距离（米）',
       type: 'category',
       boundaryGap:true,
       nameLocation: 'end',

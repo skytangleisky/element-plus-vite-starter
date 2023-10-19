@@ -53,7 +53,9 @@
     <radar-statistic></radar-statistic>
     <Legend></Legend>
     <div
-      :class="`right-drawer ${setting.disappear ? 'disappear' : ''} b-solid b-0 b-l-1px`"
+      :class="`right-drawer ${
+        setting.disappear ? 'disappear' : ''
+      } b-solid b-0 b-l-1px dark:b-color-#888`"
     >
       <div style="overflow: auto; scroll-snap-type: none">
         <chart-info></chart-info>
@@ -62,12 +64,13 @@
         <chart-th></chart-th>
       </div>
       <el-icon
-        class="left--28px z-999"
+        class="left--28px z-999 bg-#eee dark:bg-#304156 dark:color-#888"
         style="
           font-size: 28px;
           position: absolute;
-          background-color: #eee;
           border-bottom-left-radius: 50%;
+          border-left: 1px solid grey;
+          border-bottom: 1px solid grey;
         "
         @click="disappear"
       >
@@ -92,7 +95,7 @@
 </template>
 <script setup>
 import FullScreen from "ol/control/FullScreen";
-import { onMounted, onBeforeUnmount, watch, ref, computed, h } from "vue";
+import { onMounted, onBeforeUnmount, watch, ref, computed, h, onActivated } from "vue";
 const info = ref({
   title: "南昌昌北国际机场(ZSCN)",
   time: "2020-09-24 16:00",
@@ -989,6 +992,22 @@ onMounted(() => {
     },
     { immediate: true, deep: true }
   );
+  onActivated(() => {
+    removeAllFeatures();
+    station.result = [];
+    if (setting.checks[0].select) {
+      station.查询雷达列表接口();
+    }
+    if (setting.checks[1].select) {
+      station.查询雷达在线列表接口();
+    }
+    if (setting.checks[2].select) {
+      station.查询雷达离线列表接口();
+    }
+    if (setting.checks[3].select) {
+      station.查询近期新增雷达列表接口();
+    }
+  });
   watch(
     storeToRefs(setting).checks.value[0],
     (newVal, oldVal) => {
@@ -1199,6 +1218,14 @@ onMounted(() => {
   }
   & > div > div:nth-child(odd) {
     background: #eee;
+  }
+}
+.dark .right-drawer {
+  & > div > div:nth-child(odd) {
+    background: #304156;
+  }
+  & > div > div:nth-child(even) {
+    background: #252948;
   }
 }
 .disappear.right-drawer {

@@ -65,7 +65,7 @@ defineProps({
     default: {
       product_root: "demos/project/html5/three.js-master",
       product_image: "/examples/preview.jpg",
-      product_url: "",
+      product_url: "/examples/index.html",
     },
   },
 });

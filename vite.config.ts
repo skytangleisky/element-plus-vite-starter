@@ -9,6 +9,8 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 const fs = require('fs')
 
 import Unocss from 'unocss/vite'
+
+import vueJsx from "@vitejs/plugin-vue-jsx";
 import {
   presetAttributify,
   presetIcons,
@@ -36,6 +38,7 @@ export default defineConfig({
   },
   plugins: [
     vue(),
+    vueJsx(),
     inject({
       $: "jquery",
       jQuery: "jquery",
