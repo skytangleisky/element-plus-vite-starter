@@ -8,7 +8,7 @@ self.onmessage = e => {
   // xhr.timeout=10000
   xhr.onreadystatechange = function() {
     if(xhr.readyState===4){
-      let res = 'response' in xhr ? xhr.response : xhr.responseText
+      let res = xhr.response
       if(xhr.status === 200) {
         createImageBitmap(res).then(bitmapData=>{
           self.postMessage({url:item.url,z:item.z,y:item.y,x:item.x,i:item.i,j:item.j,bitmap:bitmapData,isDrawed:true})

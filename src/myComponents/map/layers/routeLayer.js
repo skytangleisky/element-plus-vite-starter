@@ -185,9 +185,11 @@ export default class RouteLayer extends BaseLayer{
                   this.maxLineWidth = Number(v)>this.maxLineWidth ? Number(v) : this.maxLineWidth;
                 })
               }
-              let encoder = new TextEncoder()
-              this.uint8Array = encoder.encode(JSON.stringify(this.航线))
-              console.log((this.uint8Array.length/1024/1024).toFixed(2)+'MB')
+              let encoder = new TextEncoder('utf-8')
+              let text = JSON.stringify(this.航线)
+              let uint8Array=encoder.encode(text)
+              this.objectUrl = URL.createObjectURL(new Blob([uint8Array],{type:'application/octet-stream'}))
+              console.log((text.length/1024/1024).toFixed(2)+'MB',this.objectUrl)
               this.test(args)
               for(let i=0;i<this.queue.length;i++){
                 let args = this.queue.splice(i--,1)[0]
@@ -212,8 +214,7 @@ export default class RouteLayer extends BaseLayer{
     args.MinLat = this.MinLat
     args.MaxLat = this.MaxLat
     args.maxLineWidth = this.maxLineWidth
-    let tmp = this.uint8Array.slice()
-    args.uint8Array = tmp
-    this.task.addTask(args,[tmp.buffer])
+    args.objectUrl = this.objectUrl
+    this.task.addTask(args)
   }
 }

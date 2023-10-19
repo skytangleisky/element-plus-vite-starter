@@ -3,6 +3,7 @@ import BaseLayer from './baseLayer.js'
 import { eventbus } from '~/eventbus/index.ts'
 import Task from './task'
 import { wgs84togcj02 } from '../workers/mapUtil.js'
+import axios from 'axios'
 export default class BorderLayer extends BaseLayer{
   constructor(task){
     super()
@@ -175,9 +176,11 @@ export default class BorderLayer extends BaseLayer{
                 this.country[i].maxLat=maxLat;
                 this.country[i].points = points;
               }
-              let encoder = new TextEncoder()
-              this.uint8Array=encoder.encode(JSON.stringify(this.country))
-              console.log((this.uint8Array.length/1024/1024).toFixed(2)+'MB')
+              let encoder = new TextEncoder('utf-8')
+              let text = JSON.stringify(this.country)
+              let uint8Array=encoder.encode(text)
+              this.objectUrl = URL.createObjectURL(new Blob([uint8Array],{type:'application/octet-stream'}))
+              console.log((text.length/1024/1024).toFixed(2)+'MB',this.objectUrl)
               this.test(args)
               for(let i=0;i<this.queue.length;i++){
                 let args = this.queue.splice(i--,1)[0]
@@ -205,8 +208,7 @@ export default class BorderLayer extends BaseLayer{
     args.MaxLng = this.MaxLng
     args.MinLat = this.MinLat
     args.MaxLat = this.MaxLat
-    let tmp = this.uint8Array.slice()
-    args.uint8Array = tmp
-    this.task.addTask(args,[tmp.buffer])
+    args.objectUrl = this.objectUrl
+    this.task.addTask(args)
   }
 }

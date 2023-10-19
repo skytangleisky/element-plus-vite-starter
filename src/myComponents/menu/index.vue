@@ -3,7 +3,7 @@
     <!--导航栏-->
     <my-map></my-map>
     <!-- <div class="nav-wrapper">人影空域申报系统</div> -->
-    <box class="info-box" right bottom>
+    <box class="info-box color-cyan" right bottom>
       <span
         >Framerate(FPS)<span>{{ data.fps }}</span></span
       >
@@ -74,8 +74,8 @@
 <script lang="ts" setup>
 import { eventbus } from "~/eventbus";
 import Box from "../../myComponents/box.vue";
-// import myMap from '../map/index.vue' //用canvas绘制的地图
-import myMap from "../openlayers/index.vue"; //基于openlayers的地图
+import myMap from "../map/index.vue"; //用canvas绘制的地图
+// import myMap from "../openlayers/index.vue"; //基于openlayers的地图
 import { ref, watch, onMounted, onBeforeUnmount, reactive } from "vue";
 import submenu from "./submenu.vue";
 import menusData from "./menusData";
@@ -145,7 +145,7 @@ onBeforeUnmount(() => {
   position: absolute;
   right: 0;
   bottom: 0;
-  display: none;
+  display: block;
 }
 .ol_list {
   user-select: none;

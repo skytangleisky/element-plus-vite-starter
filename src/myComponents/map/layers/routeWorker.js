@@ -30,10 +30,21 @@ export default class RouteLayer{
     this.MaxLng = evt.data.MaxLng
     this.MinLat = evt.data.MinLat
     this.MaxLat = evt.data.MaxLat
-    let decoder = new TextDecoder()
-    let json = decoder.decode(evt.data.uint8Array)
-    this.航线 = JSON.parse(json)
-    this.draw(evt.data.args);
+    var that = this
+    if(that.航线){
+      that.draw(evt.data.args);
+    }else{
+      var xhr = new XMLHttpRequest();
+      xhr.addEventListener("load", function(){
+        let decoder = new TextDecoder('utf-8')
+        let text = decoder.decode(this.response)
+        that.航线 = JSON.parse(text)
+        that.draw(evt.data.args);
+      });
+      xhr.responseType="arraybuffer"
+      xhr.open("GET", evt.data.objectUrl);
+      xhr.send();
+    }
   }
   test(args){
     this.isDrawed = false;

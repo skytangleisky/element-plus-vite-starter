@@ -212,9 +212,16 @@ export default class RadarLayer extends BaseLayer{
             if(xhr.readyState === 4 && xhr.status === 200) {
               this.loadStatus = 'loaded'
               this.country = this.processData(res)
-              let encoder = new TextEncoder()
-              this.uint8Array=encoder.encode(JSON.stringify(this.country))
-              console.log((this.uint8Array.length/1024/1024).toFixed(2)+'MB')
+
+
+
+
+
+              let encoder = new TextEncoder('utf-8')
+              let text = JSON.stringify(this.country)
+              let uint8Array=encoder.encode(text)
+              this.objectUrl = URL.createObjectURL(new Blob([uint8Array],{type:'application/octet-stream'}))
+              console.log((text.length/1024/1024).toFixed(2)+'MB',this.objectUrl)
               console.log(this.country)
               this.test(args)
               for(let i=0;i<this.queue.length;i++){
@@ -244,13 +251,9 @@ export default class RadarLayer extends BaseLayer{
     args.MinLat = this.MinLat
     args.MaxLat = this.MaxLat
 
-    let tmp = this.uint8Array.slice()
     let convert = wgs84togcj02(POINT.lng,POINT.lat)
     args.POINT = {lng:convert[0],lat:convert[1]}
-    args.uint8Array = tmp
-    this.task.addTask(args,[tmp.buffer])
-
-    // args.uint8Array = this.uint8Array
-    // this.task.addTask(args)
+    args.objectUrl = this.objectUrl
+    this.task.addTask(args)
   }
 }

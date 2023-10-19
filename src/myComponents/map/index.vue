@@ -1,7 +1,15 @@
 <template>
   <canvas
     ref="canvas"
-    style="position: absolute; outline: none; left: 0; top: 0; width: 100%; height: 100%"
+    style="
+      position: absolute;
+      outline: none;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: #2b2b2b;
+    "
     @mousewheel.prevent
   ></canvas>
   <canvas
@@ -46,7 +54,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { onBeforeUnmount, onMounted, ref, reactive } from "vue";
+import { onBeforeUnmount, onMounted, ref, reactive, watch } from "vue";
 import {
   MapLayer,
   BorderLayer,
@@ -234,6 +242,7 @@ onMounted(async () => {
   onBeforeUnmount(() => {
     resizeObserver.disconnect();
   });
+  1;
 });
 const moveFunc = (lng: number, lat: number) => {
   flyTo(lng, lat, { duration: 0 });
@@ -245,7 +254,7 @@ onBeforeUnmount(() => {
   // document.removeEventListener("mousewheel", mousewheelFunc);
   cancelAnimationFrame(aid);
   removeEventListener("message", test);
-  cancel();
+  // cancel();
   task.destroy();
   borderLayer.off();
   radarLayer.off();

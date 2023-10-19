@@ -33,9 +33,21 @@ onmessage(evt){
   this.MinLat=evt.data.MinLat;
   this.MaxLat=evt.data.MaxLat;
   this.POINT = evt.data.POINT;
-  let decoder = new TextDecoder()
-  this.country = JSON.parse(decoder.decode(evt.data.uint8Array))
-  this.draw(evt.data.args);
+  var that = this
+  if(that.country){
+    that.draw(evt.data.args);
+  }else{
+    var xhr = new XMLHttpRequest();
+    xhr.addEventListener("load", function(){
+      let decoder = new TextDecoder('utf-8')
+      let text = decoder.decode(this.response)
+      that.country = JSON.parse(text)
+      that.draw(evt.data.args);
+    });
+    xhr.responseType="arraybuffer"
+    xhr.open("GET", evt.data.objectUrl);
+    xhr.send();
+  }
 }
 verticalFlowColor(v) {
   const colors = ['#0000ff', '#001cff', '#0038ff', '#0054ff', '#0070ff', '#008cff', '#00a8ff', '#00c4ff', '#00e0ff', '#78ffff', '#ffff50', '#ffe600', '#ffbf00', '#ff9800', '#ff7100', '#ff4a00', '#ff2300', '#fb0000', '#d40000', '#ad0000']
