@@ -1,6 +1,7 @@
 import router from '~/router'
 import NProgress from 'nprogress'
 import { useUserStore } from './stores/user'
+import { useSettingStore } from './stores/setting'
 import "nprogress/nprogress.css"
 NProgress.configure({ showSpinner: false })
 const whiteList=['/login','/qqlogin','/register','/404','/401', '/openlayers']
@@ -23,5 +24,9 @@ router.beforeEach((to,from,next)=>{
   }
 })
 router.afterEach((to,from)=>{
+  const setting = useSettingStore()
+  if(router.currentRoute.value.name){
+    setting.defaultActive = router.currentRoute.value.name.toString()
+  }
   NProgress.done()
 })

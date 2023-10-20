@@ -1,7 +1,7 @@
 <template>
   <div
-    class="flex-col"
-    style="color: black; background-color: #fff; overflow: auto; width: 100%"
+    class="flex-col dark:bg-#aaa bg-white"
+    style="color: black; overflow: auto; width: 100%"
   >
     <div class="icons">
       <span v-for="v in icon.results"

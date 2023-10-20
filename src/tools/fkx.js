@@ -41,262 +41,11 @@ export default function DBS() {
   }
   var getFeather = v => v <= 0 ? 0 : v <= 1 ? 1 : v <= 2 ? 2 : v <= 4 ? 3 : v <= 6 ? 4 : v <= 8 ? 5 : v <= 10 ? 6 : v <= 12 ? 7 : v <= 14 ? 8 : v <= 16 ? 9 : v <= 18 ? 10 : v <= 20 ? 11 : v <= 22 ? 12 : v <= 24 ? 13 : v <= 26 ? 14 : v <= 28 ? 15 : v <= 30 ? 16 : v <= 32 ? 17 : v <= 34 ? 18 : v <= 36 ? 19 : v <= 38 ? 20 : v <= 40 ? 21 : v <= 42 ? 22 : v <= 44 ? 23 : v <= 46 ? 24 : v <= 48 ? 25 : v <= 50 ? 26 : v <= 52 ? 27 : v <= 54 ? 28 : v <= 56 ? 29 : v <= 58 ? 30 : 31
   let data = []
-  // data[0] = ["2017-06-27T11:00:00.000Z",8,"NNW",2.64]
-  // data[1] = ["2017-06-27T11:00:00.000Z",9,"NNW",2.64]
-  // data[2] = ["2017-06-27T11:00:00.000Z",10,"NNW",2.64]
-  // weatherData[0] = ["2017-06-28", 0, "images/cloudy_128.png", 4, 13]
-  const colors = ['#0000FF', '#001BFE', '#0135FF', '#0054FF', '#006FFF', '#008CFF', '#00A8FF', '#00C4FE', '#00E0FF', '#14D473', '#A6DC00', '#FFE600', '#FFBE00', '#FF9800', '#FF7100', '#FF4A00', '#FF2300', '#FB0000', '#D40000', '#AD0000']
-  option = {
-    animation: true,
-    visualMap: [{
-      type: 'piecewise',
-      show: false,
-      orient: 'vertical',
-      top: 'center',
-      left: 10,
-      itemGap: 0,
-      itemWidth: 40,
-      itemHeight: 20,
-      itemSymbol: 'rect',
-      pieces: [
-        {
-          gte: 0,
-          lt: 1,
-          color: colors[0],
-          label: '1'
-        },
-        {
-          gte: 1,
-          lt: 2,
-          color: colors[1],
-          label: '2'
-        },
-        {
-          gte: 2,
-          lt: 3,
-          color: colors[2],
-          label: '3'
-        },
-        {
-          gte: 3,
-          lt: 4,
-          color: colors[3],
-          label: '4'
-        },
-        {
-          gte: 4,
-          lt: 5,
-          color: colors[4],
-          label: '5'
-        },
-        {
-          gte: 5,
-          lt: 6,
-          color: colors[5],
-          label: '6'
-        },
-        {
-          gte: 6,
-          lt: 7,
-          color: colors[6],
-          label: '7'
-        },
-        {
-          gte: 7,
-          lt: 8,
-          color: colors[7],
-          label: '8'
-        },
-        {
-          gte: 8,
-          lt: 9,
-          color: colors[8],
-          label: '9'
-        },
-        {
-          gte: 9,
-          lt: 10,
-          color: colors[9],
-          label: '10'
-        },
-        {
-          gte: 10,
-          lt: 12,
-          color: colors[10],
-          label: '12'
-        },
-        {
-          gte: 12,
-          lt: 14,
-          color: colors[11],
-          label: '14'
-        },
-        {
-          gte: 14,
-          lt: 16,
-          color: colors[12],
-          label: '16'
-        },
-        {
-          gte: 16,
-          lt: 18,
-          color: colors[13],
-          label: '18'
-        },
-        {
-          gte: 18,
-          lt: 20,
-          color: colors[14],
-          label: '20'
-        },
-        {
-          gte: 20,
-          lt: 22,
-          color: colors[15],
-          label: '22'
-        },
-        {
-          gte: 22,
-          lt: 24,
-          color: colors[16],
-          label: '24'
-        },
-        {
-          gte: 24,
-          lt: 26,
-          color: colors[17],
-          label: '26'
-        },
-        {
-          gte: 26,
-          lt: 28,
-          color: colors[18],
-          label: '28'
-        },
-        {
-          gte: 28,
-          lt: 30,
-          color: colors[19],
-          label: '30'
-        }
-      ],
-      textStyle: {}
-    }],
-    title: {
-      text: '标题',
-      subtext: '副标题',
-      left: 'center'
-    },
-    toolbox: {
-      feature: {
-        saveAsImage: {}
-      }
-    },
-    tooltip: {
-      trigger: 'item',
-      formatter: function(params) {
-        return [
-          echarts.format.formatTime('yyyy-MM-dd hh:mm:ss', params.value[0]),
-          '距离：' + params.value[1].toFixed(2) + 'm',
-          '风向：' + params.value[2].toFixed(2) + '°',
-          '风速：' + params.value[3].toFixed(2) + 'm/s'
-        ].join('<br />')
-      }
-    },
-    // grid: {
-    // 	top: 100,
-    // 	bottom: 50,
-    // 	right:60,
-    // 	left:50,
-    // },
-    xAxis: {
-      type: 'time',
-      boundaryGap: true,
-      minInterval: 5000,
-      maxInterval: 5000,
-      interval: 5000,
-      inverse: true,
-      // min: function(value) {
-      // 	return value.min - 1000;
-      // },
-      // max: function(value) {
-      // 	return value.max + 1000;
-      // },
-      splitLine: {
-        show: true,
-        lineStyle: {
-          color: '#ddd'
-        },
-        interval: '5000'
-      },
-      axisLabel: {
-        rotate: 360,
-        color: 'black'
-        // formatter: function(value, index){
-        // 	return echarts.format.formatTime('hh:mm:ss', new Date(value));
-        // }
-      }
-    },
-    yAxis: [{
-      name: '距离（米）',
-      nameLocation: 'end',
-      nameGap: 35,
-      axisLine: {
-        lineStyle: {
-          color: '#666'
-        }
-      },
-      splitLine: {
-        lineStyle: {
-          color: '#ddd'
-        }
-      }
-    }],
-    dataZoom: [
-      // {
-      // type: 'inside',
-      // xAxisIndex: 0,
-      // minSpan: 5
-      // },
-      // {
-      // 	type: 'slider',
-      // 	xAxisIndex: 0,
-      // 	minSpan: 5,
-      // 	height: 20,
-      // 	bottom: 50,
-      // 	handleIcon: 'M10.7,11.9H9.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4h1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
-      // 	handleSize: '120%'
-      // },
-      {
-        type: 'inside',
-        yAxisIndex: 0,
-        minSpan: 1
-      },
-      {
-        type: 'slider',
-        right: 10,
-        yAxisIndex: 0
-      }
-    ],
-    series: [{
-      name: 'Punch Card',
-      type: 'heatmap',
-      data: data,
-      label: {
-        show: true
-      },
-      emphasis: {
-        itemStyle: {
-          shadowBlur: 10,
-          shadowColor: 'rgba(0, 0, 0, 0.5)'
-        }
-      }
-    }]
-  }
   var hours = [
     '0', '1', '2', '3', '4', '5'
   ]
   option = {
+    backgroundColor:'transparent',
     animation: true,
     tooltip: {
       hideDelay:0,
@@ -350,7 +99,6 @@ export default function DBS() {
       },
       splitLine:{
         show:true,
-        color:'#ddd'
       },
       splitArea:{
         show:true
@@ -368,16 +116,8 @@ export default function DBS() {
       type: 'category',
       boundaryGap:true,
       nameLocation: 'end',
-      axisLine: {
-        lineStyle: {
-          color: '#666'
-        }
-      },
       splitLine: {
         show:true,
-        lineStyle: {
-          color: '#ddd'
-        }
       },
       splitArea: {
         show: true
@@ -651,7 +391,11 @@ export default function DBS() {
   var resizeObserver
   this.init = function(setting) {
     // size = setting.size;
-    myChart = echarts.init(setting.el)
+    if(setting.isDark){
+      myChart = echarts.init(setting.el,"dark")
+    }else{
+      myChart = echarts.init(setting.el)
+    }
     resizeObserver = new ResizeObserver((entries) => {
       myChart.resize();
     });
@@ -660,8 +404,9 @@ export default function DBS() {
     echarts.connect('group')
     myChart.setOption(option, false)
   }
-  this.disconnect=function(){
+  this.destroy=function(){
     resizeObserver.disconnect()
+    echarts.dispose(myChart)
   }
 }
 

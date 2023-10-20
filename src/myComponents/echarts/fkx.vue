@@ -21,12 +21,24 @@ import { useSettingStore } from "~/stores/setting";
 const station = useStationStore();
 const setting = useSettingStore();
 import DBS, { Fdata } from "~/tools/fkx.js";
+import { isDark } from "~/composables";
 const fkxContainer = ref(null);
+watch(isDark, (isDark) => {
+  if (dbs) {
+    dbs.destroy();
+  }
+  setDBS(isDark);
+});
+let dbs: DBS;
 onMounted(() => {
-  const dbs = new DBS();
+  setDBS(isDark.value);
+});
+const setDBS = (isDark: boolean) => {
+  dbs = new DBS();
   dbs.init({
     el: fkxContainer.value,
     size: 1,
+    isDark,
   });
   // Fdata.timestamp = new Date(Math.floor(new Date().getTime() / 5000) * 5000).Format();
   // dbs.process(Object.assign({}, Fdata));
@@ -91,9 +103,9 @@ onMounted(() => {
     },
     { immediate: true }
   );
-  onBeforeUnmount(() => {
-    // clearInterval(timer);
-    dbs.disconnect();
-  });
+};
+onBeforeUnmount(() => {
+  // clearInterval(timer);
+  dbs.destroy();
 });
 </script>

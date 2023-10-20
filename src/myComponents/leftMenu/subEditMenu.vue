@@ -6,11 +6,7 @@
     :data-item="JSON.stringify(item)"
   >
     <div class="dd-handle">
-      <el-icon
-        v-if="item.svg"
-        v-dompurify-html="format(item.svg)"
-        style="font-size: 1rem"
-      ></el-icon>
+      <el-icon v-dompurify-html="format(item.svg)" style="font-size: 1rem"></el-icon>
       <span style="background: cyan">{{ item.id }}</span>
       <i class="bg-red">{{ item.path }}</i>
       <span class="bg-green">{{ item.component }}</span>

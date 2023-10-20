@@ -49,18 +49,32 @@ import { useStationStore } from "~/stores/station";
 const station = useStationStore();
 import { storeToRefs } from "pinia";
 import { Fdata } from "~/tools/fkx";
+import { isDark } from "~/composables";
 const chartDom = ref(null);
 const layerIndex = ref(null);
 const options = ref([]);
 onMounted(() => {
-  var myChart = echarts.init(chartDom.value);
-  const resizeObserver = new ResizeObserver((entries) => {
+  setEcharts(isDark.value);
+});
+watch(isDark, (isDark) => {
+  setEcharts(isDark);
+});
+var myChart;
+let resizeObserver;
+let setEcharts = (isDark) => {
+  if (myChart) {
+    echarts.dispose(myChart);
+    myChart = undefined;
+  }
+  if (isDark) {
+    myChart = echarts.init(chartDom.value, "dark");
+  } else {
+    myChart = echarts.init(chartDom.value);
+  }
+  resizeObserver = new ResizeObserver((entries) => {
     myChart.resize();
   });
   resizeObserver.observe(chartDom.value);
-  onBeforeUnmount(() => {
-    resizeObserver.disconnect();
-  });
   const dims = {
     time: 0,
     windSpeed: 1,
@@ -97,7 +111,6 @@ onMounted(() => {
       rotation: -Number(api.value(dims.R) / 180) * Math.PI - Math.PI / 2,
       position: point,
       style: api.style({
-        stroke: "#555",
         lineWidth: 1,
       }),
     };
@@ -132,6 +145,7 @@ onMounted(() => {
     };
   };
   var option = {
+    backgroundColor: "transparent",
     title: {
       text: "风速风向",
       subtext: "",
@@ -182,14 +196,12 @@ onMounted(() => {
       // data: hours,
       axisLabel: {
         rotate: 360,
-        color: "black",
         // formatter: function(value, index){
         // 	return echarts.format.formatTime('hh:mm:ss', new Date(value));
         // }
       },
       splitLine: {
         show: true,
-        color: "#ddd",
       },
       splitArea: {
         show: false,
@@ -200,27 +212,12 @@ onMounted(() => {
         name: "风速（m/s）",
         nameLocation: "middle",
         nameGap: 35,
-        axisLine: {
-          lineStyle: {
-            color: "#666",
-          },
-        },
-        splitLine: {
-          lineStyle: {
-            color: "#ddd",
-          },
-        },
       },
       {
         name: "高度（米）",
         nameLocation: "middle",
         nameGap: 35,
         max: 6,
-        axisLine: {
-          lineStyle: {
-            color: "#015DD5",
-          },
-        },
         show: false,
         splitLine: { show: false },
       },
@@ -447,5 +444,8 @@ onMounted(() => {
   );
 
   option && myChart.setOption(option);
+};
+onBeforeUnmount(() => {
+  resizeObserver.disconnect();
 });
 </script>

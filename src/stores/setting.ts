@@ -71,6 +71,7 @@ export const useSettingStore = defineStore({
         name: '3c1f8a79-4fe6-2263-08fb-477f961fc946',
         component: '/src/qqlogin.vue', //最好是异步加载
         label:'扣扣登录',
+        svg:'92210ef73b4111ee8077b025aa2c9ada',
       },
       {
         path: '/login',
