@@ -143,6 +143,7 @@ import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
 import { storeToRefs } from "pinia";
 import Legend from "./legend.vue";
+import { windArrowLayer } from "./windArrowLayer";
 
 console.log("route.query", route.query);
 const station = useStationStore();
@@ -415,7 +416,7 @@ onMounted(() => {
   };
   const map = new Map({
     overlays: [],
-    layers: [osm, webglLayer, stationLayer, featherLayer, vectorLayer],
+    layers: [osm, webglLayer, stationLayer, featherLayer, vectorLayer, windArrowLayer],
     target: mapContainer.value,
     view: new View({
       // center: fromLonLat([105,30]),
