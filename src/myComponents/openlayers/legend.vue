@@ -56,7 +56,7 @@ const click = () => {
   background-color: #304156;
   color: #fff;
   hr {
-    border-color: grey;
+    border-color: #00000044;
   }
   & > div {
     background: #304156;

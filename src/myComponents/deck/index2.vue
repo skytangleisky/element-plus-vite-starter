@@ -4,17 +4,19 @@
 <script setup>
 import { onMounted } from "vue";
 import Tile from "ol/layer/Tile.js";
+import Image from "ol/layer/Image.js";
 import OSM from "ol/source/OSM";
+import ImageCanvas from "ol/source/ImageCanvas";
 import { Point, Polygon } from "ol/geom";
 import Layer from "ol/layer/Vector";
 import Source from "ol/source/Vector";
-import "https://cdn.bootcdn.net/ajax/libs/Turf.js/6.5.0/turf.min.js";
 import { Feature, Map, View } from "ol";
 import "ol/ol.css";
 import { Style, Circle, Fill, Text, Stroke } from "ol/style.js";
 import kriging from "./kriging.js";
-import { fromLonLat, toLonLat } from "ol/proj";
+import { fromLonLat, toLonLat, transform } from "ol/proj";
 import GeoJSON from "ol/format/GeoJSON.js";
+import VectorLayer from "ol/layer/Vector";
 var data = {
   features: [
     {
@@ -486,10 +488,9 @@ var data = {
 onMounted(() => {
   let params = {
     mapCenter: [116.4, 39.9],
-    canvasAlpha: 0.75, //canvas图层透明度
     colors: [
-      "#006837",
-      "#1a9850",
+      // "#006837",
+      "#1a9850", // "#1a9850",
       "#66bd63",
       "#a6d96a",
       "#d9ef8b",
@@ -767,11 +768,58 @@ onMounted(() => {
     target: "map",
     layers: [baseLayer],
     view: new View({
-      center: fromLonLat(params.mapCenter),
+      center: params.mapCenter,
+      projection: "EPSG:4326",
       zoom: 8,
     }),
   });
-
+  let WFSVectorSource = new Source();
+  let WFSVectorLayer = new Layer({
+    source: WFSVectorSource,
+  });
+  //创建要素
+  for (let i = 0; i < data.features.length; i++) {
+    let feature = new Feature({
+      geometry: new Point([data.features[i].attributes.x, data.features[i].attributes.y]),
+      value: data.features[i].attributes.z,
+    });
+    feature.setStyle(
+      new Style({
+        image: new Circle({
+          radius: 4,
+          fill: new Fill({ color: "#fa0" }),
+          stroke: new Stroke({
+            width: 1,
+            color: "black",
+          }),
+        }),
+        text: new Text({
+          text: data.features[i].attributes.z.toString(),
+          font: "normal 14px 微软雅黑", //字体样式
+          //font: '10px sans-serif',
+          //font: 'verdana',
+          textAlign: "left", //对齐方式
+          textBaseline: "middle", //文本基线
+          //文本填充样式（即文字颜色)
+          fill: new Fill({
+            color: "#00f",
+          }),
+          //backgroundFill: new Fill({
+          //  color: "#ff0000"
+          //}),
+          stroke: new Stroke({
+            color: "#000",
+            width: 1,
+          }),
+          offsetX: 6,
+          offsetY: 0,
+          //placement: "point", //point 则自动计算面的中心k点然后标注  line 则根据面要素的边进行标注
+          overflow: false, //超出面的部分不显示
+        }),
+      })
+    );
+    WFSVectorSource.addFeature(feature);
+  }
   //定义裁剪边界
   let coord = [
     [
@@ -822,181 +870,73 @@ onMounted(() => {
     ],
   ];
   let clipgeom = new Polygon(coord);
-
-  //根据裁剪范围随机生成原始点
-  var clipPolygonTurf = turf.polygon(coord, { name: "poly1" });
-  let points = turf.randomPoint(200, { bbox: turf.bbox(clipPolygonTurf) });
-  turf.featureEach(points, function (currentFeature, featureIndex) {
-    currentFeature.properties = { value: (Math.random() * 100).toFixed(2) };
-  });
-  //原始点图层
-  let WFSVectorSource = new Source();
-  let WFSVectorLayer = new Layer({
-    source: WFSVectorSource,
-  });
-  //创建原始点图层要素
-  for (let i = 0; i < data.features.length; i++) {
-    let feature = new Feature({
-      geometry: new Point(
-        fromLonLat([data.features[i].attributes.x, data.features[i].attributes.y])
-      ),
-      value: data.features[i].attributes.z,
-    });
-    feature.setStyle([
-      new Style({
-        image: new Circle({
-          radius: 4,
-          fill: new Fill({ color: "#fa0" }),
-          stroke: new Stroke({
-            width: 1,
-            color: "black",
-          }),
-        }),
-        text: new Text({
-          text: data.features[i].attributes.z.toString(),
-          font: "normal 14px 微软雅黑", //字体样式
-          //font: '10px sans-serif',
-          //font: 'verdana',
-          textAlign: "left", //对齐方式
-          textBaseline: "middle", //文本基线
-          //文本填充样式（即文字颜色)
-          fill: new Fill({
-            color: "#00f",
-          }),
-          //backgroundFill: new Fill({
-          //  color: "#ff0000"
-          //}),
-          stroke: new Stroke({
-            color: "black",
-            width: 0.5,
-          }),
-          offsetX: 6,
-          //offsetY: parseInt(0, 10),
-          //placement: "point", //point 则自动计算面的中心k点然后标注  line 则根据面要素的边进行标注
-          // overflow: false, //超出面的部分不显示
-        }),
-      }),
-    ]);
-    WFSVectorSource.addFeature(feature);
-  }
-
-  WFSVectorSource.addFeatures([
-    new Feature({
-      geometry: new Point(fromLonLat([114, 39])),
-      image: new Circle({
-        radius: 4,
-        fill: new Fill({ color: "#fa0" }),
-        stroke: new Stroke({
-          width: 0.5,
-          color: "black",
-        }),
-      }),
-    }),
-    new Feature({
-      geometry: new Point(fromLonLat([119, 39])),
-      image: new Circle({
-        radius: 4,
-        fill: new Fill({ color: "#fa0" }),
-        stroke: new Stroke({
-          width: 0.5,
-          color: "black",
-        }),
-      }),
-    }),
-  ]);
-
-  //利用网格计算点集
-  const gridFeatureCollection = function (grid) {
-    var range = grid.zlim[1] - grid.zlim[0];
-    var i, j, x, y, z;
-    var n = grid.length; //列数
-    var m = grid[0].length; //行数
-    var pointArray = [];
-    for (i = 0; i < n; i++)
-      for (j = 0; j < m; j++) {
-        x = i * grid.width + grid.xlim[0];
-        y = j * grid.width + grid.ylim[0];
-        z = (grid[i][j] - grid.zlim[0]) / range;
-        if (z < 0.0) z = 0.0;
-        if (z > 1.0) z = 1.0;
-        pointArray.push(turf.point([x, y], { value: z }));
-      }
-    return pointArray;
-  };
-
-  let pointVectorLayer = null,
-    vectorLayer = null;
   //绘制kriging插值图
-  let drawKriging = function () {
+  let canvasLayer = null;
+  let pointVectorLayer = null;
+  let drawKriging = function (extent) {
+    let arr = [];
     let values = [],
       lngs = [],
       lats = [];
-    for (let i = 0; i < data.features.length; i++) {
-      values.push(data.features[i].attributes.z);
-      lngs.push(data.features[i].geometry.x);
-      lats.push(data.features[i].geometry.y);
-    }
-    console.log(values);
-    //console.log(values.length);
+    WFSVectorSource.forEachFeature(function (feature) {
+      values.push(feature.getProperties().value);
+      arr.push(feature.getProperties().value);
+      lngs.push(feature.getGeometry().getCoordinates()[0]);
+      lats.push(feature.getGeometry().getCoordinates()[1]);
+    });
+    arr.sort((a, b) => a - b);
+    console.log(arr);
     if (values.length > 2) {
       let letiogram = kriging.train(
         values,
         lngs,
         lats,
-        "exponential", //model还可选,exponential,gaussian,spherical
+        "exponential", //model可选exponential,gaussian,spherical
         0,
         100
       );
-      let extent = clipgeom.getExtent();
-      let grid0 = kriging.grid(coord, letiogram, (extent[2] - extent[0]) / 10); //显示网络点用，否则太多显示不了,/20
-      let grid = kriging.grid(coord, letiogram, (extent[2] - extent[0]) / 10); //用来生成色斑图,/500
-
-      //使用turf渲染等值面/线
-      let fc0 = gridFeatureCollection(grid0); //, [extent[0], extent[2]], [extent[1], extent[3]]
-      let fc = gridFeatureCollection(grid); //, [extent[0], extent[2]], [extent[1], extent[3]]
+      let ex = clipgeom.getExtent();
+      let grid = kriging.grid(coord, letiogram, (ex[2] - ex[0]) / 6);
       //移除已有图层
-      if (vectorLayer !== null) {
-        map.removeLayer(vectorLayer);
+      if (canvasLayer !== null) {
+        map.removeLayer(canvasLayer);
       }
-      //添加色斑图图层
-      var vectorSource = new Source();
-      vectorLayer = new Layer({
-        source: vectorSource,
-        opacity: 1,
-        style: function (feature) {
-          return new Style({
-            fill: new Fill({
-              color: params.colors[parseFloat(feature.get("value").split("-")[1]) * 10],
-            }),
-          });
-        },
+      //创建新图层
+      var canvas = document.createElement("canvas");
+      canvasLayer = new Image({
+        source: new ImageCanvas({
+          canvasFunction: (extent, resolution, pixelRatio, size, projection) => {
+            canvas.width = size[0];
+            canvas.height = size[1];
+            // 设置canvas透明度
+            // canvas.getContext("2d").globalAlpha = params.canvasAlpha; //放开后有网格线，
+            // canvas.getContext("2d").rect(50, 20, 200, 100);
+            // canvas.getContext("2d").lineWidth = "20";
+            // canvas.getContext("2d").strokeStyle = "#0000ff";
+            // canvas.getContext("2d").shadowColor = "rgba(0, 0, 255, 0)";
+            // canvas.getContext("2d").strokeStyle = "rgba(255,192,203)";
+            // canvas.getContext("2d").fillStyle = "rgba(0,0,255,0.5)";
+            // 先填充颜色
+            // canvas.getContext("2d").fill();
+            // 后画轮廓线
+            // canvas.getContext("2d").stroke();
+            //使用分层设色渲染
+            kriging.plot(
+              canvas,
+              grid,
+              [extent[0], extent[2]],
+              [extent[1], extent[3]],
+              params.colors
+            );
+            return canvas;
+          },
+          projection: "EPSG:4326",
+        }),
       });
-      var collection = turf.featureCollection(fc);
-      var breaks = [0, 0.1];
-      var isobands = turf.isobands(collection, breaks, { zProperty: "value" });
-      // let area = isobands.features[0].geometry.coordinates.shift();
-      // isobands.features[0].geometry.coordinates[0].push(area[0]);
+      //向map添加图层
+      map.addLayer(canvasLayer);
 
-      // let area = isobands.features[0].geometry.coordinates[0].splice(-2);
-      // isobands.features[0].geometry.coordinates.push(area);
-
-      console.log(isobands);
-      //按照面积对图层进行排序，规避turf的一个bug
-      // isobands.features.sort((a, b) => turf.area(b) - turf.area(a));
-
-      //turf.isobands有点不符合业务预期,只有一个等级时,结果集可能为空,无图形显示,写点程序(找出那一个等级，并添加进结果集)补救下
-      //if(features.length == 0){
-      //    let maxAttribute = getMaxAttribute(breaks,collection);
-      //    let value = maxAttribute;
-      //    if(value!=''){
-      //        features.push({"type":"Feature","properties":{"value":value},"geometry":boundaries.features[0].geometry,"id":0});
-      //    }
-      //}
-      var polyFeatures = new GeoJSON().readFeatures(isobands, {
-        featureProjection: "EPSG:3857", //EPSG:4326|"EPSG:3857"
-      });
-      vectorSource.addFeatures(polyFeatures);
-      map.addLayer(vectorLayer);
+      map.addLayer(WFSVectorLayer);
 
       //移除已有图层
       if (pointVectorLayer !== null) {
@@ -1008,107 +948,73 @@ onMounted(() => {
         source: pointVectorSource,
       });
       map.addLayer(pointVectorLayer);
-      map.addLayer(WFSVectorLayer);
-      var range = grid.zlim[1] - grid.zlim[0];
       //创建要素
-      for (let i = 0; i < fc0.length; i++) {
-        let feature = new Feature({
-          geometry: new Point(
-            fromLonLat([fc0[i].geometry.coordinates[0], fc0[i].geometry.coordinates[1]])
-          ),
-          // value: fc0[i].properties.value * range + grid.zlim[0],
-          value: fc0[i].properties.value,
-        });
+      for (let i = 0; i < grid.length; i++) {
+        for (let j = 0; j < grid[i].length; j++) {
+          let feature = new Feature({
+            geometry: new Point([
+              (i / grid.length) * (grid.xlim[1] - grid.xlim[0]) + grid.xlim[0],
+              (j / grid[i].length) * (grid.ylim[1] - grid.ylim[0]) + grid.ylim[0],
+            ]),
+            value: grid[i][j],
+          });
+          console.log(
+            (i / grid.length) * (grid.xlim[1] - grid.xlim[0]) + grid.xlim[0],
+            (j / grid[i].length) * (grid.ylim[1] - grid.ylim[0]) + grid.ylim[0]
+          );
 
-        let showText = feature.getProperties().value.toFixed(2);
-        feature.setStyle(
-          new Style({
-            //fill: new Fill({
-            //    color: 'rgba(0, 0, 0, 0.3)'
-            //}),
-            //stroke: new Stroke({
-            //    color: 'blue',
-            //    width: 2
-            //}),
-            image: new Circle({
-              radius: 2,
-              fill: new Fill({ color: "#FF0000" }),
-              stroke: new Stroke({
-                width: 1,
-                color: "black",
-              }),
-            }),
-            text: new Text({
-              text: showText,
-              font: "normal 14px 微软雅黑", //字体样式
-              //font: '10px sans-serif',
-              //font: 'verdana',
-              textAlign: "left", //对齐方式
-              textBaseline: "bottom", //文本基线
-              //文本填充样式（即文字颜色)
-              fill: new Fill({
-                color: "#ff0000",
-              }),
-              //backgroundFill: new Fill({
-              //  color: "#ff0000"
+          let showText = feature.getProperties().value.toFixed(2);
+          feature.setStyle(
+            new Style({
+              //fill: new Fill({
+              //    color: 'rgba(0, 0, 0, 0.3)'
               //}),
-              stroke: new Stroke({
-                color: "#000",
-                width: 1,
+              //stroke: new Stroke({
+              //    color: 'blue',
+              //    width: 2
+              //}),
+              image: new Circle({
+                radius: 2,
+                fill: new Fill({ color: "#FF0000" }),
+                stroke: new Stroke({
+                  width: 1,
+                  color: "black",
+                }),
               }),
-              offsetX: 0,
-              offsetY: 0,
-              //placement: "point", //point 则自动计算面的中心k点然后标注  line 则根据面要素的边进行标注
-              overflow: false, //超出面的部分不显示
-            }),
-          })
-        );
-        pointVectorSource.addFeature(feature);
+              text: new Text({
+                text: showText,
+                font: "normal 14px 微软雅黑", //字体样式
+                //font: '10px sans-serif',
+                //font: 'verdana',
+                textAlign: "left", //对齐方式
+                textBaseline: "bottom", //文本基线
+                //文本填充样式（即文字颜色)
+                fill: new Fill({
+                  color: "#ff0000",
+                }),
+                //backgroundFill: new Fill({
+                //  color: "#ff0000"
+                //}),
+                stroke: new Stroke({
+                  color: "#000",
+                  width: 1,
+                }),
+                offsetX: 0,
+                offsetY: 0,
+                //placement: "point", //point 则自动计算面的中心k点然后标注  line 则根据面要素的边进行标注
+                overflow: false, //超出面的部分不显示
+              }),
+            })
+          );
+          pointVectorSource.addFeature(feature);
+        }
       }
     } else {
       alert("有效样点个数不足，无法插值");
     }
   };
   //首次加载，自动渲染一次差值图
-  drawKriging();
-
-  //取网格点中等级包含最多的点的等级属性
-  // function getMaxAttribute(inLevelV, inGrid) {
-  //   //定义变量
-  //   let levelArray = [];
-  //   let levelLength = inLevelV.length;
-  //   inLevelV.forEach(function (item, index) {
-  //     if (index > 0) levelArray.push(0);
-  //   });
-  //   //统计每个等级中网格点数量
-  //   inGrid.features.map((i) => {
-  //     inLevelV.forEach(function (item, index) {
-  //       if (index < levelLength - 3) {
-  //         if (
-  //           i.properties.value >= inLevelV[index] &&
-  //           i.properties.value < inLevelV[index + 1]
-  //         )
-  //           levelArray[index]++;
-  //       }
-  //       if (index == levelLength - 2) {
-  //         if (i.properties.value >= inLevelV[index]) levelArray[index]++;
-  //       }
-  //     });
-  //   });
-  //   //取等级中网格点最多的值
-  //   let maxIndex = -1;
-  //   let maxV = 0;
-  //   levelArray.forEach(function (item, index) {
-  //     if (maxV < item) {
-  //       maxV = item;
-  //       maxIndex = index;
-  //     }
-  //   });
-  //   let value = "";
-  //   if (maxIndex != -1) {
-  //     value = inLevelV[maxIndex] + "-" + inLevelV[maxIndex + 1];
-  //   }
-  //   return value;
-  // }
+  let extent = clipgeom.getExtent();
+  drawKriging(extent);
 });
 </script>

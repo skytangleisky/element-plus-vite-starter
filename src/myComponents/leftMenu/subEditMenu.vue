@@ -7,9 +7,9 @@
   >
     <div class="dd-handle">
       <el-icon v-dompurify-html="format(item.svg)" style="font-size: 1rem"></el-icon>
-      <span style="background: cyan">{{ item.id }}</span>
-      <i class="bg-red">{{ item.path }}</i>
-      <span class="bg-green">{{ item.component }}</span>
+      <span>{{ item.id }}</span>
+      <i class="b-var(--text-primary-color)-1px b-solid">{{ item.path }}</i>
+      <span>{{ item.component }}</span>
     </div>
     <ol v-if="item.children" class="dd-list">
       <subEditMenu :json="item.children"></subEditMenu>

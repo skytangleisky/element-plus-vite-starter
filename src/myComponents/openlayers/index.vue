@@ -95,6 +95,18 @@
 </template>
 <script setup>
 import FullScreen from "ol/control/FullScreen";
+import Graticule from "ol/layer/Graticule.js";
+const graticule = new Graticule({
+  // the style to use for the lines, optional.
+  strokeStyle: new Stroke({
+    color: "rgba(255,120,0,0.9)",
+    width: 2,
+    lineDash: [0.5, 4],
+  }),
+  showLabels: true,
+  visible: true,
+  wrapX: true,
+});
 import { onMounted, onBeforeUnmount, watch, ref, computed, h, onActivated } from "vue";
 const info = ref({
   title: "南昌昌北国际机场(ZSCN)",
@@ -416,13 +428,22 @@ onMounted(() => {
   };
   const map = new Map({
     overlays: [],
-    layers: [osm, webglLayer, stationLayer, featherLayer, vectorLayer, windArrowLayer],
+    layers: [
+      osm,
+      webglLayer,
+      stationLayer,
+      featherLayer,
+      vectorLayer,
+      windArrowLayer,
+      graticule,
+    ],
     target: mapContainer.value,
     view: new View({
       // center: fromLonLat([105,30]),
       // zoom:8,
       center: fromLonLat([115.43123283436979, 39.56864128657364]),
       zoom: 6,
+      projection: "EPSG:3857",
     }),
     //加载控件到地图容器中
     controls: defaultControls({
@@ -458,7 +479,7 @@ onMounted(() => {
     //   }
     // )
   }
-  // map.addControl(new FullScreen())
+  map.addControl(new FullScreen());
   let selected = null;
   const pointermoveFunc = (evt) => {
     selected && selected.set("hover", 0);
@@ -623,21 +644,25 @@ onMounted(() => {
               let tmp2 = tmp[0][k].slice().reverse()[featherValue];
               if (tmp2) {
                 for (let key in tmp2) {
-                  feature.set("height", tmp2[key].height.toFixed(1));
-                  feature.set("temperature", tmp2[key].temperature.toFixed(2));
-                  feature.set("humidity", tmp2[key].humidity.toFixed(2));
+                  feature.set("distance", tmp2[key].distance.toFixed(1));
+                  feature.set("ex_temp", tmp2[key].ex_temp.toFixed(2));
+                  if (tmp2[key].ex_hum == -1) {
+                    feature.set("ex_hum", undefined);
+                  } else {
+                    feature.set("ex_hum", tmp2[key].ex_hum.toFixed(2));
+                  }
                   if (setting.factor[10].val) {
-                    feature.getStyle()[5].getText().setText(feature.get("height"));
+                    feature.getStyle()[5].getText().setText(feature.get("distance"));
                   } else {
                     feature.getStyle()[5].getText().setText(undefined);
                   }
                   if (setting.factor[7].val) {
-                    feature.getStyle()[8].getText().setText(feature.get("temperature"));
+                    feature.getStyle()[8].getText().setText(feature.get("ex_temp"));
                   } else {
                     feature.getStyle()[8].getText().setText(undefined);
                   }
                   if (setting.factor[9].val) {
-                    feature.getStyle()[10].getText().setText(feature.get("humidity"));
+                    feature.getStyle()[10].getText().setText(feature.get("ex_hum"));
                   } else {
                     feature.getStyle()[10].getText().setText(undefined);
                   }
@@ -938,7 +963,7 @@ onMounted(() => {
     (newVal) => {
       if (newVal.val) {
         source3.getFeatures().forEach((feature) => {
-          feature.getStyle()[8].getText().setText(feature.get("temperature"));
+          feature.getStyle()[8].getText().setText(feature.get("ex_temp"));
           feature.changed();
         });
         // source.getFeatures().forEach((feature) => {
@@ -964,7 +989,7 @@ onMounted(() => {
     (newVal) => {
       if (newVal.val) {
         source3.getFeatures().forEach((feature) => {
-          feature.getStyle()[10].getText().setText(feature.get("humidity"));
+          feature.getStyle()[10].getText().setText(feature.get("ex_hum"));
           feature.changed();
         });
       } else {
@@ -981,7 +1006,7 @@ onMounted(() => {
     (newVal) => {
       if (newVal.val) {
         source3.getFeatures().forEach((feature) => {
-          feature.getStyle()[5].getText().setText(feature.get("height"));
+          feature.getStyle()[5].getText().setText(feature.get("distance"));
           feature.changed();
         });
       } else {
@@ -1083,6 +1108,17 @@ onMounted(() => {
             return layer.get("id") === "districtLayer";
           })
           .setVisible(false);
+      }
+    },
+    { immediate: true }
+  );
+  watch(
+    storeToRefs(setting).graticule,
+    (newVal) => {
+      if (newVal) {
+        graticule.setVisible(true);
+      } else {
+        graticule.setVisible(false);
       }
     },
     { immediate: true }

@@ -72,6 +72,7 @@ const Reset = () => {
   icon.$reset();
   station.$reset();
   data.$reset();
+  user.Logout();
   user.$reset();
   router.replace({ ...router.currentRoute.value, force: true });
 };

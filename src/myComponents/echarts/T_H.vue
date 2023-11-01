@@ -55,10 +55,10 @@ watch(
             let tmp2 = v[k].slice().reverse()[featherValue];
             if (tmp2) {
               for (let key in tmp2) {
-                let temperature = tmp2[key].temperature;
-                let humidity = tmp2[key].humidity;
+                let temperature = tmp2[key].ex_temp;
+                let humidity = tmp2[key].ex_hum;
                 option.series[0].data.push(temperature);
-                option.series[1].data.push(humidity);
+                // option.series[1].data.push(humidity);
               }
             }
           }
@@ -84,7 +84,7 @@ var option = {
       return [
         params[0].axisValueLabel,
         "温度：" + params[0].value,
-        "湿度：" + params[1].value,
+        "湿度：" + (params[1] ? params[1].value : "-"),
       ].join("<br>");
     },
   },

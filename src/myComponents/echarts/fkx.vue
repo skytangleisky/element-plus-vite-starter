@@ -71,22 +71,12 @@ const setDBS = (isDark: boolean) => {
               fData.data = [];
               v[k].map((v) => {
                 for (let k in v) {
-                  //{
-                  //   'fHei': '436.00',
-                  //   'fHorChange': '999.00',
-                  //   'fHAngle': '40.40',
-                  //   'fHSpeed': '21.37',
-                  //   'fSDev': '0.00',
-                  //   'fVSpeed': '-1.79',
-                  //   'fVerChange': '999.00',
-                  //   'iBelieveable': '1'
-                  // }
                   fData.data.push({
-                    fHei: v[k].height.toString(),
-                    fHAngle: v[k].direction.toString(),
-                    fHSpeed: v[k].speed.toString(),
-                    fVSpeed: 0,
-                    iBelieveable: v[k].reliability,
+                    fHei: v[k].distance.toString(),
+                    fHAngle: v[k].center_h_direction_abs.toString(),
+                    fHSpeed: v[k].center_h_speed.toString(),
+                    fVSpeed: v[k].vert_airflow.toString(),
+                    // iBelieveable: v[k].reliability,
                   });
                 }
               });

@@ -418,9 +418,9 @@ let setEcharts = (isDark) => {
               let tmp2 = v[k][layerIdx];
               if (tmp2) {
                 for (let key in tmp2) {
-                  fData[1] = tmp2[key].speed;
-                  fData[2] = tmp2[key].direction;
-                  fData[3] = tmp2[key].height;
+                  fData[1] = tmp2[key].center_h_speed;
+                  fData[2] = tmp2[key].center_h_direction_abs;
+                  fData[3] = tmp2[key].distance;
                 }
                 if (fData[1] === -1000) {
                 } else {

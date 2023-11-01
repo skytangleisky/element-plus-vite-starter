@@ -6,6 +6,7 @@ export const useSettingStore = defineStore({
   state: () => ({
     lang: 'zh-cn',
     loadmap:true,
+    graticule:false,
     district:true,
     airline:true,
     navigation:true,
@@ -80,12 +81,6 @@ export const useSettingStore = defineStore({
         label:'登录',
       },
       {
-        path: '/deck',
-        name: 'e4961e04-e574-0e1f-ae23-94f157b14a36',
-        component: '/src/myComponents/deck/index.vue',
-        label: 'deck',
-      },
-      {
         path: '/openlayers',
         name: '961a22a1-f5da-9845-fc89-3519ed95059f',
         // component:'/src/myComponents/openlayers/radarStatistic.vue'
@@ -93,7 +88,19 @@ export const useSettingStore = defineStore({
         component:'/src/myComponents/openlayers/index.vue',
         label:'openlayers',
         svg:'4db7562c3aa011ee8077b025aa2c9ada',
-      }
+      },
+      {
+        path: '/deck',
+        name: 'e4961e04-e574-0e1f-ae23-94f157b14a36',
+        component: '/src/myComponents/deck/index.vue',
+        label: 'deck',
+      },
+      {
+        path: '/deck2',
+        name: 'e4961e04-e574-0e1f-ae23-94f157b14a37',
+        component: '/src/myComponents/deck/index2.vue',
+        label: 'deck2',
+      },
     ]
   }),
   getters:{

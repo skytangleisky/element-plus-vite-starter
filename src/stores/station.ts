@@ -42,16 +42,13 @@ interface Wind {
   [key:string]:Array<{
     [key:string]:Array<{
       [key:string]:{
-        height:number
+        distance:number
         layers:number
-        speed:number
-        direction:number
-        min_speed:number
-        max_speed:number
-        rsd:number
-        reliability:number
-        temperature:number
-        humidity:number
+        center_h_speed:number
+        center_h_direction_abs:number
+        vert_airflow:number
+        ex_temp:number
+        ex_hum:number
       }
     }>
   }>;

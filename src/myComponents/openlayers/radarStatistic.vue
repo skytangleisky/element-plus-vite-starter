@@ -7,7 +7,7 @@
       <collapse-card title="雷达设备" v-model:show="show">
         <div
           v-for="(v, k) in setting.checks"
-          class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-gray-9 b-t-1px"
+          class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-#00000044 b-t-1px"
         >
           <span>{{ v.name }}</span>
           <span>{{ v.val }}</span>
@@ -26,7 +26,7 @@
         <template v-for="(v, k) in setting.factor">
           <div
             v-if="v.visible"
-            class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-gray-9 b-t-1px"
+            class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-#00000044 b-t-1px"
           >
             <span>{{ v.toolTips }}</span>
             <el-switch
@@ -38,7 +38,7 @@
           </div>
         </template>
         <div
-          class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-gray-9 b-t-1px"
+          class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-#00000044 b-t-1px"
         >
           <span>风杆</span>
           <div>
@@ -68,7 +68,7 @@
     <div class="item">
       <collapse-card title="图层管理" v-model:show="showMapSetting">
         <div
-          class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-gray-9 b-t-1px"
+          class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-#00000044 b-t-1px"
         >
           <span>地图</span>
           <el-switch
@@ -79,7 +79,18 @@
           />
         </div>
         <div
-          class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-gray-9 b-t-1px"
+          class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-#00000044 b-t-1px"
+        >
+          <span>格子线</span>
+          <el-switch
+            v-model="setting.graticule"
+            inline-prompt
+            :active-icon="Check"
+            :inactive-icon="Close"
+          />
+        </div>
+        <div
+          class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-#00000044 b-t-1px"
         >
           <span>行政区划</span>
           <el-switch
@@ -90,7 +101,7 @@
           />
         </div>
         <div
-          class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-gray-9 b-t-1px"
+          class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-#00000044 b-t-1px"
         >
           <span>站点</span>
           <el-switch

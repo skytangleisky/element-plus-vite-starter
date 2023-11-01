@@ -1,12 +1,12 @@
 <template>
   <div
-    class="flex-col dark:bg-#aaa bg-white"
+    class="flex-col dark:bg-#000 bg-white"
     style="color: black; overflow: auto; width: 100%"
   >
     <div class="icons">
       <span v-for="v in icon.results"
         ><el-icon
-          style="font-size: 2em"
+          style="font-size: 2em; color: var(--ep-text-color-primary)"
           v-dompurify-html="v.svg"
           @click="storeIcon(v)"
         ></el-icon>
@@ -38,7 +38,12 @@
         </el-form-item>
         <el-form-item label="svg">
           <el-icon style="font-size: 2em" v-dompurify-html="form.svg"></el-icon>
-          <el-input v-model="form.svg" style="width: calc(100% - 2em)" />
+          <el-input
+            v-model="form.svg"
+            style="width: calc(100% - 2em)"
+            type="textarea"
+            :rows="10"
+          />
         </el-form-item>
         <el-form-item>
           <el-button @click="dialogFormVisible = false">Cancel</el-button>
@@ -452,6 +457,9 @@ p {
   border-top: 2px solid #ddd;
   border-bottom: 2px solid #ddd;
 }
+.dark .nestable-lists {
+  border-color: #444;
+}
 
 #nestable-menu {
   padding: 0;
@@ -470,21 +478,21 @@ p {
   -moz-box-sizing: border-box;
 }
 
-#nestable2 .dd-handle {
-  color: #fff;
-  border: 1px solid #999;
-  background: #bbb;
-  background: -webkit-linear-gradient(top, #bbb 0%, #999 100%);
-  background: -moz-linear-gradient(top, #bbb 0%, #999 100%);
-  background: linear-gradient(top, #bbb 0%, #999 100%);
-}
-
-#nestable2 .dd-handle:hover {
-  background: #bbb;
-}
-
-#nestable2 .dd-item > button:before {
-  color: #fff;
+.dark .dd {
+  .dd-handle {
+    color: #fff;
+    border: 1px solid #999;
+    background: #bbb;
+    background: -webkit-linear-gradient(top, #bbb 0%, #999 100%);
+    background: -moz-linear-gradient(top, #bbb 0%, #999 100%);
+    background: linear-gradient(top, #bbb 0%, #999 100%);
+  }
+  .dd-handle:hover {
+    background: #bbb;
+  }
+  .dd-item > button:before {
+    color: #fff;
+  }
 }
 
 @media only screen and (min-width: 700px) {
