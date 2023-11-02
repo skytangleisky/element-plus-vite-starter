@@ -492,7 +492,7 @@ onMounted(() => {
     canvasAlpha: 0.75, //canvas图层透明度
     colors: [
       // "#006837",
-      "#1a9850",
+      "transparent", //"#1a9850",
       "#66bd63",
       "#a6d96a",
       "#d9ef8b",
@@ -770,8 +770,8 @@ onMounted(() => {
     target: "map",
     layers: [baseLayer],
     view: new View({
-      center: params.mapCenter,
-      projection: "EPSG:4326",
+      center: fromLonLat(params.mapCenter),
+      projection: "EPSG:3857", //EPSG:4326
       zoom: 8,
     }),
   });
@@ -779,50 +779,50 @@ onMounted(() => {
   //定义裁剪边界
   let coord = [
     [
-      // [117.315375, 40.181212],
-      // [117.367916, 40.135762],
-      // [116.751758, 40.002595],
-      // [116.754136, 39.870341],
-      // [116.913383, 39.804999],
-      // [116.901858, 39.680614],
-      // [116.788145, 39.56255],
-      // [116.535646, 39.590346],
-      // [116.392103, 39.491124],
-      // [116.4293, 39.433841],
-      // [116.387072, 39.417336],
-      // [116.237232, 39.476253],
-      // [116.172242, 39.578854],
-      // [115.728745, 39.479123],
-      // [115.610225, 39.588658],
-      // [115.508537, 39.59137],
-      // [115.416399, 39.733407],
-      // [115.416624, 39.776734],
-      // [115.550565, 39.772964],
-      // [115.408433, 40.015829],
-      // [115.85422, 40.144999],
-      // [115.922315, 40.216777],
-      // [115.708758, 40.499032],
-      // [115.89819, 40.585919],
-      // [116.03778, 40.577909],
-      // [116.208725, 40.741562],
-      // [116.454984, 40.739689],
-      // [116.297615, 40.910402],
-      // [116.43816, 40.870116],
-      // [116.405424, 40.94854],
-      // [116.537137, 40.9661],
-      // [116.621495, 41.057333],
-      // [116.703349, 40.853574],
-      // [116.93405, 40.675155],
-      // [117.454502, 40.647216],
-      // [117.387854, 40.533274],
-      // [117.166811, 40.503979],
-      // [117.164198, 40.373887],
-      // [117.315375, 40.181212],
-      [113, 38],
-      [120, 38],
-      [120, 43],
-      [113, 43],
-      [113, 38],
+      [117.315375, 40.181212],
+      [117.367916, 40.135762],
+      [116.751758, 40.002595],
+      [116.754136, 39.870341],
+      [116.913383, 39.804999],
+      [116.901858, 39.680614],
+      [116.788145, 39.56255],
+      [116.535646, 39.590346],
+      [116.392103, 39.491124],
+      [116.4293, 39.433841],
+      [116.387072, 39.417336],
+      [116.237232, 39.476253],
+      [116.172242, 39.578854],
+      [115.728745, 39.479123],
+      [115.610225, 39.588658],
+      [115.508537, 39.59137],
+      [115.416399, 39.733407],
+      [115.416624, 39.776734],
+      [115.550565, 39.772964],
+      [115.408433, 40.015829],
+      [115.85422, 40.144999],
+      [115.922315, 40.216777],
+      [115.708758, 40.499032],
+      [115.89819, 40.585919],
+      [116.03778, 40.577909],
+      [116.208725, 40.741562],
+      [116.454984, 40.739689],
+      [116.297615, 40.910402],
+      [116.43816, 40.870116],
+      [116.405424, 40.94854],
+      [116.537137, 40.9661],
+      [116.621495, 41.057333],
+      [116.703349, 40.853574],
+      [116.93405, 40.675155],
+      [117.454502, 40.647216],
+      [117.387854, 40.533274],
+      [117.166811, 40.503979],
+      [117.164198, 40.373887],
+      [117.315375, 40.181212],
+      // [113, 38],
+      // [120, 38],
+      // [120, 43],
+      // [113, 43],
+      // [113, 38],
     ],
   ];
   let clipgeom = new Polygon(coord);
@@ -838,12 +838,13 @@ onMounted(() => {
   let WFSVectorLayer = new Layer({
     source: WFSVectorSource,
   });
-  map.addLayer(WFSVectorLayer);
   //创建原始点图层要素
   //for (let i = 0; i < points.features.length; i++) {
   for (let i = 0; i < data.features.length; i++) {
     let feature = new Feature({
-      geometry: new Point([data.features[i].attributes.x, data.features[i].attributes.y]),
+      geometry: new Point(
+        fromLonLat([data.features[i].attributes.x, data.features[i].attributes.y])
+      ),
       value: data.features[i].attributes.z,
     });
     //let feature = new Feature({
@@ -853,8 +854,35 @@ onMounted(() => {
     feature.setStyle(
       new Style({
         image: new Circle({
-          radius: 6,
-          fill: new Fill({ color: "#00F" }),
+          radius: 4,
+          fill: new Fill({ color: "#fa0" }),
+          stroke: new Stroke({
+            width: 1,
+            color: "black",
+          }),
+        }),
+        text: new Text({
+          text: data.features[i].attributes.z.toString(),
+          font: "normal 14px 微软雅黑", //字体样式
+          //font: '10px sans-serif',
+          //font: 'verdana',
+          textAlign: "left", //对齐方式
+          textBaseline: "middle", //文本基线
+          //文本填充样式（即文字颜色)
+          fill: new Fill({
+            color: "#00f",
+          }),
+          //backgroundFill: new Fill({
+          //  color: "#ff0000"
+          //}),
+          stroke: new Stroke({
+            color: "#000",
+            width: 1,
+          }),
+          offsetX: 6,
+          offsetY: 0,
+          //placement: "point", //point 则自动计算面的中心k点然后标注  line 则根据面要素的边进行标注
+          overflow: false, //超出面的部分不显示
         }),
       })
     );
@@ -874,8 +902,6 @@ onMounted(() => {
         x = i * grid.width + grid.xlim[0];
         y = j * grid.width + grid.ylim[0];
         z = (grid[i][j] - grid.zlim[0]) / range;
-        if (z < 0.0) z = 0.0;
-        if (z > 1.0) z = 1.0;
         pointArray.push(turf.point([x, y], { value: z }));
       }
     return pointArray;
@@ -888,11 +914,12 @@ onMounted(() => {
     let values = [],
       lngs = [],
       lats = [];
-    WFSVectorSource.forEachFeature(function (feature) {
-      values.push(feature.getProperties().value);
-      lngs.push(feature.getGeometry().getCoordinates()[0]);
-      lats.push(feature.getGeometry().getCoordinates()[1]);
-    });
+    for (let i = 0; i < data.features.length; i++) {
+      values.push(data.features[i].attributes.z);
+      lngs.push(data.features[i].attributes.x);
+      lats.push(data.features[i].attributes.y);
+    }
+    console.log(values);
     //console.log(values.length);
     if (values.length > 3) {
       let letiogram = kriging.train(
@@ -904,9 +931,8 @@ onMounted(() => {
         params.krigingAlpha
       );
       let ex = clipgeom.getExtent();
-      let grid0 = kriging.grid(coord, letiogram, (ex[2] - ex[0]) / 20); //显示网络点用，否则太多显示不了
-      let grid = kriging.grid(coord, letiogram, (ex[2] - ex[0]) / 500); //用来生成色斑图
-
+      let grid0 = kriging.grid(coord, letiogram, (ex[2] - ex[0]) / 50); //显示网络点用，否则太多显示不了
+      let grid = kriging.grid(coord, letiogram, (ex[2] - ex[0]) / 50); //用来生成色斑图
       //使用turf渲染等值面/线
       let fc0 = gridFeatureCollection(grid0); //, [extent[0], extent[2]], [extent[1], extent[3]]
       let fc = gridFeatureCollection(grid); //, [extent[0], extent[2]], [extent[1], extent[3]]
@@ -937,7 +963,7 @@ onMounted(() => {
       }
       //按照面积对图层进行排序，规避turf的一个bug
       isobands.features.sort(sortArea);
-
+      console.log(isobands);
       //turf.isobands有点不符合业务预期,只有一个等级时,结果集可能为空,无图形显示,写点程序(找出那一个等级，并添加进结果集)补救下
       //if(features.length == 0){
       //    let maxAttribute = getMaxAttribute(breaks,collection);
@@ -948,7 +974,7 @@ onMounted(() => {
       //}
 
       var polyFeatures = new GeoJSON().readFeatures(isobands, {
-        featureProjection: "EPSG:4326",
+        featureProjection: "EPSG:3857",
       });
       vectorSource.addFeatures(polyFeatures);
       map.addLayer(vectorLayer);
@@ -963,39 +989,35 @@ onMounted(() => {
         source: pointVectorSource,
       });
       map.addLayer(pointVectorLayer);
+
+      map.addLayer(WFSVectorLayer);
       //创建要素
       for (let i = 0; i < fc0.length; i++) {
         let feature = new Feature({
-          geometry: new Point([
-            fc0[i].geometry.coordinates[0],
-            fc0[i].geometry.coordinates[1],
-          ]),
+          geometry: new Point(
+            fromLonLat([fc0[i].geometry.coordinates[0], fc0[i].geometry.coordinates[1]])
+          ),
           value: fc0[i].properties.value,
         });
 
-        let showText = feature.getProperties().value
-          ? "" + feature.getProperties().value.toFixed(2)
-          : "0";
+        let showText = feature.getProperties().value.toFixed(3);
         feature.setStyle(
           new Style({
-            //fill: new Fill({
-            //    color: 'rgba(0, 0, 0, 0.3)'
-            //}),
-            //stroke: new Stroke({
-            //    color: 'blue',
-            //    width: 2
-            //}),
-            //image: new Circle({
-            //    radius: 6,
-            //    fill: new Fill({ color: "#FF0000" })
-            //}),
+            image: new Circle({
+              radius: 2,
+              fill: new Fill({ color: "#FF0000" }),
+              stroke: new Stroke({
+                width: 1,
+                color: "black",
+              }),
+            }),
             text: new Text({
               text: showText,
               font: "normal 14px 微软雅黑", //字体样式
               //font: '10px sans-serif',
               //font: 'verdana',
-              textAlign: "center", //对齐方式
-              textBaseline: "middle", //文本基线
+              textAlign: "left", //对齐方式
+              textBaseline: "bottom", //文本基线
               //文本填充样式（即文字颜色)
               fill: new Fill({
                 color: "#ff0000",
@@ -1004,7 +1026,7 @@ onMounted(() => {
               //  color: "#ff0000"
               //}),
               stroke: new Stroke({
-                color: "#ffffff",
+                color: "#000",
                 width: 1,
               }),
               //offsetX: parseInt(0, 10),

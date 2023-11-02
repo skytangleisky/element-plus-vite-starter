@@ -487,10 +487,10 @@ var data = {
 };
 onMounted(() => {
   let params = {
-    mapCenter: [116.4, 39.9],
+    mapCenter: fromLonLat([116.4, 39.9]),
     colors: [
       // "#006837",
-      "#1a9850", // "#1a9850",
+      "#1a9850",
       "#66bd63",
       "#a6d96a",
       "#d9ef8b",
@@ -769,7 +769,7 @@ onMounted(() => {
     layers: [baseLayer],
     view: new View({
       center: params.mapCenter,
-      projection: "EPSG:4326",
+      projection: "EPSG:3857", //EPSG:4326
       zoom: 8,
     }),
   });
@@ -780,7 +780,9 @@ onMounted(() => {
   //创建要素
   for (let i = 0; i < data.features.length; i++) {
     let feature = new Feature({
-      geometry: new Point([data.features[i].attributes.x, data.features[i].attributes.y]),
+      geometry: new Point(
+        fromLonLat([data.features[i].attributes.x, data.features[i].attributes.y])
+      ),
       value: data.features[i].attributes.z,
     });
     feature.setStyle(
@@ -820,53 +822,99 @@ onMounted(() => {
     );
     WFSVectorSource.addFeature(feature);
   }
+  WFSVectorSource.addFeatures([
+    new Feature({
+      geometry: new Point(fromLonLat([113, 38])),
+      image: new Circle({
+        radius: 4,
+        fill: new Fill({ color: "#fa0" }),
+        stroke: new Stroke({
+          width: 0.5,
+          color: "black",
+        }),
+      }),
+    }),
+    new Feature({
+      geometry: new Point(fromLonLat([120, 38])),
+      image: new Circle({
+        radius: 4,
+        fill: new Fill({ color: "#fa0" }),
+        stroke: new Stroke({
+          width: 0.5,
+          color: "black",
+        }),
+      }),
+    }),
+    new Feature({
+      geometry: new Point(fromLonLat([120, 43])),
+      image: new Circle({
+        radius: 4,
+        fill: new Fill({ color: "#fa0" }),
+        stroke: new Stroke({
+          width: 0.5,
+          color: "black",
+        }),
+      }),
+    }),
+    new Feature({
+      geometry: new Point(fromLonLat([113, 43])),
+      image: new Circle({
+        radius: 4,
+        fill: new Fill({ color: "#fa0" }),
+        stroke: new Stroke({
+          width: 0.5,
+          color: "black",
+        }),
+      }),
+    }),
+  ]);
   //定义裁剪边界
   let coord = [
     [
-      // [117.315375, 40.181212],
-      // [117.367916, 40.135762],
-      // [116.751758, 40.002595],
-      // [116.754136, 39.870341],
-      // [116.913383, 39.804999],
-      // [116.901858, 39.680614],
-      // [116.788145, 39.56255],
-      // [116.535646, 39.590346],
-      // [116.392103, 39.491124],
-      // [116.4293, 39.433841],
-      // [116.387072, 39.417336],
-      // [116.237232, 39.476253],
-      // [116.172242, 39.578854],
-      // [115.728745, 39.479123],
-      // [115.610225, 39.588658],
-      // [115.508537, 39.59137],
-      // [115.416399, 39.733407],
-      // [115.416624, 39.776734],
-      // [115.550565, 39.772964],
-      // [115.408433, 40.015829],
-      // [115.85422, 40.144999],
-      // [115.922315, 40.216777],
-      // [115.708758, 40.499032],
-      // [115.89819, 40.585919],
-      // [116.03778, 40.577909],
-      // [116.208725, 40.741562],
-      // [116.454984, 40.739689],
-      // [116.297615, 40.910402],
-      // [116.43816, 40.870116],
-      // [116.405424, 40.94854],
-      // [116.537137, 40.9661],
-      // [116.621495, 41.057333],
-      // [116.703349, 40.853574],
-      // [116.93405, 40.675155],
-      // [117.454502, 40.647216],
-      // [117.387854, 40.533274],
-      // [117.166811, 40.503979],
-      // [117.164198, 40.373887],
-      // [117.315375, 40.181212],
-      [113, 38],
-      [120, 38],
-      [120, 43],
-      [113, 43],
-      [113, 38],
+      [117.315375, 40.181212],
+      [117.367916, 40.135762],
+      [116.751758, 40.002595],
+      [116.754136, 39.870341],
+      [116.913383, 39.804999],
+      [116.901858, 39.680614],
+      [116.788145, 39.56255],
+      [116.535646, 39.590346],
+      [116.392103, 39.491124],
+      [116.4293, 39.433841],
+      [116.387072, 39.417336],
+      [116.237232, 39.476253],
+      [116.172242, 39.578854],
+      [115.728745, 39.479123],
+      [115.610225, 39.588658],
+      [115.508537, 39.59137],
+      [115.416399, 39.733407],
+      [115.416624, 39.776734],
+      [115.550565, 39.772964],
+      [115.408433, 40.015829],
+      [115.85422, 40.144999],
+      [115.922315, 40.216777],
+      [115.708758, 40.499032],
+      [115.89819, 40.585919],
+      [116.03778, 40.577909],
+      [116.208725, 40.741562],
+      [116.454984, 40.739689],
+      [116.297615, 40.910402],
+      [116.43816, 40.870116],
+      [116.405424, 40.94854],
+      [116.537137, 40.9661],
+      [116.621495, 41.057333],
+      [116.703349, 40.853574],
+      [116.93405, 40.675155],
+      [117.454502, 40.647216],
+      [117.387854, 40.533274],
+      [117.166811, 40.503979],
+      [117.164198, 40.373887],
+      [117.315375, 40.181212],
+      // [113, 38],
+      // [120, 38],
+      // [120, 43],
+      // [113, 43],
+      // [113, 38],
     ],
   ];
   let clipgeom = new Polygon(coord);
@@ -874,18 +922,15 @@ onMounted(() => {
   let canvasLayer = null;
   let pointVectorLayer = null;
   let drawKriging = function (extent) {
-    let arr = [];
     let values = [],
       lngs = [],
       lats = [];
-    WFSVectorSource.forEachFeature(function (feature) {
-      values.push(feature.getProperties().value);
-      arr.push(feature.getProperties().value);
-      lngs.push(feature.getGeometry().getCoordinates()[0]);
-      lats.push(feature.getGeometry().getCoordinates()[1]);
-    });
-    arr.sort((a, b) => a - b);
-    console.log(arr);
+    for (let i = 0; i < data.features.length; i++) {
+      values.push(data.features[i].attributes.z);
+      let pt = [data.features[i].attributes.x, data.features[i].attributes.y];
+      lngs.push(pt[0]);
+      lats.push(pt[1]);
+    }
     if (values.length > 2) {
       let letiogram = kriging.train(
         values,
@@ -896,7 +941,8 @@ onMounted(() => {
         100
       );
       let ex = clipgeom.getExtent();
-      let grid = kriging.grid(coord, letiogram, (ex[2] - ex[0]) / 6);
+      let grid0 = kriging.grid(coord, letiogram, (ex[2] - ex[0]) / 50);
+      let grid = kriging.grid(coord, letiogram, (ex[2] - ex[0]) / 50);
       //移除已有图层
       if (canvasLayer !== null) {
         map.removeLayer(canvasLayer);
@@ -949,21 +995,22 @@ onMounted(() => {
       });
       map.addLayer(pointVectorLayer);
       //创建要素
-      for (let i = 0; i < grid.length; i++) {
-        for (let j = 0; j < grid[i].length; j++) {
+      for (let i = 0; i < grid0.length; i++) {
+        for (let j = 0; j < grid0[i].length; j++) {
           let feature = new Feature({
-            geometry: new Point([
-              (i / grid.length) * (grid.xlim[1] - grid.xlim[0]) + grid.xlim[0],
-              (j / grid[i].length) * (grid.ylim[1] - grid.ylim[0]) + grid.ylim[0],
-            ]),
-            value: grid[i][j],
+            geometry: new Point(
+              fromLonLat([
+                (i / grid0.length) * (grid0.xlim[1] - grid0.xlim[0]) + grid0.xlim[0],
+                (j / grid0[i].length) * (grid0.ylim[1] - grid0.ylim[0]) + grid0.ylim[0],
+              ])
+            ),
+            value: grid0[i][j],
           });
-          console.log(
-            (i / grid.length) * (grid.xlim[1] - grid.xlim[0]) + grid.xlim[0],
-            (j / grid[i].length) * (grid.ylim[1] - grid.ylim[0]) + grid.ylim[0]
-          );
-
-          let showText = feature.getProperties().value.toFixed(2);
+          // let showText = feature.getProperties().value.toFixed(2);
+          let showText = (
+            (feature.getProperties().value - grid0.zlim[0]) /
+            (grid0.zlim[1] - grid0.zlim[0])
+          ).toFixed(3);
           feature.setStyle(
             new Style({
               //fill: new Fill({

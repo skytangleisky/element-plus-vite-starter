@@ -460,11 +460,13 @@ var kriging = function() {
 			var m = grid[0].length;
 			for(i=0;i<n;i++)
 				for(j=0;j<m;j++) {
-					if(grid[i][j]==undefined) continue;
-					x = canvas.width*((i-0.5)*grid.width+grid.xlim[0]-xlim[0])/range[0];
-					y = canvas.height*(1-((j-0.5)*grid.width+grid.ylim[0]-ylim[0])/range[1]);
-					let x1 = canvas.width*((i+0.5)*grid.width+grid.xlim[0]-xlim[0])/range[0];
-					let y1 = canvas.height*(1-((j+0.5)*grid.width+grid.ylim[0]-ylim[0])/range[1]);
+					if(grid[i][j]==undefined) {
+						continue;
+					}
+					x = canvas.width*(((i-0.5) / grid.length) * (grid.xlim[1] - grid.xlim[0]) + grid.xlim[0]-xlim[0])/range[0];
+					y = canvas.height*(1-(((j-0.5) / grid[i].length) * (grid.ylim[1] - grid.ylim[0]) + grid.ylim[0]-ylim[0])/range[1]);
+					let x1 = canvas.width*(((i+0.5) / grid.length) * (grid.xlim[1] - grid.xlim[0]) + grid.xlim[0] - xlim[0]) / range[0];
+					let y1 = canvas.height*(1-(((j+0.5) / grid[i].length) * (grid.ylim[1] - grid.ylim[0]) + grid.ylim[0] - ylim[0]) / range[1]);
 					z = (grid[i][j]-grid.zlim[0])/range[2];
 					if(z<0.0) z = 0.0;
 					if(z>1.0) z = 1.0;
