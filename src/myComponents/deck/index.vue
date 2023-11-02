@@ -486,9 +486,12 @@ var data = {
 onMounted(() => {
   let params = {
     mapCenter: [116.4, 39.9],
+    krigingModel: "exponential", //model还可选'gaussian','spherical',exponential
+    krigingSigma2: 0,
+    krigingAlpha: 100, //226
     canvasAlpha: 0.75, //canvas图层透明度
     colors: [
-      "#006837",
+      // "#006837",
       "#1a9850",
       "#66bd63",
       "#a6d96a",
@@ -767,7 +770,8 @@ onMounted(() => {
     target: "map",
     layers: [baseLayer],
     view: new View({
-      center: fromLonLat(params.mapCenter),
+      center: params.mapCenter,
+      projection: "EPSG:4326",
       zoom: 8,
     }),
   });
@@ -834,79 +838,32 @@ onMounted(() => {
   let WFSVectorLayer = new Layer({
     source: WFSVectorSource,
   });
+  map.addLayer(WFSVectorLayer);
   //创建原始点图层要素
+  //for (let i = 0; i < points.features.length; i++) {
   for (let i = 0; i < data.features.length; i++) {
     let feature = new Feature({
-      geometry: new Point(
-        fromLonLat([data.features[i].attributes.x, data.features[i].attributes.y])
-      ),
+      geometry: new Point([data.features[i].attributes.x, data.features[i].attributes.y]),
       value: data.features[i].attributes.z,
     });
-    feature.setStyle([
+    //let feature = new Feature({
+    //    geometry: new Point(points.features[i].geometry.coordinates),
+    //    value: points.features[i].properties.value
+    //});
+    feature.setStyle(
       new Style({
         image: new Circle({
-          radius: 4,
-          fill: new Fill({ color: "#fa0" }),
-          stroke: new Stroke({
-            width: 1,
-            color: "black",
-          }),
+          radius: 6,
+          fill: new Fill({ color: "#00F" }),
         }),
-        text: new Text({
-          text: data.features[i].attributes.z.toString(),
-          font: "normal 14px 微软雅黑", //字体样式
-          //font: '10px sans-serif',
-          //font: 'verdana',
-          textAlign: "left", //对齐方式
-          textBaseline: "middle", //文本基线
-          //文本填充样式（即文字颜色)
-          fill: new Fill({
-            color: "#00f",
-          }),
-          //backgroundFill: new Fill({
-          //  color: "#ff0000"
-          //}),
-          stroke: new Stroke({
-            color: "black",
-            width: 0.5,
-          }),
-          offsetX: 6,
-          //offsetY: parseInt(0, 10),
-          //placement: "point", //point 则自动计算面的中心k点然后标注  line 则根据面要素的边进行标注
-          // overflow: false, //超出面的部分不显示
-        }),
-      }),
-    ]);
+      })
+    );
     WFSVectorSource.addFeature(feature);
   }
 
-  WFSVectorSource.addFeatures([
-    new Feature({
-      geometry: new Point(fromLonLat([114, 39])),
-      image: new Circle({
-        radius: 4,
-        fill: new Fill({ color: "#fa0" }),
-        stroke: new Stroke({
-          width: 0.5,
-          color: "black",
-        }),
-      }),
-    }),
-    new Feature({
-      geometry: new Point(fromLonLat([119, 39])),
-      image: new Circle({
-        radius: 4,
-        fill: new Fill({ color: "#fa0" }),
-        stroke: new Stroke({
-          width: 0.5,
-          color: "black",
-        }),
-      }),
-    }),
-  ]);
-
   //利用网格计算点集
   const gridFeatureCollection = function (grid) {
+    //, xlim, ylim
     var range = grid.zlim[1] - grid.zlim[0];
     var i, j, x, y, z;
     var n = grid.length; //列数
@@ -927,33 +884,33 @@ onMounted(() => {
   let pointVectorLayer = null,
     vectorLayer = null;
   //绘制kriging插值图
-  let drawKriging = function () {
+  let drawKriging = function (extent) {
     let values = [],
       lngs = [],
       lats = [];
-    for (let i = 0; i < data.features.length; i++) {
-      values.push(data.features[i].attributes.z);
-      lngs.push(data.features[i].geometry.x);
-      lats.push(data.features[i].geometry.y);
-    }
-    console.log(values);
+    WFSVectorSource.forEachFeature(function (feature) {
+      values.push(feature.getProperties().value);
+      lngs.push(feature.getGeometry().getCoordinates()[0]);
+      lats.push(feature.getGeometry().getCoordinates()[1]);
+    });
     //console.log(values.length);
-    if (values.length > 2) {
+    if (values.length > 3) {
       let letiogram = kriging.train(
         values,
         lngs,
         lats,
-        "exponential", //model还可选,exponential,gaussian,spherical
-        0,
-        100
+        params.krigingModel,
+        params.krigingSigma2,
+        params.krigingAlpha
       );
-      let extent = clipgeom.getExtent();
-      let grid0 = kriging.grid(coord, letiogram, (extent[2] - extent[0]) / 10); //显示网络点用，否则太多显示不了,/20
-      let grid = kriging.grid(coord, letiogram, (extent[2] - extent[0]) / 10); //用来生成色斑图,/500
+      let ex = clipgeom.getExtent();
+      let grid0 = kriging.grid(coord, letiogram, (ex[2] - ex[0]) / 20); //显示网络点用，否则太多显示不了
+      let grid = kriging.grid(coord, letiogram, (ex[2] - ex[0]) / 500); //用来生成色斑图
 
       //使用turf渲染等值面/线
       let fc0 = gridFeatureCollection(grid0); //, [extent[0], extent[2]], [extent[1], extent[3]]
       let fc = gridFeatureCollection(grid); //, [extent[0], extent[2]], [extent[1], extent[3]]
+
       //移除已有图层
       if (vectorLayer !== null) {
         map.removeLayer(vectorLayer);
@@ -962,27 +919,24 @@ onMounted(() => {
       var vectorSource = new Source();
       vectorLayer = new Layer({
         source: vectorSource,
-        opacity: 1,
+        opacity: 1.0,
         style: function (feature) {
-          return new Style({
+          var style = new Style({
             fill: new Fill({
-              color: params.colors[parseFloat(feature.get("value").split("-")[1]) * 10],
+              color: params.colors[parseFloat(feature.get("value").split("-")[0]) * 10],
             }),
           });
+          return style;
         },
       });
       var collection = turf.featureCollection(fc);
-      var breaks = [0, 0.1];
+      var breaks = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
       var isobands = turf.isobands(collection, breaks, { zProperty: "value" });
-      // let area = isobands.features[0].geometry.coordinates.shift();
-      // isobands.features[0].geometry.coordinates[0].push(area[0]);
-
-      // let area = isobands.features[0].geometry.coordinates[0].splice(-2);
-      // isobands.features[0].geometry.coordinates.push(area);
-
-      console.log(isobands);
+      function sortArea(a, b) {
+        return turf.area(b) - turf.area(a);
+      }
       //按照面积对图层进行排序，规避turf的一个bug
-      // isobands.features.sort((a, b) => turf.area(b) - turf.area(a));
+      isobands.features.sort(sortArea);
 
       //turf.isobands有点不符合业务预期,只有一个等级时,结果集可能为空,无图形显示,写点程序(找出那一个等级，并添加进结果集)补救下
       //if(features.length == 0){
@@ -992,8 +946,9 @@ onMounted(() => {
       //        features.push({"type":"Feature","properties":{"value":value},"geometry":boundaries.features[0].geometry,"id":0});
       //    }
       //}
+
       var polyFeatures = new GeoJSON().readFeatures(isobands, {
-        featureProjection: "EPSG:3857", //EPSG:4326|"EPSG:3857"
+        featureProjection: "EPSG:4326",
       });
       vectorSource.addFeatures(polyFeatures);
       map.addLayer(vectorLayer);
@@ -1008,19 +963,19 @@ onMounted(() => {
         source: pointVectorSource,
       });
       map.addLayer(pointVectorLayer);
-      map.addLayer(WFSVectorLayer);
-      var range = grid.zlim[1] - grid.zlim[0];
       //创建要素
       for (let i = 0; i < fc0.length; i++) {
         let feature = new Feature({
-          geometry: new Point(
-            fromLonLat([fc0[i].geometry.coordinates[0], fc0[i].geometry.coordinates[1]])
-          ),
-          // value: fc0[i].properties.value * range + grid.zlim[0],
+          geometry: new Point([
+            fc0[i].geometry.coordinates[0],
+            fc0[i].geometry.coordinates[1],
+          ]),
           value: fc0[i].properties.value,
         });
 
-        let showText = feature.getProperties().value.toFixed(2);
+        let showText = feature.getProperties().value
+          ? "" + feature.getProperties().value.toFixed(2)
+          : "0";
         feature.setStyle(
           new Style({
             //fill: new Fill({
@@ -1030,21 +985,17 @@ onMounted(() => {
             //    color: 'blue',
             //    width: 2
             //}),
-            image: new Circle({
-              radius: 2,
-              fill: new Fill({ color: "#FF0000" }),
-              stroke: new Stroke({
-                width: 1,
-                color: "black",
-              }),
-            }),
+            //image: new Circle({
+            //    radius: 6,
+            //    fill: new Fill({ color: "#FF0000" })
+            //}),
             text: new Text({
               text: showText,
               font: "normal 14px 微软雅黑", //字体样式
               //font: '10px sans-serif',
               //font: 'verdana',
-              textAlign: "left", //对齐方式
-              textBaseline: "bottom", //文本基线
+              textAlign: "center", //对齐方式
+              textBaseline: "middle", //文本基线
               //文本填充样式（即文字颜色)
               fill: new Fill({
                 color: "#ff0000",
@@ -1053,11 +1004,11 @@ onMounted(() => {
               //  color: "#ff0000"
               //}),
               stroke: new Stroke({
-                color: "#000",
+                color: "#ffffff",
                 width: 1,
               }),
-              offsetX: 0,
-              offsetY: 0,
+              //offsetX: parseInt(0, 10),
+              //offsetY: parseInt(0, 10),
               //placement: "point", //point 则自动计算面的中心k点然后标注  line 则根据面要素的边进行标注
               overflow: false, //超出面的部分不显示
             }),
@@ -1070,45 +1021,46 @@ onMounted(() => {
     }
   };
   //首次加载，自动渲染一次差值图
-  drawKriging();
+  let extent = clipgeom.getExtent();
+  drawKriging(extent);
 
   //取网格点中等级包含最多的点的等级属性
-  // function getMaxAttribute(inLevelV, inGrid) {
-  //   //定义变量
-  //   let levelArray = [];
-  //   let levelLength = inLevelV.length;
-  //   inLevelV.forEach(function (item, index) {
-  //     if (index > 0) levelArray.push(0);
-  //   });
-  //   //统计每个等级中网格点数量
-  //   inGrid.features.map((i) => {
-  //     inLevelV.forEach(function (item, index) {
-  //       if (index < levelLength - 3) {
-  //         if (
-  //           i.properties.value >= inLevelV[index] &&
-  //           i.properties.value < inLevelV[index + 1]
-  //         )
-  //           levelArray[index]++;
-  //       }
-  //       if (index == levelLength - 2) {
-  //         if (i.properties.value >= inLevelV[index]) levelArray[index]++;
-  //       }
-  //     });
-  //   });
-  //   //取等级中网格点最多的值
-  //   let maxIndex = -1;
-  //   let maxV = 0;
-  //   levelArray.forEach(function (item, index) {
-  //     if (maxV < item) {
-  //       maxV = item;
-  //       maxIndex = index;
-  //     }
-  //   });
-  //   let value = "";
-  //   if (maxIndex != -1) {
-  //     value = inLevelV[maxIndex] + "-" + inLevelV[maxIndex + 1];
-  //   }
-  //   return value;
-  // }
+  function getMaxAttribute(inLevelV, inGrid) {
+    //定义变量
+    let levelArray = [];
+    let levelLength = inLevelV.length;
+    inLevelV.forEach(function (item, index) {
+      if (index > 0) levelArray.push(0);
+    });
+    //统计每个等级中网格点数量
+    inGrid.features.map((i) => {
+      inLevelV.forEach(function (item, index) {
+        if (index < levelLength - 3) {
+          if (
+            i.properties.value >= inLevelV[index] &&
+            i.properties.value < inLevelV[index + 1]
+          )
+            levelArray[index]++;
+        }
+        if (index == levelLength - 2) {
+          if (i.properties.value >= inLevelV[index]) levelArray[index]++;
+        }
+      });
+    });
+    //取等级中网格点最多的值
+    let maxIndex = -1;
+    let maxV = 0;
+    levelArray.forEach(function (item, index) {
+      if (maxV < item) {
+        maxV = item;
+        maxIndex = index;
+      }
+    });
+    let value = "";
+    if (maxIndex != -1) {
+      value = inLevelV[maxIndex] + "-" + inLevelV[maxIndex + 1];
+    }
+    return value;
+  }
 });
 </script>
