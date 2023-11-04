@@ -61,6 +61,7 @@
         <chart-info></chart-info>
         <chart-fkx></chart-fkx>
         <chart-dom></chart-dom>
+        <chartSNR></chartSNR>
         <chart-th></chart-th>
       </div>
       <el-icon
@@ -147,6 +148,7 @@ import chartTh from "~/myComponents/echarts/T_H.vue";
 import chartDom from "~/myComponents/echarts/index.vue";
 import chartFkx from "~/myComponents/echarts/fkx.vue";
 import chartInfo from "~/myComponents/echarts/info.vue";
+import chartSNR from "~/myComponents/echarts/SNR.vue";
 import { useRoute } from "vue-router";
 const route = useRoute();
 import { linear, inAndOut } from "ol/easing";
@@ -434,7 +436,7 @@ onMounted(() => {
       stationLayer,
       featherLayer,
       vectorLayer,
-      windArrowLayer,
+      //  windArrowLayer,
       graticule,
     ],
     target: mapContainer.value,
@@ -596,7 +598,7 @@ onMounted(() => {
   watch(
     [storeToRefs(station).avgWindData, storeToRefs(setting).featherValue],
     ([avgWindData, featherValue]) => {
-      avgWindData.forEach((v, k) => {
+      avgWindData.forEach((v) => {
         source.getFeatures().forEach((feature) => {
           let tmp = v[feature.get("radar_id")];
           if (tmp) {
@@ -604,8 +606,8 @@ onMounted(() => {
               let tmp2 = tmp[0][k].slice().reverse()[featherValue];
               if (tmp2) {
                 for (let key in tmp2) {
-                  feature.set("rad", (tmp2[key].direction / 180) * Math.PI);
-                  feature.set("flag", getFeather(tmp2[key].speed));
+                  feature.set("rad", (tmp2[key].center_h_direction_abs / 180) * Math.PI);
+                  feature.set("flag", getFeather(tmp2[key].center_h_speed));
                 }
               } else {
                 for (let key in tmp2) {
@@ -623,8 +625,8 @@ onMounted(() => {
               let tmp2 = tmp[0][k].slice().reverse()[featherValue];
               if (tmp2) {
                 for (let key in tmp2) {
-                  feature.set("rad", (tmp2[key].direction / 180) * Math.PI);
-                  feature.set("speed", tmp2[key].speed + "m/s");
+                  feature.set("rad", (tmp2[key].center_h_direction_abs / 180) * Math.PI);
+                  feature.set("speed", tmp2[key].center_h_speed + "m/s");
                   feature.set("time", k);
                 }
               } else {
@@ -683,8 +685,8 @@ onMounted(() => {
     }
   );
   watch(
-    [storeToRefs(station).result, storeToRefs(setting).featherValue],
-    ([newVal, featherValue], [oldVal]) => {
+    storeToRefs(station).result,
+    (newVal) => {
       const data = newVal;
       removeAllFeatures();
       for (let i = 0; i < data.length; i++) {
@@ -955,6 +957,9 @@ onMounted(() => {
       station.查询平均风数据接口().then((res) => {
         station.avgWindData = res.data.data;
       });
+      station.查询径向风数据接口().then((res) => {
+        station.radialWindData = res.data.data;
+      });
     },
     { deep: true, immediate: true }
   );
@@ -1036,11 +1041,12 @@ onMounted(() => {
   });
   watch(
     storeToRefs(setting).checks.value[0],
-    (newVal, oldVal) => {
-      if (!oldVal) return;
+    (newVal) => {
       removeAllFeatures();
       if (newVal.select) {
-        station.查询雷达列表接口();
+        station.查询雷达列表接口().then(() => {
+          console.log("radars");
+        });
       } else {
         station.result = [];
       }
@@ -1049,8 +1055,7 @@ onMounted(() => {
   );
   watch(
     storeToRefs(setting).checks.value[1],
-    (newVal, oldVal) => {
-      if (!oldVal) return;
+    (newVal) => {
       if (newVal.select) {
         station.查询雷达在线列表接口();
       } else {
@@ -1062,8 +1067,7 @@ onMounted(() => {
   );
   watch(
     storeToRefs(setting).checks.value[2],
-    (newVal, oldVal) => {
-      if (!oldVal) return;
+    (newVal) => {
       if (newVal.select) {
         station.查询雷达离线列表接口();
       } else {
@@ -1074,8 +1078,7 @@ onMounted(() => {
   );
   watch(
     storeToRefs(setting).checks.value[3],
-    (newVal, oldVal) => {
-      if (!oldVal) return;
+    (newVal) => {
       if (newVal.select) {
         station.查询近期新增雷达列表接口();
       } else {
@@ -1149,6 +1152,7 @@ onMounted(() => {
   watch(
     storeToRefs(setting).feather,
     (newVal) => {
+      console.log(newVal, source.getFeatures());
       if (newVal) {
         source.getFeatures().forEach((item) => {
           item.set("opacity", 1.0);
@@ -1171,6 +1175,9 @@ onMounted(() => {
     station.查询平均风数据接口().then((res) => {
       station.avgWindData = res.data.data;
     });
+    // station.查询径向风数据接口().then((res) => {//太慢
+    //   station.radialWindData = res.data.data;
+    // });
   }, 5000);
   onBeforeUnmount(() => {
     eventbus.off("将站点移动到屏幕中心");
@@ -1258,6 +1265,7 @@ onMounted(() => {
   }
 }
 .dark .right-drawer {
+  background-color: black;
   & > div > div:nth-child(odd) {
     background: #304156;
   }

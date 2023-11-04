@@ -101,6 +101,12 @@ export const useSettingStore = defineStore({
         component: '/src/myComponents/deck/index2.vue',
         label: 'deck2',
       },
+      {
+        path: '/mapbox',
+        name: 'e4961e04-e574-0e1f-ae23-94f157b14a38',
+        component: '/src/myComponents/mapbox/index.vue',
+        label: 'mapbox',
+      },
     ]
   }),
   getters:{

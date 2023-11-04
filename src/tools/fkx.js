@@ -92,7 +92,7 @@ export default function DBS() {
       data: hours,
       axisLabel: {
         rotate: 360,
-        color: 'black'
+        // color: 'black'
         // formatter: function(value, index){
         // 	return echarts.format.formatTime('hh:mm:ss', new Date(value));
         // }
