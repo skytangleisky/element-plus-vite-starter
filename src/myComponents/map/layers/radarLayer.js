@@ -222,7 +222,7 @@ export default class RadarLayer extends BaseLayer{
               let uint8Array=encoder.encode(text)
               this.objectUrl = URL.createObjectURL(new Blob([uint8Array],{type:'application/octet-stream'}))
               console.log((text.length/1024/1024).toFixed(2)+'MB',this.objectUrl)
-              console.log(this.country)
+              // console.log(this.country)
               this.test(args)
               for(let i=0;i<this.queue.length;i++){
                 let args = this.queue.splice(i--,1)[0]

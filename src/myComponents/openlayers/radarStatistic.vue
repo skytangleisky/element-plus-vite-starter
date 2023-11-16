@@ -41,27 +41,12 @@
           class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-#00000044 b-t-1px"
         >
           <span>风杆</span>
-          <div>
-            <el-select
-              v-model="setting.featherValue"
-              placeholder="Select"
-              size="small"
-              style="width: 100px"
-            >
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-            <el-switch
-              v-model="setting.feather"
-              inline-prompt
-              :active-icon="Check"
-              :inactive-icon="Close"
-            />
-          </div>
+          <el-switch
+            v-model="setting.feather"
+            inline-prompt
+            :active-icon="Check"
+            :inactive-icon="Close"
+          />
         </div>
       </collapse-card>
     </div>
@@ -116,7 +101,15 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { watch, ref, onMounted, onBeforeUnmount, h } from "vue";
+import {
+  watch,
+  ref,
+  onMounted,
+  onBeforeUnmount,
+  h,
+  onActivated,
+  onDeactivated,
+} from "vue";
 import { Check, Close } from "@element-plus/icons-vue";
 import { 雷达统计接口 } from "~/api/光恒/station";
 import collapseCard from "./collapseCard.vue";
@@ -152,11 +145,11 @@ const update = () => {
       });
     });
 };
-onMounted(() => {
+onActivated(() => {
   timer = setInterval(update, 5000);
   update();
 });
-onBeforeUnmount(() => {
+onDeactivated(() => {
   clearInterval(timer);
 });
 const options = [
@@ -199,6 +192,9 @@ const options = [
     background: #ffffff;
     box-shadow: 0 0 10px 10px #00000011;
     border-color: #00000011;
+  }
+  &::-webkit-scrollbar {
+    width: 0;
   }
 }
 .dark .radarStatistic {

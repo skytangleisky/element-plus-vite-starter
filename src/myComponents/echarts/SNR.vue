@@ -28,79 +28,103 @@ watch(isDark, (isDark) => {
 onMounted(() => {
   setChart(isDark.value);
 });
-watch([storeToRefs(station).radialWindData], ([radialWindData]) => {
-  option.series[0].data = [];
-  option.series[1].data = [];
-  option.series[2].data = [];
-  option.series[3].data = [];
-  radialWindData.map((v, k) => {
-    if (k == 0) {
-      for (let timestamp in v) {
-        v[timestamp].map((value: any, key: number) => {
-          for (let index in value) {
-            //index序号
-            value[index].map((v: any) => {
-              for (let k in v) {
-                let item = v[k];
-                option.series[Number(index) - 1].data.push(item.distance);
+watch(
+  [
+    storeToRefs(station).radialWindData,
+    storeToRefs(station).result,
+    storeToRefs(station).active,
+  ],
+  ([radialWindData, result, active]) => {
+    // option.series[0].data = [];
+    // option.series[1].data = [];
+    // option.series[2].data = [];
+    // option.series[3].data = [];
+    // radialWindData.map((v, k) => {
+    // if (k == 0) {
+    //   for (let timestamp in v) {
+    //     v[timestamp].map((value: any, key: number) => {
+    //       for (let index in value) {
+    //         //index序号
+    //         value[index].map((v: any) => {
+    //           for (let k in v) {
+    //             let item = v[k];
+    //             option.series[Number(index) - 1].data.push([item.snr, item.distance]);
+    //           }
+    //         });
+    //       }
+    //     });
+    //   }
+    // }
+    // myChart.setOption(option);
+    // });
+
+    radialWindData.map((v, k) => {
+      option.series[0].data = [];
+      option.series[1].data = [];
+      option.series[2].data = [];
+      option.series[3].data = [];
+      let data;
+      for (let key in v) {
+        if (result[active] && key == result[active].radar.radar_id) {
+          data = v[key];
+        }
+      }
+      if (data) {
+        data.map((v, k) => {
+          if (k == 0) {
+            for (let k in v) {
+              //k为时间
+              let tmp2 = v[k];
+              if (tmp2) {
+                for (let key in tmp2) {
+                  for (let index in tmp2[key]) {
+                    for (let m in tmp2[key][index]) {
+                      let tmp3 = tmp2[key][index][m];
+                      for (let n in tmp3) {
+                        let item = tmp3[n];
+                        option.series[Number(index) - 1].data.push([
+                          item.snr,
+                          item.distance,
+                        ]);
+                      }
+                    }
+                  }
+                }
               }
-            });
+            }
           }
         });
+        myChart.setOption(option);
+      } else {
+        option.series[0].data = [];
+        option.series[1].data = [];
+        option.series[2].data = [];
+        option.series[3].data = [];
+        myChart.setOption(option);
       }
-    }
-    myChart.setOption(option);
-  });
-  // radialWindData.map((v, k) => {
-  //   let data;
-  //   for (let key in v) {
-  //     if (result[active] && key == result[active].radar.radar_id) {
-  //       data = v[key];
-  //     }
-  //   }
-  //   if (data) {
-  //     data.map((v, k) => {
-  //       for (let k in v) {
-  //         option.xAxis.data.push(k.substring(10));
-  //         let tmp2 = v[k].slice().reverse()[featherValue];
-  //         if (tmp2) {
-  //           for (let key in tmp2) {
-  //             let temperature = tmp2[key].ex_temp;
-  //             let humidity = tmp2[key].ex_hum;
-  //             option.series[0].data.push(temperature);
-  //             // option.series[1].data.push(humidity);
-  //           }
-  //         }
-  //       }
-  //     });
-  //     myChart.setOption(option);
-  //   } else {
-  //     option.series[0].data = [];
-  //     option.series[1].data = [];
-  //     myChart.setOption(option);
-  //   }
-  // });
-});
+    });
+  }
+);
 var option = {
   backgroundColor: "transparent",
   title: {
     show: false,
-    text: "温湿度曲线图",
+    text: "距离信噪比曲线图",
   },
-  // tooltip: {
-  //   trigger: "axis",
-  //   formatter: function (params: any) {
-  //     return [
-  //       params[0].axisValueLabel,
-  //       "温度：" + params[0].value,
-  //       "湿度：" + (params[1] ? params[1].value : "-"),
-  //     ].join("<br>");
-  //   },
-  // },
+  tooltip: {
+    trigger: "axis",
+    // formatter: function (params: any) {
+    //   return [
+    //     params[0].axisValueLabel,
+    //     "温度：" + params[0].value,
+    //     "湿度：" + (params[1] ? params[1].value : "-"),
+    //   ].join("<br>");
+    // },
+  },
   xAxis: {
-    type: "category",
+    // type: "category",
+    type: "value",
     boundaryGap: false,
-    data: ["0", "1", "2", "3", "4", "5", "6", "7"],
   },
   legend: {
     data: ["SNR1", "SNR2", "SNR3", "SNR4"],

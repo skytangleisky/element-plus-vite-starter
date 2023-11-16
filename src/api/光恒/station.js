@@ -2,7 +2,7 @@ import request from '../../utils/request'
 
 export function 雷达统计接口(){
   return request({
-    url: '/guangheng/api/radars/count',
+    url: 'guangheng/api/radars/count',
     method: 'post',
     data: {
       user_id: 'e13df6498a4e46bc8970b95ec47779f5'
@@ -12,7 +12,7 @@ export function 雷达统计接口(){
 
 export function 查询雷达列表接口(query) {
   return request({
-    url: '/guangheng/api/radars',
+    url: 'guangheng/api/radars',
     method: 'post',
     data: {
       user_id: 'e13df6498a4e46bc8970b95ec47779f5'
@@ -22,7 +22,7 @@ export function 查询雷达列表接口(query) {
 
 export function 查询雷达在线列表接口(query) {
   return request({
-    url: '/guangheng/api/radars/online',
+    url: 'guangheng/api/radars/online',
     method: 'post',
     data: {
       user_id: 'e13df6498a4e46bc8970b95ec47779f5'
@@ -32,7 +32,7 @@ export function 查询雷达在线列表接口(query) {
 
 export function 查询雷达离线列表接口(query) {
   return request({
-    url: '/guangheng/api/radars/offline',
+    url: 'guangheng/api/radars/offline',
     method: 'post',
     data: {
       user_id: 'e13df6498a4e46bc8970b95ec47779f5'
@@ -42,7 +42,7 @@ export function 查询雷达离线列表接口(query) {
 
 export function 查询近期新增雷达列表接口(query) {
   return request({
-    url: '/guangheng/api/radars/new',
+    url: 'guangheng/api/radars/new',
     method: 'post',
     data: {
       user_id: 'e13df6498a4e46bc8970b95ec47779f5'
@@ -51,7 +51,18 @@ export function 查询近期新增雷达列表接口(query) {
 }
 export function 查询平均风数据接口(query) {
   return request({
-    url: '/guangheng/api/weather/wind/avg',
+    url: 'guangheng/api/weather/wind/avg',
+    method: 'post',
+    data: {
+      user_id: "e13df6498a4e46bc8970b95ec47779f5",
+      // date: new Date().Format('yyyyMMdd')
+      date: "20231026"
+    }
+  })
+}
+export function 查询瞬时风数据接口(query) {
+  return request({
+    url: 'guangheng/api/weather/wind/second',
     method: 'post',
     data: {
       user_id: "e13df6498a4e46bc8970b95ec47779f5",
@@ -73,7 +84,7 @@ export function 查询径向风数据接口(){
 
 export function 发送电子邮件接口(){
   return request({
-    url: '/guangheng/api/mail',
+    url: 'guangheng/api/mail',
     method: 'post',
     data: {
       subject: '文本测试',
@@ -87,7 +98,7 @@ export function 发送电子邮件接口(){
 
 export function 发送带附件的邮件接口(){
   return request({
-    url: '/guangheng/api/mail_with_atachments',
+    url: 'guangheng/api/mail_with_atachments',
     method: 'post',
     data: {
       subject: '文本测试',
@@ -102,7 +113,7 @@ export function 发送带附件的邮件接口(){
 
 export function 发送短信接口(){
   return request({
-    url: '/guangheng/api/sms',
+    url: 'guangheng/api/sms',
     method: 'post',
     data: {
       phone_numbers: "13265328058",

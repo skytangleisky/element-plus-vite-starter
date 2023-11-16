@@ -5,13 +5,23 @@
         <el-icon v-dompurify-html="format(item.svg)"></el-icon>
         <span>{{ item.label }}</span>
       </template>
-      <SubMenu v-for="route in item.children" :key="route.name" :item="route"></SubMenu>
+      <SubMenu
+        v-for="route in item.children"
+        :absoluteRootPath="absoluteRootPath + '/' + item.path"
+        :key="route.name"
+        :item="route"
+      ></SubMenu>
     </el-sub-menu>
-    <router-link v-else :to="item.path" :replace="item.replace">
-      <el-menu-item :index="item.name"
-        ><el-icon v-dompurify-html="format(item.svg)"></el-icon
-        >{{ item.label }}</el-menu-item
-      >
+    <router-link
+      v-else
+      :to="absoluteRootPath + '/' + item.path"
+      :replace="item.replace"
+      style="text-decoration: none"
+    >
+      <el-menu-item :index="item.name">
+        <el-icon v-dompurify-html="format(item.svg)" />
+        <template #title>{{ item.label }}</template>
+      </el-menu-item>
     </router-link>
 
     <!-- <el-sub-menu index="1">
@@ -48,6 +58,10 @@ const { item } = defineProps({
   item: {
     type: Object,
     default: { hide: true, name: "name", label: "label" },
+  },
+  absoluteRootPath: {
+    type: String,
+    default: "",
   },
 });
 const format = (svg: string) => {

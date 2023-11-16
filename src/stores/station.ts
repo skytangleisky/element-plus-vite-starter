@@ -1,6 +1,6 @@
 // @ts-check
 import { defineStore, acceptHMRUpdate } from 'pinia'
-import { 查询雷达列表接口, 查询雷达在线列表接口,查询雷达离线列表接口,查询近期新增雷达列表接口,查询平均风数据接口,查询径向风数据接口} from '../api/光恒/station'
+import { 查询雷达列表接口, 查询雷达在线列表接口,查询雷达离线列表接口,查询近期新增雷达列表接口,查询平均风数据接口,查询瞬时风数据接口,查询径向风数据接口} from '../api/光恒/station'
 interface Station {
   data_time:string
   is_online:boolean
@@ -58,6 +58,7 @@ export const useStationStore = defineStore({
   state: () => ({
     result:new Array<Station>(),//设备信息列表
     avgWindData: new Array<Wind>(),//平均风数据
+    secondWindData: new Array<Wind>(),//平均风数据
     radialWindData: new Array(),
     active:-1
   }),
@@ -190,6 +191,15 @@ export const useStationStore = defineStore({
     查询平均风数据接口(){
       return new Promise((resolve,reject)=>{
         查询平均风数据接口().then((res:any)=>{
+          resolve(res)
+        }).catch((e)=>{
+          reject(e)
+        })
+      })
+    },
+    查询瞬时风数据接口(){
+      return new Promise((resolve,reject)=>{
+        查询瞬时风数据接口().then((res:any)=>{
           resolve(res)
         }).catch((e)=>{
           reject(e)

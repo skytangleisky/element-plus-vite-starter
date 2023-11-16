@@ -82,6 +82,7 @@ import Task from "./layers/task";
 let needRedraw = false;
 let aid: number;
 import { eventbus } from "~/eventbus";
+import { storeToRefs } from "pinia";
 const setting = useSettingStore();
 let mapLayer: MapLayer;
 let borderLayer: BorderLayer;
@@ -154,7 +155,6 @@ let newPos: {
 let task: Task;
 onMounted(async () => {
   task = new Task(20);
-  console.log("new Task");
   mapLayer = new MapLayer();
   borderLayer = new BorderLayer(task);
   radarLayer = new RadarLayer(task);
@@ -202,8 +202,8 @@ onMounted(async () => {
   const resizeObserver = new ResizeObserver(() => {
     let rect = cvs.getBoundingClientRect();
     if (rect.width == 0 || rect.height == 0) return;
-    cvs.width = rect.width;
-    cvs.height = rect.height;
+    cvs.width = rect.width * devicePixelRatio;
+    cvs.height = rect.height * devicePixelRatio;
     planeLayer.quadtree.bounds = { x: 0, y: 0, width: cvs.width, height: cvs.height };
     stationLayer.quadtree.bounds = { x: 0, y: 0, width: cvs.width, height: cvs.height };
     localStorage.L && (obj.targetL = obj.L = Number(localStorage.L));
@@ -263,81 +263,69 @@ onBeforeUnmount(() => {
   console.log("destroyed");
 });
 const init = () => {
-  if (setting.loadmap) {
-    mapLayer.show();
-  } else {
-    mapLayer.hide();
-  }
-  if (setting.district) {
-    borderLayer.show();
-  } else {
-    borderLayer.hide();
-  }
-  if (setting.navigation) {
-    pointLayer.show();
-  } else {
-    pointLayer.hide();
-  }
-  if (setting.airline) {
-    routeLayer.show();
-  } else {
-    routeLayer.hide();
-  }
-  if (setting.radar) {
-    radarLayer.show();
-  } else {
-    radarLayer.hide();
-  }
-};
-const test = (e: MessageEvent) => {
-  if (e.data.type == "自定义") {
-    if (e.data.obj.name == "瓦片地图") {
-      if (e.data.obj.leftImgSrc) {
+  watch(
+    storeToRefs(setting).loadmap,
+    (loadmap) => {
+      if (loadmap) {
         mapLayer.show();
-        setting.setloadMap(true);
       } else {
         mapLayer.hide();
-        setting.setloadMap(false);
       }
       loadMap();
-    } else if (e.data.obj.name == "行政区划") {
-      if (e.data.obj.leftImgSrc) {
+    },
+    { immediate: true }
+  );
+  watch(
+    storeToRefs(setting).district,
+    (district) => {
+      if (district) {
         borderLayer.show();
-        setting.district = true;
       } else {
         borderLayer.hide();
-        setting.district = false;
       }
       loadMap();
-    } else if (e.data.obj.name == "导航台") {
-      if (e.data.obj.leftImgSrc) {
+    },
+    { immediate: true }
+  );
+  watch(
+    storeToRefs(setting).navigation,
+    (navigation) => {
+      if (navigation) {
         pointLayer.show();
-        setting.navigation = true;
       } else {
         pointLayer.hide();
-        setting.navigation = false;
       }
       loadMap();
-    } else if (e.data.obj.name == "航线") {
-      if (e.data.obj.leftImgSrc) {
+    },
+    { immediate: true }
+  );
+  watch(
+    storeToRefs(setting).airline,
+    (airline) => {
+      if (airline) {
         routeLayer.show();
-        setting.airline = true;
       } else {
         routeLayer.hide();
-        setting.airline = false;
       }
       loadMap();
-    } else if (e.data.obj.name == "雷达") {
-      if (e.data.obj.leftImgSrc) {
+    },
+    { immediate: true }
+  );
+  watch(
+    storeToRefs(setting).radar,
+    (radar) => {
+      if (radar) {
         radarLayer.show();
-        setting.radar = true;
       } else {
         radarLayer.hide();
-        setting.radar = false;
       }
       loadMap();
-    }
-  }
+    },
+    { immediate: true }
+  );
+};
+const test = (e: MessageEvent) => {
+  console.log(e);
 };
 var interval = 0;
 var then = 0;
@@ -407,7 +395,7 @@ const draw = () => {
       tileWidth
     );
     ctx.beginPath();
-    ctx.strokeStyle = "red";
+    ctx.strokeStyle = "#00ffff";
     ctx.lineWidth = 2;
     ctx.translate(position.x, position.y);
     ctx.arc(0, 0, 20, 0, Math.PI * 2);

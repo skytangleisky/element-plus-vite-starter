@@ -14,7 +14,6 @@ export const useSettingStore = defineStore({
     radar:true,
     station:true,
     feather:true,
-    featherValue:0,
     legend:false,
     disappear:true,
     component:'/src/myComponents/menu/index.vue',
@@ -42,11 +41,11 @@ export const useSettingStore = defineStore({
     defaultOpends:['65e99b66-e340-4d4b-6b26-629f41dc63d9'],
     routes:[
       {
-        path: '/',
+        path: 'contain',
         component: '/src/container.vue',
-        redirect: { path: '/map' },
+        redirect: { path: '/contain/map' },
         name:'65e99b66-e340-4d4b-6b26-629f41dc63d9',
-        label:'ROOT',
+        label:'contain',
         svg:'8226ee256c6711ee8c80b025aa2c9ada',
         children:[
           {
@@ -65,23 +64,34 @@ export const useSettingStore = defineStore({
             replace:true,
             svg:'887ba0af3b3511ee8077b025aa2c9ada',
           },
+          {
+            path: 'openlayers',
+            name: '961a22a1-f5da-9845-fc89-3519ed95059e',
+            // component:'/src/myComponents/openlayers/radarStatistic.vue'
+            // component:'/src/myComponents/menu/index.vue'
+            component:'/src/myComponents/openlayers/index.vue',
+            replace:true,
+            label:'openlayers',
+            svg:'4db7562c3aa011ee8077b025aa2c9ada',
+          },
         ]
       },
       {
-        path: '/qqlogin',
+        path: 'qqlogin',
         name: '3c1f8a79-4fe6-2263-08fb-477f961fc946',
         component: '/src/qqlogin.vue', //最好是异步加载
         label:'扣扣登录',
         svg:'92210ef73b4111ee8077b025aa2c9ada',
       },
       {
-        path: '/login',
+        path: 'login',
         name: '97f11ef1-f3aa-9b9f-3e77-a131a9278a08',
         component: '/src/login.vue',
         label:'登录',
+        svg:'97d8a6d93ab711ee8077b025aa2c9ada'
       },
       {
-        path: '/openlayers',
+        path: 'openlayers',
         name: '961a22a1-f5da-9845-fc89-3519ed95059f',
         // component:'/src/myComponents/openlayers/radarStatistic.vue'
         // component:'/src/myComponents/menu/index.vue'
@@ -90,22 +100,29 @@ export const useSettingStore = defineStore({
         svg:'4db7562c3aa011ee8077b025aa2c9ada',
       },
       {
-        path: '/deck',
+        path: 'deck',
         name: 'e4961e04-e574-0e1f-ae23-94f157b14a36',
         component: '/src/myComponents/deck/index.vue',
-        label: 'deck',
+        label: 'openlayers',
+        svg:'a69daeed81e611ee98afb025aa2c9ada'
       },
       {
-        path: '/deck2',
+        path: 'deck2',
         name: 'e4961e04-e574-0e1f-ae23-94f157b14a37',
         component: '/src/myComponents/deck/index2.vue',
-        label: 'deck2',
+        label: 'openlayers2',
+        svg:'a69daeed81e611ee98afb025aa2c9ada'
       },
       {
-        path: '/mapbox',
+        path: 'mapbox',
         name: 'e4961e04-e574-0e1f-ae23-94f157b14a38',
         component: '/src/myComponents/mapbox/index.vue',
         label: 'mapbox',
+        svg:'11b6b95281e711ee98afb025aa2c9ada'
+      },
+      {
+        path: '',
+        redirect: '/contain/map',
       },
     ]
   }),
@@ -132,7 +149,6 @@ export const useSettingStore = defineStore({
   },
   persist: true
 })
-
 if (import.meta.hot) {
   import.meta.hot.accept(acceptHMRUpdate(useSettingStore, import.meta.hot))
 }

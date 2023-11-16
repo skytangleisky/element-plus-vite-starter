@@ -61,11 +61,13 @@
         <chart-info></chart-info>
         <chart-fkx></chart-fkx>
         <chart-dom></chart-dom>
+        <chartDirection></chartDirection>
+        <chartSpeed></chartSpeed>
         <chartSNR></chartSNR>
         <chart-th></chart-th>
       </div>
       <el-icon
-        class="left--28px z-999 bg-#eee dark:bg-#304156 dark:color-#888"
+        class="left--29px z-999 bg-#eee dark:bg-#304156 dark:color-#888"
         style="
           font-size: 28px;
           position: absolute;
@@ -108,7 +110,16 @@ const graticule = new Graticule({
   visible: true,
   wrapX: true,
 });
-import { onMounted, onBeforeUnmount, watch, ref, computed, h, onActivated } from "vue";
+import {
+  onMounted,
+  onBeforeUnmount,
+  watch,
+  ref,
+  computed,
+  h,
+  onActivated,
+  onDeactivated,
+} from "vue";
 const info = ref({
   title: "南昌昌北国际机场(ZSCN)",
   time: "2020-09-24 16:00",
@@ -149,6 +160,8 @@ import chartDom from "~/myComponents/echarts/index.vue";
 import chartFkx from "~/myComponents/echarts/fkx.vue";
 import chartInfo from "~/myComponents/echarts/info.vue";
 import chartSNR from "~/myComponents/echarts/SNR.vue";
+import chartSpeed from "~/myComponents/echarts/Speed.vue";
+import chartDirection from "~/myComponents/echarts/Direction.vue";
 import { useRoute } from "vue-router";
 const route = useRoute();
 import { linear, inAndOut } from "ol/easing";
@@ -481,7 +494,7 @@ onMounted(() => {
     //   }
     // )
   }
-  map.addControl(new FullScreen());
+  // map.addControl(new FullScreen());
   let selected = null;
   const pointermoveFunc = (evt) => {
     selected && selected.set("hover", 0);
@@ -557,7 +570,7 @@ onMounted(() => {
         });
       }
     },
-    { immediate: true, deep: true }
+    { immediate: false, deep: true }
   );
   watch(
     // storeToRefs(setting).factor.value[5],
@@ -593,49 +606,74 @@ onMounted(() => {
         // });
       }
     },
-    { immediate: true }
+    { immediate: false }
   );
   watch(
-    [storeToRefs(station).avgWindData, storeToRefs(setting).featherValue],
-    ([avgWindData, featherValue]) => {
+    [
+      storeToRefs(station).avgWindData,
+      storeToRefs(station).result,
+      storeToRefs(station).active,
+    ],
+    ([avgWindData]) => {
       avgWindData.forEach((v) => {
-        source.getFeatures().forEach((feature) => {
-          let tmp = v[feature.get("radar_id")];
-          if (tmp) {
-            for (let k in tmp[0]) {
-              let tmp2 = tmp[0][k].slice().reverse()[featherValue];
-              if (tmp2) {
-                for (let key in tmp2) {
-                  feature.set("rad", (tmp2[key].center_h_direction_abs / 180) * Math.PI);
-                  feature.set("flag", getFeather(tmp2[key].center_h_speed));
-                }
-              } else {
-                for (let key in tmp2) {
-                  feature.set("rad", 0);
-                  feature.set("flag", 0);
-                }
-              }
-            }
-          }
-        });
         source2.getFeatures().forEach((feature) => {
+          // let tmp = v[feature.get("radar_id")];
+          // if (tmp) {
+          //   for (let k in tmp[0]) {
+          //     let tmp2 = tmp[0][k].slice().reverse()[0];
+          //     if (tmp2) {
+          //       for (let key in tmp2) {
+          //         feature.set("rad", (tmp2[key].center_h_direction_abs / 180) * Math.PI);
+          //         feature.set("speed", tmp2[key].center_h_speed + "m/s");
+          //         feature.set("time", k);
+          //       }
+          //     } else {
+          //       for (let key in tmp2) {
+          //         feature.set("rad", NaN);
+          //         feature.set("speed", NaN);
+          //         feature.set("time", k);
+          //       }
+          //     }
+          //   }
+          // }
+
           let tmp = v[feature.get("radar_id")];
           if (tmp) {
-            for (let k in tmp[0]) {
-              let tmp2 = tmp[0][k].slice().reverse()[featherValue];
-              if (tmp2) {
-                for (let key in tmp2) {
-                  feature.set("rad", (tmp2[key].center_h_direction_abs / 180) * Math.PI);
-                  feature.set("speed", tmp2[key].center_h_speed + "m/s");
-                  feature.set("time", k);
-                }
-              } else {
-                for (let key in tmp2) {
-                  feature.set("rad", NaN);
-                  feature.set("speed", NaN);
-                  feature.set("time", k);
-                }
+            console.log("===========>", feature);
+            source.forEachFeature((f) => {
+              if (f.get("radar_id" == feature.get("radar_id"))) {
+                source.removeFeature(f);
               }
+            });
+            for (let k in tmp[0]) {
+              let tmp2 = tmp[0][k].slice().reverse();
+              let lngLat = [feature.get("lng"), feature.get("lat")];
+              tmp2.forEach((tmp3) => {
+                for (let k in tmp3) {
+                  lngLat[1] += 70 / 111000;
+                  let item = tmp3[k];
+                  source.addFeature(
+                    new Feature({
+                      radar_id: feature.get("radar_id"),
+                      rad: (item.center_h_direction_abs / 180) * Math.PI,
+                      flag: getFeather(item.center_h_speed),
+                      geometry: new Point(fromLonLat(lngLat)),
+                      opacity: 1.0,
+                    })
+                  );
+                }
+              });
+              // if (tmp2) {
+              //    for (let key in tmp2) {
+              //      feature.set("rad", (tmp2[key].center_h_direction_abs / 180) * Math.PI);
+              //      feature.set("flag", getFeather(tmp2[key].center_h_speed));
+              //    }
+              // } else {
+              //   for (let key in tmp2) {
+              //     feature.set("rad", 0);
+              //     feature.set("flag", 0);
+              //   }
+              // }
             }
           }
         });
@@ -643,7 +681,7 @@ onMounted(() => {
           let tmp = v[feature.get("radar_id")];
           if (tmp) {
             for (let k in tmp[0]) {
-              let tmp2 = tmp[0][k].slice().reverse()[featherValue];
+              let tmp2 = tmp[0][k].slice().reverse()[0];
               if (tmp2) {
                 for (let key in tmp2) {
                   feature.set("distance", tmp2[key].distance.toFixed(1));
@@ -693,15 +731,6 @@ onMounted(() => {
         const speed = 0; // Math.random() * 60;
         const rad = (Math.PI / 180) * Math.random() * 360;
         let lngLat = [data[i].longitude, data[i].latitude];
-        source.addFeature(
-          new Feature({
-            radar_id: data[i].radar.radar_id,
-            rad,
-            flag: getFeather(speed),
-            geometry: new Point(fromLonLat(lngLat)),
-            opacity: 1.0,
-          })
-        );
         source2.addFeature(
           new Feature({
             radar_id: data[i].radar.radar_id,
@@ -714,6 +743,8 @@ onMounted(() => {
             coords: lngLat,
             geometry: new Point(fromLonLat(lngLat)),
             opacity: 1.0,
+            lng: data[i].longitude,
+            lat: data[i].latitude,
           })
         );
         let feature = new Feature({
@@ -954,14 +985,19 @@ onMounted(() => {
         ]);
         source3.addFeature(feature);
       }
-      station.查询平均风数据接口().then((res) => {
-        station.avgWindData = res.data.data;
-      });
-      station.查询径向风数据接口().then((res) => {
-        station.radialWindData = res.data.data;
-      });
+      if (data.length) {
+        station.查询平均风数据接口().then((res) => {
+          station.avgWindData = res.data.data;
+        });
+        station.查询瞬时风数据接口().then((res) => {
+          station.secondWindData = res.data.data;
+        });
+        station.查询径向风数据接口().then((res) => {
+          station.radialWindData = res.data.data;
+        });
+      }
     },
-    { deep: true, immediate: true }
+    { deep: true, immediate: false }
   );
   watch(
     storeToRefs(setting).factor.value[7],
@@ -1038,15 +1074,25 @@ onMounted(() => {
     if (setting.checks[3].select) {
       station.查询近期新增雷达列表接口();
     }
+    station.查询平均风数据接口().then((res) => {
+      station.avgWindData = res.data.data;
+    });
+    station.查询瞬时风数据接口().then((res) => {
+      station.secondWindData = res.data.data;
+    });
+    station.查询径向风数据接口().then((res) => {
+      station.radialWindData = res.data.data;
+    });
+  });
+  onDeactivated(() => {
+    clearInterval(timer);
   });
   watch(
     storeToRefs(setting).checks.value[0],
     (newVal) => {
       removeAllFeatures();
       if (newVal.select) {
-        station.查询雷达列表接口().then(() => {
-          console.log("radars");
-        });
+        station.查询雷达列表接口();
       } else {
         station.result = [];
       }
@@ -1152,7 +1198,6 @@ onMounted(() => {
   watch(
     storeToRefs(setting).feather,
     (newVal) => {
-      console.log(newVal, source.getFeatures());
       if (newVal) {
         source.getFeatures().forEach((item) => {
           item.set("opacity", 1.0);
@@ -1172,9 +1217,12 @@ onMounted(() => {
     //     // geometry.setCoordinates(fromLonLat([110,30]))
     //     // feature.set('geometry',geometry)
     //   })
-    station.查询平均风数据接口().then((res) => {
-      station.avgWindData = res.data.data;
-    });
+    // station.查询平均风数据接口().then((res) => {
+    //   station.avgWindData = res.data.data;
+    // });
+    // station.查询瞬时风数据接口().then((res) => {
+    //   station.secondWindData = res.data.data;
+    // });
     // station.查询径向风数据接口().then((res) => {//太慢
     //   station.radialWindData = res.data.data;
     // });

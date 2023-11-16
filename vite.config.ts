@@ -81,7 +81,7 @@ export default defineConfig({
       key: fs.readFileSync('dev.tanglei.top.key')
     },
     host:'::',
-    open:'https://dev.tanglei.top',
+    open:'https://dev.tanglei.top:5173',
     port:5173,
     proxy:{
       '/guangheng':{
@@ -96,7 +96,7 @@ export default defineConfig({
         ws:true,
       },
       '/tanglei':{
-        target:'http://tanglei.top:81',//替换的服务端地址
+        target:'http://tanglei.top',//替换的服务端地址
         changeOrigin:true,//开启代理，允许跨域
         rewrite:path=>path.replace(/^\/tanglei/,'') // 设置重写的路径
       },

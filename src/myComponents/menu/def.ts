@@ -3,26 +3,24 @@ interface Item{
   children?:Array<Item>;
   left?:Boolean;
   right?:Boolean;
-  leftImgSrc?:string;
+  leftImgSrc?:boolean;
   onClick?:Function;
 }
 const checkClick = (e:Event,item:Item,k:number) => {
-  if(item.children){
+  if(item.children&&item.children[k]){
     let v = item.children[k]
-    if(v.leftImgSrc == 'checked.svg')
-      delete v.leftImgSrc
-    else
-      v.leftImgSrc = 'checked.svg'
+    v.leftImgSrc=!v.leftImgSrc
   }
 }
 const radioClick = (e:Event,item:Item,k:number) => {
   if(item.children){
     let v = item.children[k]
     item.children.forEach((V:Item,K:number)=>{
-      if(K!=k&&V.leftImgSrc)delete V.leftImgSrc
+      if(K!=k&&V.leftImgSrc==true){
+        V.leftImgSrc=false
+      }
     })
-    if(v.leftImgSrc!='checked.svg')
-      v.leftImgSrc = 'checked.svg'
+    v.leftImgSrc = true
   }
 }
 export {

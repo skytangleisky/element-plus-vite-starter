@@ -1,11 +1,12 @@
 <template>
-  <div id="map" class="b-solid b-red b-1px h-full"></div>
+  <div ref="mapRef" class="w-full h-full"></div>
 </template>
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import Tile from "ol/layer/Tile.js";
 import Image from "ol/layer/Image.js";
 import OSM from "ol/source/OSM";
+import XYZ from "ol/source/XYZ";
 import ImageCanvas from "ol/source/ImageCanvas";
 import { Point, Polygon } from "ol/geom";
 import Layer from "ol/layer/Vector";
@@ -485,6 +486,7 @@ var data = {
     },
   ],
 };
+const mapRef = ref(null);
 onMounted(() => {
   let params = {
     mapCenter: fromLonLat([116.4, 39.9]),
@@ -762,10 +764,14 @@ onMounted(() => {
   };
   let baseLayer = new Tile({
     title: "base",
-    source: new OSM(),
+    // source: new OSM(),
+    source: new XYZ({
+      url: "https://tanglei.site:3210/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
+    }),
+    preload: Infinity,
   });
   let map = new Map({
-    target: "map",
+    target: mapRef.value,
     layers: [baseLayer],
     view: new View({
       center: params.mapCenter,

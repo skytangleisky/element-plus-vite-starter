@@ -2,7 +2,12 @@
   <div class="login_dialog">
     <div class="leftImage">雷达设备组网数据采集管理系统</div>
     <div class="rightPlane">
-      <el-form ref="formEl" :model="numberValidateForm" class="demo-ruleForm">
+      <el-form
+        ref="formEl"
+        id="rightPlaneForm"
+        :model="numberValidateForm"
+        class="demo-ruleForm"
+      >
         <el-form-item
           prop="username"
           :rules="[{ required: true, message: 'username is required' }]"

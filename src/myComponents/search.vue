@@ -236,7 +236,9 @@ const login = () => {
   }
 };
 const logout = () => {
+  user.$reset();
   user.logout();
+  sessionStorage.clear();
 };
 const clear_input = () => {
   inputValue.value = "";

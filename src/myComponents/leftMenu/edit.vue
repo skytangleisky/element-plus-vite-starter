@@ -16,7 +16,13 @@
     <h1>Nestable2</h1>
     <el-button text @click="addIcon">open a Form nested Dialog</el-button>
     <el-dialog v-model="dialogFormVisible" title="Icon">
-      <el-form :model="form" label-width="120px" ref="ruleFormRef" :rules="rules">
+      <el-form
+        :model="form"
+        label-width="120px"
+        id="saveIconForm"
+        ref="ruleFormRef"
+        :rules="rules"
+      >
         <el-form-item label="id">
           <el-input v-model="form.id" placeholder="autogeneration" />
         </el-form-item>

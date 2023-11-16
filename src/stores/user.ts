@@ -62,7 +62,6 @@ export const useUserStore = defineStore({
     Logout(){
       return new Promise((resolve,reject)=>{
         logout().then(res=>{
-          this.$reset()
           resolve(res)
         }).catch(e=>{
           reject(e)

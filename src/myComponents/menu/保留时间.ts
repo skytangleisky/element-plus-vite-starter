@@ -1,5 +1,5 @@
-import { radioClick } from './def'
+import { radioClick as onClick } from './def'
 export default [
-  {name:'5分钟',onClick:radioClick},
-  {name:'10分钟',onClick:radioClick,leftImgSrc:'checked.svg'},
+  {name:'5分钟',onClick},
+  {name:'10分钟',onClick,leftImgSrc:true},
 ]

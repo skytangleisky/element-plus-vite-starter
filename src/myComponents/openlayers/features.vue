@@ -40,6 +40,8 @@ onMounted(() => {
       if (rect.width != 0 && rect.height != 0) {
         canvas.width = rect.width * devicePixelRatio;
         canvas.height = rect.height * devicePixelRatio;
+        canvas.style.width = rect.width + "px";
+        canvas.style.height = rect.height + "px";
         draw(canvas, isDark.value);
       }
     });
@@ -55,7 +57,8 @@ function draw(canvas: HTMLCanvasElement, isDark: boolean) {
   if (!context) throw Error("invalid context");
   context.clearRect(0, 0, canvas.width, canvas.height);
   context.save();
-  context.lineWidth = 1;
+  context.lineWidth = 1 * devicePixelRatio;
+  context.font = 10 * devicePixelRatio + "px april";
   context.translate(canvas.width / 2, canvas.height / 2);
   if (isDark) {
     context.strokeStyle = "#fff";
@@ -64,25 +67,24 @@ function draw(canvas: HTMLCanvasElement, isDark: boolean) {
     context.strokeStyle = "#000";
     context.fillStyle = "#000";
   }
-  context.arc(0, 0, 4, 0, Math.PI * 2);
+  context.arc(0, 0, 4 * devicePixelRatio, 0, Math.PI * 2);
   // context.fill();
   context.stroke();
-
   context.textAlign = "center";
   context.textBaseline = "middle";
-  context.fillText("站名", 0, -20);
+  context.fillText("站名", 0, -20 * devicePixelRatio);
 
   context.textAlign = "right";
   context.textBaseline = "middle";
-  context.fillText("高度", -20, 0);
+  context.fillText("高度", -20 * devicePixelRatio, 0);
 
   context.textAlign = "right";
   context.textBaseline = "top";
-  context.fillText("温度", -20, 20);
+  context.fillText("温度", -20 * devicePixelRatio, 20 * devicePixelRatio);
 
   context.textAlign = "left";
   context.textBaseline = "top";
-  context.fillText("湿度", 20, 20);
+  context.fillText("湿度", 20 * devicePixelRatio, 20 * devicePixelRatio);
   context.restore();
 }
 </script>

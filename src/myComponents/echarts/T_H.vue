@@ -33,11 +33,10 @@ onMounted(() => {
 watch(
   [
     storeToRefs(station).avgWindData,
-    storeToRefs(setting).featherValue,
     storeToRefs(station).result,
     storeToRefs(station).active,
   ],
-  ([avgWindData, featherValue, result, active]) => {
+  ([avgWindData, result, active]) => {
     option.xAxis.data = [];
     option.series[0].data = [];
     option.series[1].data = [];
@@ -52,7 +51,7 @@ watch(
         data.map((v, k) => {
           for (let k in v) {
             option.xAxis.data.push(k.substring(10));
-            let tmp2 = v[k].slice().reverse()[featherValue];
+            let tmp2 = v[k].slice().reverse()[0];
             if (tmp2) {
               for (let key in tmp2) {
                 let temperature = tmp2[key].ex_temp;

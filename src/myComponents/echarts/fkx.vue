@@ -50,11 +50,10 @@ const setDBS = (isDark: boolean) => {
   watch(
     [
       storeToRefs(station).avgWindData,
-      storeToRefs(setting).featherValue,
       storeToRefs(station).result,
       storeToRefs(station).active,
     ],
-    ([avgWindData, featherValue, result, active]) => {
+    ([avgWindData, result, active]) => {
       avgWindData.map((v, k) => {
         let data;
         for (let key in v) {

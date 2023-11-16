@@ -110,9 +110,10 @@ let setEcharts = (isDark) => {
       // rotation: directionMap[api.value(dims.R)],
       rotation: -Number(api.value(dims.R) / 180) * Math.PI - Math.PI / 2,
       position: point,
-      style: api.style({
+      style: {
         lineWidth: 1,
-      }),
+        fill: api.visual("color"),
+      },
     };
   };
   const renderWeather = function (param, api) {
@@ -156,9 +157,9 @@ let setEcharts = (isDark) => {
       trigger: "axis",
       formatter: function (params) {
         return [
-          echarts.format.formatTime("yyyy-MM-dd", params[0].value[dims.time]) +
+          echarts.time.format("yyyy-MM-dd", params[0].value[dims.time]) +
             " " +
-            echarts.format.formatTime("hh:mm", params[0].value[dims.time]),
+            echarts.time.format("hh:mm", params[0].value[dims.time]),
           "风速：" + params[0].value[dims.windSpeed],
           "风向：" + params[0].value[dims.R],
           "高度：" + params[0].value[dims.waveHeight],

@@ -23,6 +23,9 @@ export function deepClone(source) {
 
 export const array2components = array => {
   const arr = deepClone(array)
+  arr.map((v,k)=>{
+    v.path='/'+v.path
+  })
   const fn = l => {
     l.map(v => {
       if(v.children instanceof Array){

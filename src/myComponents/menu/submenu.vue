@@ -6,7 +6,7 @@
     @mouseenter="mouseenter"
     :key="k"
     @mouseup.stop="(e:any)=>{v.children||mouseup(e,item,k)}"
-    :style="'pointer-events:' + (v.name ? 'auto' : 'none')"
+    :style="'text-shadow:none;pointer-events:' + (v.name ? 'auto' : 'none')"
   >
     <template v-if="v.name">
       <el-icon v-if="item?.left" style="overflow: hidden">

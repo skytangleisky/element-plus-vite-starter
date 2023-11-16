@@ -1,6 +1,6 @@
-import { radioClick } from './def'
+import { radioClick as onClick } from './def'
 export default [
-  {name:'60秒',onClick:radioClick},
-  {name:'120秒',onClick:radioClick},
-  {name:'300秒',onClick:radioClick,leftImgSrc:'checked.svg'},
+  {name:'60秒',onClick},
+  {name:'120秒',onClick},
+  {name:'300秒',onClick,leftImgSrc:true},
 ]

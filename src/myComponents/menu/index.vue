@@ -163,9 +163,15 @@ onBeforeUnmount(() => {
     white-space: nowrap;
     padding: 1px 4px 1px 4px;
     cursor: default;
+    text-shadow: 0 1px #ffffff88, 1px 0 #ffffff88, -1px 0 #ffffff88, 0 -1px #ffffff88;
   }
   .li_item:focus-within > .ol_list {
     display: flex;
+  }
+}
+.dark .ol_list {
+  .li_item {
+    text-shadow: 0 1px #00000088, 1px 0 #00000088, -1px 0 #00000088, 0 -1px #00000088;
   }
 }
 .menu {

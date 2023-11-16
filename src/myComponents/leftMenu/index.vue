@@ -1,32 +1,32 @@
 <template>
-  <div
-    class="flex flex-col"
-    style="color: black; background-color: #304156; overflow: auto; min-width: 240px"
+  <el-scrollbar
+    :style="`height: 100%; background-color: #304156;${isCollapse ? '' : 'width:210px'}`"
   >
     <el-menu
       :key="setting.menuKey"
       background-color="#304156"
+      :collapse="isCollapse"
       text-color="#bfcbd9"
       active-text-color="#409eff"
       class="el-menu-vertical-demo"
       :default-openeds="setting.defaultOpends"
       :default-active="setting.defaultActive"
-      style="width: 100%; flex: 1; border-right: 0"
       @open="open"
       @close="close"
       @select="select"
+      style="border-right: 0"
     >
       <SubMenu v-for="route in setting.routes" :key="route.name" :item="route"></SubMenu>
     </el-menu>
-    <el-select
+  </el-scrollbar>
+  <!-- <el-select
       v-model="setting.component"
       filterable
       style="width: 100%"
       @change="change"
     >
       <el-option v-for="(k, v) in languages" :key="v" :label="v" :value="v" />
-    </el-select>
-  </div>
+    </el-select> -->
 </template>
 <script lang="ts" setup>
 import { ref, onMounted, onActivated } from "vue";
@@ -48,6 +48,7 @@ onActivated(() => {
   setting.menuKey++;
   icon.FetchList();
 });
+const isCollapse = ref(false);
 const change = (v: any) => {
   function fn(list: any[]) {
     for (let i = 0; i < list.length; i++) {
@@ -73,7 +74,7 @@ const change = (v: any) => {
   array2components(setting.routes).map((v: any) => {
     router.addRoute(v);
   });
-  router.push({ path: "/map", replace: false });
+  router.push({ path: "/contain/map", replace: false });
 };
 const open = (id: string) => {
   setting.defaultOpends.push(id);

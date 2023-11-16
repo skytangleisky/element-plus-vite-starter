@@ -69,17 +69,23 @@ const data = useDataStore();
 import { Icon } from "ol/style";
 const Reset = () => {
   setting.$reset();
+  setting.$dispose();
   icon.$reset();
   station.$reset();
   data.$reset();
-  user.Logout();
   user.$reset();
+  user.Logout().catch((e) => {
+    throw e;
+  });
+  sessionStorage.clear();
+  localStorage.clear();
   router.replace({ ...router.currentRoute.value, force: true });
 };
 const login = () => {};
 const logout = () => {
   user.$reset();
   user.Logout().catch((e) => {
+    sessionStorage.clear();
     throw e;
   });
   router.push({ path: "/login", replace: true });

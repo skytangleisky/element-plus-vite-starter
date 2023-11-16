@@ -1,5 +1,5 @@
 import request from '../utils/request'
-const url = '/api/libs/db/src/login.php'
+const url = 'api/libs/db/src/login.php'
 export function login(data) {
   return request({
     url,

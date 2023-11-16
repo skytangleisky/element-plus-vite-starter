@@ -4,8 +4,13 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 import * as turf from "@turf/turf";
-import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
+import raster from "./raster.js";
+// import style from "./streets-v11.js";
+import style from "./streets-v11.js";
+// let style = "mapbox://styles/mapbox/streets-v11";
+// import style from "./satellite-v9.js";
+// let style = "mapbox://styles/mapbox/satellite-v9";
+// let style = "mapbox://styles/tanglei201314/clons7b5v00dm01prgrblhncs";
 let boundaries = {
   type: "FeatureCollection",
   name: "boundaries",
@@ -110,7 +115,7 @@ var interpolate_options = {
   units: "degrees",
   weight: 10,
 };
-let grid = turf.interpolate(points, 0.05, interpolate_options);
+let grid = turf.interpolate(points, 0.02, interpolate_options);
 grid.features.map((i) => (i.properties.value = i.properties.value.toFixed(2)));
 
 var isobands_options = {
@@ -139,7 +144,52 @@ var isobands_options = {
     { fill: "#a50026" },
   ],
 };
-let isobands = turf.isobands(grid, [1, 10, 20, 30, 50, 70, 100], isobands_options);
+//name_zh-hans
+//name_zh-hant
+// "sources": {
+// 			"composite": {
+// 					"url_origin": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2",
+// 					"tiles": [
+// 						"https://tanglei.site:3220?lyrs=v&x={x}&y={y}&z={z}"
+// 					],
+// 					"type": "vector"
+// 			}
+// 	},
+// 	"sprite": "https://tanglei.top/mapboxgl/sprite",
+// 	"glyphs": "https://tanglei.top/mapboxgl/resources/glyphs/{fontstack}/{range}.pbf",
+// {
+//   'id': '3d-buildings',
+//   'source': 'composite',
+//   'source-layer': 'building',
+//   'filter': ['==', 'extrude', 'true'],
+//   'type': 'fill-extrusion',
+//   'minzoom': 1,
+//   'paint': {
+//       'fill-extrusion-color': '#aaa',
+//       // 地图放大的时候，使用插值的方式，添加更细节的建筑物，这种方式，视觉过渡更平滑
+//       'fill-extrusion-height': [
+//           'interpolate',
+//           ['linear'],
+//           ['zoom'],
+//           15,
+//           0,
+//           15.05,
+//           ['get', 'height']
+//       ],
+//       'fill-extrusion-base': [
+//           'interpolate',
+//           ['linear'],
+//           ['zoom'],
+//           15,
+//           0,
+//           15.05,
+//           ['get', 'min_height']
+//       ],
+//       'fill-extrusion-opacity': 1
+//   }
+// }
+let isobands = turf.isobands(grid, [1, 10, 20, 30, 50, 70, 90], isobands_options);
+let isolines = turf.isolines(grid, [1, 10, 20, 30, 50, 70, 90], isobands_options);
 
 boundaries = turf.flatten(boundaries);
 isobands = turf.flatten(isobands);
@@ -164,17 +214,25 @@ isobands.features.forEach(function (layer1) {
 });
 let intersection = turf.featureCollection(features);
 mapboxgl.accessToken =
-  "pk.eyJ1Ijoic2hldmF3ZW4iLCJhIjoiY2lwZXN2OGlvMDAwMXR1bmh0aG5vbDFteiJ9.2fsD37adZ1hC2MUU-2xByA";
+  // "pk.eyJ1Ijoic2hldmF3ZW4iLCJhIjoiY2lwZXN2OGlvMDAwMXR1bmh0aG5vbDFteiJ9.2fsD37adZ1hC2MUU-2xByA";
+  "pk.eyJ1IjoidGFuZ2xlaTIwMTMxNCIsImEiOiJjbGtmOTdyNWoxY2F1M3Jqczk4cGllYXp3In0.9N-H_79ehy4dJeuykZa0xA";
 const mapRef = ref(null);
 // 可视化及交互部分
 onMounted(() => {
-  if (!mapRef) throw Error("invalid mapRef!");
+  if (!mapRef.value) throw Error("invalid mapRef!");
   var map = new mapboxgl.Map({
     container: mapRef.value,
-    style: "mapbox://styles/mapbox/streets-v11",
+    // style: raster,
+    style,
     bounds: turf.bbox(boundaries),
+    // localIdeographFontFamily: "Microsoft YoHei",
+    localIdeographFontFamily: "",
+    antialias: true,
   });
-
+  map.addControl(new mapboxgl.NavigationControl());
+  map.addControl(new mapboxgl.ScaleControl());
+  map.addControl(new mapboxgl.FullscreenControl());
+  // map.setStyle(raster as mapboxgl.Style);
   map.on("load", function () {
     // 逐个添加过程中的数据
     map.addSource("boundaries", {
@@ -197,19 +255,23 @@ onMounted(() => {
       type: "geojson",
       data: intersection,
     });
-    // 逐个添加过程中形成的图层
-    map.addLayer({
-      id: "tilelayer",
-      type: "raster",
-      source: {
-        type: "raster",
-        tiles: ["https://tanglei.site:3210/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}"],
-        //zoomOffset:-1,
-        tileSize: 256,
-      },
-      paint: {},
-      layout: {},
+    map.addSource("isolines", {
+      type: "geojson",
+      data: isolines,
     });
+    // 逐个添加过程中形成的图层
+    // map.addLayer({
+    //   id: "tilelayer",
+    //   type: "raster",
+    //   source: {
+    //     type: "raster",
+    //     tiles: ["https://tanglei.site:3210/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}"],
+    //     //zoomOffset:-1,
+    //     tileSize: 256,
+    //   },
+    //   paint: {},
+    //   layout: {},
+    // });
     map.addLayer({
       id: "points",
       type: "symbol",
@@ -257,6 +319,19 @@ onMounted(() => {
       },
     });
     map.addLayer({
+      id: "isolines",
+      type: "line",
+      source: "isobands",
+      layout: {
+        visibility: "visible",
+      },
+      paint: {
+        "line-color": ["get", "fill"],
+        "line-width": 2,
+        "line-opacity": 0.8,
+      },
+    });
+    map.addLayer({
       id: "boundaries",
       type: "line",
       source: "boundaries",
@@ -270,7 +345,9 @@ onMounted(() => {
       id: "intersection",
       type: "fill",
       source: "intersection",
-      layout: {},
+      layout: {
+        visibility: "visible",
+      },
       paint: {
         "fill-color": ["get", "fill"],
         "fill-opacity": [
