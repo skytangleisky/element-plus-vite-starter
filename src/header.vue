@@ -85,9 +85,9 @@ const login = () => {};
 const logout = () => {
   user.$reset();
   user.Logout().catch((e) => {
-    sessionStorage.clear();
     throw e;
   });
+  sessionStorage.clear();
   router.push({ path: "/login", replace: true });
 
   // user.Logout().then(()=>{

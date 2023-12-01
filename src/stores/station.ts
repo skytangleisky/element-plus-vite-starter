@@ -63,9 +63,9 @@ export const useStationStore = defineStore({
     active:-1
   }),
   actions: {
-    查询雷达列表接口(){
+    查询雷达列表接口(query:any){
       return new Promise((resolve,reject)=>{
-        查询雷达列表接口().then((res:any)=>{
+        查询雷达列表接口(query).then((res:any)=>{
           let result = res.data.data
           this.$patch({result})
           resolve(result)
@@ -155,9 +155,9 @@ export const useStationStore = defineStore({
         // }.data
       })
     },
-    查询雷达在线列表接口(){
+    查询雷达在线列表接口(query:any){
       return new Promise((resolve,reject)=>{
-        查询雷达在线列表接口().then((res:any)=>{
+        查询雷达在线列表接口(query).then((res:any)=>{
           let result = res.data.data
           this.$patch({result})
           resolve(result)
@@ -166,9 +166,9 @@ export const useStationStore = defineStore({
         })
       })
     },
-    查询雷达离线列表接口(){
+    查询雷达离线列表接口(query:any){
       return new Promise((resolve,reject)=>{
-        查询雷达离线列表接口().then((res:any)=>{
+        查询雷达离线列表接口(query).then((res:any)=>{
           let result = res.data.data
           this.$patch({result})
           resolve(result)
@@ -177,9 +177,9 @@ export const useStationStore = defineStore({
         })
       })
     },
-    查询近期新增雷达列表接口(){
+    查询近期新增雷达列表接口(query:any){
       return new Promise((resolve,reject)=>{
-        查询近期新增雷达列表接口().then((res:any)=>{
+        查询近期新增雷达列表接口(query).then((res:any)=>{
           let result = res.data.data
           this.$patch({result})
           resolve(result)
@@ -188,27 +188,27 @@ export const useStationStore = defineStore({
         })
       })
     },
-    查询平均风数据接口(){
+    查询平均风数据接口(query:any){
       return new Promise((resolve,reject)=>{
-        查询平均风数据接口().then((res:any)=>{
+        查询平均风数据接口(query).then((res:any)=>{
           resolve(res)
         }).catch((e)=>{
           reject(e)
         })
       })
     },
-    查询瞬时风数据接口(){
+    查询瞬时风数据接口(query:any){
       return new Promise((resolve,reject)=>{
-        查询瞬时风数据接口().then((res:any)=>{
+        查询瞬时风数据接口(query).then((res:any)=>{
           resolve(res)
         }).catch((e)=>{
           reject(e)
         })
       })
     },
-    查询径向风数据接口(){
+    查询径向风数据接口(query:any){
       return new Promise((resolve,reject)=>{
-        查询径向风数据接口().then((res:any)=>{
+        查询径向风数据接口(query).then((res:any)=>{
           resolve(res)
         }).catch((e)=>{
           reject(e)

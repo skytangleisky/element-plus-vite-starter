@@ -1,32 +1,41 @@
 <template>
-  <el-scrollbar
-    :style="`height: 100%; background-color: #304156;${isCollapse ? '' : 'width:210px'}`"
-  >
-    <el-menu
-      :key="setting.menuKey"
-      background-color="#304156"
-      :collapse="isCollapse"
-      text-color="#bfcbd9"
-      active-text-color="#409eff"
-      class="el-menu-vertical-demo"
-      :default-openeds="setting.defaultOpends"
-      :default-active="setting.defaultActive"
-      @open="open"
-      @close="close"
-      @select="select"
-      style="border-right: 0"
+  <div class="flex flex-col">
+    <el-scrollbar
+      class="flex-1"
+      :style="`height: 100%; background-color: #304156;${
+        isCollapse ? '' : 'width:210px'
+      }`"
     >
-      <SubMenu v-for="route in setting.routes" :key="route.name" :item="route"></SubMenu>
-    </el-menu>
-  </el-scrollbar>
-  <!-- <el-select
+      <el-menu
+        :key="setting.menuKey"
+        background-color="#304156"
+        :collapse="isCollapse"
+        text-color="#bfcbd9"
+        active-text-color="#409eff"
+        class="el-menu-vertical-demo"
+        :default-openeds="setting.defaultOpends"
+        :default-active="setting.defaultActive"
+        @open="open"
+        @close="close"
+        @select="select"
+        style="border-right: 0"
+      >
+        <SubMenu
+          v-for="route in setting.routes"
+          :key="route.name"
+          :item="route"
+        ></SubMenu>
+      </el-menu>
+    </el-scrollbar>
+    <el-select
       v-model="setting.component"
       filterable
       style="width: 100%"
       @change="change"
     >
       <el-option v-for="(k, v) in languages" :key="v" :label="v" :value="v" />
-    </el-select> -->
+    </el-select>
+  </div>
 </template>
 <script lang="ts" setup>
 import { ref, onMounted, onActivated } from "vue";

@@ -186,7 +186,6 @@ onMounted(async () => {
   }
   // if(webgpu.value)
   //   run(webgpu.value)
-  window.addEventListener("message", test, { passive: true });
   // mapLayer.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}'})
   // mapLayer.setSource({url:'https://tanglei.site:444?z={z}&y={y}&x={x}'})//nps+go
   // mapLayer.setSource({url:'http://tanglei.site:81?z={z}&y={y}&x={x}'})//nps+go
@@ -253,7 +252,6 @@ onBeforeUnmount(() => {
   cvs.removeEventListener("mousewheel", mousewheelFunc);
   // document.removeEventListener("mousewheel", mousewheelFunc);
   cancelAnimationFrame(aid);
-  removeEventListener("message", test);
   // cancel();
   task.destroy();
   borderLayer.off();
@@ -323,9 +321,6 @@ const init = () => {
     },
     { immediate: true }
   );
-};
-const test = (e: MessageEvent) => {
-  console.log(e);
 };
 var interval = 0;
 var then = 0;
@@ -777,7 +772,7 @@ const flyTo = (
 };
 const testClick = () => {
   let convert = wgs84togcj02(POINT.lng, POINT.lat);
-  // flyTo(convert[0],convert[1],{targetL:10,duration:5})
+  flyTo(convert[0], convert[1], { targetL: 10, duration: 5 });
 };
 </script>
 <style lang="scss">

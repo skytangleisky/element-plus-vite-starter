@@ -222,7 +222,7 @@ defineProps({
     left: 0;
     margin: -1rem;
     border-radius: 10px;
-    background: #1f2229;
+    background: grey;
     -webkit-clip-path: inset(2rem 0 2rem 2rem round 10px);
     clip-path: inset(2rem 0 2rem 2rem round 10px);
     contain: strict;
@@ -359,6 +359,11 @@ defineProps({
     background: #444857;
     overflow: hidden;
     flex-shrink: 0;
+  }
+}
+.dark .pen-item {
+  &:before {
+    background: #1f2229;
   }
 }
 </style>

@@ -1,5 +1,4 @@
 import url from "./satellite.json?url"
-console.log(window.location)
 export default {
 	"version": 8,
 	"name": "Streets",
@@ -268,41 +267,18 @@ export default {
 			]
 	},
 	"sources": {
-		'point': {
-			'type': 'geojson',
-			'data': {
-				'type': 'FeatureCollection',
-				'features': [
-					{
-						'type': 'Feature',
-						'properties': {},
-						'geometry': {
-							'type': 'Point',
-							'coordinates': [-122.414, 37.776]
-						}
-					}
-				]
-			}
-		},
 		"district":{
 			"type":"geojson",
 			"data": "https://tanglei.top/mapboxgl/100000_full.json"
 		},
 		"radar":{
 			'type': 'image',
-			// 'url': 'https://tanglei.top/mapboxgl/radar.gif',
-			// 'coordinates': [
-			// 	[-80.425, 46.437],
-			// 	[-71.516, 46.437],
-			// 	[-71.516, 37.936],
-			// 	[-80.425, 37.936]
-			// ],
-			'url': 'https://tanglei.top/mapboxgl/雷达拼图.png',
+			'url': 'https://tanglei.top/mapboxgl/radar.gif',
 			'coordinates': [
-				[80, 50],
-				[130, 50],
-				[130, 10],
-				[80, 10]
+				[-80.425, 46.437],
+				[-71.516, 46.437],
+				[-71.516, 37.936],
+				[-80.425, 37.936]
 			]
 		},
 		"vis":{
@@ -341,7 +317,7 @@ export default {
 	"glyphs_origin": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
 	"sprite": window.location.origin+"/resources/sprite",
 	"glyphs": window.location.origin+"/resources/glyphs/{fontstack}/{range}.pbf",
-	"projection": {"name": "globe"},
+	"projection": {"name": "globe"},//albers, equalEarth, equirectangular, lambertConformalConic, mercator, naturalEarth, winkelTripel, globe
 	"layers": [
 			{
 					"id": "land",
@@ -969,7 +945,10 @@ export default {
 				"type": "raster",
 				"source": "raster-tiles",
 				"minzoom": 0,
-				"maxzoom": 22
+				"maxzoom": 22,
+				layout:{
+					visibility:'none'
+				}
 			},
 			{
 					"id": "building",
@@ -7125,6 +7104,9 @@ export default {
 								['get', 'min_height']
 						],
 						'fill-extrusion-opacity': 1
+				},
+				layout:{
+					visibility:'none'
 				}
 			},
 			{
@@ -7134,6 +7116,9 @@ export default {
 				'paint': {
 					'raster-fade-duration': 0,
 					'raster-opacity':0.8
+				},
+				layout:{
+					visibility:'none'
 				}
 			},
 			{
@@ -7141,26 +7126,9 @@ export default {
 				'type': 'raster',
 				'source': 'radar',
 				'paint': {
-					'raster-fade-duration': 0,
-					'raster-opacity':1.0
-				}
-			},
-			{
-				'id': 'plane',
-				'source': 'point',
-				'type': 'symbol',
-				'layout': {
-					// This icon is a part of the Mapbox Streets style.
-					// To view all images available in a Mapbox style, open
-					// the style in Mapbox Studio and click the "Images" tab.
-					// To add a new image to the style at runtime see
-					// https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-					'icon-image': 'airport',
-					'icon-size': 1,
-					'icon-rotate': ['get', 'bearing'],
-					'icon-rotation-alignment': 'map',
-					'icon-allow-overlap': true,
-					'icon-ignore-placement': true
+					"raster-fade-duration": 0,
+					"raster-opacity": 0.8,
+					"raster-resampling": "nearest",
 				}
 			}
 	],

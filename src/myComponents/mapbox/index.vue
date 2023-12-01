@@ -2,15 +2,136 @@
   <div ref="mapRef" class="w-full h-full"></div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
+import { View, loadImage } from "~/tools";
+import "./mapbox-gl.css";
+import "./mapbox-gl.js";
+import plotUrl from "./data/plot/06040802.000?url";
+import irUrl1 from "./data/ir/m/0604091200.000?url";
+import irUrl2 from "./data/ir/m/0604091300.000?url";
+import irUrl3 from "./data/ir/m/0604091400.000?url";
+import irUrl4 from "./data/ir/m/0604091500.000?url";
+import irUrl5 from "./data/ir/m/0604091600.000?url";
+import irUrl6 from "./data/ir/m/0604091700.000?url";
+import irUrl7 from "./data/ir/m/0604091800.000?url";
+import irUrl8 from "./data/ir/m/0604091900.000?url";
+import irUrl9 from "./data/ir/m/0604092000.000?url";
+import irUrl10 from "./data/ir/m/0604092100.000?url";
+import irUrl11 from "./data/ir/m/0604092200.000?url";
+import irUrl12 from "./data/ir/m/0604092300.000?url";
+import { onMounted, ref, onBeforeUnmount } from "vue";
 import * as turf from "@turf/turf";
 import raster from "./raster.js";
 // import style from "./streets-v11.js";
 import style from "./streets-v11.js";
+import palette from "./data/红外/I-01.xml?raw";
+import { lngLat2XY, XY2LngLat } from "../map/js/core";
 // let style = "mapbox://styles/mapbox/streets-v11";
 // import style from "./satellite-v9.js";
 // let style = "mapbox://styles/mapbox/satellite-v9";
 // let style = "mapbox://styles/tanglei201314/clons7b5v00dm01prgrblhncs";
+import imageUrl from "~/assets/feather.svg?url";
+import { getMicapsData } from "./data/plot/micaps";
+import CustomLayer from "./WindGL/CustomLayer";
+const getColor = (v: number) => {
+  return v <= 0
+    ? "#0000ff"
+    : v <= 4
+    ? "#002aff"
+    : v <= 8
+    ? "#0054ff"
+    : v <= 12
+    ? "#007eff"
+    : v <= 16
+    ? "#00a8ff"
+    : v <= 20
+    ? "#00d2ff"
+    : v <= 24
+    ? "#14d474"
+    : v <= 28
+    ? "#a6dd00"
+    : v <= 32
+    ? "#ffe600"
+    : v <= 36
+    ? "#ffb300"
+    : v <= 40
+    ? "#ff8000"
+    : v <= 44
+    ? "#ff4d00"
+    : v <= 48
+    ? "#ff1a00"
+    : v <= 52
+    ? "#e60000"
+    : v <= 56
+    ? "#b30000"
+    : v <= 58
+    ? "#b30000"
+    : "#b30000";
+};
+var getFeather = (v: number) =>
+  v <= 0
+    ? 0
+    : v <= 1
+    ? 1
+    : v <= 2
+    ? 2
+    : v <= 4
+    ? 4
+    : v <= 6
+    ? 6
+    : v <= 8
+    ? 8
+    : v <= 10
+    ? 10
+    : v <= 12
+    ? 12
+    : v <= 14
+    ? 14
+    : v <= 16
+    ? 16
+    : v <= 18
+    ? 18
+    : v <= 20
+    ? 20
+    : v <= 22
+    ? 22
+    : v <= 24
+    ? 24
+    : v <= 26
+    ? 26
+    : v <= 28
+    ? 28
+    : v <= 30
+    ? 30
+    : v <= 32
+    ? 32
+    : v <= 34
+    ? 34
+    : v <= 36
+    ? 36
+    : v <= 38
+    ? 38
+    : v <= 40
+    ? 40
+    : v <= 42
+    ? 42
+    : v <= 44
+    ? 44
+    : v <= 46
+    ? 46
+    : v <= 48
+    ? 48
+    : v <= 50
+    ? 50
+    : v <= 52
+    ? 52
+    : v <= 54
+    ? 54
+    : v <= 56
+    ? 56
+    : v <= 58
+    ? 58
+    : 60;
+
 let boundaries = {
   type: "FeatureCollection",
   name: "boundaries",
@@ -220,14 +341,22 @@ const mapRef = ref(null);
 // 可视化及交互部分
 onMounted(() => {
   if (!mapRef.value) throw Error("invalid mapRef!");
+  console.log("new Map");
   var map = new mapboxgl.Map({
     container: mapRef.value,
     // style: raster,
+    performanceMetricsCollection: false,
     style,
     bounds: turf.bbox(boundaries),
     // localIdeographFontFamily: "Microsoft YoHei",
     localIdeographFontFamily: "",
     antialias: true,
+    renderWorldCopies: true,
+    // minZoom: 1,
+    // maxBounds: [
+    //   [60.0, 0],
+    //   [160.0, 60],
+    // ],
   });
   map.addControl(new mapboxgl.NavigationControl());
   map.addControl(new mapboxgl.ScaleControl());
@@ -272,6 +401,7 @@ onMounted(() => {
     //   paint: {},
     //   layout: {},
     // });
+    /*
     map.addLayer({
       id: "points",
       type: "symbol",
@@ -364,7 +494,7 @@ onMounted(() => {
         ],
       },
     });
-
+*/
     // var toggleableLayerIds = ["points", "grid", "isobands", "intersection"];
     // toggleableLayerIds.map((v,k)=>{
     //   let visibility = map.getLayoutProperty(v,"visibility");
@@ -372,8 +502,8 @@ onMounted(() => {
     //   map.setLayoutProperty(v,"visibility","none")
     // }
   });
-  var hoveredStateId = null;
-  map.on("mousemove", "intersection", function (e) {
+  var hoveredStateId: boolean = false;
+  map.on("mousemove", "intersection", function (e: any) {
     if (e.features.length > 0) {
       if (hoveredStateId) {
         map.setFeatureState(
@@ -387,6 +517,282 @@ onMounted(() => {
         { hover: true }
       );
     }
+  });
+  map.on("load", () => {
+    getMicapsData(plotUrl).then((result: any) => {
+      let points = {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: [
+            {
+              type: "Feature",
+              properties: {},
+              geometry: {
+                type: "Point",
+                coordinates: [-122.414, 37.776],
+              },
+            },
+          ],
+        },
+      };
+      points.data.features = [];
+      result.data.forEach((v: any) => {
+        if (v.风速 != 9999) {
+          points.data.features.push({
+            type: "Feature",
+            properties: Object.assign({ image: "feather" + getFeather(v.风速) }, v),
+            geometry: {
+              type: "Point",
+              coordinates: [v.经度, v.纬度],
+            },
+          });
+        }
+      });
+      map.addSource("point", points);
+      const getCoord = (i: number, j: number, v: number) => ({
+        x1: (i * (16 + 20)) / (16 * 10 + 20 * (10 - 1)),
+        y1: (j * (32 + 20)) / (32 * 4 + 20 * (4 - 1)),
+        x2: (i * (16 + 20)) / (16 * 10 + 20 * (10 - 1)) + 16 / (16 * 10 + 20 * (10 - 1)),
+        y2: (j * (32 + 20)) / (32 * 4 + 20 * (4 - 1)) + 32 / (32 * 4 + 20 * (4 - 1)),
+        fill: getColor(v),
+      });
+      loadImage(imageUrl, 340, 188, {
+        feather0: getCoord(0, 0, 0),
+        feather1: getCoord(1, 0, 1),
+        feather2: getCoord(2, 0, 2),
+        feather4: getCoord(3, 0, 3),
+        feather6: getCoord(4, 0, 6),
+        feather8: getCoord(5, 0, 8),
+        feather10: getCoord(6, 0, 10),
+        feather12: getCoord(7, 0, 12),
+        feather14: getCoord(8, 0, 14),
+        feather16: getCoord(9, 0, 16),
+        feather18: getCoord(0, 1, 18),
+        feather20: getCoord(1, 1, 20),
+        feather22: getCoord(2, 1, 22),
+        feather24: getCoord(3, 1, 24),
+        feather26: getCoord(4, 1, 26),
+        feather28: getCoord(5, 1, 28),
+        feather30: getCoord(6, 1, 30),
+        feather32: getCoord(7, 1, 32),
+        feather34: getCoord(8, 1, 34),
+        feather36: getCoord(9, 1, 36),
+        feather38: getCoord(0, 2, 38),
+        feather40: getCoord(1, 2, 40),
+        feather42: getCoord(2, 2, 42),
+        feather44: getCoord(3, 2, 44),
+        feather46: getCoord(4, 2, 46),
+        feather48: getCoord(5, 2, 48),
+        feather50: getCoord(6, 2, 50),
+        feather52: getCoord(7, 2, 52),
+        feather54: getCoord(8, 2, 54),
+        feather56: getCoord(9, 2, 56),
+        feather58: getCoord(0, 3, 58),
+        feather60: getCoord(1, 3, 60),
+      }).then((result) => {
+        for (let k in result) {
+          map.addImage(k, result[k]);
+        }
+        map.addLayer({
+          id: "plane",
+          source: "point",
+          type: "symbol",
+          layout: {
+            // This icon is a part of the Mapbox Streets style.
+            // To view all images available in a Mapbox style, open
+            // the style in Mapbox Studio and click the "Images" tab.
+            // To add a new image to the style at runtime see
+            // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+            "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
+            "icon-image": ["get", "image"],
+            "icon-size": 1,
+            "icon-rotate": ["get", "风向"],
+            "icon-rotation-alignment": "map",
+            "icon-allow-overlap": true,
+            "icon-ignore-placement": true,
+            "text-field": ["get", "风速"],
+            "text-font": ["simkai"],
+            "text-size": 20,
+            "text-transform": "uppercase",
+            // "text-letter-spacing": 0.05,
+            "text-anchor": "center",
+            "text-line-height": 1,
+            // "text-justify": "center",
+            "text-offset": [0, 0],
+            "text-ignore-placement": true,
+            "text-allow-overlap": true,
+            "text-rotation-alignment": "map",
+          },
+        });
+      });
+    });
+
+    // map.addLayer({
+    //   id: "park-volcanoes",
+    //   type: "circle",
+    //   source: "point",
+    //   paint: {
+    //     "circle-rotation-alignment": "map",
+    //     "circle-radius": {
+    //       base: 3,
+    //       stops: [
+    //         [12, 5],
+    //         [22, 180],
+    //       ],
+    //     },
+    //     "circle-color": [
+    //       "match",
+    //       ["get", "color"],
+    //       "white",
+    //       "#fff",
+    //       "green",
+    //       "#0f0",
+    //       "#00f",
+    //     ],
+    //   },
+    //   filter: ["==", "$type", "Point"],
+    // });
+    // map.addLayer(new CustomLayer());
+    let irCvs = document.createElement("canvas") as HTMLCanvasElement;
+    let urls = [
+      irUrl1,
+      irUrl2,
+      irUrl3,
+      irUrl4,
+      irUrl5,
+      irUrl6,
+      irUrl7,
+      irUrl8,
+      irUrl9,
+      irUrl10,
+      irUrl11,
+      irUrl12,
+    ];
+    let INDEX = 0;
+    let url = urls[INDEX++ % urls.length];
+    /*
+    getMicapsData(url).then((result: any) => {
+      let minLng = result.minLng;
+      let minLat = result.minLat;
+      let cenPos = lngLat2XY(result.cenLng, result.cenLat);
+      let minPos = lngLat2XY(minLng, minLat);
+      let maxPos = { x: 2 * cenPos.x - minPos.x, y: 2 * cenPos.y - minPos.y };
+      let maxLngLat = XY2LngLat(maxPos.x, maxPos.y);
+      let maxLng = maxLngLat.lng;
+      let maxLat = maxLngLat.lat;
+      let array = new Uint8ClampedArray(4 * result.xCount * result.yCount);
+      for (let j = 0; j < result.xCount; j++) {
+        for (let i = 0; i < result.yCount; i++) {
+          let value = result.pixelData[(result.yCount - j - 1) * result.xCount + i];
+          // let color = getColor(value / 255);
+          let color = Color[value];
+          color[3] = value;
+          if (color?.length) {
+            array[4 * (j * result.xCount + i) + 0] = color[0];
+            array[4 * (j * result.xCount + i) + 1] = color[1];
+            array[4 * (j * result.xCount + i) + 2] = color[2];
+            array[4 * (j * result.xCount + i) + 3] = color[3]; // color[3]
+          }
+        }
+      }
+      let imgData = new ImageData(array, result.xCount, result.yCount);
+      irCvs.width = result.xCount;
+      irCvs.height = result.yCount;
+      let ctx = irCvs.getContext("2d");
+      if (ctx) {
+        ctx.putImageData(imgData, 0, 0);
+        map.addSource("irSource", {
+          type: "image",
+          url: irCvs.toDataURL(),
+          coordinates: [
+            [minLng, maxLat],
+            [maxLng, maxLat],
+            [maxLng, minLat],
+            [minLng, minLat],
+          ],
+        });
+        map.addLayer({
+          id: "irLayer",
+          type: "raster",
+          source: "irSource",
+          paint: {
+            "raster-fade-duration": 0,
+            "raster-opacity": 0.8,
+            "raster-resampling": "nearest",
+          },
+          layout: {
+            visibility: "visible",
+          },
+        });
+        timer = setInterval(() => {
+          let url = urls[INDEX++ % urls.length];
+          getMicapsData(url).then((result: any) => {
+            let minLng = result.minLng;
+            let minLat = result.minLat;
+            let cenPos = lngLat2XY(result.cenLng, result.cenLat);
+            let minPos = lngLat2XY(minLng, minLat);
+            let maxPos = { x: 2 * cenPos.x - minPos.x, y: 2 * cenPos.y - minPos.y };
+            let maxLngLat = XY2LngLat(maxPos.x, maxPos.y);
+            let maxLng = maxLngLat.lng;
+            let maxLat = maxLngLat.lat;
+            let array = new Uint8ClampedArray(4 * result.xCount * result.yCount);
+            for (let j = 0; j < result.xCount; j++) {
+              for (let i = 0; i < result.yCount; i++) {
+                let value = result.pixelData[(result.yCount - j - 1) * result.xCount + i];
+                // let color = getColor(value / 255);
+                let color = Color[value];
+                color[3] = value;
+                if (color?.length) {
+                  array[4 * (j * result.xCount + i) + 0] = color[0];
+                  array[4 * (j * result.xCount + i) + 1] = color[1];
+                  array[4 * (j * result.xCount + i) + 2] = color[2];
+                  array[4 * (j * result.xCount + i) + 3] = color[3]; // color[3]
+                }
+              }
+            }
+            let imgData = new ImageData(array, result.xCount, result.yCount);
+            irCvs.width = result.xCount;
+            irCvs.height = result.yCount;
+            let ctx = irCvs.getContext("2d");
+            if (ctx) {
+              ctx.putImageData(imgData, 0, 0);
+              map.getSource("irSource").updateImage({
+                url: irCvs.toDataURL(),
+                coordinates: [
+                  [minLng, maxLat],
+                  [maxLng, maxLat],
+                  [maxLng, minLat],
+                  [minLng, minLat],
+                ],
+              });
+            }
+          });
+        }, 1000);
+      }
+    });*/
+  });
+  let timer: number;
+  map.on("click", () => {
+    console.log("click");
+    if (map.getProjection().name == "globe") {
+      map.setProjection("mercator");
+    } else map.setProjection("globe");
+  });
+  var Color: { [key: string]: any } = {};
+  let xmlDoc = new DOMParser().parseFromString(palette, "text/xml");
+  let collections = xmlDoc.getElementsByTagName("entry");
+  for (let i = 0; i < collections.length; i++) {
+    let value = Number(collections[i].getAttribute("value"));
+    let strPalette = collections[i].getAttribute("rgba");
+    if (strPalette) {
+      let rgba = strPalette.split(",");
+      rgba.map((v) => Number(v));
+      Color[value.toFixed()] = rgba;
+    }
+  }
+  onBeforeUnmount(() => {
+    timer && clearInterval(timer);
   });
 });
 </script>

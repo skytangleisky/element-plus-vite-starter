@@ -115,6 +115,8 @@ import { 雷达统计接口 } from "~/api/光恒/station";
 import collapseCard from "./collapseCard.vue";
 import { useSettingStore } from "~/stores/setting";
 import { ElMessage } from "element-plus";
+import { useRoute } from "vue-router";
+const route = useRoute();
 const setting = useSettingStore();
 const show = ref(true);
 const show2 = ref(true);
@@ -127,7 +129,7 @@ const beforeChange = () => {
 };
 let timer: any;
 const update = () => {
-  雷达统计接口()
+  雷达统计接口({ user_id: route.query.user_id })
     .then((res) => {
       const data = res.data.data;
       setting.checks[0].val = data.radar_count;

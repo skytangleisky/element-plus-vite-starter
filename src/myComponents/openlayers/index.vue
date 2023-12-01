@@ -97,6 +97,7 @@
   </div>
 </template>
 <script setup>
+import { getLngLat } from "~/myComponents/map/js/core.js";
 import FullScreen from "ol/control/FullScreen";
 import Graticule from "ol/layer/Graticule.js";
 const graticule = new Graticule({
@@ -199,11 +200,11 @@ const osm = new TileLayer({
   id: "tileLayer",
   preload: Infinity,
   source: new XYZ({
-    // url: 'https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}',
+    // url: "https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
     // url: "https://wprd0{1-4}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
-    // url: "https://tanglei.site:3210/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
+    url: "https://tanglei.site:3210/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
     // url: "http://tanglei.site:3211/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
-    url: "https://tanglei.site/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
+    // url: "https://tanglei.site/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
   }),
 });
 const vectorLayer = new VectorLayer({
@@ -639,7 +640,6 @@ onMounted(() => {
 
           let tmp = v[feature.get("radar_id")];
           if (tmp) {
-            console.log("===========>", feature);
             source.forEachFeature((f) => {
               if (f.get("radar_id" == feature.get("radar_id"))) {
                 source.removeFeature(f);
@@ -650,8 +650,9 @@ onMounted(() => {
               let lngLat = [feature.get("lng"), feature.get("lat")];
               tmp2.forEach((tmp3) => {
                 for (let k in tmp3) {
-                  lngLat[1] += 70 / 111000;
                   let item = tmp3[k];
+                  let ll = getLngLat(lngLat[0], lngLat[1], item.north_a, Number(k));
+                  lngLat = [ll.lng, ll.lat];
                   source.addFeature(
                     new Feature({
                       radar_id: feature.get("radar_id"),
@@ -986,15 +987,30 @@ onMounted(() => {
         source3.addFeature(feature);
       }
       if (data.length) {
-        station.查询平均风数据接口().then((res) => {
-          station.avgWindData = res.data.data;
-        });
-        station.查询瞬时风数据接口().then((res) => {
-          station.secondWindData = res.data.data;
-        });
-        station.查询径向风数据接口().then((res) => {
-          station.radialWindData = res.data.data;
-        });
+        station
+          .查询平均风数据接口({
+            user_id: route.query.user_id,
+            // date: new Date().Format("yyyyMMdd"),
+          })
+          .then((res) => {
+            station.avgWindData = res.data.data;
+          });
+        station
+          .查询瞬时风数据接口({
+            user_id: route.query.user_id,
+            // date: new Date().Format("yyyyMMdd"),
+          })
+          .then((res) => {
+            station.secondWindData = res.data.data;
+          });
+        station
+          .查询径向风数据接口({
+            user_id: route.query.user_id,
+            // date: new Date().Format("yyyyMMdd"),
+          })
+          .then((res) => {
+            station.radialWindData = res.data.data;
+          });
       }
     },
     { deep: true, immediate: false }
@@ -1063,26 +1079,41 @@ onMounted(() => {
     removeAllFeatures();
     station.result = [];
     if (setting.checks[0].select) {
-      station.查询雷达列表接口();
+      station.查询雷达列表接口({ user_id: route.query.user_id });
     }
     if (setting.checks[1].select) {
-      station.查询雷达在线列表接口();
+      station.查询雷达在线列表接口({ user_id: route.query.user_id });
     }
     if (setting.checks[2].select) {
-      station.查询雷达离线列表接口();
+      station.查询雷达离线列表接口({ user_id: route.query.user_id });
     }
     if (setting.checks[3].select) {
-      station.查询近期新增雷达列表接口();
+      station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
     }
-    station.查询平均风数据接口().then((res) => {
-      station.avgWindData = res.data.data;
-    });
-    station.查询瞬时风数据接口().then((res) => {
-      station.secondWindData = res.data.data;
-    });
-    station.查询径向风数据接口().then((res) => {
-      station.radialWindData = res.data.data;
-    });
+    station
+      .查询平均风数据接口({
+        user_id: route.query.user_id,
+        // date: new Date().Format("yyyyMMdd"),
+      })
+      .then((res) => {
+        station.avgWindData = res.data.data;
+      });
+    station
+      .查询瞬时风数据接口({
+        user_id: route.query.user_id,
+        // date: new Date().Format("yyyyMMdd"),
+      })
+      .then((res) => {
+        station.secondWindData = res.data.data;
+      });
+    station
+      .查询径向风数据接口({
+        user_id: route.query.user_id,
+        // date: new Date().Format("yyyyMMdd"),
+      })
+      .then((res) => {
+        station.radialWindData = res.data.data;
+      });
   });
   onDeactivated(() => {
     clearInterval(timer);
@@ -1092,7 +1123,7 @@ onMounted(() => {
     (newVal) => {
       removeAllFeatures();
       if (newVal.select) {
-        station.查询雷达列表接口();
+        station.查询雷达列表接口({ user_id: route.query.user_id });
       } else {
         station.result = [];
       }
@@ -1103,7 +1134,7 @@ onMounted(() => {
     storeToRefs(setting).checks.value[1],
     (newVal) => {
       if (newVal.select) {
-        station.查询雷达在线列表接口();
+        station.查询雷达在线列表接口({ user_id: route.query.user_id });
       } else {
         station.result = [];
       }
@@ -1115,7 +1146,7 @@ onMounted(() => {
     storeToRefs(setting).checks.value[2],
     (newVal) => {
       if (newVal.select) {
-        station.查询雷达离线列表接口();
+        station.查询雷达离线列表接口({ user_id: route.query.user_id });
       } else {
         station.result = [];
       }
@@ -1126,7 +1157,7 @@ onMounted(() => {
     storeToRefs(setting).checks.value[3],
     (newVal) => {
       if (newVal.select) {
-        station.查询近期新增雷达列表接口();
+        station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
       } else {
         station.result = [];
       }
@@ -1217,13 +1248,13 @@ onMounted(() => {
     //     // geometry.setCoordinates(fromLonLat([110,30]))
     //     // feature.set('geometry',geometry)
     //   })
-    // station.查询平均风数据接口().then((res) => {
+    // station.查询平均风数据接口({user_id:route.query.user_id,date:new Date().Format('yyyyMMdd')}).then((res) => {
     //   station.avgWindData = res.data.data;
     // });
-    // station.查询瞬时风数据接口().then((res) => {
+    // station.查询瞬时风数据接口({user_id:route.query.user_id,date:new Date().Format('yyyyMMdd')}).then((res) => {
     //   station.secondWindData = res.data.data;
     // });
-    // station.查询径向风数据接口().then((res) => {//太慢
+    // station.查询径向风数据接口({user_id:route.query.user_id,date:new Date().Format('yyyyMMdd')}).then((res) => {//太慢
     //   station.radialWindData = res.data.data;
     // });
   }, 5000);

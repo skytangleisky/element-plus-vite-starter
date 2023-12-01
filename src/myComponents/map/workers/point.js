@@ -1,9 +1,4 @@
 import { wgs84togcj02 } from './mapUtil.js'
-let MinLng;
-let MaxLng;
-let MinLat;
-let MaxLat;
-let isDrawed = false;
 class View{
   constructor(arrayBuffer){
     this.dataView = new DataView(arrayBuffer)
@@ -79,6 +74,12 @@ class View{
     return this.pos
   }
 }
+let MinLng;
+let MaxLng;
+let MinLat;
+let MaxLat;
+let isDrawed = false;
+
 const GISTYPE={
   GIS_POINT: 1,
   GIS_LINE: 2,
@@ -207,23 +208,24 @@ function draw(args){
             if(iDataLen<=0){
               return;
             }
+            let utf8Decoder = new TextDecoder('utf8')
             let tagPara = {
               m_clearType:view.getInt16(),
-              m_strLayerName:new TextDecoder('utf8').decode(view.getBytes(view.getUint16())),
+              m_strLayerName:utf8Decoder.decode(view.getBytes(view.getUint16())),
               iUnitNum:view.getInt32(),
             }
             let vecUnit = []
             for(let i=0;i<tagPara.iUnitNum;i++){//tagPara.iUnitNum
               let pUnit = {
                 iID: view.getInt32(),//图元ID
-                strCode: new TextDecoder('utf8').decode(view.getBytes(view.getUint16())),//图元名称
+                strCode: utf8Decoder.decode(view.getBytes(view.getUint16())),//图元名称
                 tagRGB:{///图元颜色
                   sBlue: view.getUint8(),
                   sGreen: view.getUint8(),
                   sRed: view.getUint8(),
                 },
                 tagText:{///标注信息
-                  strText:new TextDecoder('utf8').decode(view.getBytes(view.getUint16())),//标注内容
+                  strText:utf8Decoder.decode(view.getBytes(view.getUint16())),//标注内容
                   tagPos:{//标注位置
                     dLong:view.getFloat64(),//Longitude 经度
                     dLat:view.getFloat64(),//Latitude	纬度

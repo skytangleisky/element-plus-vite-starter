@@ -2,7 +2,7 @@
   <my-header></my-header>
   <div class="flex flex-row" style="width: 100%; height: calc(100% - 40px)">
     <left-menu></left-menu>
-    <div class="content relative w-full h-full" style="overflow: auto">
+    <div class="relative w-full h-full" style="overflow: auto">
       <router-view v-slot="{ Component }">
         <keep-alive>
           <component :is="Component" />
@@ -56,9 +56,5 @@ import leftMenu from "./myComponents/leftMenu/index.vue";
 }
 .element-plus-logo {
   width: 50%;
-}
-.content > div {
-  border: 1px solid red;
-  box-sizing: border-box;
 }
 </style>
