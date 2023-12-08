@@ -13,7 +13,7 @@ fn main(
     @location(1) uv : vec2<f32>
 ) -> VertexOutput {
     var output : VertexOutput;
-    output.Position = position * mvpMatrix[index];
+    output.Position =  mvpMatrix[index] * position;
     output.fragUV = uv;
     // output.fragPosition = 0.5 * (position + vec4<f32>(1.0, 1.0, 1.0, 1.0));
     output.fragPosition = vec4<f32>(1.0, 1.0, 1.0, 0.25);

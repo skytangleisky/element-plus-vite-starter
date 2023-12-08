@@ -57,52 +57,53 @@ watch(
     // }
     // myChart.setOption(option);
     // });
-
-    radialWindData.map((v, k) => {
-      option.series[0].data = [];
-      option.series[1].data = [];
-      option.series[2].data = [];
-      option.series[3].data = [];
-      let data;
-      for (let key in v) {
-        if (result[active] && key == result[active].radar.radar_id) {
-          data = v[key];
+    if (radialWindData) {
+      radialWindData.map((v, k) => {
+        option.series[0].data = [];
+        option.series[1].data = [];
+        option.series[2].data = [];
+        option.series[3].data = [];
+        let data;
+        for (let key in v) {
+          if (result[active] && key == result[active].radar.radar_id) {
+            data = v[key];
+          }
         }
-      }
-      if (data) {
-        data.map((v, k) => {
-          if (k == 0) {
-            for (let k in v) {
-              //k为时间
-              let tmp2 = v[k];
-              if (tmp2) {
-                for (let key in tmp2) {
-                  for (let index in tmp2[key]) {
-                    for (let m in tmp2[key][index]) {
-                      let tmp3 = tmp2[key][index][m];
-                      for (let n in tmp3) {
-                        let item = tmp3[n];
-                        option.series[Number(index) - 1].data.push([
-                          item.snr,
-                          item.distance,
-                        ]);
+        if (data) {
+          data.map((v, k) => {
+            if (k == 0) {
+              for (let k in v) {
+                //k为时间
+                let tmp2 = v[k];
+                if (tmp2) {
+                  for (let key in tmp2) {
+                    for (let index in tmp2[key]) {
+                      for (let m in tmp2[key][index]) {
+                        let tmp3 = tmp2[key][index][m];
+                        for (let n in tmp3) {
+                          let item = tmp3[n];
+                          option.series[Number(index) - 1].data.push([
+                            item.snr,
+                            item.distance,
+                          ]);
+                        }
                       }
                     }
                   }
                 }
               }
             }
-          }
-        });
-        myChart.setOption(option);
-      } else {
-        option.series[0].data = [];
-        option.series[1].data = [];
-        option.series[2].data = [];
-        option.series[3].data = [];
-        myChart.setOption(option);
-      }
-    });
+          });
+          myChart.setOption(option);
+        } else {
+          option.series[0].data = [];
+          option.series[1].data = [];
+          option.series[2].data = [];
+          option.series[3].data = [];
+          myChart.setOption(option);
+        }
+      });
+    }
   }
 );
 var option = {

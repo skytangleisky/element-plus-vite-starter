@@ -1,8 +1,21 @@
 <template>
-  <div ref="mapRef" class="w-full h-full"></div>
+  <div ref="mapRef" class="w-full h-full bg-white"></div>
+  <el-select
+    v-model="setting.projection"
+    placeholder="projection"
+    size="small"
+    style="position: absolute; left: 20px; top: 20px"
+  >
+    <el-option
+      v-for="item in options"
+      :key="item.value"
+      :value="item.value"
+      :label="item.label"
+    ></el-option>
+  </el-select>
 </template>
 <script lang="ts" setup>
-import { View, loadImage } from "~/tools";
+import { loadImage } from "~/tools";
 import "./mapbox-gl.css";
 import "./mapbox-gl.js";
 import plotUrl from "./data/plot/06040802.000?url";
@@ -18,7 +31,7 @@ import irUrl9 from "./data/ir/m/0604092000.000?url";
 import irUrl10 from "./data/ir/m/0604092100.000?url";
 import irUrl11 from "./data/ir/m/0604092200.000?url";
 import irUrl12 from "./data/ir/m/0604092300.000?url";
-import { onMounted, ref, onBeforeUnmount } from "vue";
+import { onMounted, ref, onBeforeUnmount, watch } from "vue";
 import * as turf from "@turf/turf";
 import raster from "./raster.js";
 // import style from "./streets-v11.js";
@@ -32,6 +45,22 @@ import { lngLat2XY, XY2LngLat } from "../map/js/core";
 import imageUrl from "~/assets/feather.svg?url";
 import { getMicapsData } from "./data/plot/micaps";
 import CustomLayer from "./WindGL/CustomLayer";
+import { useSettingStore } from "~/stores/setting";
+import { storeToRefs } from "pinia";
+const setting = useSettingStore();
+const options = ref([
+  // { value: "albers", label: "albers" },
+  // { value: "equalEarth", label: "equalEarth" },
+  // { value: "equirectangular", label: "equirectangular" },
+  // { value: "lambertConformalConic", label: "lambertConformalConic" },
+  { value: "mercator", label: "mercator" },
+  // { value: "naturalEarth", label: "naturalEarth" },
+  // { value: "winkelTripel", label: "winkelTripel" },
+  { value: "globe", label: "globe" },
+]);
+watch(storeToRefs(setting).projection, (projection) => {
+  map && map.setProjection(projection);
+});
 const getColor = (v: number) => {
   return v <= 0
     ? "#0000ff"
@@ -338,16 +367,18 @@ mapboxgl.accessToken =
   // "pk.eyJ1Ijoic2hldmF3ZW4iLCJhIjoiY2lwZXN2OGlvMDAwMXR1bmh0aG5vbDFteiJ9.2fsD37adZ1hC2MUU-2xByA";
   "pk.eyJ1IjoidGFuZ2xlaTIwMTMxNCIsImEiOiJjbGtmOTdyNWoxY2F1M3Jqczk4cGllYXp3In0.9N-H_79ehy4dJeuykZa0xA";
 const mapRef = ref(null);
+var map: mapboxgl.Map;
 // 可视化及交互部分
 onMounted(() => {
   if (!mapRef.value) throw Error("invalid mapRef!");
   console.log("new Map");
-  var map = new mapboxgl.Map({
+  map = new mapboxgl.Map({
     container: mapRef.value,
     // style: raster,
     performanceMetricsCollection: false,
     style,
-    bounds: turf.bbox(boundaries),
+    projection: setting.projection,
+    // bounds: turf.bbox(boundaries),
     // localIdeographFontFamily: "Microsoft YoHei",
     localIdeographFontFamily: "",
     antialias: true,
@@ -357,7 +388,14 @@ onMounted(() => {
     //   [60.0, 0],
     //   [160.0, 60],
     // ],
+    // zoom: 18,
+    // center: [148.9819, -35.3981],
+    // pitch: 60,
+    zoom: 4,
+    center: [0, 0],
+    pitch: 0,
   });
+  // map.repaint = true;
   map.addControl(new mapboxgl.NavigationControl());
   map.addControl(new mapboxgl.ScaleControl());
   map.addControl(new mapboxgl.FullscreenControl());
@@ -653,7 +691,7 @@ onMounted(() => {
     //   },
     //   filter: ["==", "$type", "Point"],
     // });
-    // map.addLayer(new CustomLayer());
+    map.addLayer(new CustomLayer());
     let irCvs = document.createElement("canvas") as HTMLCanvasElement;
     let urls = [
       irUrl1,
@@ -671,7 +709,7 @@ onMounted(() => {
     ];
     let INDEX = 0;
     let url = urls[INDEX++ % urls.length];
-    /*
+
     getMicapsData(url).then((result: any) => {
       let minLng = result.minLng;
       let minLat = result.minLat;
@@ -725,60 +763,54 @@ onMounted(() => {
             visibility: "visible",
           },
         });
-        timer = setInterval(() => {
-          let url = urls[INDEX++ % urls.length];
-          getMicapsData(url).then((result: any) => {
-            let minLng = result.minLng;
-            let minLat = result.minLat;
-            let cenPos = lngLat2XY(result.cenLng, result.cenLat);
-            let minPos = lngLat2XY(minLng, minLat);
-            let maxPos = { x: 2 * cenPos.x - minPos.x, y: 2 * cenPos.y - minPos.y };
-            let maxLngLat = XY2LngLat(maxPos.x, maxPos.y);
-            let maxLng = maxLngLat.lng;
-            let maxLat = maxLngLat.lat;
-            let array = new Uint8ClampedArray(4 * result.xCount * result.yCount);
-            for (let j = 0; j < result.xCount; j++) {
-              for (let i = 0; i < result.yCount; i++) {
-                let value = result.pixelData[(result.yCount - j - 1) * result.xCount + i];
-                // let color = getColor(value / 255);
-                let color = Color[value];
-                color[3] = value;
-                if (color?.length) {
-                  array[4 * (j * result.xCount + i) + 0] = color[0];
-                  array[4 * (j * result.xCount + i) + 1] = color[1];
-                  array[4 * (j * result.xCount + i) + 2] = color[2];
-                  array[4 * (j * result.xCount + i) + 3] = color[3]; // color[3]
-                }
-              }
-            }
-            let imgData = new ImageData(array, result.xCount, result.yCount);
-            irCvs.width = result.xCount;
-            irCvs.height = result.yCount;
-            let ctx = irCvs.getContext("2d");
-            if (ctx) {
-              ctx.putImageData(imgData, 0, 0);
-              map.getSource("irSource").updateImage({
-                url: irCvs.toDataURL(),
-                coordinates: [
-                  [minLng, maxLat],
-                  [maxLng, maxLat],
-                  [maxLng, minLat],
-                  [minLng, minLat],
-                ],
-              });
-            }
-          });
-        }, 1000);
+        // timer = setInterval(() => {
+        //   let url = urls[INDEX++ % urls.length];
+        //   getMicapsData(url).then((result: any) => {
+        //     let minLng = result.minLng;
+        //     let minLat = result.minLat;
+        //     let cenPos = lngLat2XY(result.cenLng, result.cenLat);
+        //     let minPos = lngLat2XY(minLng, minLat);
+        //     let maxPos = { x: 2 * cenPos.x - minPos.x, y: 2 * cenPos.y - minPos.y };
+        //     let maxLngLat = XY2LngLat(maxPos.x, maxPos.y);
+        //     let maxLng = maxLngLat.lng;
+        //     let maxLat = maxLngLat.lat;
+        //     let array = new Uint8ClampedArray(4 * result.xCount * result.yCount);
+        //     for (let j = 0; j < result.xCount; j++) {
+        //       for (let i = 0; i < result.yCount; i++) {
+        //         let value = result.pixelData[(result.yCount - j - 1) * result.xCount + i];
+        //         // let color = getColor(value / 255);
+        //         let color = Color[value];
+        //         color[3] = value;
+        //         if (color?.length) {
+        //           array[4 * (j * result.xCount + i) + 0] = color[0];
+        //           array[4 * (j * result.xCount + i) + 1] = color[1];
+        //           array[4 * (j * result.xCount + i) + 2] = color[2];
+        //           array[4 * (j * result.xCount + i) + 3] = color[3]; // color[3]
+        //         }
+        //       }
+        //     }
+        //     let imgData = new ImageData(array, result.xCount, result.yCount);
+        //     irCvs.width = result.xCount;
+        //     irCvs.height = result.yCount;
+        //     let ctx = irCvs.getContext("2d");
+        //     if (ctx) {
+        //       ctx.putImageData(imgData, 0, 0);
+        //       map.getSource("irSource").updateImage({
+        //         url: irCvs.toDataURL(),
+        //         coordinates: [
+        //           [minLng, maxLat],
+        //           [maxLng, maxLat],
+        //           [maxLng, minLat],
+        //           [minLng, minLat],
+        //         ],
+        //       });
+        //     }
+        //   });
+        // }, 1000);
       }
-    });*/
+    });
   });
   let timer: number;
-  map.on("click", () => {
-    console.log("click");
-    if (map.getProjection().name == "globe") {
-      map.setProjection("mercator");
-    } else map.setProjection("globe");
-  });
   var Color: { [key: string]: any } = {};
   let xmlDoc = new DOMParser().parseFromString(palette, "text/xml");
   let collections = xmlDoc.getElementsByTagName("entry");

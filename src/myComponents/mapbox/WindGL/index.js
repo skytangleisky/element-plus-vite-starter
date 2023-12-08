@@ -74,7 +74,6 @@ export default class WindGL{
 		this.windTexture = util.createTexture(this.gl, this.gl.LINEAR, windData.image);
 	}
 	draw(matrix) {
-		this.newmatrix = matrix;
 		const gl = this.gl;
 		gl.disable(gl.DEPTH_TEST);
 		gl.disable(gl.STENCIL_TEST);
@@ -82,17 +81,17 @@ export default class WindGL{
 		util.bindTexture(gl, this.windTexture, 0);
 		util.bindTexture(gl, this.particleStateTexture0, 1);
 
-		this.drawScreen();
+		this.drawScreen(matrix);
 		this.updateParticles();
 	}
-	drawScreen() {
+	drawScreen(matrix) {
 		const gl = this.gl;
 		// draw the screen into a temporary framebuffer to retain it as the background on the next frame
 		util.bindFramebuffer(gl, this.framebuffer, this.screenTexture);
 		gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
 		this.drawTexture(this.backgroundTexture, this.fadeOpacity);
-		this.drawParticles();
+		this.drawParticles(matrix);
 
 		util.bindFramebuffer(gl, null);
 		// enable blending to support drawing on top of an existing background (e.g. a map)
@@ -113,21 +112,19 @@ export default class WindGL{
 
 		util.bindAttribute(gl, this.quadBuffer, program.a_pos, 2);
 		util.bindTexture(gl, texture, 2);
-		this.newmatrix && gl.uniformMatrix4fv(program.u_matrix, false, this.newmatrix);
 		gl.uniform1i(program.u_screen, 2);
 		gl.uniform1f(program.u_opacity, opacity);
 
 		gl.drawArrays(gl.TRIANGLES, 0, 6);
 	}
-	drawParticles() {
+	drawParticles(matrix) {
 		const gl = this.gl;
 		const program = this.drawProgram;
 		gl.useProgram(program.program);
 
 		util.bindAttribute(gl, this.particleIndexBuffer, program.a_index, 1);
 		util.bindTexture(gl, this.colorRampTexture, 2);
-
-		this.newmatrix && gl.uniformMatrix4fv(program.u_matrix, false, this.newmatrix);
+		gl.uniformMatrix4fv(program.u_matrix, false, matrix);
 
 		gl.uniform1i(program.u_wind, 0);
 		gl.uniform1i(program.u_particles, 1);
@@ -149,7 +146,6 @@ export default class WindGL{
 
 		util.bindAttribute(gl, this.quadBuffer, program.a_pos, 2);
 
-		this.newmatrix && gl.uniformMatrix4fv(program.u_matrix, false, this.newmatrix);
 		gl.uniform1i(program.u_wind, 0);
 		gl.uniform1i(program.u_particles, 1);
 
@@ -246,7 +242,6 @@ function getColorRamp(colors) {
 	for (var stop in colors) {
 		gradient.addColorStop(+stop, colors[stop]);
 	}
-
 	ctx.fillStyle = gradient;
 	ctx.fillRect(0, 0, 256, 1);
 

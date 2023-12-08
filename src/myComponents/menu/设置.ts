@@ -1,6 +1,6 @@
 import { checkClick as onClick, Item } from './def'
 import { useSettingStore } from '~/stores/setting'
-import { storeToRefs } from 'pinia'
+import { storeToRefs } from "pinia"
 const setting  = useSettingStore()
 // const setting = JSON.parse(localStorage.getItem('setting')||'{"loadmap":true,"district":false,"navigation":false,"airline":false,"radar":false}')
 export default [

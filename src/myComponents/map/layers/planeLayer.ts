@@ -112,7 +112,7 @@ export default class PlaneLayer{
     image.height=32*4+20*(4-1)
     image.onload = () => {
       this.preTime=performance.now()
-      for(let k=0;k<10;k++) {
+      for(let k=0;k<20;k++) {
         // const item = res.data.data[k]
         // console.log(item)
         let plane = new Plane()
@@ -149,7 +149,7 @@ export default class PlaneLayer{
         plane.cvs = document.createElement('canvas')
         if(plane.vx==0&&plane.vy==0){
           plane.rad = Math.random()*360/180*Math.PI
-          // plane.rad = Math.PI/180*0
+          // plane.rad = Math.PI/180*90
         }else{
           plane.rad = Math.atan2(-plane.vx,plane.vy)+Math.PI
         }
@@ -313,16 +313,16 @@ export default class PlaneLayer{
       }
 
 
-      // ctx.fillStyle = '#ffffff88';
-      // ctx.fillRect(this.myCursor.x, this.myCursor.y, this.myCursor.width, this.myCursor.height);
+      ctx.fillStyle = '#ffffff88';
+      ctx.fillRect(this.myCursor.x, this.myCursor.y, this.myCursor.width, this.myCursor.height);
     }
-    // this.drawQuadtree(ctx,this.quadtree)
+    this.drawQuadtree(ctx,this.quadtree)
     this.drawObjects(ctx)
   }
   drawObjects(ctx:any) {
-    let 矩形碰撞框 = false
-    let 需要检测 = false
-    let intersection = false
+    let 矩形碰撞框 = true
+    let 需要检测 = true
+    let intersection = true
     for(var i=0;i<this.spirits.length;i++) {
       let item = this.spirits[i]
       if(item.x+item.width>this.quadtree.bounds.x

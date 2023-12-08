@@ -1,5 +1,5 @@
 // @ts-check
-import { defineStore, acceptHMRUpdate } from 'pinia'
+import { defineStore, acceptHMRUpdate } from "pinia"
 import { fetchList, saveData } from '~/api/icon'
 interface Icon {
   name:string

@@ -184,8 +184,7 @@ onMounted(async () => {
   } else {
     throw new Error("invalid ctx");
   }
-  // if(webgpu.value)
-  //   run(webgpu.value)
+  // if (webgpu.value) run(webgpu.value);
   // mapLayer.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}'})
   // mapLayer.setSource({url:'https://tanglei.site:444?z={z}&y={y}&x={x}'})//nps+go
   // mapLayer.setSource({url:'http://tanglei.site:81?z={z}&y={y}&x={x}'})//nps+go
@@ -239,6 +238,7 @@ onMounted(async () => {
   document.addEventListener("mousemove", mousemoveFunc, { passive: true });
   eventbus.on("move", moveFunc);
   onBeforeUnmount(() => {
+    cancel();
     resizeObserver.disconnect();
   });
   1;
@@ -262,7 +262,7 @@ onBeforeUnmount(() => {
 });
 const init = () => {
   watch(
-    storeToRefs(setting).loadmap,
+    () => setting.loadmap,
     (loadmap) => {
       if (loadmap) {
         mapLayer.show();

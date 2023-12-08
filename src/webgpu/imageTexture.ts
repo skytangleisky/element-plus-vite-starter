@@ -5,7 +5,7 @@ import { getMvpMatrix } from './util/math'
 import positionVert from './shaders/position.vert.wgsl?raw'
 import colorFrag from './shaders/color.frag.wgsl?raw'
 import * as triangle from './util/triangle'
-import { mat4, vec3 } from '~/tools/gl-matrix'
+import { mat4, vec3 } from 'gl-matrix'
 import textureUrl from '../assets/aircraft.png?url'
 // import textureUrl from '/texture.webp?url'
 let aid:number
@@ -156,7 +156,7 @@ async function initPipeline(device: GPUDevice, format: GPUTextureFormat, size:{w
         primitive: {
             topology: 'triangle-list',
             // Culling backfaces pointing away from the camera
-            cullMode: 'none',
+            cullMode:"none",
         },
         // Enable depth testing since we have z-level positions
         // Fragment closest to the camera is rendered in front
@@ -273,7 +273,7 @@ function draw(
 }
 export function cancel(){
     window.cancelAnimationFrame(aid)
-    resizeObserver.disconnect()
+    resizeObserver&&resizeObserver.disconnect()
 }
 // total objects
 const NUM = 10000
@@ -340,13 +340,6 @@ export default async function run(canvas:HTMLCanvasElement){
             }
         ]
     })
-    // start loop
-    function frame(){
-        logic()
-        draw(device, context, pipelineObj,textureGroup)
-        aid = requestAnimationFrame(frame)
-    }
-    frame()
     function logic(){
         // device.queue.writeBuffer(pipelineObj.colorBuffer, 0, new Float32Array([Math.random(), Math.random(), Math.random(), .9]))
         // update rotation for each object
@@ -399,7 +392,12 @@ export default async function run(canvas:HTMLCanvasElement){
         }
         device.queue.writeBuffer(pipelineObj.mvpBufferTriangle, 0, mvpBufferTriangle)
     }
-
+    // start loop
+    function frame(){
+        logic()
+        draw(device, context, pipelineObj,textureGroup)
+        aid = requestAnimationFrame(frame)
+    }
     resizeObserver = new ResizeObserver(()=>{
         let rect = canvas.getBoundingClientRect()
         if(rect.width==0||rect.height==0)return
@@ -439,4 +437,5 @@ export default async function run(canvas:HTMLCanvasElement){
             y:-(y-size.height/2)/(size.height/2)
         }
     }
+    frame()
 }

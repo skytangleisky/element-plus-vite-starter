@@ -1,5 +1,4 @@
-import { mat4, vec3 } from '~/tools/gl-matrix'
-// import { mat4, vec3 } from 'gl-matrix'
+import { mat4, vec3 } from 'gl-matrix'
 
 /*
 平移旋转缩放
@@ -9,39 +8,39 @@ import { mat4, vec3 } from '~/tools/gl-matrix'
     const modelViewMatrix = mat4.create()
     const matrix = mat4.create()
     mat4.translate(modelViewMatrix, modelViewMatrix, vec3.fromValues(position.x, position.y, position.z))
-    mat4.multiply(matrix,mat4.fromValues(
+    mat4.multiply(matrix,matrix,mat4.fromValues(
         1,0,0,position.x,
         0,1,0,position.y,
         0,0,1,position.z,
-        0,0,0,1),matrix)
+        0,0,0,1))
 
     mat4.rotateX(modelViewMatrix, modelViewMatrix, rotation.x)
-    mat4.multiply(matrix,mat4.fromValues(
+    mat4.multiply(matrix,matrix,mat4.fromValues(
         1,0,0,0,
         0,Math.cos(rotation.x),Math.sin(rotation.x),0,
         0,-Math.sin(rotation.x),Math.cos(rotation.x),0,
-        0,0,0,1),matrix)
+        0,0,0,1))
 
     mat4.rotateY(modelViewMatrix, modelViewMatrix, rotation.y)
-    mat4.multiply(matrix,mat4.fromValues(
+    mat4.multiply(matrix,matrix,mat4.fromValues(
         Math.cos(rotation.y),0,-Math.sin(rotation.y),0,
         0,1,0,0,
         Math.sin(rotation.y),0,Math.cos(rotation.y),0,
-        0,0,0,1),matrix)
+        0,0,0,1))
 
     mat4.rotateZ(modelViewMatrix, modelViewMatrix, rotation.z)
-    mat4.multiply(matrix,mat4.fromValues(
+    mat4.multiply(matrix,matrix,mat4.fromValues(
         Math.cos(rotation.z),Math.sin(rotation.z),0,0,
         -Math.sin(rotation.z),Math.cos(rotation.z),0,0,
         0,0,1,0,
-        0,0,0,1),matrix)
+        0,0,0,1))
 
     mat4.scale(modelViewMatrix, modelViewMatrix, vec3.fromValues(scale.x, scale.y, scale.z))
-    mat4.multiply(matrix,mat4.fromValues(
+    mat4.multiply(matrix,matrix,mat4.fromValues(
         scale.x,0,0,0,
         0,scale.y,0,0,
         0,0,scale.z,0,
-        0,0,0,1),matrix)
+        0,0,0,1))
     console.log(mat4.equals(matrix,modelViewMatrix))
 */
 
@@ -61,33 +60,33 @@ let l = -r
 const projectionMatrix1 = mat4.create()
 mat4.multiply(
     projectionMatrix1,
+    projectionMatrix1,
     mat4.fromValues(
         n,0,0,0,
         0,n,0,0,
         0,0,f+n,-f*n,
         0,0,1,0
-    ),
-    projectionMatrix1
+    )
 )
 mat4.multiply(
+    projectionMatrix1,
     projectionMatrix1,
     mat4.fromValues(
         1,0,0,-(r+l)/2,
         0,1,0,-(t+b)/2,
         0,0,1,-(f+n)/2,
         0,0,0,1
-    ),
-    projectionMatrix1
+    )
 )
 mat4.multiply(
-    projectionMatrix1, 
+    projectionMatrix1,
+    projectionMatrix1,
     mat4.fromValues(
         2/(r-l),0,0,0,
         0,2/(t-b),0,0,
         0,0,2/(f-n),0,
         0,0,0,1
-    ),
-    projectionMatrix1
+    )
 )
 const projectionMatrix2 = mat4.create()
 mat4.perspectiveNO(projectionMatrix2, fov, aspect, n, f)
@@ -95,13 +94,13 @@ console.log(mat4.equals(projectionMatrix1,projectionMatrix2))
 //Zrange [-1,1]->[0,1]
 mat4.multiply(
     projectionMatrix1,
+    projectionMatrix1,
     mat4.fromValues(
         1,0,0,0,
         0,1,0,0,
         0,0,0.5,0.5,
         0,0,0,1
-    ),
-    projectionMatrix1
+    )
 )
 const projectionMatrix3 = mat4.create()
 mat4.perspectiveZO(projectionMatrix3, fov, aspect, n, f)
@@ -162,9 +161,7 @@ function getMvpMatrix(
     // get mvp matrix
     const mvpMatrix = mat4.create()
     mat4.multiply(mvpMatrix,projectionMatrix,modelViewMatrix)
-    // return matrix as Float32Array
     return mvpMatrix as Float32Array
-    // return modelViewMatrix as Float32Array
 }
 
 // return modelView matrix from given position, rotation, scale
@@ -173,16 +170,21 @@ function getModelViewMatrix(
     rotation = {x:0, y:0, z:0},
     scale = {x:1, y:1, z:1}
 ){
+    // get modelView Matrix
     const modelViewMatrix = mat4.create()
+    // translate position
+    mat4.translate(modelViewMatrix, modelViewMatrix, vec3.fromValues(position.x, position.y, position.z))
+    // rotate
     mat4.rotateX(modelViewMatrix, modelViewMatrix, rotation.x)
     mat4.rotateY(modelViewMatrix, modelViewMatrix, rotation.y)
     mat4.rotateZ(modelViewMatrix, modelViewMatrix, rotation.z)
+    // scale
     mat4.scale(modelViewMatrix, modelViewMatrix, vec3.fromValues(scale.x, scale.y, scale.z))
-    mat4.translate(modelViewMatrix, modelViewMatrix, vec3.fromValues(position.x, position.y, position.z))
+    // return matrix as Float32Array
     return modelViewMatrix as Float32Array
 }
 
-const center = vec3.fromValues(0,0,1)
+const center = vec3.fromValues(0,0,-1)
 const up = vec3.fromValues(0,1,0)
 function getProjectionMatrix(
     size: {width:number,height:number},
@@ -193,11 +195,9 @@ function getProjectionMatrix(
 ){
     // create cameraview
     const cameraView = mat4.create()
-    const eye = vec3.fromValues(position.x, position.y, position.z)
+    const eye = vec3.fromValues(0, 0, 0)
     mat4.translate(cameraView, cameraView, eye)
     mat4.lookAt(cameraView, eye, center, up)
-    // get a perspective Matrix
-    const projectionMatrix1 = mat4.create()
     let aspect = size.width/size.height
 
     let n = 1
@@ -212,51 +212,78 @@ function getProjectionMatrix(
     // let b =-1
     // let r = 1
     // let l =-1
+
+    /*const projectionMatrix1 = mat4.create()
+    mat4.multiply(
+        projectionMatrix1,
+        projectionMatrix1,
+        mat4.fromValues(
+            n,0,0,0,
+            0,n,0,0,
+            0,0,f+n,-f*n,
+            0,0,1,0
+        )
+    )
+    mat4.multiply(
+        projectionMatrix1,
+        projectionMatrix1,
+        mat4.fromValues(
+            1,0,0,-(r+l)/2,
+            0,1,0,-(t+b)/2,
+            0,0,1,-(f+n)/2,
+            0,0,0,1
+        )
+    )
+    mat4.multiply(
+        projectionMatrix1,
+        projectionMatrix1,
+        mat4.fromValues(
+            2/(r-l),0,0,0,
+            0,2/(t-b),0,0,
+            0,0,2/(f-n),0,
+            0,0,0,1
+        )
+    )
+    //Zrange [-1,1]->[0,1]
+    mat4.multiply(
+        projectionMatrix1,
+        projectionMatrix1,
+        mat4.fromValues(
+            1,0,0,0,
+            0,1,0,0,
+            0,0,0.5,0.5,
+            0,0,0,1
+        )
+    )
+    mat4.transpose(projectionMatrix1,projectionMatrix1)
+    return projectionMatrix1 as Float32Array
+    */
+
+
+    const projectionMatrix = mat4.create()
+    mat4.perspectiveZO(projectionMatrix, fov, aspect, n, f)
+    mat4.multiply(
+        projectionMatrix,
+        projectionMatrix,
+        mat4.fromValues(
+            1,0,0,0,
+            0,1,0,0,
+            0,0,-1,0,
+            0,0,0,1
+        )
+    )
+    // mat4.orthoZO(projectionMatrix, l, r, b,t ,n , f)
     // mat4.multiply(
-    //     projectionMatrix1,
-    //     mat4.fromValues(
-    //         n,0,0,0,
-    //         0,n,0,0,
-    //         0,0,f+n,-f*n,
-    //         0,0,1,0
-    //     ),
-    //     projectionMatrix1
-    // )
-    // mat4.multiply(
-    //     projectionMatrix1,
-    //     mat4.fromValues(
-    //         1,0,0,-(r+l)/2,
-    //         0,1,0,-(t+b)/2,
-    //         0,0,1,-(f+n)/2,
-    //         0,0,0,1
-    //     ),
-    //     projectionMatrix1
-    // )
-    // mat4.multiply(
-    //     projectionMatrix1, 
-    //     mat4.fromValues(
-    //         2/(r-l),0,0,0,
-    //         0,2/(t-b),0,0,
-    //         0,0,2/(f-n),0,
-    //         0,0,0,1
-    //     ),
-    //     projectionMatrix1
-    // )
-    // //Zrange [-1,1]->[0,1]
-    // mat4.multiply(
-    //     projectionMatrix1,
+    //     projectionMatrix,
+    //     projectionMatrix,
     //     mat4.fromValues(
     //         1,0,0,0,
     //         0,1,0,0,
-    //         0,0,0.5,0.5,
+    //         0,0,-1,0,
     //         0,0,0,1
-    //     ),
-    //     projectionMatrix1
+    //     )
     // )
-    const projectionMatrix = mat4.create()
-    mat4.perspectiveZO(projectionMatrix, fov, aspect, n, f)
-    // mat4.orthoZO(projectionMatrix, l, r, b,t ,n , f)
-    // mat4.multiply(projectionMatrix1, cameraView,projectionMatrix1)
+    mat4.multiply(projectionMatrix, projectionMatrix, cameraView)
     return projectionMatrix as Float32Array
 }
 

@@ -27,7 +27,7 @@
 </template>
 <script setup>
 import { ref } from "vue";
-// import { version as piniaVersion } from 'pinia/package.json'
+// import { version as piniaVersion } from "~/tools/pinia/src/package.json'
 // import { version as vueVersion } from 'vue/package.json'
 // import { version as elementplusVersion } from 'element-plus/package.json'
 // import { version as vueRouterVersion } from 'vue-router/package.json'

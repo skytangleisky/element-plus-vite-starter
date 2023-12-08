@@ -78,39 +78,41 @@ watch(
     storeToRefs(station).active,
   ],
   ([avgWindData, result, active]) => {
-    option.series[1].data = [];
-    avgWindData.map((v, k) => {
-      let data;
-      for (let key in v) {
-        if (result[active] && key == result[active].radar.radar_id) {
-          data = v[key];
+    if (avgWindData) {
+      option.series[1].data = [];
+      avgWindData.map((v, k) => {
+        let data;
+        for (let key in v) {
+          if (result[active] && key == result[active].radar.radar_id) {
+            data = v[key];
+          }
         }
-      }
-      if (data) {
-        data.map((v, k) => {
-          if (k == 0) {
-            for (let k in v) {
-              let tmp2 = v[k].slice().reverse();
-              for (let i = 0; i < tmp2.length; i++) {
-                for (let k in tmp2[i]) {
-                  let item = tmp2[i][k];
-                  if (item.center_h_direction_abs != -1000) {
-                    option.series[1].data.push([
-                      item.distance,
-                      item.center_h_direction_abs,
-                    ]);
+        if (data) {
+          data.map((v, k) => {
+            if (k == 0) {
+              for (let k in v) {
+                let tmp2 = v[k].slice().reverse();
+                for (let i = 0; i < tmp2.length; i++) {
+                  for (let k in tmp2[i]) {
+                    let item = tmp2[i][k];
+                    if (item.center_h_direction_abs != -1000) {
+                      option.series[1].data.push([
+                        item.distance,
+                        item.center_h_direction_abs,
+                      ]);
+                    }
                   }
                 }
               }
             }
-          }
-        });
-        myChart.setOption(option);
-      } else {
-        option.series[1].data = [];
-        myChart.setOption(option);
-      }
-    });
+          });
+          myChart.setOption(option);
+        } else {
+          option.series[1].data = [];
+          myChart.setOption(option);
+        }
+      });
+    }
   }
 );
 

@@ -66,7 +66,7 @@
         <div
           class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-#00000044 b-t-1px"
         >
-          <span>格子线</span>
+          <span>经纬格</span>
           <el-switch
             v-model="setting.graticule"
             inline-prompt
@@ -96,6 +96,17 @@
             :inactive-icon="Close"
           />
         </div>
+        <div
+          class="w-full flex justify-between items-center b-0px b-solid b-gray-1 dark:b-#00000044 b-t-1px"
+        >
+          <span>重新定位</span>
+          <el-icon
+            @click="resetLocation"
+            style="min-width: 40px; height: 32px; cursor: pointer"
+          >
+            <Location></Location>
+          </el-icon>
+        </div>
       </collapse-card>
     </div>
   </div>
@@ -110,7 +121,7 @@ import {
   onActivated,
   onDeactivated,
 } from "vue";
-import { Check, Close } from "@element-plus/icons-vue";
+import { Check, Close, Location } from "@element-plus/icons-vue";
 import { 雷达统计接口 } from "~/api/光恒/station";
 import collapseCard from "./collapseCard.vue";
 import { useSettingStore } from "~/stores/setting";
@@ -121,6 +132,9 @@ const setting = useSettingStore();
 const show = ref(true);
 const show2 = ref(true);
 const showMapSetting = ref(true);
+const resetLocation = () => {
+  setting.$resetFields(["openlayers"]);
+};
 const beforeChange = () => {
   for (let k in setting.checks) {
     setting.checks[k].select = false;
@@ -148,7 +162,7 @@ const update = () => {
     });
 };
 onActivated(() => {
-  timer = setInterval(update, 5000);
+  timer = setInterval(update, 3 * 60 * 1000);
   update();
 });
 onDeactivated(() => {

@@ -201,8 +201,8 @@ const osm = new TileLayer({
   preload: Infinity,
   source: new XYZ({
     // url: "https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
-    // url: "https://wprd0{1-4}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
-    url: "https://tanglei.site:3210/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
+    url: "https://wprd0{1-4}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
+    // url: "https://tanglei.site:3210/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
     // url: "http://tanglei.site:3211/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
     // url: "https://tanglei.site/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
   }),
@@ -457,8 +457,8 @@ onMounted(() => {
     view: new View({
       // center: fromLonLat([105,30]),
       // zoom:8,
-      center: fromLonLat([115.43123283436979, 39.56864128657364]),
-      zoom: 6,
+      center: fromLonLat(setting.openlayers.center),
+      zoom: setting.openlayers.zoom,
       projection: "EPSG:3857",
     }),
     //加载控件到地图容器中
@@ -470,6 +470,14 @@ onMounted(() => {
       // new ScaleLine({bar: true, text: true, minWidth: 125})
     ]),
   });
+  watch(
+    () => setting.openlayers.zoom,
+    (newZoom) => map.getView().setZoom(newZoom)
+  );
+  watch(
+    () => setting.openlayers.center,
+    (newCenter) => map.getView().setCenter(fromLonLat(newCenter))
+  );
   function flyTo(v) {
     console.log(v);
     let zoom = map.getView().getZoom();
@@ -545,7 +553,9 @@ onMounted(() => {
   };
   const moveendFunc = () => {
     let view = map.getView();
-    // console.log(view.getZoom(),toLonLat(view.getCenter()))
+    setting.openlayers.zoom = view.getZoom();
+    setting.openlayers.center = toLonLat(view.getCenter());
+    // console.log(view.getZoom(), toLonLat(view.getCenter()));
   };
   map.on("pointermove", pointermoveFunc);
   map.on("pointerdown", pointerdownFunc);
@@ -637,11 +647,10 @@ onMounted(() => {
           //     }
           //   }
           // }
-
           let tmp = v[feature.get("radar_id")];
           if (tmp) {
             source.forEachFeature((f) => {
-              if (f.get("radar_id" == feature.get("radar_id"))) {
+              if (f.get("radar_id") == feature.get("radar_id")) {
                 source.removeFeature(f);
               }
             });
@@ -1248,16 +1257,32 @@ onMounted(() => {
     //     // geometry.setCoordinates(fromLonLat([110,30]))
     //     // feature.set('geometry',geometry)
     //   })
-    // station.查询平均风数据接口({user_id:route.query.user_id,date:new Date().Format('yyyyMMdd')}).then((res) => {
-    //   station.avgWindData = res.data.data;
-    // });
-    // station.查询瞬时风数据接口({user_id:route.query.user_id,date:new Date().Format('yyyyMMdd')}).then((res) => {
-    //   station.secondWindData = res.data.data;
-    // });
-    // station.查询径向风数据接口({user_id:route.query.user_id,date:new Date().Format('yyyyMMdd')}).then((res) => {//太慢
-    //   station.radialWindData = res.data.data;
-    // });
-  }, 5000);
+    station
+      .查询平均风数据接口({
+        user_id: route.query.user_id,
+        date: new Date().Format("yyyyMMdd"),
+      })
+      .then((res) => {
+        station.avgWindData = res.data.data;
+      });
+    station
+      .查询瞬时风数据接口({
+        user_id: route.query.user_id,
+        date: new Date().Format("yyyyMMdd"),
+      })
+      .then((res) => {
+        station.secondWindData = res.data.data;
+      });
+    station
+      .查询径向风数据接口({
+        user_id: route.query.user_id,
+        date: new Date().Format("yyyyMMdd"),
+      })
+      .then((res) => {
+        //太慢
+        station.radialWindData = res.data.data;
+      });
+  }, 4 * 60 * 1000);
   onBeforeUnmount(() => {
     eventbus.off("将站点移动到屏幕中心");
     clearInterval(timer);

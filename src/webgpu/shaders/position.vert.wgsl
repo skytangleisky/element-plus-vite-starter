@@ -10,7 +10,7 @@ fn main(
     @location(0) position : vec4<f32>,
     @location(1) rgba : vec4<f32>) -> VertexOutput {
     var output: VertexOutput;
-    output.Position = position * testMatrix[instanceIndex * 4 + vertexIndex];
+    output.Position = testMatrix[instanceIndex * 4 + vertexIndex] * position;
     output.fragPosition = rgba;
     return output;
 }

@@ -1,5 +1,5 @@
 // @ts-check
-import { defineStore, acceptHMRUpdate } from 'pinia'
+import { defineStore, acceptHMRUpdate } from "pinia"
 import { fetchList, fetchData, saveData, deleteData } from '../api/data.js'
 
 export const useDataStore = defineStore({

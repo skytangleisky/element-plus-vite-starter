@@ -1,5 +1,5 @@
 // @ts-check
-import { defineStore, acceptHMRUpdate } from 'pinia'
+import { defineStore, acceptHMRUpdate } from "pinia"
 import { login, getInfo,logout } from '../api/login.js'
 
 export const useUserStore = defineStore({

@@ -1,5 +1,6 @@
 import request from '../../utils/request'
-const user_id = 'e13df6498a4e46bc8970b95ec47779f5'
+const user_id = '1e2ef8820806421eb849ed2dead33bff'
+const time = '20231026' // 20231026 ｜ new Date().Format('yyyyMMdd')
 export function 雷达统计接口(query){
   if(!query.user_id){
     query.user_id = user_id
@@ -59,7 +60,7 @@ export function 查询平均风数据接口(query) {
     query.user_id = user_id
   }
   if(!query.date){
-    query.date = "20231026" // new Date().Format('yyyyMMdd')
+    query.date = time
   }
   return request({
     url: 'guangheng/api/weather/wind/avg',
@@ -72,7 +73,7 @@ export function 查询瞬时风数据接口(query) {
     query.user_id = user_id
   }
   if(!query.date){
-    query.date = "20231026" // new Date().Format('yyyyMMdd')
+    query.date = time
   }
   return request({
     url: 'guangheng/api/weather/wind/second',
@@ -85,7 +86,7 @@ export function 查询径向风数据接口(query){
     query.user_id = user_id
   }
   if(!query.date){
-    query.date = "20231026" // new Date().Format('yyyyMMdd')
+    query.date = time
   }
   return request({
     url: 'guangheng/api/weather/wind/radial',

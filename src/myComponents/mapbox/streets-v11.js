@@ -269,27 +269,7 @@ export default {
 	"sources": {
 		"district":{
 			"type":"geojson",
-			"data": "https://tanglei.top/mapboxgl/100000_full.json"
-		},
-		"radar":{
-			'type': 'image',
-			'url': 'https://tanglei.top/mapboxgl/radar.gif',
-			'coordinates': [
-				[-80.425, 46.437],
-				[-71.516, 46.437],
-				[-71.516, 37.936],
-				[-80.425, 37.936]
-			]
-		},
-		"vis":{
-			'type': 'image',
-			'url': 'https://tanglei.top/mapboxgl/vis/202311160100.png',
-			'coordinates': [
-				[70, 55],
-				[146, 55],
-				[146, -10],
-				[70, -10]
-			]
+			"data": window.location.origin+"/resources/100000_full.json"
 		},
 		"composite": {
 				"url_origin": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2",
@@ -312,12 +292,12 @@ export default {
 			"tileSize": 256
 		}
 	},
-	"terrain": { 'source': 'mapbox-dem', 'exaggeration': 1 },
+	// "terrain": { 'source': 'mapbox-dem', 'exaggeration': 1 },
 	"sprite_origin": "mapbox://sprites/tanglei201314/clons7b5v00dm01prgrblhncs/6iqitl5z21pbbxxwuij8b59i2",
 	"glyphs_origin": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
 	"sprite": window.location.origin+"/resources/sprite",
 	"glyphs": window.location.origin+"/resources/glyphs/{fontstack}/{range}.pbf",
-	"projection": {"name": "globe"},//albers, equalEarth, equirectangular, lambertConformalConic, mercator, naturalEarth, winkelTripel, globe
+	"projection": {"name": "mercator"},//albers, equalEarth, equirectangular, lambertConformalConic, mercator, naturalEarth, winkelTripel, globe
 	"layers": [
 			{
 					"id": "land",
@@ -7106,29 +7086,7 @@ export default {
 						'fill-extrusion-opacity': 1
 				},
 				layout:{
-					visibility:'none'
-				}
-			},
-			{
-				'id': 'vis-layer',
-				'type': 'raster',
-				'source': 'vis',
-				'paint': {
-					'raster-fade-duration': 0,
-					'raster-opacity':0.8
-				},
-				layout:{
-					visibility:'none'
-				}
-			},
-			{
-				'id': 'radar-layer',
-				'type': 'raster',
-				'source': 'radar',
-				'paint': {
-					"raster-fade-duration": 0,
-					"raster-opacity": 0.8,
-					"raster-resampling": "nearest",
+					visibility:'visible'
 				}
 			}
 	],
