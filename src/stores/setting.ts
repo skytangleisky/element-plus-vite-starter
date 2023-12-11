@@ -1,4 +1,4 @@
-import { defineStore, acceptHMRUpdate,StoreDefinition } from "pinia"
+import { defineStore, acceptHMRUpdate } from "pinia"
 import zhCn from '../languages/zh-cn.mjs'
 import en from '../languages/en.mjs'
 export const state = {
@@ -6,15 +6,16 @@ export const state = {
     zoom:5,
     center:[100.41462758184835, 36.57697037305711],
   },
-  projection: 'globe',
+  projection: 'mercator',
   lang: 'zh-cn',
   loadmap:true,
-  graticule:false,
   district:true,
   airline:true,
   navigation:true,
+  radar:false,
+  stream:false,
+  graticule:false,
   tileUrl:'',
-  radar:true,
   station:true,
   feather:true,
   legend:false,
@@ -39,7 +40,6 @@ export const state = {
     { name: "离线雷达", val: "", select: false },
     { name: "新增雷达", val: "", select: false },
   ],
-  menuKey:0,//用于<el-menu></el-menu>重置
   defaultActive: 'a7ef7b88-5e6b-0c62-129b-00a18980cdce',
   defaultOpends:['65e99b66-e340-4d4b-6b26-629f41dc63d9'],
   routes:[
@@ -160,52 +160,8 @@ export const useSettingStore = defineStore({
       })
     }
   },
-  persist: false
+  persist: true
 })
-// if(import.meta.hot){
-//   import.meta.hot.accept(acceptHMRUpdate(useSettingStore, import.meta.hot))
-// }
-export const isUseStore = (fn: any): fn is StoreDefinition => {
-  return typeof fn === 'function' && typeof fn.$id === 'string'
-}
 if(import.meta.hot){
-  import.meta.hot.accept(newModule=>{
-    let hot = import.meta.hot
-    let initialUseStore = useSettingStore
-    const pinia: Pinia | undefined = hot.data.pinia || initialUseStore._pinia
-
-    if (!pinia) {
-      // this store is still not used
-      return
-    }
-
-    // preserve the pinia instance across loads
-    hot.data.pinia = pinia
-
-    // console.log('got data', newStore)
-    for (const exportName in newModule) {
-      const useStore = newModule[exportName]
-      // console.log('checking for', exportName)
-      if (isUseStore(useStore) && pinia._s.has(useStore.$id)) {
-        // console.log('Accepting update for', useStore.$id)
-        const id = useStore.$id
-
-        if (id !== initialUseStore.$id) {
-          console.warn(
-            `The id of the store changed from "${initialUseStore.$id}" to "${id}". Reloading.`
-          )
-          // return import.meta.hot.invalidate()
-          return hot.invalidate()
-        }
-
-        const existingStore: StoreGeneric = pinia._s.get(id)!
-        if (!existingStore) {
-          console.log(`[Pinia]: skipping hmr because store doesn't exist yet`)
-          return
-        }
-        existingStore.$patch(newModule.state)
-        // useStore(pinia, existingStore)
-      }
-    }
-  })
+  import.meta.hot.accept(acceptHMRUpdate(useSettingStore, import.meta.hot))
 }

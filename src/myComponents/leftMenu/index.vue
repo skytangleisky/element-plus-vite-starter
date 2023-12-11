@@ -7,7 +7,6 @@
       }`"
     >
       <el-menu
-        :key="setting.menuKey"
         background-color="#304156"
         :collapse="isCollapse"
         text-color="#bfcbd9"
@@ -49,12 +48,10 @@ const setting = useSettingStore();
 const router = useRouter();
 import SubMenu from "./SubMenu.vue";
 import { array2components } from "~/tools";
-setting.menuKey++;
 onMounted(() => {
   icon.FetchList();
 });
 onActivated(() => {
-  setting.menuKey++;
   icon.FetchList();
 });
 const isCollapse = ref(false);
