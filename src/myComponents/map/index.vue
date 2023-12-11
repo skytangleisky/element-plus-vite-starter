@@ -76,7 +76,7 @@ import {
 import { wgs84togcj02 } from "./workers/mapUtil";
 import { useSettingStore } from "~/stores/setting";
 import run, { cancel } from "~/webgpu/imageTexture";
-// import Windy from './layers/Windy'
+import Windy from "./layers/Windy";
 import "./Sample_POI";
 import Task from "./layers/task";
 let needRedraw = false;
@@ -91,7 +91,7 @@ let pointLayer: PointLayer;
 let routeLayer: RouteLayer;
 let planeLayer: PlaneLayer;
 let stationLayer: StationLayer;
-// const windy = new Windy()
+const windy = new Windy();
 let canvas = ref(null);
 let webgpu = ref(null);
 // let POINT = {lng:113.42165142106768,lat:23.098844381632485}
@@ -227,7 +227,24 @@ onMounted(async () => {
     limitRegion();
     loadMap();
     needRedraw = true;
-    // windy.start([[0,0],[cvs.width,cvs.height]],cvs.width,cvs.height,[[pixel2Lng(0,obj.imgX,2**obj.L,256), pixel2Lat(cvs.height,obj.imgY,2**obj.L,256)],[pixel2Lng(cvs.width,obj.imgX,2**obj.L,256), pixel2Lat(0,obj.imgY,2**obj.L,256)]])
+    windy.start(
+      [
+        [0, 0],
+        [cvs.width, cvs.height],
+      ],
+      cvs.width,
+      cvs.height,
+      [
+        [
+          pixel2Lng(0, obj.imgX, 2 ** obj.L, 256),
+          pixel2Lat(cvs.height, obj.imgY, 2 ** obj.L, 256),
+        ],
+        [
+          pixel2Lng(cvs.width, obj.imgX, 2 ** obj.L, 256),
+          pixel2Lat(0, obj.imgY, 2 ** obj.L, 256),
+        ],
+      ]
+    );
     draw();
   });
   resizeObserver.observe(cvs);
@@ -262,6 +279,7 @@ onBeforeUnmount(() => {
 });
 const init = () => {
   watch(
+    // () => setting.loadmap,
     () => setting.loadmap,
     (loadmap) => {
       if (loadmap) {
@@ -274,7 +292,7 @@ const init = () => {
     { immediate: true }
   );
   watch(
-    storeToRefs(setting).district,
+    () => setting.district,
     (district) => {
       if (district) {
         borderLayer.show();
@@ -286,7 +304,7 @@ const init = () => {
     { immediate: true }
   );
   watch(
-    storeToRefs(setting).navigation,
+    () => setting.navigation,
     (navigation) => {
       if (navigation) {
         pointLayer.show();
@@ -298,7 +316,7 @@ const init = () => {
     { immediate: true }
   );
   watch(
-    storeToRefs(setting).airline,
+    () => setting.airline,
     (airline) => {
       if (airline) {
         routeLayer.show();
@@ -310,7 +328,7 @@ const init = () => {
     { immediate: true }
   );
   watch(
-    storeToRefs(setting).radar,
+    () => setting.radar,
     (radar) => {
       if (radar) {
         radarLayer.show();
@@ -362,7 +380,7 @@ const draw = () => {
     radarLayer.render(obj, ctx);
     pointLayer.render(obj, ctx);
     routeLayer.render(obj, ctx);
-    // windy.render(obj,ctx)
+    setting.stream && windy.render(obj, ctx);
     planeLayer.render(obj, ctx);
     // stationLayer.render(obj,ctx)
     ctx.restore();
@@ -494,7 +512,24 @@ const mousemoveFunc = (evt: MouseEvent) => {
         ]);
       },
       onComplete() {
-        // windy.start([[0,0],[cvs.width,cvs.height]],cvs.width,cvs.height,[[pixel2Lng(0,obj.imgX,2**obj.L,256), pixel2Lat(cvs.height,obj.imgY,2**obj.L,256)],[pixel2Lng(cvs.width,obj.imgX,2**obj.L,256), pixel2Lat(0,obj.imgY,2**obj.L,256)]])
+        windy.start(
+          [
+            [0, 0],
+            [cvs.width, cvs.height],
+          ],
+          cvs.width,
+          cvs.height,
+          [
+            [
+              pixel2Lng(0, obj.imgX, 2 ** obj.L, 256),
+              pixel2Lat(cvs.height, obj.imgY, 2 ** obj.L, 256),
+            ],
+            [
+              pixel2Lng(cvs.width, obj.imgX, 2 ** obj.L, 256),
+              pixel2Lat(0, obj.imgY, 2 ** obj.L, 256),
+            ],
+          ]
+        );
       },
       ease: Power3.easeOut,
     });
@@ -594,7 +629,24 @@ const mousewheelFunc = (event: any) => {
       // plane&&plane.setPos(obj.imgX,obj.imgY,2**obj.L)
     },
     onComplete() {
-      // windy.start([[0,0],[cvs.width,cvs.height]],cvs.width,cvs.height,[[pixel2Lng(0,obj.imgX,2**obj.L,256), pixel2Lat(cvs.height,obj.imgY,2**obj.L,256)],[pixel2Lng(cvs.width,obj.imgX,2**obj.L,256), pixel2Lat(0,obj.imgY,2**obj.L,256)]])
+      windy.start(
+        [
+          [0, 0],
+          [cvs.width, cvs.height],
+        ],
+        cvs.width,
+        cvs.height,
+        [
+          [
+            pixel2Lng(0, obj.imgX, 2 ** obj.L, 256),
+            pixel2Lat(cvs.height, obj.imgY, 2 ** obj.L, 256),
+          ],
+          [
+            pixel2Lng(cvs.width, obj.imgX, 2 ** obj.L, 256),
+            pixel2Lat(0, obj.imgY, 2 ** obj.L, 256),
+          ],
+        ]
+      );
     },
     ease: Power3.easeOut,
   });

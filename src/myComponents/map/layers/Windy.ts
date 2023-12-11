@@ -444,12 +444,14 @@ export default class Windy{
         }
       }
     }
-    let x=lng2Pixel(this.rad2deg(this.extent.west),obj.imgX,2**obj.L,256)
-    let y=lat2Pixel(this.rad2deg(this.extent.north),obj.imgY,2**obj.L,256)
-    let w=lng2Pixel(this.rad2deg(this.extent.east),obj.imgX,2**obj.L,256)-x
-    let h=lat2Pixel(this.rad2deg(this.extent.south),obj.imgY,2**obj.L,256)-y
-    // ctx.drawImage(this.canvas,0,0,this.extent.width,this.extent.height,x,y,this.extent.width,this.extent.height)
-    ctx.drawImage(this.canvas,0,0,this.extent.width,this.extent.height,x,y,w,h)
+    if(this.extent){
+      let x=lng2Pixel(this.rad2deg(this.extent.west),obj.imgX,2**obj.L,256)
+      let y=lat2Pixel(this.rad2deg(this.extent.north),obj.imgY,2**obj.L,256)
+      let w=lng2Pixel(this.rad2deg(this.extent.east),obj.imgX,2**obj.L,256)-x
+      let h=lat2Pixel(this.rad2deg(this.extent.south),obj.imgY,2**obj.L,256)-y
+      // ctx.drawImage(this.canvas,0,0,this.extent.width,this.extent.height,x,y,this.extent.width,this.extent.height)
+      ctx.drawImage(this.canvas,0,0,this.extent.width,this.extent.height,x,y,w,h)
+    }
   }
 
   start( bounds:[[number,number],[number,number]], width:number, height:number, extent:[[number,number],[number,number]] ){
