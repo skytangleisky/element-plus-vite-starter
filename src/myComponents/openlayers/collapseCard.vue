@@ -1,11 +1,23 @@
 <template>
-  <div class="collapse-card" style="border-radius: 8px; overflow: hidden">
+  <div class="collapse-card">
     <div
-      class="title w-full h-30px left-0 box-border flex flex-row justify-between items-center"
+      class="title h-30px left-0 box-border flex flex-row justify-between items-center"
       @click="click"
     >
-      <div style="font-size: 20px; color: rgb(78, 129, 184)">{{ title }}</div>
+      <div style="font-size: 16px; color: rgb(78, 129, 184)">{{ title }}</div>
+      <span v-show="showVal">{{ val }}</span>
+      <el-switch
+        v-show="showSelect"
+        @click.stop
+        v-model="select"
+        inline-prompt
+        :active-icon="Check"
+        :inactive-icon="Close"
+        :before-change="beforeChange"
+        size="small"
+      />
       <el-icon
+        v-show="showCollapse"
         :class="`${show ? 'rotate-180deg' : 'rotate-0eg'}`"
         style="transition: all 300ms"
       >
@@ -36,28 +48,38 @@
   </div>
 </template>
 <script lang="ts" setup>
-const emit = defineEmits(["update:show"]);
+import { computed } from "vue";
+import { Check, Close } from "@element-plus/icons-vue";
+const emit = defineEmits(["update:show", "update:select"]);
 const click = () => {
   emit("update:show", !props.show);
 };
-const props = defineProps({
-  title: {
-    type: String,
-    default: "Title",
+interface propsType {
+  title: string;
+  show: boolean;
+  select?: boolean;
+  beforeChange?: (() => boolean | Promise<boolean>) | undefined;
+  showSelect?: boolean;
+  showCollapse?: boolean;
+  val?: number;
+  showVal?: boolean;
+}
+const props = withDefaults(defineProps<propsType>(), {
+  title: "Title",
+  show: true,
+  testSelect: true,
+  beforeChange: undefined,
+  select: false,
+  showCollapse: true,
+  number: 0,
+  showVal: false,
+});
+const select = computed({
+  get() {
+    return props.select;
   },
-  show: {
-    type: Boolean,
-    default: true,
+  set(val) {
+    emit("update:select", val);
   },
 });
 </script>
-<style lang="scss">
-.collapse-card {
-  .title {
-    padding-left: 10px;
-  }
-  .collapse {
-    padding-left: 10px;
-  }
-}
-</style>

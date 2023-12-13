@@ -54,41 +54,43 @@ const setDBS = (isDark: boolean) => {
       storeToRefs(station).active,
     ],
     ([avgWindData, result, active]) => {
-      avgWindData.map((v, k) => {
-        let data;
-        for (let key in v) {
-          if (result[active] && key == result[active].radar.radar_id) {
-            data = v[key];
-          }
-        }
-        if (data) {
-          let Fdatas: any[] = [];
-          data.map((v, k) => {
-            for (let k in v) {
-              let fData: { [key: string]: any } = {};
-              fData.timestamp = k;
-              fData.data = [];
-              v[k].map((v) => {
-                for (let k in v) {
-                  fData.data.push({
-                    fHei: v[k].distance.toString(),
-                    fHAngle: v[k].center_h_direction_abs.toString(),
-                    fHSpeed: v[k].center_h_speed.toString(),
-                    fVSpeed: v[k].vert_airflow.toString(),
-                    // iBelieveable: v[k].reliability,
-                  });
-                }
-              });
-              fData.data.reverse();
-              Fdatas.unshift(fData);
-              // console.log(fData);
+      if (avgWindData) {
+        avgWindData.map((v, k) => {
+          let data;
+          for (let key in v) {
+            if (result[active] && key == result[active].radar.radar_id) {
+              data = v[key];
             }
-          });
-          dbs.process(Fdatas);
-        } else {
-          dbs.clear();
-        }
-      });
+          }
+          if (data) {
+            let Fdatas: any[] = [];
+            data.map((v, k) => {
+              for (let k in v) {
+                let fData: { [key: string]: any } = {};
+                fData.timestamp = k;
+                fData.data = [];
+                v[k].map((v) => {
+                  for (let k in v) {
+                    fData.data.push({
+                      fHei: v[k].distance.toString(),
+                      fHAngle: v[k].center_h_direction_abs.toString(),
+                      fHSpeed: v[k].center_h_speed.toString(),
+                      fVSpeed: v[k].vert_airflow.toString(),
+                      // iBelieveable: v[k].reliability,
+                    });
+                  }
+                });
+                fData.data.reverse();
+                Fdatas.unshift(fData);
+                // console.log(fData);
+              }
+            });
+            dbs.process(Fdatas);
+          } else {
+            dbs.clear();
+          }
+        });
+      }
     },
     { immediate: true }
   );

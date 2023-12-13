@@ -73,7 +73,7 @@ export default class WindGL{
 		this.windData = windData;
 		this.windTexture = util.createTexture(this.gl, this.gl.LINEAR, windData.image);
 	}
-	draw(matrix) {
+	draw(matrix,projection) {
 		const gl = this.gl;
 		gl.disable(gl.DEPTH_TEST);
 		gl.disable(gl.STENCIL_TEST);
@@ -81,17 +81,17 @@ export default class WindGL{
 		util.bindTexture(gl, this.windTexture, 0);
 		util.bindTexture(gl, this.particleStateTexture0, 1);
 
-		this.drawScreen(matrix);
+		this.drawScreen(matrix,projection);
 		this.updateParticles();
 	}
-	drawScreen(matrix) {
+	drawScreen(matrix,projection) {
 		const gl = this.gl;
 		// draw the screen into a temporary framebuffer to retain it as the background on the next frame
 		util.bindFramebuffer(gl, this.framebuffer, this.screenTexture);
 		gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
 		this.drawTexture(this.backgroundTexture, this.fadeOpacity);
-		this.drawParticles(matrix);
+		this.drawParticles(matrix,projection);
 
 		util.bindFramebuffer(gl, null);
 		// enable blending to support drawing on top of an existing background (e.g. a map)
@@ -117,7 +117,7 @@ export default class WindGL{
 
 		gl.drawArrays(gl.TRIANGLES, 0, 6);
 	}
-	drawParticles(matrix) {
+	drawParticles(matrix,projection) {
 		const gl = this.gl;
 		const program = this.drawProgram;
 		gl.useProgram(program.program);
@@ -125,6 +125,7 @@ export default class WindGL{
 		util.bindAttribute(gl, this.particleIndexBuffer, program.a_index, 1);
 		util.bindTexture(gl, this.colorRampTexture, 2);
 		gl.uniformMatrix4fv(program.u_matrix, false, matrix);
+		gl.uniform1i(program.projection,projection);
 
 		gl.uniform1i(program.u_wind, 0);
 		gl.uniform1i(program.u_particles, 1);

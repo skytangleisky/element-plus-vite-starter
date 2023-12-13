@@ -269,7 +269,6 @@ onBeforeUnmount(() => {
   cvs.removeEventListener("mousewheel", mousewheelFunc);
   // document.removeEventListener("mousewheel", mousewheelFunc);
   cancelAnimationFrame(aid);
-  // cancel();
   task.destroy();
   borderLayer.off();
   radarLayer.off();
@@ -336,6 +335,19 @@ const init = () => {
         radarLayer.hide();
       }
       loadMap();
+    },
+    { immediate: true }
+  );
+  watch(
+    () => setting.webgpu,
+    (val) => {
+      if (val) {
+        if (webgpu.value) {
+          run(webgpu.value);
+        }
+      } else {
+        cancel();
+      }
     },
     { immediate: true }
   );

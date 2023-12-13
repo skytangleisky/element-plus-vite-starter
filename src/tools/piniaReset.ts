@@ -14,11 +14,10 @@ export default ({ options, store }: PiniaPluginContext): void => {
   store.$resetFields = (fields) => {
     const { state } = options;
     let originalState = state ? state() : {};
-    store.$patch(($state) => {
-      if (fields) {
-        originalState = pick(originalState, fields);
-      }
-      Object.assign($state, originalState);
-    });
+    if (fields) {
+      originalState = pick(originalState, fields);
+    }
+    console.log(originalState)
+    // originalState.$patch(originalState);
   };
 };

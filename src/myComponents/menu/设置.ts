@@ -10,4 +10,5 @@ export default [
   {name:'航线',onClick,leftImgSrc:storeToRefs(setting).airline},
   {name:'雷达',onClick,leftImgSrc:storeToRefs(setting).radar},
   {name:'流场',onClick,leftImgSrc:storeToRefs(setting).stream},
+  {name:'webgpu',onClick,leftImgSrc:storeToRefs(setting).webgpu},
 ]

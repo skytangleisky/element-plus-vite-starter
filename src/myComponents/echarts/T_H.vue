@@ -40,35 +40,37 @@ watch(
     option.xAxis.data = [];
     option.series[0].data = [];
     option.series[1].data = [];
-    avgWindData.map((v, k) => {
-      let data;
-      for (let key in v) {
-        if (result[active] && key == result[active].radar.radar_id) {
-          data = v[key];
+    if (avgWindData) {
+      avgWindData.map((v, k) => {
+        let data;
+        for (let key in v) {
+          if (result[active] && key == result[active].radar.radar_id) {
+            data = v[key];
+          }
         }
-      }
-      if (data) {
-        data.map((v, k) => {
-          for (let k in v) {
-            option.xAxis.data.push(k.substring(10));
-            let tmp2 = v[k].slice().reverse()[0];
-            if (tmp2) {
-              for (let key in tmp2) {
-                let temperature = tmp2[key].ex_temp;
-                let humidity = tmp2[key].ex_hum;
-                option.series[0].data.push(temperature);
-                // option.series[1].data.push(humidity);
+        if (data) {
+          data.map((v, k) => {
+            for (let k in v) {
+              option.xAxis.data.push(k.substring(10));
+              let tmp2 = v[k].slice().reverse()[0];
+              if (tmp2) {
+                for (let key in tmp2) {
+                  let temperature = tmp2[key].ex_temp;
+                  let humidity = tmp2[key].ex_hum;
+                  option.series[0].data.push(temperature);
+                  // option.series[1].data.push(humidity);
+                }
               }
             }
-          }
-        });
-        myChart.setOption(option);
-      } else {
-        option.series[0].data = [];
-        option.series[1].data = [];
-        myChart.setOption(option);
-      }
-    });
+          });
+          myChart.setOption(option);
+        } else {
+          option.series[0].data = [];
+          option.series[1].data = [];
+          myChart.setOption(option);
+        }
+      });
+    }
   }
 );
 var option = {

@@ -8,6 +8,7 @@ export const state = {
   },
   projection: 'mercator',
   lang: 'zh-cn',
+  webgpu:true,
   loadmap:true,
   district:true,
   airline:true,
@@ -35,10 +36,62 @@ export const state = {
     {toolTips:'高度',name:'H',val:true,visible:true},
   ],
   checks:[
-    { name: "雷达总数", val: "", select: true },
-    { name: "在线雷达", val: "", select: false },
-    { name: "离线雷达", val: "", select: false },
-    { name: "新增雷达", val: "", select: false },
+    {
+      name: "雷达总数",
+      show:false,
+      showSelect:true,
+      showCollapse:false,
+      val:0,
+      showVal:true,
+      children: [
+        {name:'机舱雷达',val: 2},
+        {name:'塔式雷达',val: 0},
+        {name:'三维雷达',val: 0}
+      ],
+      select: true
+    },
+    {
+      name: "在线雷达",
+      showCollapse:false,
+      show:false,
+      showSelect:true,
+      val:0,
+      showVal:true,
+      children:[
+        {name:'机舱雷达',val: 1},
+        {name:'塔式雷达',val: 0},
+        {name:'三维雷达',val: 0}
+      ],
+      select: false
+    },
+    {
+      name: "离线雷达",
+      showCollapse:false,
+      show:false,
+      showSelect:true,
+      val:0,
+      showVal:true,
+      children: [
+        {name:'机舱雷达',val: 1},
+        {name:'塔式雷达',val: 0},
+        {name:'三维雷达',val: 0}
+      ],
+      select: false
+    },
+    {
+      name: "新增雷达",
+      showCollapse:false,
+      show:false,
+      showSelect:true,
+      val:0,
+      showVal:true,
+      children: [
+        {name:'机舱雷达',val: 2},
+        {name:'塔式雷达',val: 0},
+        {name:'三维雷达',val: 0}
+      ],
+      select: false
+    },
   ],
   defaultActive: 'a7ef7b88-5e6b-0c62-129b-00a18980cdce',
   defaultOpends:['65e99b66-e340-4d4b-6b26-629f41dc63d9'],

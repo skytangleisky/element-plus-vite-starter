@@ -169,6 +169,7 @@ import { linear, inAndOut } from "ol/easing";
 import radarStatistic from "./radarStatistic.vue";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
+console.log(">>>>", setting);
 import { storeToRefs } from "pinia";
 import Legend from "./legend.vue";
 import { windArrowLayer } from "./windArrowLayer";
@@ -626,110 +627,112 @@ onMounted(() => {
       storeToRefs(station).active,
     ],
     ([avgWindData]) => {
-      avgWindData.forEach((v) => {
-        source2.getFeatures().forEach((feature) => {
-          // let tmp = v[feature.get("radar_id")];
-          // if (tmp) {
-          //   for (let k in tmp[0]) {
-          //     let tmp2 = tmp[0][k].slice().reverse()[0];
-          //     if (tmp2) {
-          //       for (let key in tmp2) {
-          //         feature.set("rad", (tmp2[key].center_h_direction_abs / 180) * Math.PI);
-          //         feature.set("speed", tmp2[key].center_h_speed + "m/s");
-          //         feature.set("time", k);
-          //       }
-          //     } else {
-          //       for (let key in tmp2) {
-          //         feature.set("rad", NaN);
-          //         feature.set("speed", NaN);
-          //         feature.set("time", k);
-          //       }
-          //     }
-          //   }
-          // }
-          let tmp = v[feature.get("radar_id")];
-          if (tmp) {
-            source.forEachFeature((f) => {
-              if (f.get("radar_id") == feature.get("radar_id")) {
-                source.removeFeature(f);
-              }
-            });
-            for (let k in tmp[0]) {
-              let tmp2 = tmp[0][k].slice().reverse();
-              let lngLat = [feature.get("lng"), feature.get("lat")];
-              tmp2.forEach((tmp3) => {
-                for (let k in tmp3) {
-                  let item = tmp3[k];
-                  let ll = getLngLat(lngLat[0], lngLat[1], item.north_a, Number(k));
-                  lngLat = [ll.lng, ll.lat];
-                  source.addFeature(
-                    new Feature({
-                      radar_id: feature.get("radar_id"),
-                      rad: (item.center_h_direction_abs / 180) * Math.PI,
-                      flag: getFeather(item.center_h_speed),
-                      geometry: new Point(fromLonLat(lngLat)),
-                      opacity: 1.0,
-                    })
-                  );
+      if (avgWindData) {
+        avgWindData.forEach((v) => {
+          source2.getFeatures().forEach((feature) => {
+            // let tmp = v[feature.get("radar_id")];
+            // if (tmp) {
+            //   for (let k in tmp[0]) {
+            //     let tmp2 = tmp[0][k].slice().reverse()[0];
+            //     if (tmp2) {
+            //       for (let key in tmp2) {
+            //         feature.set("rad", (tmp2[key].center_h_direction_abs / 180) * Math.PI);
+            //         feature.set("speed", tmp2[key].center_h_speed + "m/s");
+            //         feature.set("time", k);
+            //       }
+            //     } else {
+            //       for (let key in tmp2) {
+            //         feature.set("rad", NaN);
+            //         feature.set("speed", NaN);
+            //         feature.set("time", k);
+            //       }
+            //     }
+            //   }
+            // }
+            let tmp = v[feature.get("radar_id")];
+            if (tmp) {
+              source.forEachFeature((f) => {
+                if (f.get("radar_id") == feature.get("radar_id")) {
+                  source.removeFeature(f);
                 }
               });
-              // if (tmp2) {
-              //    for (let key in tmp2) {
-              //      feature.set("rad", (tmp2[key].center_h_direction_abs / 180) * Math.PI);
-              //      feature.set("flag", getFeather(tmp2[key].center_h_speed));
-              //    }
-              // } else {
-              //   for (let key in tmp2) {
-              //     feature.set("rad", 0);
-              //     feature.set("flag", 0);
-              //   }
-              // }
+              for (let k in tmp[0]) {
+                let tmp2 = tmp[0][k].slice().reverse();
+                let lngLat = [feature.get("lng"), feature.get("lat")];
+                tmp2.forEach((tmp3) => {
+                  for (let k in tmp3) {
+                    let item = tmp3[k];
+                    let ll = getLngLat(lngLat[0], lngLat[1], item.north_a, Number(k));
+                    lngLat = [ll.lng, ll.lat];
+                    source.addFeature(
+                      new Feature({
+                        radar_id: feature.get("radar_id"),
+                        rad: (item.center_h_direction_abs / 180) * Math.PI,
+                        flag: getFeather(item.center_h_speed),
+                        geometry: new Point(fromLonLat(lngLat)),
+                        opacity: 1.0,
+                      })
+                    );
+                  }
+                });
+                // if (tmp2) {
+                //    for (let key in tmp2) {
+                //      feature.set("rad", (tmp2[key].center_h_direction_abs / 180) * Math.PI);
+                //      feature.set("flag", getFeather(tmp2[key].center_h_speed));
+                //    }
+                // } else {
+                //   for (let key in tmp2) {
+                //     feature.set("rad", 0);
+                //     feature.set("flag", 0);
+                //   }
+                // }
+              }
             }
-          }
-        });
-        source3.getFeatures().forEach((feature) => {
-          let tmp = v[feature.get("radar_id")];
-          if (tmp) {
-            for (let k in tmp[0]) {
-              let tmp2 = tmp[0][k].slice().reverse()[0];
-              if (tmp2) {
-                for (let key in tmp2) {
-                  feature.set("distance", tmp2[key].distance.toFixed(1));
-                  feature.set("ex_temp", tmp2[key].ex_temp.toFixed(2));
-                  if (tmp2[key].ex_hum == -1) {
-                    feature.set("ex_hum", undefined);
-                  } else {
-                    feature.set("ex_hum", tmp2[key].ex_hum.toFixed(2));
+          });
+          source3.getFeatures().forEach((feature) => {
+            let tmp = v[feature.get("radar_id")];
+            if (tmp) {
+              for (let k in tmp[0]) {
+                let tmp2 = tmp[0][k].slice().reverse()[0];
+                if (tmp2) {
+                  for (let key in tmp2) {
+                    feature.set("distance", tmp2[key].distance.toFixed(1));
+                    feature.set("ex_temp", tmp2[key].ex_temp.toFixed(2));
+                    if (tmp2[key].ex_hum == -1) {
+                      feature.set("ex_hum", undefined);
+                    } else {
+                      feature.set("ex_hum", tmp2[key].ex_hum.toFixed(2));
+                    }
+                    if (setting.factor[10].val) {
+                      feature.getStyle()[5].getText().setText(feature.get("distance"));
+                    } else {
+                      feature.getStyle()[5].getText().setText(undefined);
+                    }
+                    if (setting.factor[7].val) {
+                      feature.getStyle()[8].getText().setText(feature.get("ex_temp"));
+                    } else {
+                      feature.getStyle()[8].getText().setText(undefined);
+                    }
+                    if (setting.factor[9].val) {
+                      feature.getStyle()[10].getText().setText(feature.get("ex_hum"));
+                    } else {
+                      feature.getStyle()[10].getText().setText(undefined);
+                    }
+                    feature.changed();
                   }
-                  if (setting.factor[10].val) {
-                    feature.getStyle()[5].getText().setText(feature.get("distance"));
-                  } else {
+                } else {
+                  for (let key in tmp2) {
                     feature.getStyle()[5].getText().setText(undefined);
-                  }
-                  if (setting.factor[7].val) {
-                    feature.getStyle()[8].getText().setText(feature.get("ex_temp"));
-                  } else {
                     feature.getStyle()[8].getText().setText(undefined);
-                  }
-                  if (setting.factor[9].val) {
-                    feature.getStyle()[10].getText().setText(feature.get("ex_hum"));
-                  } else {
                     feature.getStyle()[10].getText().setText(undefined);
+                    feature.changed();
                   }
-                  feature.changed();
-                }
-              } else {
-                for (let key in tmp2) {
-                  feature.getStyle()[5].getText().setText(undefined);
-                  feature.getStyle()[8].getText().setText(undefined);
-                  feature.getStyle()[10].getText().setText(undefined);
-                  feature.changed();
                 }
               }
             }
-          }
+          });
         });
-      });
+      }
     }
   );
   watch(

@@ -389,57 +389,59 @@ let setEcharts = (isDark) => {
       storeToRefs(station).active,
     ],
     ([avgWindData, layerIdx, result, active]) => {
-      avgWindData.map((v, k) => {
-        let data;
-        for (let key in v) {
-          if (result[active] && key == result[active].radar.radar_id) {
-            data = v[key];
-          }
-        }
-        if (data) {
-          options.value = [];
-          for (let K in data[0]) {
-            for (let i = 0; i < data[0][K].length; i++) {
-              for (let key in data[0][K][i]) {
-                options.value.push({
-                  value: i,
-                  label: `${key}米`,
-                });
-              }
-            }
-            if (layerIndex.value == null) {
-              layerIndex.value = data[0][K].length - 1;
+      if (avgWindData) {
+        avgWindData.map((v, k) => {
+          let data;
+          for (let key in v) {
+            if (result[active] && key == result[active].radar.radar_id) {
+              data = v[key];
             }
           }
-          let Fdatas = [];
-          data.map((v, k) => {
-            for (let k in v) {
-              let fData = [];
-              fData[0] = k;
-              let tmp2 = v[k][layerIdx];
-              if (tmp2) {
-                for (let key in tmp2) {
-                  fData[1] = tmp2[key].center_h_speed;
-                  fData[2] = tmp2[key].center_h_direction_abs;
-                  fData[3] = tmp2[key].distance;
-                }
-                if (fData[1] === -1000) {
-                } else {
-                  Fdatas.unshift(fData);
+          if (data) {
+            options.value = [];
+            for (let K in data[0]) {
+              for (let i = 0; i < data[0][K].length; i++) {
+                for (let key in data[0][K][i]) {
+                  options.value.push({
+                    value: i,
+                    label: `${key}米`,
+                  });
                 }
               }
+              if (layerIndex.value == null) {
+                layerIndex.value = data[0][K].length - 1;
+              }
             }
-          });
-          // option.series[0].data = Fdatas;
-          option.series[1].data = Fdatas;
-          option.series[2].data = Fdatas;
-          myChart.setOption(option);
-        } else {
-          option.series[1].data = [];
-          option.series[2].data = [];
-          myChart.setOption(option);
-        }
-      });
+            let Fdatas = [];
+            data.map((v, k) => {
+              for (let k in v) {
+                let fData = [];
+                fData[0] = k;
+                let tmp2 = v[k][layerIdx];
+                if (tmp2) {
+                  for (let key in tmp2) {
+                    fData[1] = tmp2[key].center_h_speed;
+                    fData[2] = tmp2[key].center_h_direction_abs;
+                    fData[3] = tmp2[key].distance;
+                  }
+                  if (fData[1] === -1000) {
+                  } else {
+                    Fdatas.unshift(fData);
+                  }
+                }
+              }
+            });
+            // option.series[0].data = Fdatas;
+            option.series[1].data = Fdatas;
+            option.series[2].data = Fdatas;
+            myChart.setOption(option);
+          } else {
+            option.series[1].data = [];
+            option.series[2].data = [];
+            myChart.setOption(option);
+          }
+        });
+      }
     },
     { immediate: true }
   );
