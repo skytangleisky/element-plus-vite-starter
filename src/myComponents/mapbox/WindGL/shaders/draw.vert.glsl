@@ -23,30 +23,31 @@
 
 
 #define EPSILON 0.0000001
-#define PI 3.141592653589793
 #define EXTENT 8192.0
-#define HALF_PI PI / 2.0
-#define QUARTER_PI PI / 4.0
-#define RAD_TO_DEG 180.0 / PI
-#define DEG_TO_RAD PI / 180.0
-#define GLOBE_RADIUS EXTENT / PI / 2.0
-#define E 2.718281828459
-
+#define PI 3.141592653589793
+float TWICE_PI = PI * 2.0;
+float HALF_PI = PI / 2.0;
+float QUARTER_PI = PI / 4.0;
+float RAD_TO_DEG = 180.0 / PI;
+float DEG_TO_RAD = PI / 180.0;
+float GLOBE_RADIUS = EXTENT / PI / 2.0;
+float sinh(float f){
+    return (exp(f)-exp(-f))/2.0;
+}
+float asinh(float f){
+    return log(f+sqrt(pow(f,2.0)+1.0));
+}
 float mercatorXfromLng(float lng) {
     return (180.0 + lng) / 360.0;
 }
 float mercatorYfromLat(float lat) {
-    return (180.0 - (RAD_TO_DEG* log(tan(QUARTER_PI + lat / 2.0 * DEG_TO_RAD)))) / 360.0;
+    return 0.5 - asinh(tan(lat * DEG_TO_RAD)) / TWICE_PI;
 }
-
-
 float lngFromMercatorX(float x) {
     return x * 360.0 - 180.0;
 }
-
 float latFromMercatorY(float y){
-    float y2 = 180.0 - y * 360.0;
-    return 360.0 / PI * atan(exp(y2 * PI / 180.0)) - 90.0;
+    return atan(sinh((0.5 - y) * TWICE_PI)) * RAD_TO_DEG;
 }
 vec3 latLngToECEF(vec2 latLng) {
     latLng = DEG_TO_RAD * latLng;
@@ -67,9 +68,6 @@ uniform float u_particles_res;
 uniform int projection;
 varying vec2 uv_pos;
 uniform mat4 u_matrix;  // update by limz
-float sinh(float f){
-    return (pow(E,f)-pow(E,-f))/2.0;
-}
 void main() {
     gl_PointSize = 1.0;
     vec4 color = texture2D(u_particles, vec2(fract(a_index / u_particles_res),floor(a_index / u_particles_res) / u_particles_res));
@@ -84,7 +82,7 @@ void main() {
     // float stopLng = 169.42999999999998;
     // float startLat = -10.38;
     // float stopLat = 50.30088389285023;
-    float LAT = atan(sinh(PI))/PI*180.0;
+    float LAT = atan(sinh(PI))*RAD_TO_DEG;
     float startLng = -180.0;
     float stopLng = 180.0;
     float startLat = -LAT;
