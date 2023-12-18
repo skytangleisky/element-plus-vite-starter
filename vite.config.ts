@@ -6,6 +6,7 @@ import { visualizer } from 'rollup-plugin-visualizer'
 
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import { viteMockServe } from "vite-plugin-mock"
 const fs = require('fs')
 
 import Unocss from 'unocss/vite'
@@ -38,6 +39,11 @@ export default defineConfig({
   },
   plugins: [
     vue(),
+    viteMockServe({
+      mockPath:"mock",
+      enable:true,
+      logger:true,
+    }),
     vueJsx(),
     inject({
       $: "jquery",

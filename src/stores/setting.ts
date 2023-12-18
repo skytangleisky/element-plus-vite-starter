@@ -33,7 +33,7 @@ export const state = {
     {toolTips:'温度',name:'T',val:true,visible:true},
     {toolTips:'露点',name:'Td',val:true,visible:false},
     {toolTips:'湿度',name:'RH',val:true,visible:true},
-    {toolTips:'高度',name:'H',val:true,visible:true},
+    {toolTips:'高度',name:'H',val:true,visible:false},
   ],
   checks:[
     {

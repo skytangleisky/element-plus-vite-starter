@@ -9,11 +9,18 @@
     "
   >
     <div
-      ref="mapContainer"
+      ref="mapRef"
       class="map"
-      style="position: absolute; left: 0; top: 0; width: 100%; height: 100%"
+      style="
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        line-height: 1;
+      "
     ></div>
-    <div ref="popup" class="ol-popup">
+    <div ref="popup" class="ol-popup" style="display: none">
       <div
         style="
           position: absolute;
@@ -48,7 +55,7 @@
         <div style="color: #e83e8c">纬&emsp;度：{{ info.latitude }}</div>
         <div style="color: #e83e8c">方位角：{{ info.deg }}</div>
       </div>
-      <div href="#" ref="popup_closer" class="ol-popup-closer"></div>
+      <div ref="popup_closer" class="ol-popup-closer"></div>
     </div>
     <radar-statistic></radar-statistic>
     <Legend></Legend>
@@ -97,20 +104,11 @@
   </div>
 </template>
 <script setup>
+import "../mapbox/mapbox-gl.css";
+import "../mapbox/mapbox-gl.js";
+import { getCoord, loadImage, getFeather } from "~/tools";
+import imageUrl from "~/assets/feather.svg?url";
 import { getLngLat } from "~/myComponents/map/js/core.js";
-import FullScreen from "ol/control/FullScreen";
-import Graticule from "ol/layer/Graticule.js";
-const graticule = new Graticule({
-  // the style to use for the lines, optional.
-  strokeStyle: new Stroke({
-    color: "rgba(255,120,0,0.9)",
-    width: 2,
-    lineDash: [0.5, 4],
-  }),
-  showLabels: true,
-  visible: true,
-  wrapX: true,
-});
 import {
   onMounted,
   onBeforeUnmount,
@@ -131,31 +129,8 @@ const info = ref({
   latitude: "",
   deg: "",
 });
-import VectorLayer from "ol/layer/Vector";
-import GeoJSON from "ol/format/GeoJSON.js";
-import Layer from "ol/layer/Layer.js";
-import Map from "ol/Map.js";
-import TileLayer from "ol/layer/Tile.js";
-// import TileLayer from 'ol/layer/WebGLTile.js';
-import XYZ from "ol/source/XYZ.js";
-import VectorSource from "ol/source/Vector.js";
-import View from "ol/View.js";
-import WebGLVectorLayerRenderer from "ol/renderer/webgl/VectorLayer.js";
-import "ol/ol.css";
-import WebGLPointsLayer from "ol/layer/WebGLPoints.js";
-import Feature from "ol/Feature.js";
-import Point from "ol/geom/Point.js";
-import { format, toStringHDMS } from "ol/coordinate";
-import { fromLonLat, toLonLat } from "ol/proj";
-import Overlay from "ol/Overlay";
-// import ufo_shapes from './data/ufo_shapes.png?url'
-import ufo_shapes from "~/assets/feather.svg?url";
-// import ufo_shapes from '~/assets/feather.png?url'
-import circle from "~/assets/circle.svg?url";
-import { Circle, Fill, Stroke, Style, Text } from "ol/style.js";
 import { eventbus } from "~/eventbus";
 import { useStationStore } from "~/stores/station";
-import { ScaleLine, defaults as defaultControls } from "ol/control";
 import chartTh from "~/myComponents/echarts/T_H.vue";
 import chartDom from "~/myComponents/echarts/index.vue";
 import chartFkx from "~/myComponents/echarts/fkx.vue";
@@ -165,319 +140,471 @@ import chartSpeed from "~/myComponents/echarts/Speed.vue";
 import chartDirection from "~/myComponents/echarts/Direction.vue";
 import { useRoute } from "vue-router";
 const route = useRoute();
-import { linear, inAndOut } from "ol/easing";
 import radarStatistic from "./radarStatistic.vue";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
-console.log(">>>>", setting);
 import { storeToRefs } from "pinia";
 import Legend from "./legend.vue";
-import { windArrowLayer } from "./windArrowLayer";
+import style from "./streets-v11.js";
+import { point } from "@turf/turf";
 
 console.log("route.query", route.query);
 const station = useStationStore();
 /** @type {import('ol/style/literal.js').LiteralStyle} */
 
-class WebGLLayer extends Layer {
-  createRenderer() {
-    return new WebGLVectorLayerRenderer(this, {
-      style: {
-        "stroke-color": ["*", ["get", "COLOR"], [220, 220, 220]],
-        "stroke-width": 1,
-        "fill-color": ["*", ["get", "COLOR"], [0, 0, 0, 0.2]],
-      },
-    });
-  }
-}
-const webglLayer = new WebGLLayer({
-  id: "districtLayer",
-  source: new VectorSource({
-    // url: 'https://openlayers.org/data/vector/ecoregions.json',
-    url: "https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json",
-    format: new GeoJSON(),
-  }),
-});
-const osm = new TileLayer({
-  id: "tileLayer",
-  preload: Infinity,
-  source: new XYZ({
-    // url: "https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
-    url: "https://wprd0{1-4}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
-    // url: "https://tanglei.site:3210/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
-    // url: "http://tanglei.site:3211/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
-    // url: "https://tanglei.site/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
-  }),
-});
-const vectorLayer = new VectorLayer({
-  id: "factor",
-});
-
-const mapContainer = ref(null);
+const mapRef = ref(null);
 const popup = ref(null);
 const popup_closer = ref(null);
 const disappear = (e) => {
   setting.disappear = !setting.disappear;
 };
 let timer;
-const getCoord = (i, j) => [
-  (i * (16 + 20)) / (16 * 10 + 20 * (10 - 1)),
-  (j * (32 + 20)) / (32 * 4 + 20 * (4 - 1)),
-  (i * (16 + 20)) / (16 * 10 + 20 * (10 - 1)) + 16 / (16 * 10 + 20 * (10 - 1)),
-  (j * (32 + 20)) / (32 * 4 + 20 * (4 - 1)) + 32 / (32 * 4 + 20 * (4 - 1)),
-];
-const getFeather = (v) =>
-  v <= 0
-    ? 0
-    : v <= 1
-    ? 1
-    : v <= 2
-    ? 2
-    : v <= 4
-    ? 4
-    : v <= 6
-    ? 6
-    : v <= 8
-    ? 8
-    : v <= 10
-    ? 10
-    : v <= 12
-    ? 12
-    : v <= 14
-    ? 14
-    : v <= 16
-    ? 16
-    : v <= 18
-    ? 18
-    : v <= 20
-    ? 20
-    : v <= 22
-    ? 22
-    : v <= 24
-    ? 24
-    : v <= 26
-    ? 26
-    : v <= 28
-    ? 28
-    : v <= 30
-    ? 30
-    : v <= 32
-    ? 32
-    : v <= 34
-    ? 34
-    : v <= 36
-    ? 36
-    : v <= 38
-    ? 38
-    : v <= 40
-    ? 40
-    : v <= 42
-    ? 42
-    : v <= 44
-    ? 44
-    : v <= 46
-    ? 46
-    : v <= 48
-    ? 48
-    : v <= 50
-    ? 50
-    : v <= 52
-    ? 52
-    : v <= 54
-    ? 54
-    : v <= 56
-    ? 56
-    : v <= 58
-    ? 58
-    : 60;
-const style = {
-  symbol: {
-    symbolType: "image",
-    src: ufo_shapes,
-    size: [16, 32],
-    rotation: ["get", "rad", "number"],
-    color: [
-      "interpolate",
-      ["linear"],
-      ["get", "flag"],
-      0,
-      "#0000ff",
-      4,
-      "#002aff",
-      8,
-      "#0054ff",
-      12,
-      "#007eff",
-      16,
-      "#00a8ff",
-      20,
-      "#00d2ff",
-      24,
-      "#14d474",
-      28,
-      "#a6dd00",
-      32,
-      "#ffe600",
-      36,
-      "#ffb300",
-      40,
-      "#ff8000",
-      44,
-      "#ff4d00",
-      48,
-      "#ff1a00",
-      52,
-      "#e60000",
-      56,
-      "#b30000",
-      58,
-      "#b30000",
-      60,
-      "#b30000",
-    ],
-    opacity: ["get", "opacity", "number"],
-    rotateWithView: true,
-    offset: ["match", ["get", "flag"], 0, [0, 0], [8, 16]],
-    textureCoord: [
-      "match",
-      ["get", "flag"],
-      0,
-      // getCoord(0, 0),
-      getCoord(2, 3), //不显示
-      1,
-      getCoord(1, 0),
-      2,
-      getCoord(2, 0),
-      4,
-      getCoord(3, 0),
-      6,
-      getCoord(4, 0),
-      8,
-      getCoord(5, 0),
-      10,
-      getCoord(6, 0),
-      12,
-      getCoord(7, 0),
-      14,
-      getCoord(8, 0),
-      16,
-      getCoord(9, 0),
-      18,
-      getCoord(0, 1),
-      20,
-      getCoord(1, 1),
-      22,
-      getCoord(2, 1),
-      24,
-      getCoord(3, 1),
-      26,
-      getCoord(4, 1),
-      28,
-      getCoord(5, 1),
-      30,
-      getCoord(6, 1),
-      32,
-      getCoord(7, 1),
-      34,
-      getCoord(8, 1),
-      36,
-      getCoord(9, 1),
-      38,
-      getCoord(0, 2),
-      40,
-      getCoord(1, 2),
-      42,
-      getCoord(2, 2),
-      44,
-      getCoord(3, 2),
-      46,
-      getCoord(4, 2),
-      48,
-      getCoord(5, 2),
-      50,
-      getCoord(6, 2),
-      52,
-      getCoord(7, 2),
-      54,
-      getCoord(8, 2),
-      56,
-      getCoord(9, 2),
-      58,
-      getCoord(0, 3),
-      getCoord(1, 3),
-    ],
-  },
-};
-const style2 = {
-  symbol: {
-    symbolType: "circle",
-    size: 10,
-    color: ["match", ["get", "hover"], 1, "#ff3f3f", "#006688"],
-    rotateWithView: false,
-    offset: [0, 0],
-    opacity: 1,
-  },
-};
-const stationLayer = new WebGLPointsLayer({
-  id: "station",
-  style: style2,
-});
-const featherLayer = new WebGLPointsLayer({
-  id: "feather",
-  style,
-});
 onMounted(() => {
+  let map = new mapboxgl.Map({
+    container: mapRef.value,
+    // style: raster,
+    performanceMetricsCollection: false,
+    style,
+    // dragRotate: false,
+    // touchRotate: false,
+    // bounds: turf.bbox(boundaries),
+    // localIdeographFontFamily: "Microsoft YoHei",
+    localIdeographFontFamily: "",
+    antialias: true,
+    renderWorldCopies: true,
+    // minZoom: 1,
+    // maxBounds: [
+    //   [60.0, 0],
+    //   [160.0, 60],
+    // ],
+    // zoom: 18,
+    // center: [148.9819, -35.3981],
+    // pitch: 60,
+    zoom: setting.openlayers.zoom,
+    center: setting.openlayers.center,
+    pitch: 0,
+  });
+  let speed = 20;
+  const points = {
+    type: "geojson",
+    data: {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          properties: {
+            风速: speed,
+            image: "feather" + getFeather(speed),
+            风向: 0,
+          },
+          geometry: {
+            type: "Point",
+            coordinates: [-122.414, 37.776],
+          },
+        },
+      ],
+    },
+  };
+  map.on("zoom", () => {
+    setting.openlayers.zoom = map.getZoom();
+  });
+  map.on("move", () => {
+    let center = map.getCenter();
+    setting.openlayers.center = [center.lng, center.lat];
+  });
+  map.on("load", () => {
+    map.addSource("point", points);
+    map.addLayer({
+      id: "stationLayer",
+      source: "point",
+      type: "circle",
+      paint: {
+        "circle-radius": [
+          "interpolate",
+          ["exponential", 1.5],
+          ["zoom"],
+          15,
+          4.5,
+          16,
+          8,
+          18,
+          20,
+          22,
+          200,
+        ],
+        "circle-color": ["get", "color"],
+        "circle-stroke-width": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          15,
+          0.8,
+          16,
+          1.2,
+          18,
+          2,
+        ],
+        // "circle-stroke-color": "hsl(220, 20%, 85%)",
+        "circle-pitch-alignment": "map",
+      },
+      filter: ["==", ["get", "type"], "站点"],
+      layout: {
+        visibility: setting.station ? "visible" : "none",
+      },
+    });
+    loadImage(imageUrl, 340, 188, {
+      feather0: getCoord(0, 0, 0),
+      feather1: getCoord(1, 0, 1),
+      feather2: getCoord(2, 0, 2),
+      feather4: getCoord(3, 0, 3),
+      feather6: getCoord(4, 0, 6),
+      feather8: getCoord(5, 0, 8),
+      feather10: getCoord(6, 0, 10),
+      feather12: getCoord(7, 0, 12),
+      feather14: getCoord(8, 0, 14),
+      feather16: getCoord(9, 0, 16),
+      feather18: getCoord(0, 1, 18),
+      feather20: getCoord(1, 1, 20),
+      feather22: getCoord(2, 1, 22),
+      feather24: getCoord(3, 1, 24),
+      feather26: getCoord(4, 1, 26),
+      feather28: getCoord(5, 1, 28),
+      feather30: getCoord(6, 1, 30),
+      feather32: getCoord(7, 1, 32),
+      feather34: getCoord(8, 1, 34),
+      feather36: getCoord(9, 1, 36),
+      feather38: getCoord(0, 2, 38),
+      feather40: getCoord(1, 2, 40),
+      feather42: getCoord(2, 2, 42),
+      feather44: getCoord(3, 2, 44),
+      feather46: getCoord(4, 2, 46),
+      feather48: getCoord(5, 2, 48),
+      feather50: getCoord(6, 2, 50),
+      feather52: getCoord(7, 2, 52),
+      feather54: getCoord(8, 2, 54),
+      feather56: getCoord(9, 2, 56),
+      feather58: getCoord(0, 3, 58),
+      feather60: getCoord(1, 3, 60),
+    }).then((result) => {
+      for (let k in result) {
+        map.addImage(k, result[k]);
+      }
+      map.addLayer({
+        id: "featherLayer",
+        source: "point",
+        type: "symbol",
+        layout: {
+          visibility: setting.station ? "visible" : "none",
+          // This icon is a part of the Mapbox Streets style.
+          // To view all images available in a Mapbox style, open
+          // the style in Mapbox Studio and click the "Images" tab.
+          // To add a new image to the style at runtime see
+          // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+          "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
+          "icon-image": ["get", "image"],
+          "icon-size": 1,
+          "icon-rotate": ["get", "风向"],
+          "icon-rotation-alignment": "map",
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+          // "text-field": ["get", "风速"],
+          // "text-font": ["simkai"],
+          // "text-size": 20,
+          // "text-transform": "uppercase",
+          // // "text-letter-spacing": 0.05,
+          // "text-anchor": "center",
+          // "text-line-height": 1,
+          // // "text-justify": "center",
+          // "text-offset": [0, 0],
+          // "text-ignore-placement": true,
+          // "text-allow-overlap": true,
+          // "text-rotation-alignment": "map",
+        },
+        filter: ["==", ["get", "type"], "风羽"],
+      });
+      map.addLayer({
+        id: "textLayer",
+        source: "point",
+        type: "symbol",
+        layout: {
+          visibility: setting.station ? "visible" : "none",
+          "text-field": ["get", "name"],
+          "text-font": ["simkai"],
+          "text-size": 20,
+          "text-transform": "uppercase",
+          // "text-letter-spacing": 0.05,
+          "text-anchor": "center",
+          "text-line-height": 1,
+          "text-offset": [0, -1.2],
+          "text-ignore-placement": true,
+          "text-allow-overlap": true,
+          "text-rotation-alignment": "map",
+        },
+        paint: {
+          "text-color": "white",
+        },
+        filter: ["==", ["get", "type"], "站点"],
+      });
+      map.addLayer({
+        id: "temperatureLayer",
+        source: "point",
+        type: "symbol",
+        layout: {
+          visibility: setting.station ? "visible" : "none",
+          "text-field": ["get", "external_temperature"],
+          "text-font": ["simkai"],
+          "text-size": 20,
+          "text-transform": "uppercase",
+          // "text-letter-spacing": 0.05,
+          "text-anchor": "right",
+          "text-line-height": 1,
+          "text-offset": [-1, -0.2],
+          "text-ignore-placement": true,
+          "text-allow-overlap": true,
+          "text-rotation-alignment": "map",
+        },
+        paint: {
+          "text-opacity": setting.factor[7].val ? 1 : 0,
+          "text-color": "white",
+        },
+        filter: ["==", ["get", "type"], "站点"],
+      });
+      map.addLayer({
+        id: "humidityLayer",
+        source: "point",
+        type: "symbol",
+        layout: {
+          visibility: setting.station ? "visible" : "none",
+          "text-field": ["get", "external_humidity"],
+          "text-font": ["simkai"],
+          "text-size": 20,
+          "text-transform": "uppercase",
+          // "text-letter-spacing": 0.05,
+          "text-anchor": "right",
+          "text-line-height": 1,
+          "text-offset": [-1, 1.2],
+          "text-ignore-placement": true,
+          "text-allow-overlap": true,
+          "text-rotation-alignment": "map",
+        },
+        paint: {
+          "text-opacity": setting.factor[9].val ? 1 : 0,
+          "text-color": "white",
+        },
+        filter: ["==", ["get", "type"], "站点"],
+      });
+    });
+  });
   eventbus.on("将站点移动到屏幕中心", flyTo);
   const container = popup.value;
   const closer = popup_closer.value;
-  const overlay = new Overlay({
-    element: container,
-    autoPan: {
-      animation: {
-        duration: 0,
-      },
-    },
-  });
   closer.onclick = function () {
     selected = null;
     overlay.setPosition(undefined);
     closer.blur();
     return false;
   };
-  const map = new Map({
-    overlays: [],
-    layers: [
-      osm,
-      webglLayer,
-      stationLayer,
-      featherLayer,
-      vectorLayer,
-      //  windArrowLayer,
-      graticule,
-    ],
-    target: mapContainer.value,
-    view: new View({
-      // center: fromLonLat([105,30]),
-      // zoom:8,
-      center: fromLonLat(setting.openlayers.center),
-      zoom: setting.openlayers.zoom,
-      projection: "EPSG:3857",
-    }),
-    //加载控件到地图容器中
-    controls: defaultControls({
-      zoom: false,
-      rotate: false,
-      attribution: false,
-    }).extend([
-      // new ScaleLine({bar: true, text: true, minWidth: 125})
-    ]),
+  watch(
+    () => station.result,
+    (newVal) => {
+      const data = newVal;
+      points.data = {
+        type: "FeatureCollection",
+        features: [],
+      };
+      for (let i = 0; i < data.length; i++) {
+        let color = "blue";
+        if (data[i].radar.data_status == false || data[i].radar.is_online == false) {
+          color = "red";
+        } else if (
+          data[i].compass_status == false ||
+          data[i].control_plate_status == false ||
+          data[i].edfa_status == false ||
+          data[i].external_status == false ||
+          data[i].gps_status == false ||
+          data[i].grabber_status == false
+        ) {
+          color = "orange";
+        } else {
+          color = "#0f0";
+        }
+        // console.log(data[i]);
+        points.data.features.push({
+          type: "Feature",
+          properties: {
+            type: "站点",
+            radar_id: data[i].radar.radar_id,
+            风速: speed,
+            time: data[i].data_time,
+            name: data[i].radar.name,
+            is_online: data[i].is_online,
+            external_temperature: data[i].external_temperature,
+            external_humidity: data[i].external_humidity,
+            image: "feather" + getFeather(speed),
+            color,
+          },
+          geometry: {
+            type: "Point",
+            coordinates: [data[i].longitude, data[i].latitude],
+          },
+        });
+
+        // 模拟
+        // if (i == 0)
+        //   points.data.features[i].properties.radar_id =
+        //     "7dad08b8-2c89-47d4-9698-7e885090c3f6";
+      }
+      let source = map.getSource("point");
+      source && source.setData(points.data);
+      if (data.length) {
+        station
+          .查询平均风数据接口({
+            user_id: route.query.user_id,
+            // date: new Date().Format("yyyyMMdd"),
+          })
+          .then((res) => {
+            station.avgWindData = res.data.data;
+          });
+        station
+          .查询瞬时风数据接口({
+            user_id: route.query.user_id,
+            // date: new Date().Format("yyyyMMdd"),
+          })
+          .then((res) => {
+            station.secondWindData = res.data.data;
+          });
+        station
+          .查询径向风数据接口({
+            user_id: route.query.user_id,
+            // date: new Date().Format("yyyyMMdd"),
+          })
+          .then((res) => {
+            station.radialWindData = res.data.data;
+          });
+      }
+    },
+    { deep: true, immediate: false }
+  );
+  map.on("click", "stationLayer", (e) => {
+    if (e.features) {
+      setting.disappear = false;
+      station.active = -1;
+      for (let i = 0; i < station.result.length; i++) {
+        console.log(station.result[i].radar.name);
+        if (station.result[i].radar.radar_id == e.features[0].properties.radar_id) {
+          station.active = i;
+        }
+      }
+    }
   });
   watch(
-    () => setting.openlayers.zoom,
-    (newZoom) => map.getView().setZoom(newZoom)
-  );
-  watch(
-    () => setting.openlayers.center,
-    (newCenter) => map.getView().setCenter(fromLonLat(newCenter))
+    [
+      storeToRefs(station).avgWindData,
+      storeToRefs(station).result,
+      storeToRefs(station).active,
+    ],
+    ([avgWindData]) => {
+      if (avgWindData) {
+        avgWindData.forEach((v) => {
+          for (let radar_id in v) {
+            //删除相关站点的风羽
+            for (let i = 0; i < points.data.features.length; i++) {
+              if (
+                radar_id == points.data.features[i].properties.radar_id &&
+                points.data.features[i].properties.type == "风羽"
+              ) {
+                points.data.features.splice(i, 1);
+              }
+            }
+            //计算风羽的位置并添加
+            for (let i = 0; i < points.data.features.length; i++) {
+              if (
+                radar_id == points.data.features[i].properties.radar_id &&
+                points.data.features[i].properties.type == "站点"
+              ) {
+                let lngLat = points.data.features[i].geometry.coordinates;
+                let tmp = v[radar_id];
+                for (let k in tmp[0]) {
+                  let tmp2 = tmp[0][k].slice().reverse();
+                  tmp2.forEach((tmp3) => {
+                    for (let k in tmp3) {
+                      let item = tmp3[k];
+                      let ll = getLngLat(lngLat[0], lngLat[1], item.north_a, Number(k));
+                      lngLat = [ll.lng, ll.lat];
+                      // item.center_h_direction_abs = Math.random() * 360;
+                      // item.center_h_speed = Math.random() * 60;
+                      if (
+                        item.center_h_direction_abs != -1000 &&
+                        item.center_h_speed != -1000
+                      ) {
+                        points.data.features.push({
+                          type: "Feature",
+                          properties: {
+                            type: "风羽",
+                            radar_id: radar_id,
+                            风速: item.center_h_speed,
+                            image: "feather" + getFeather(item.center_h_speed),
+                            风向: item.center_h_direction_abs,
+                          },
+                          geometry: {
+                            type: "Point",
+                            coordinates: lngLat,
+                          },
+                        });
+                      }
+                    }
+                    let source = map.getSource("point");
+                    source.setData(points.data);
+                  });
+                }
+              }
+            }
+          }
+          // source3.getFeatures().forEach((feature) => {
+          //   let tmp = v[feature.get("radar_id")];
+          //   if (tmp) {
+          //     for (let k in tmp[0]) {
+          //       let tmp2 = tmp[0][k].slice().reverse()[0];
+          //       if (tmp2) {
+          //         for (let key in tmp2) {
+          //           feature.set("distance", tmp2[key].distance.toFixed(1));
+          //           feature.set("ex_temp", tmp2[key].ex_temp.toFixed(2));
+          //           if (tmp2[key].ex_hum == -1) {
+          //             feature.set("ex_hum", undefined);
+          //           } else {
+          //             feature.set("ex_hum", tmp2[key].ex_hum.toFixed(2));
+          //           }
+          //           if (setting.factor[10].val) {
+          //             feature.getStyle()[5].getText().setText(feature.get("distance"));
+          //           } else {
+          //             feature.getStyle()[5].getText().setText(undefined);
+          //           }
+          //           if (setting.factor[7].val) {
+          //             feature.getStyle()[8].getText().setText(feature.get("ex_temp"));
+          //           } else {
+          //             feature.getStyle()[8].getText().setText(undefined);
+          //           }
+          //           if (setting.factor[9].val) {
+          //             feature.getStyle()[10].getText().setText(feature.get("ex_hum"));
+          //           } else {
+          //             feature.getStyle()[10].getText().setText(undefined);
+          //           }
+          //           feature.changed();
+          //         }
+          //       } else {
+          //         for (let key in tmp2) {
+          //           feature.getStyle()[5].getText().setText(undefined);
+          //           feature.getStyle()[8].getText().setText(undefined);
+          //           feature.getStyle()[10].getText().setText(undefined);
+          //           feature.changed();
+          //         }
+          //       }
+          //     }
+          //   }
+          // });
+        });
+      }
+    }
   );
   function flyTo(v) {
     console.log(v);
@@ -558,28 +685,19 @@ onMounted(() => {
     setting.openlayers.center = toLonLat(view.getCenter());
     // console.log(view.getZoom(), toLonLat(view.getCenter()));
   };
-  map.on("pointermove", pointermoveFunc);
-  map.on("pointerdown", pointerdownFunc);
-  map.on("moveend", moveendFunc);
-  const source = new VectorSource();
-  const source2 = new VectorSource();
-  const source3 = new VectorSource();
-  vectorLayer.setSource(source3);
-  stationLayer.setSource(source2);
-  featherLayer.setSource(source);
   watch(
     storeToRefs(setting).factor.value[0],
     (newVal) => {
       if (newVal.val) {
-        source3.getFeatures().forEach((feature) => {
-          feature.getStyle()[0].getText().setText(feature.get("radar_id"));
-          feature.changed();
-        });
+        // source3.getFeatures().forEach((feature) => {
+        //   feature.getStyle()[0].getText().setText(feature.get("radar_id"));
+        //   feature.changed();
+        // });
       } else {
-        source3.getFeatures().forEach((feature) => {
-          feature.getStyle()[0].getText().setText(undefined);
-          feature.changed();
-        });
+        // source3.getFeatures().forEach((feature) => {
+        //   feature.getStyle()[0].getText().setText(undefined);
+        //   feature.changed();
+        // });
       }
     },
     { immediate: false, deep: true }
@@ -589,500 +707,55 @@ onMounted(() => {
     storeToRefs(setting).station,
     (newVal) => {
       if (newVal) {
-        map
-          .getLayers()
-          .getArray()
-          .find(function (layer) {
-            return layer.get("id") === "station";
-          })
-          .setVisible(true);
-        vectorLayer.setOpacity(1.0);
-        featherLayer.setVisible(true);
-        // source3.getFeatures().forEach((feature) => {
-        //   feature.getStyle()[3].getText().setText(feature.get("name"));
-        //   feature.changed();
-        // });
+        map.setLayoutProperty("stationLayer", "visibility", "visible");
+        map.setLayoutProperty("featherLayer", "visibility", "visible");
+        map.setLayoutProperty("textLayer", "visibility", "visible");
+        map.setLayoutProperty("temperatureLayer", "visibility", "visible");
+        map.setLayoutProperty("humidityLayer", "visibility", "visible");
       } else {
-        map
-          .getLayers()
-          .getArray()
-          .find(function (layer) {
-            return layer.get("id") === "station";
-          })
-          .setVisible(false);
-        vectorLayer.setOpacity(0);
-        featherLayer.setVisible(false);
-        // source3.getFeatures().forEach((feature) => {
-        //   feature.getStyle()[3].getText().setText(undefined);
-        //   feature.changed();
-        // });
-      }
-    },
-    { immediate: false }
-  );
-  watch(
-    [
-      storeToRefs(station).avgWindData,
-      storeToRefs(station).result,
-      storeToRefs(station).active,
-    ],
-    ([avgWindData]) => {
-      if (avgWindData) {
-        avgWindData.forEach((v) => {
-          source2.getFeatures().forEach((feature) => {
-            // let tmp = v[feature.get("radar_id")];
-            // if (tmp) {
-            //   for (let k in tmp[0]) {
-            //     let tmp2 = tmp[0][k].slice().reverse()[0];
-            //     if (tmp2) {
-            //       for (let key in tmp2) {
-            //         feature.set("rad", (tmp2[key].center_h_direction_abs / 180) * Math.PI);
-            //         feature.set("speed", tmp2[key].center_h_speed + "m/s");
-            //         feature.set("time", k);
-            //       }
-            //     } else {
-            //       for (let key in tmp2) {
-            //         feature.set("rad", NaN);
-            //         feature.set("speed", NaN);
-            //         feature.set("time", k);
-            //       }
-            //     }
-            //   }
-            // }
-            let tmp = v[feature.get("radar_id")];
-            if (tmp) {
-              source.forEachFeature((f) => {
-                if (f.get("radar_id") == feature.get("radar_id")) {
-                  source.removeFeature(f);
-                }
-              });
-              for (let k in tmp[0]) {
-                let tmp2 = tmp[0][k].slice().reverse();
-                let lngLat = [feature.get("lng"), feature.get("lat")];
-                tmp2.forEach((tmp3) => {
-                  for (let k in tmp3) {
-                    let item = tmp3[k];
-                    let ll = getLngLat(lngLat[0], lngLat[1], item.north_a, Number(k));
-                    lngLat = [ll.lng, ll.lat];
-                    source.addFeature(
-                      new Feature({
-                        radar_id: feature.get("radar_id"),
-                        rad: (item.center_h_direction_abs / 180) * Math.PI,
-                        flag: getFeather(item.center_h_speed),
-                        geometry: new Point(fromLonLat(lngLat)),
-                        opacity: 1.0,
-                      })
-                    );
-                  }
-                });
-                // if (tmp2) {
-                //    for (let key in tmp2) {
-                //      feature.set("rad", (tmp2[key].center_h_direction_abs / 180) * Math.PI);
-                //      feature.set("flag", getFeather(tmp2[key].center_h_speed));
-                //    }
-                // } else {
-                //   for (let key in tmp2) {
-                //     feature.set("rad", 0);
-                //     feature.set("flag", 0);
-                //   }
-                // }
-              }
-            }
-          });
-          source3.getFeatures().forEach((feature) => {
-            let tmp = v[feature.get("radar_id")];
-            if (tmp) {
-              for (let k in tmp[0]) {
-                let tmp2 = tmp[0][k].slice().reverse()[0];
-                if (tmp2) {
-                  for (let key in tmp2) {
-                    feature.set("distance", tmp2[key].distance.toFixed(1));
-                    feature.set("ex_temp", tmp2[key].ex_temp.toFixed(2));
-                    if (tmp2[key].ex_hum == -1) {
-                      feature.set("ex_hum", undefined);
-                    } else {
-                      feature.set("ex_hum", tmp2[key].ex_hum.toFixed(2));
-                    }
-                    if (setting.factor[10].val) {
-                      feature.getStyle()[5].getText().setText(feature.get("distance"));
-                    } else {
-                      feature.getStyle()[5].getText().setText(undefined);
-                    }
-                    if (setting.factor[7].val) {
-                      feature.getStyle()[8].getText().setText(feature.get("ex_temp"));
-                    } else {
-                      feature.getStyle()[8].getText().setText(undefined);
-                    }
-                    if (setting.factor[9].val) {
-                      feature.getStyle()[10].getText().setText(feature.get("ex_hum"));
-                    } else {
-                      feature.getStyle()[10].getText().setText(undefined);
-                    }
-                    feature.changed();
-                  }
-                } else {
-                  for (let key in tmp2) {
-                    feature.getStyle()[5].getText().setText(undefined);
-                    feature.getStyle()[8].getText().setText(undefined);
-                    feature.getStyle()[10].getText().setText(undefined);
-                    feature.changed();
-                  }
-                }
-              }
-            }
-          });
-        });
+        map.setLayoutProperty("stationLayer", "visibility", "none");
+        map.setLayoutProperty("featherLayer", "visibility", "none");
+        map.setLayoutProperty("textLayer", "visibility", "none");
+        map.setLayoutProperty("humidityLayer", "visibility", "none");
+        map.setLayoutProperty("temperatureLayer", "visibility", "none");
       }
     }
-  );
-  watch(
-    storeToRefs(station).result,
-    (newVal) => {
-      const data = newVal;
-      removeAllFeatures();
-      for (let i = 0; i < data.length; i++) {
-        const speed = 0; // Math.random() * 60;
-        const rad = (Math.PI / 180) * Math.random() * 360;
-        let lngLat = [data[i].longitude, data[i].latitude];
-        source2.addFeature(
-          new Feature({
-            radar_id: data[i].radar.radar_id,
-            time: "-",
-            name: data[i].radar.name,
-            station: true,
-            is_online: data[i].is_online ? "在线" : "离线",
-            speed,
-            rad,
-            coords: lngLat,
-            geometry: new Point(fromLonLat(lngLat)),
-            opacity: 1.0,
-            lng: data[i].longitude,
-            lat: data[i].latitude,
-          })
-        );
-        let feature = new Feature({
-          radar_id: data[i].radar.radar_id,
-          time: data[i].data_time,
-          name: data[i].radar.name,
-          is_online: data[i].is_online ? "在线" : "离线",
-          speed,
-          rad,
-          coords: lngLat,
-          geometry: new Point(fromLonLat(lngLat)),
-          opacity: 1.0,
-          T: "温度",
-          RH: "湿度",
-        });
-        const gap = 30;
-        feature.setStyle([
-          new Style({
-            //0
-            text: new Text({
-              font: "14px Menlo",
-              textBaseline: "middle",
-              textAlign: "middle",
-              justify: "center",
-              text: undefined, //ZH-站号
-              offsetX: 0,
-              offsetY: -2 * gap,
-              fill: new Fill({
-                color: [255, 255, 255, 1],
-              }),
-              stroke: new Stroke({ color: "black", width: 1 }),
-              backgroundFill: new Fill({
-                color: [168, 50, 153, 0],
-              }),
-              padding: [0, 0, 0, 0],
-            }),
-          }),
-          new Style({
-            //1
-            text: new Text({
-              font: "14px Menlo",
-              textBaseline: "middle",
-              textAlign: "middle",
-              justify: "center",
-              text: undefined, //FY-风羽
-              offsetX: 2 * gap,
-              offsetY: -2 * gap,
-              fill: new Fill({
-                color: [255, 255, 255, 1],
-              }),
-              stroke: new Stroke({ color: "black", width: 1 }),
-              backgroundFill: new Fill({
-                color: [168, 50, 153, 0],
-              }),
-              padding: [0, 0, 0, 0],
-            }),
-          }),
-          new Style({
-            //2
-            text: new Text({
-              font: "14px Menlo",
-              textBaseline: "middle",
-              textAlign: "middle",
-              justify: "center",
-              text: undefined, //SNR-信噪比
-              offsetX: -gap,
-              offsetY: -gap,
-              fill: new Fill({
-                color: [255, 255, 255, 1],
-              }),
-              stroke: new Stroke({ color: "black", width: 1 }),
-              backgroundFill: new Fill({
-                color: [168, 50, 153, 0],
-              }),
-              padding: [0, 0, 0, 0],
-            }),
-          }),
-          new Style({
-            //3
-            text: new Text({
-              font: "14px Menlo",
-              textAlign: "middle",
-              textBaseline: "middle",
-              justify: "center",
-              text: data[i].radar.name, //ZM-站名
-              offsetX: 0,
-              offsetY: -gap,
-              fill: new Fill({
-                color: [255, 255, 255, 1],
-              }),
-              stroke: new Stroke({ color: "black", width: 1 }),
-              backgroundFill: new Fill({
-                color: [168, 50, 153, 0],
-              }),
-              padding: [0, 0, 0, 0],
-            }),
-          }),
-          new Style({
-            //4
-            text: new Text({
-              font: "14px Menlo",
-              textAlign: "middle",
-              textBaseline: "middle",
-              justify: "center",
-              text: undefined, //W-垂直气流
-              offsetX: gap,
-              offsetY: -gap,
-              fill: new Fill({
-                color: [255, 255, 255, 1],
-              }),
-              stroke: new Stroke({ color: "black", width: 1 }),
-              backgroundFill: new Fill({
-                color: [168, 50, 153, 0],
-              }),
-              padding: [0, 0, 0, 0],
-            }),
-          }),
-          new Style({
-            //5
-            text: new Text({
-              font: "14px Menlo",
-              textAlign: "right",
-              textBaseline: "middle",
-              justify: "center",
-              text: undefined, //H-高度
-              offsetX: -gap,
-              offsetY: 0,
-              fill: new Fill({
-                color: [255, 255, 255, 1],
-              }),
-              stroke: new Stroke({ color: "black", width: 1 }),
-              backgroundFill: new Fill({
-                color: [168, 50, 153, 0],
-              }),
-              padding: [0, 0, 0, 0],
-            }),
-          }),
-          new Style({
-            //6
-            text: new Text({
-              font: "14px Menlo",
-              textAlign: "middle",
-              textBaseline: "middle",
-              justify: "center",
-              text: undefined, //N-站点
-              offsetX: 0,
-              offsetY: 0,
-              fill: new Fill({
-                color: [255, 255, 255, 1],
-              }),
-              stroke: new Stroke({ color: "black", width: 1 }),
-              backgroundFill: new Fill({
-                color: [168, 50, 153, 0],
-              }),
-              padding: [0, 0, 0, 0],
-            }),
-          }),
-          new Style({
-            //7
-            text: new Text({
-              font: "14px Menlo",
-              textAlign: "middle",
-              textBaseline: "middle",
-              justify: "center",
-              text: undefined, //SW-谱宽
-              offsetX: gap,
-              offsetY: 0,
-              fill: new Fill({
-                color: [255, 255, 255, 1],
-              }),
-              stroke: new Stroke({ color: "black", width: 1 }),
-              backgroundFill: new Fill({
-                color: [168, 50, 153, 0],
-              }),
-              padding: [0, 0, 0, 0],
-            }),
-          }),
-          new Style({
-            //8
-            text: new Text({
-              font: "14px Menlo",
-              textAlign: "right",
-              textBaseline: "middle",
-              justify: "center",
-              text: undefined, //T-温度
-              offsetX: -gap,
-              offsetY: gap,
-              fill: new Fill({
-                color: [255, 255, 255, 1],
-              }),
-              stroke: new Stroke({ color: "black", width: 1 }),
-              backgroundFill: new Fill({
-                color: [168, 50, 153, 0],
-              }),
-              padding: [0, 0, 0, 0],
-            }),
-          }),
-          new Style({
-            //9
-            text: new Text({
-              font: "14px Menlo",
-              textAlign: "middle",
-              textBaseline: "middle",
-              justify: "center",
-              text: undefined, //Td-露点
-              offsetX: 0,
-              offsetY: gap,
-              fill: new Fill({
-                color: [255, 255, 255, 1],
-              }),
-              stroke: new Stroke({ color: "black", width: 1 }),
-              backgroundFill: new Fill({
-                color: [168, 50, 153, 0],
-              }),
-              padding: [0, 0, 0, 0],
-            }),
-          }),
-          new Style({
-            //10
-            text: new Text({
-              font: "14px Menlo",
-              textAlign: "left",
-              textBaseline: "middle",
-              justify: "center",
-              text: undefined, //RH-相对湿度
-              offsetX: gap,
-              offsetY: gap,
-              fill: new Fill({
-                color: [255, 255, 255, 1],
-              }),
-              stroke: new Stroke({ color: "black", width: 1 }),
-              backgroundFill: new Fill({
-                color: [168, 50, 153, 0],
-              }),
-              padding: [0, 0, 0, 0],
-            }),
-          }),
-        ]);
-        source3.addFeature(feature);
-      }
-      if (data.length) {
-        station
-          .查询平均风数据接口({
-            user_id: route.query.user_id,
-            // date: new Date().Format("yyyyMMdd"),
-          })
-          .then((res) => {
-            station.avgWindData = res.data.data;
-          });
-        station
-          .查询瞬时风数据接口({
-            user_id: route.query.user_id,
-            // date: new Date().Format("yyyyMMdd"),
-          })
-          .then((res) => {
-            station.secondWindData = res.data.data;
-          });
-        station
-          .查询径向风数据接口({
-            user_id: route.query.user_id,
-            // date: new Date().Format("yyyyMMdd"),
-          })
-          .then((res) => {
-            station.radialWindData = res.data.data;
-          });
-      }
-    },
-    { deep: true, immediate: false }
   );
   watch(
     storeToRefs(setting).factor.value[7],
     (newVal) => {
       if (newVal.val) {
-        source3.getFeatures().forEach((feature) => {
-          feature.getStyle()[8].getText().setText(feature.get("ex_temp"));
-          feature.changed();
-        });
-        // source.getFeatures().forEach((feature) => {
-        //   feature.set("rad", feature.get("rad"));
-        //   feature.set("flag", getFeather(feature.get("speed")));
-        // });
-        // source2.getFeatures().forEach((feature) => {
-        //   feature.set("rad", feature.get("rad"));
-        //   feature.set("speed", feature.get("speed"));
-        //   feature.set("time", feature.get("time"));
-        // });
+        map.setPaintProperty("temperatureLayer", "text-opacity", 1);
       } else {
-        source3.getFeatures().forEach((feature) => {
-          feature.getStyle()[8].getText().setText(undefined);
-          feature.changed();
-        });
+        map.setPaintProperty("temperatureLayer", "text-opacity", 0);
       }
     },
-    { immediate: true, deep: true }
+    { deep: true }
   );
   watch(
     storeToRefs(setting).factor.value[9],
     (newVal) => {
       if (newVal.val) {
-        source3.getFeatures().forEach((feature) => {
-          feature.getStyle()[10].getText().setText(feature.get("ex_hum"));
-          feature.changed();
-        });
+        map.setPaintProperty("humidityLayer", "text-opacity", 1);
       } else {
-        source3.getFeatures().forEach((feature) => {
-          feature.getStyle()[10].getText().setText(undefined);
-          feature.changed();
-        });
+        map.setPaintProperty("humidityLayer", "text-opacity", 0);
       }
     },
-    { immediate: true, deep: true }
+    { deep: true }
   );
   watch(
     storeToRefs(setting).factor.value[10],
     (newVal) => {
       if (newVal.val) {
-        source3.getFeatures().forEach((feature) => {
-          feature.getStyle()[5].getText().setText(feature.get("distance"));
-          feature.changed();
-        });
+        // source3.getFeatures().forEach((feature) => {
+        //   feature.getStyle()[5].getText().setText(feature.get("distance"));
+        //   feature.changed();
+        // });
       } else {
-        source3.getFeatures().forEach((feature) => {
-          feature.getStyle()[5].getText().setText(undefined);
-          feature.changed();
-        });
+        // source3.getFeatures().forEach((feature) => {
+        //   feature.getStyle()[5].getText().setText(undefined);
+        //   feature.changed();
+        // });
       }
     },
     { immediate: true, deep: true }
@@ -1177,82 +850,50 @@ onMounted(() => {
     { deep: true, immediate: true }
   );
   function removeAllFeatures() {
-    source.getFeatures().forEach((feature) => source.removeFeature(feature));
-    source2.getFeatures().forEach((feature) => source2.removeFeature(feature));
-    source3.getFeatures().forEach((feature) => source3.removeFeature(feature));
+    // source.getFeatures().forEach((feature) => source.removeFeature(feature));
+    // source2.getFeatures().forEach((feature) => source2.removeFeature(feature));
+    // source3.getFeatures().forEach((feature) => source3.removeFeature(feature));
   }
   watch(
-    storeToRefs(setting).district,
+    () => setting.district,
     (newVal) => {
       if (newVal) {
-        map
-          .getLayers()
-          .getArray()
-          .find(function (layer) {
-            return layer.get("id") === "districtLayer";
-          })
-          .setVisible(true);
+        map.setLayoutProperty("districtLayer", "visibility", "visible");
+        map.setLayoutProperty("districtOutline", "visibility", "visible");
       } else {
-        map
-          .getLayers()
-          .getArray()
-          .find(function (layer) {
-            return layer.get("id") === "districtLayer";
-          })
-          .setVisible(false);
+        map.setLayoutProperty("districtLayer", "visibility", "none");
+        map.setLayoutProperty("districtOutline", "visibility", "none");
       }
-    },
-    { immediate: true }
+    }
   );
   watch(
     storeToRefs(setting).graticule,
     (newVal) => {
-      if (newVal) {
-        graticule.setVisible(true);
-      } else {
-        graticule.setVisible(false);
-      }
+      // if (newVal) {
+      //   graticule.setVisible(true);
+      // } else {
+      //   graticule.setVisible(false);
+      // }
     },
     { immediate: true }
   );
   watch(
-    storeToRefs(setting).loadmap,
+    () => setting.loadmap,
     (newVal) => {
       if (newVal) {
-        map
-          .getLayers()
-          .getArray()
-          .find(function (layer) {
-            return layer.get("id") === "tileLayer";
-          })
-          .setVisible(true);
+        map.setLayoutProperty("simple-tiles", "visibility", "visible");
       } else {
-        map
-          .getLayers()
-          .getArray()
-          .find(function (layer) {
-            return layer.get("id") === "tileLayer";
-          })
-          .setVisible(false);
+        map.setLayoutProperty("simple-tiles", "visibility", "none");
       }
-    },
-    { immediate: true }
+    }
   );
-  watch(
-    storeToRefs(setting).feather,
-    (newVal) => {
-      if (newVal) {
-        source.getFeatures().forEach((item) => {
-          item.set("opacity", 1.0);
-        });
-      } else {
-        source.getFeatures().forEach((item) => {
-          item.set("opacity", 0);
-        });
-      }
-    },
-    { immediate: true }
-  );
+  watch(storeToRefs(setting).feather, (newVal) => {
+    if (newVal) {
+      map.setPaintProperty("featherLayer", "text-opacity", 1);
+    } else {
+      map.setPaintProperty("featherLayer", "text-opacity", 0);
+    }
+  });
   timer = setInterval(() => {
     //   source.getFeatures().forEach(feature=>{
     //     feature.set('rad',Math.PI/180*Math.random()*360)
@@ -1289,9 +930,6 @@ onMounted(() => {
   onBeforeUnmount(() => {
     eventbus.off("将站点移动到屏幕中心");
     clearInterval(timer);
-    map.un("pointermove", pointermoveFunc);
-    map.un("pointerdown", pointerdownFunc);
-    map.un("moveend", moveendFunc);
   });
 });
 </script>

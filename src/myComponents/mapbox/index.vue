@@ -15,7 +15,6 @@
   </el-select>
 </template>
 <script lang="ts" setup>
-import { loadImage } from "~/tools";
 import "./mapbox-gl.css";
 import "./mapbox-gl.js";
 import plotUrl from "./data/plot/06040802.000?url";
@@ -47,6 +46,7 @@ import { getMicapsData } from "./data/plot/micaps";
 import CustomLayer from "./WindGL/CustomLayer";
 import { useSettingStore } from "~/stores/setting";
 import { storeToRefs } from "pinia";
+import { getFeather, getColor, getCoord, loadImage } from "~/tools";
 const setting = useSettingStore();
 const options = ref([
   // { value: "albers", label: "albers" },
@@ -61,106 +61,6 @@ const options = ref([
 watch(storeToRefs(setting).projection, (projection) => {
   map && map.setProjection(projection);
 });
-const getColor = (v: number) => {
-  return v <= 0
-    ? "#0000ff"
-    : v <= 4
-    ? "#002aff"
-    : v <= 8
-    ? "#0054ff"
-    : v <= 12
-    ? "#007eff"
-    : v <= 16
-    ? "#00a8ff"
-    : v <= 20
-    ? "#00d2ff"
-    : v <= 24
-    ? "#14d474"
-    : v <= 28
-    ? "#a6dd00"
-    : v <= 32
-    ? "#ffe600"
-    : v <= 36
-    ? "#ffb300"
-    : v <= 40
-    ? "#ff8000"
-    : v <= 44
-    ? "#ff4d00"
-    : v <= 48
-    ? "#ff1a00"
-    : v <= 52
-    ? "#e60000"
-    : v <= 56
-    ? "#b30000"
-    : v <= 58
-    ? "#b30000"
-    : "#b30000";
-};
-var getFeather = (v: number) =>
-  v <= 0
-    ? 0
-    : v <= 1
-    ? 1
-    : v <= 2
-    ? 2
-    : v <= 4
-    ? 4
-    : v <= 6
-    ? 6
-    : v <= 8
-    ? 8
-    : v <= 10
-    ? 10
-    : v <= 12
-    ? 12
-    : v <= 14
-    ? 14
-    : v <= 16
-    ? 16
-    : v <= 18
-    ? 18
-    : v <= 20
-    ? 20
-    : v <= 22
-    ? 22
-    : v <= 24
-    ? 24
-    : v <= 26
-    ? 26
-    : v <= 28
-    ? 28
-    : v <= 30
-    ? 30
-    : v <= 32
-    ? 32
-    : v <= 34
-    ? 34
-    : v <= 36
-    ? 36
-    : v <= 38
-    ? 38
-    : v <= 40
-    ? 40
-    : v <= 42
-    ? 42
-    : v <= 44
-    ? 44
-    : v <= 46
-    ? 46
-    : v <= 48
-    ? 48
-    : v <= 50
-    ? 50
-    : v <= 52
-    ? 52
-    : v <= 54
-    ? 54
-    : v <= 56
-    ? 56
-    : v <= 58
-    ? 58
-    : 60;
-
 let boundaries = {
   type: "FeatureCollection",
   name: "boundaries",
@@ -587,13 +487,6 @@ onMounted(() => {
         }
       });
       map.addSource("point", points);
-      const getCoord = (i: number, j: number, v: number) => ({
-        x1: (i * (16 + 20)) / (16 * 10 + 20 * (10 - 1)),
-        y1: (j * (32 + 20)) / (32 * 4 + 20 * (4 - 1)),
-        x2: (i * (16 + 20)) / (16 * 10 + 20 * (10 - 1)) + 16 / (16 * 10 + 20 * (10 - 1)),
-        y2: (j * (32 + 20)) / (32 * 4 + 20 * (4 - 1)) + 32 / (32 * 4 + 20 * (4 - 1)),
-        fill: getColor(v),
-      });
       loadImage(imageUrl, 340, 188, {
         feather0: getCoord(0, 0, 0),
         feather1: getCoord(1, 0, 1),

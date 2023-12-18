@@ -76,15 +76,12 @@ function draw(canvas: HTMLCanvasElement, isDark: boolean) {
 
   context.textAlign = "right";
   context.textBaseline = "middle";
-  context.fillText("高度", -20 * devicePixelRatio, 0);
+  context.fillText("温度", -20 * devicePixelRatio, 0);
 
   context.textAlign = "right";
   context.textBaseline = "top";
   context.fillText("温度", -20 * devicePixelRatio, 20 * devicePixelRatio);
 
-  context.textAlign = "left";
-  context.textBaseline = "top";
-  context.fillText("湿度", 20 * devicePixelRatio, 20 * devicePixelRatio);
   context.restore();
 }
 </script>

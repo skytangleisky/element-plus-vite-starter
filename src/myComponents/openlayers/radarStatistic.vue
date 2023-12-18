@@ -63,7 +63,7 @@
             size="small"
           />
         </div>
-        <div class="subitem">
+        <!-- <div class="subitem">
           <span>经纬格</span>
           <el-switch
             v-model="setting.graticule"
@@ -72,7 +72,7 @@
             :inactive-icon="Close"
             size="small"
           />
-        </div>
+        </div> -->
         <div class="subitem">
           <span>行政区划</span>
           <el-switch

@@ -162,7 +162,7 @@ let setEcharts = (isDark) => {
             echarts.time.format("hh:mm", params[0].value[dims.time]),
           "风速：" + params[0].value[dims.windSpeed],
           "风向：" + params[0].value[dims.R],
-          "高度：" + params[0].value[dims.waveHeight],
+          "距离：" + params[0].value[dims.waveHeight],
         ].join("<br>");
       },
     },
