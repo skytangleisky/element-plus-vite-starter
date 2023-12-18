@@ -20,15 +20,21 @@ import {
   transformerVariantGroup,
 } from 'unocss'
 
-const pathSrc = path.resolve(__dirname, 'src')
 const lifecycle = process.env.npm_lifecycle_event;
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  define: {
+    __DEV__: true,
+    __TEST__: true,
+    __BROWSER__: true,
+    __USE_DEVTOOLS__: false,
+  },
   resolve: {
     alias: {
-      '~/': `${pathSrc}/`,
-    },
+      '~/': `${__dirname}/src/`,
+      pinia: `${__dirname}/packages/pinia/src/index.ts`,
+    }
   },
   css: {
     preprocessorOptions: {

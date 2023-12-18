@@ -13,6 +13,9 @@
     "esModuleInterop": true,
     "lib": ["esnext", "dom"],
     "paths": {
+      "pinia": [
+        "./packages/pinia/src/index.d.ts"
+      ],
       "~/*": ["src/*"]
     },
     "outDir": "dist",

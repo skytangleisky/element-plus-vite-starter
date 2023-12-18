@@ -22,7 +22,7 @@
                 >登陆</el-dropdown-item
               >
               <!-- <el-dropdown-item :icon="ColdDrink">捐赠</el-dropdown-item> -->
-              <el-dropdown-item :icon="Setting">设置</el-dropdown-item>
+              <el-dropdown-item :icon="Setting" @click="click">设置</el-dropdown-item>
               <el-dropdown-item :icon="Switch" @click="Reset">重置</el-dropdown-item>
               <el-dropdown-item
                 v-if="user.logined"
@@ -66,7 +66,9 @@ const user = useUserStore();
 import { useDataStore } from "./stores/data";
 const data = useDataStore();
 
-import { Icon } from "ol/style";
+const click = () => {
+  setting.$resetFields();
+};
 const Reset = () => {
   setting.$reset();
   setting.$dispose();

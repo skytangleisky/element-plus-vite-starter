@@ -8,7 +8,7 @@ export const state = {
   },
   projection: 'mercator',
   lang: 'zh-cn',
-  webgpu:true,
+  webgpu:false,
   loadmap:true,
   district:true,
   airline:true,
