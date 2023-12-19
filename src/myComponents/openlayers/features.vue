@@ -80,7 +80,7 @@ function draw(canvas: HTMLCanvasElement, isDark: boolean) {
 
   context.textAlign = "right";
   context.textBaseline = "top";
-  context.fillText("温度", -20 * devicePixelRatio, 20 * devicePixelRatio);
+  context.fillText("湿度", -20 * devicePixelRatio, 20 * devicePixelRatio);
 
   context.restore();
 }
