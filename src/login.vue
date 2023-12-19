@@ -64,15 +64,6 @@ import { useUserStore } from "~/stores/user";
 let user = useUserStore();
 import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
-import axios from "axios";
-axios
-  .get("/api/stations")
-  .then((response) => {
-    console.log(response.data);
-  })
-  .catch((error) => {
-    console.log(error);
-  });
 const router = useRouter();
 
 const hide = ref(true);

@@ -3,10 +3,10 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import inject from '@rollup/plugin-inject'
 import { visualizer } from 'rollup-plugin-visualizer'
+import { middleware } from './packages/plugin-middleware-mock'
 
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
-import { viteMockServe } from "vite-plugin-mock"
 const fs = require('fs')
 
 import Unocss from 'unocss/vite'
@@ -45,11 +45,7 @@ export default defineConfig({
   },
   plugins: [
     vue(),
-    viteMockServe({
-      mockPath:"mock",
-      enable:true,
-      logger:true,
-    }),
+    middleware(),
     vueJsx(),
     inject({
       $: "jquery",
@@ -93,6 +89,7 @@ export default defineConfig({
       key: fs.readFileSync('dev.tanglei.top.key')
     },
     host:'::',
+    // open:'http://localhost:5173',
     open:'https://dev.tanglei.top',
     port:5173,
     proxy:{
