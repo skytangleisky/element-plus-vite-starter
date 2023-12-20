@@ -1,5 +1,27 @@
-import routes from '../../mock/index';
+const chokidar = require('chokidar')
 const cookie = require('cookie')
+const fg = require('fast-glob')
+const colors = require('picocolors')
+const { bundleRequire }  = require('bundle-require')
+function loggerOutput(title, msg, type = 'info') {
+  const tag = type === 'info' ? colors.cyan(`[vite:mock]`) : colors.red(`[vite:mock-server]`)
+  return console.log(
+    `${colors.dim(new Date().toLocaleTimeString())} ${tag} ${colors.green(title)} ${colors.dim( msg)}`,
+  )
+}
+const watcher = chokidar.watch(process.cwd()+'/mock', {
+  ignoreInitial: true
+})
+let routes = []
+watcher.on('all', async (event, file) => {
+  loggerOutput(`mock file ${event}`, file)
+  routes=[];
+  (await Promise.all(fg.globSync(`**/*.{ts,mjs,js}`, {cwd: process.cwd() + '/mock',}).map(async(name)=>await bundleRequire({filepath: process.cwd() + '/mock/' + name})))).map(item=>{
+    if(item.mod.default instanceof Array){
+      routes = routes.concat(item.mod.default)
+    }
+  })
+})
 function parseQuery(queryString) {
   var query = {};
   let arr = queryString.split("&");
@@ -28,7 +50,7 @@ function parseQuery(queryString) {
   }
   return query;
 }
-module.exports = async function(req, res, next){
+module.exports = async(req, res, next) => {
   res.cookie = (name,value,options)=>{
     res.setHeader('Set-Cookie',cookie.serialize(name, value, options))
   }
@@ -45,6 +67,18 @@ module.exports = async function(req, res, next){
     next()
   }
 };
+module.exports.dispose = async() => {
+  await watcher.unwatch(process.cwd()+'/mock')
+}
+module.exports.init = async()=>{
+  routes=[];
+  (await Promise.all(fg.globSync(`**/*.{ts,mjs,js}`, {cwd: process.cwd() + '/mock',}).map(async(name)=>await bundleRequire({filepath: process.cwd() + '/mock/' + name})))).map(item=>{
+    if(item.mod.default instanceof Array){
+      routes = routes.concat(item.mod.default)
+    }
+  })
+  loggerOutput(`load mock data from`, process.cwd()+'/mock')
+}
 async function matchRoute(req,res,next,routes){
   for(let i=0;i<routes.length;i++){
     if((routes[i].method!=undefined&&routes[i].method!=null)&&(req.method == routes[i].method||(routes[i].method instanceof Array && routes[i].method.indexOf(req.method)>=0)) && (req.path === routes[i].url || req.path.match(RegExp(`^${routes[i].url}`)))){
@@ -65,6 +99,7 @@ async function matchRoute(req,res,next,routes){
       }).then(body=>{
         req.body = body
       })
+      loggerOutput('request invoke', req.method.padEnd(10,' ') + req.url)
       if(Object.prototype.toString.call(routes[i].response)==='[object Object]'){
         res.write(JSON.stringify(routes[i].response))
         res.end()
@@ -91,3 +126,4 @@ async function matchRoute(req,res,next,routes){
   }
   return false
 }
+

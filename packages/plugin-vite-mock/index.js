@@ -1,8 +1,8 @@
 const cookieParser = require('cookie-parser')
 const router = require('./router.js')
-export function middleware(opts) {
+export function mock(opts) {
   return {
-    name: 'vite-plugin-middleware',
+    name: 'vite:mock',
     load(id) {
       // 在钩子逻辑中可以通过闭包访问外部的 options 传参
     },
@@ -32,8 +32,8 @@ export function middleware(opts) {
       return html
     },
     async handleHotUpdate(ctx) {},
-    buildStart() {},
-    buildEnd() {},
-    closeBundle() {}
+    async buildStart() { await router.init() },
+    async buildEnd() { await router.dispose() },
+    async closeBundle() {}
   }
 }

@@ -1,9 +1,8 @@
-import path from 'path'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import inject from '@rollup/plugin-inject'
 import { visualizer } from 'rollup-plugin-visualizer'
-import { middleware } from './packages/plugin-middleware-mock'
+import { mock } from './packages/plugin-vite-mock'
 
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
@@ -45,7 +44,7 @@ export default defineConfig({
   },
   plugins: [
     vue(),
-    middleware(),
+    mock(),
     vueJsx(),
     inject({
       $: "jquery",

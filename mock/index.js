@@ -1,4 +1,3 @@
-import loginApi from './loginApi'
 import Mock from 'mockjs';
 export default [
   {
@@ -13,7 +12,6 @@ export default [
       })
     }
   },
-  ...loginApi,
   {
     url:'/api/weather/wind/avg',
     method:'POST',
