@@ -1,5 +1,5 @@
 import request from '../utils/request'
-const url = 'api/db/data'
+const url = 'backend/db/data'
 export function fetchList(query) {
   return request({
     url,

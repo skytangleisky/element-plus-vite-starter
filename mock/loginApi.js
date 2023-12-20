@@ -29,7 +29,7 @@ const users = {
   }
 }
 export default [{
-  url: '/api/libs/db/src/login.php',
+  url: '/backend/libs/db/src/login.php',
   method: 'POST',
   response: (req,res) => {
     if(users[req.body.username]){
@@ -47,7 +47,7 @@ export default [{
   }
 },
 {
-  url: '/api/libs/db/src/login.php',
+  url: '/backend/libs/db/src/login.php',
   method: 'GET',
   response: (req,res) => {
     let token = req.cookies['Admin-Token']
@@ -67,7 +67,7 @@ export default [{
   }
 },
 {
-  url: '/api/libs/db/src/login.php',
+  url: '/backend/libs/db/src/login.php',
   method: 'DELETE',
   response: (req,res) => {
     res.clearCookie('Admin-Token')

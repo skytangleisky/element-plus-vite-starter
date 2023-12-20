@@ -98,14 +98,14 @@ export default defineConfig({
       //   changeOrigin:true,//开启代理，允许跨域
       //   rewrite:path=>path.replace(/^\/guangheng/,''), // 设置重写的路径
       // },
-      '/guangheng':{
+      '/api':{
         target:'https://main.emgo-tech.com',//替换的服务端地址
         changeOrigin:true,//开启代理，允许跨域
       },
-      '/api':{
+      '/backend':{
         target:'http://websocket.tanglei.top',//替换的服务端地址
         changeOrigin:true,//开启代理，允许跨域
-        rewrite:path=>path.replace(/^\/api/,''), // 设置重写的路径
+        rewrite:path=>path.replace(/^\/backend/,''), // 设置重写的路径
         ws:true,
       },
       '/tanglei':{

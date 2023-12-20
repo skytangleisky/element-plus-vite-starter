@@ -1,5 +1,5 @@
 import request from '~/utils/request'
-const url = 'api/db/icon'
+const url = 'backend/db/icon'
 export function fetchList() {
   const data = {
     "select":["*"], // 需要获取的字段，"*"代表所有字段

@@ -146,7 +146,6 @@ const setting = useSettingStore();
 import { storeToRefs } from "pinia";
 import Legend from "./legend.vue";
 import style from "./streets-v11.js";
-import { point } from "@turf/turf";
 
 console.log("route.query", route.query);
 const station = useStationStore();
@@ -165,8 +164,8 @@ onMounted(() => {
     // style: raster,
     performanceMetricsCollection: false,
     style,
-    // dragRotate: false,
-    // touchRotate: false,
+    dragRotate: false,
+    touchRotate: false,
     // bounds: turf.bbox(boundaries),
     // localIdeographFontFamily: "Microsoft YoHei",
     localIdeographFontFamily: "",
@@ -460,7 +459,6 @@ onMounted(() => {
         station
           .查询平均风数据接口({
             user_id: route.query.user_id,
-            // date: new Date().Format("yyyyMMdd"),
           })
           .then((res) => {
             station.avgWindData = res.data.data;
@@ -468,7 +466,6 @@ onMounted(() => {
         station
           .查询瞬时风数据接口({
             user_id: route.query.user_id,
-            // date: new Date().Format("yyyyMMdd"),
           })
           .then((res) => {
             station.secondWindData = res.data.data;
@@ -476,7 +473,6 @@ onMounted(() => {
         station
           .查询径向风数据接口({
             user_id: route.query.user_id,
-            // date: new Date().Format("yyyyMMdd"),
           })
           .then((res) => {
             station.radialWindData = res.data.data;
@@ -522,7 +518,7 @@ onMounted(() => {
                 radar_id == points.data.features[i].properties.radar_id &&
                 points.data.features[i].properties.type == "站点"
               ) {
-                let lngLat = points.data.features[i].geometry.coordinates;
+                const lngLat = points.data.features[i].geometry.coordinates;
                 let tmp = v[radar_id];
                 for (let k in tmp[0]) {
                   let tmp2 = tmp[0][k].slice().reverse();
@@ -530,7 +526,6 @@ onMounted(() => {
                     for (let k in tmp3) {
                       let item = tmp3[k];
                       let ll = getLngLat(lngLat[0], lngLat[1], item.north_a, Number(k));
-                      lngLat = [ll.lng, ll.lat];
                       // item.center_h_direction_abs = Math.random() * 360;
                       // item.center_h_speed = Math.random() * 60;
                       if (
@@ -548,13 +543,13 @@ onMounted(() => {
                           },
                           geometry: {
                             type: "Point",
-                            coordinates: lngLat,
+                            coordinates: [ll.lng, ll.lat],
                           },
                         });
                       }
                     }
                     let source = map.getSource("point");
-                    source.setData(points.data);
+                    source && source.setData(points.data);
                   });
                 }
               }
@@ -778,7 +773,6 @@ onMounted(() => {
     station
       .查询平均风数据接口({
         user_id: route.query.user_id,
-        // date: new Date().Format("yyyyMMdd"),
       })
       .then((res) => {
         station.avgWindData = res.data.data;
@@ -786,7 +780,6 @@ onMounted(() => {
     station
       .查询瞬时风数据接口({
         user_id: route.query.user_id,
-        // date: new Date().Format("yyyyMMdd"),
       })
       .then((res) => {
         station.secondWindData = res.data.data;
@@ -794,7 +787,6 @@ onMounted(() => {
     station
       .查询径向风数据接口({
         user_id: route.query.user_id,
-        // date: new Date().Format("yyyyMMdd"),
       })
       .then((res) => {
         station.radialWindData = res.data.data;
@@ -904,7 +896,6 @@ onMounted(() => {
     station
       .查询平均风数据接口({
         user_id: route.query.user_id,
-        date: new Date().Format("yyyyMMdd"),
       })
       .then((res) => {
         station.avgWindData = res.data.data;
@@ -912,7 +903,6 @@ onMounted(() => {
     station
       .查询瞬时风数据接口({
         user_id: route.query.user_id,
-        date: new Date().Format("yyyyMMdd"),
       })
       .then((res) => {
         station.secondWindData = res.data.data;
@@ -920,7 +910,6 @@ onMounted(() => {
     station
       .查询径向风数据接口({
         user_id: route.query.user_id,
-        date: new Date().Format("yyyyMMdd"),
       })
       .then((res) => {
         //太慢

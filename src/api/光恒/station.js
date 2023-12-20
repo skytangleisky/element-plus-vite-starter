@@ -1,12 +1,13 @@
 import request from '../../utils/request'
 const user_id = '1e2ef8820806421eb849ed2dead33bff'
-const time = '20231026' // 20231026 ｜ new Date().Format('yyyyMMdd')
+// const time = '20231026'
+const time = new Date().Format('yyyyMMdd')
 export function 雷达统计接口(query){
   if(!query.user_id){
     query.user_id = user_id
   }
   return request({
-    url: 'guangheng/api/radars/count',
+    url: 'api/radars/count',
     method: 'post',
     data: query
   })
@@ -17,7 +18,7 @@ export function 查询雷达列表接口(query) {
     query.user_id = user_id
   }
   return request({
-    url: 'guangheng/api/radars',
+    url: 'api/radars',
     method: 'post',
     data: query
   })
@@ -28,7 +29,7 @@ export function 查询雷达在线列表接口(query) {
     query.user_id = user_id
   }
   return request({
-    url: 'guangheng/api/radars/online',
+    url: 'api/radars/online',
     method: 'post',
     data: query
   })
@@ -39,7 +40,7 @@ export function 查询雷达离线列表接口(query) {
     query.user_id = user_id
   }
   return request({
-    url: 'guangheng/api/radars/offline',
+    url: 'api/radars/offline',
     method: 'post',
     data: query
   })
@@ -50,7 +51,7 @@ export function 查询近期新增雷达列表接口(query) {
     query.user_id = user_id
   }
   return request({
-    url: 'guangheng/api/radars/new',
+    url: 'api/radars/new',
     method: 'post',
     data: query
   })
@@ -59,11 +60,8 @@ export function 查询平均风数据接口(query) {
   if(!query.user_id){
     query.user_id = user_id
   }
-  if(!query.date){
-    query.date = time
-  }
   return request({
-    url: 'guangheng/api/weather/wind/avg',
+    url: 'api/weather/wind/avg/'+time,
     method: 'post',
     data: query
   })
@@ -72,11 +70,8 @@ export function 查询瞬时风数据接口(query) {
   if(!query.user_id){
     query.user_id = user_id
   }
-  if(!query.date){
-    query.date = time
-  }
   return request({
-    url: 'guangheng/api/weather/wind/second',
+    url: 'api/weather/wind/second/'+time,
     method: 'post',
     data: query
   })
@@ -85,11 +80,8 @@ export function 查询径向风数据接口(query){
   if(!query.user_id){
     query.user_id = user_id
   }
-  if(!query.date){
-    query.date = time
-  }
   return request({
-    url: 'guangheng/api/weather/wind/radial',
+    url: 'api/weather/wind/radial/'+time,
     method: 'post',
     data:query
   })
@@ -97,7 +89,7 @@ export function 查询径向风数据接口(query){
 
 export function 发送电子邮件接口(){
   return request({
-    url: 'guangheng/api/mail',
+    url: 'api/mail',
     method: 'post',
     data: {
       subject: '文本测试',
@@ -111,7 +103,7 @@ export function 发送电子邮件接口(){
 
 export function 发送带附件的邮件接口(){
   return request({
-    url: 'guangheng/api/mail_with_atachments',
+    url: 'api/mail_with_atachments',
     method: 'post',
     data: {
       subject: '文本测试',
@@ -126,7 +118,7 @@ export function 发送带附件的邮件接口(){
 
 export function 发送短信接口(){
   return request({
-    url: 'guangheng/api/sms',
+    url: 'api/sms',
     method: 'post',
     data: {
       phone_numbers: "13265328058",

@@ -1001,7 +1001,6 @@ onMounted(() => {
         station
           .查询平均风数据接口({
             user_id: route.query.user_id,
-            // date: new Date().Format("yyyyMMdd"),
           })
           .then((res) => {
             station.avgWindData = res.data.data;
@@ -1009,7 +1008,6 @@ onMounted(() => {
         station
           .查询瞬时风数据接口({
             user_id: route.query.user_id,
-            // date: new Date().Format("yyyyMMdd"),
           })
           .then((res) => {
             station.secondWindData = res.data.data;
@@ -1017,7 +1015,6 @@ onMounted(() => {
         station
           .查询径向风数据接口({
             user_id: route.query.user_id,
-            // date: new Date().Format("yyyyMMdd"),
           })
           .then((res) => {
             station.radialWindData = res.data.data;
@@ -1104,7 +1101,6 @@ onMounted(() => {
     station
       .查询平均风数据接口({
         user_id: route.query.user_id,
-        // date: new Date().Format("yyyyMMdd"),
       })
       .then((res) => {
         station.avgWindData = res.data.data;
@@ -1112,7 +1108,6 @@ onMounted(() => {
     station
       .查询瞬时风数据接口({
         user_id: route.query.user_id,
-        // date: new Date().Format("yyyyMMdd"),
       })
       .then((res) => {
         station.secondWindData = res.data.data;
@@ -1120,7 +1115,6 @@ onMounted(() => {
     station
       .查询径向风数据接口({
         user_id: route.query.user_id,
-        // date: new Date().Format("yyyyMMdd"),
       })
       .then((res) => {
         station.radialWindData = res.data.data;
@@ -1262,7 +1256,6 @@ onMounted(() => {
     station
       .查询平均风数据接口({
         user_id: route.query.user_id,
-        date: new Date().Format("yyyyMMdd"),
       })
       .then((res) => {
         station.avgWindData = res.data.data;
@@ -1270,7 +1263,6 @@ onMounted(() => {
     station
       .查询瞬时风数据接口({
         user_id: route.query.user_id,
-        date: new Date().Format("yyyyMMdd"),
       })
       .then((res) => {
         station.secondWindData = res.data.data;
@@ -1278,7 +1270,6 @@ onMounted(() => {
     station
       .查询径向风数据接口({
         user_id: route.query.user_id,
-        date: new Date().Format("yyyyMMdd"),
       })
       .then((res) => {
         //太慢
