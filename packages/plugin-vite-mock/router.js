@@ -5,9 +5,13 @@ const colors = require('picocolors')
 const { bundleRequire }  = require('bundle-require')
 async function sleep(timeout=0){
   return new Promise(resolve=>{
-    timeout && setTimeout(()=>{
+    if(timeout){
+      setTimeout(()=>{
+        resolve(timeout)
+      },timeout)
+    }else {
       resolve(timeout)
-    },timeout)
+    }
   })
 }
 function loggerOutput(title, msg, type = 'info') {
