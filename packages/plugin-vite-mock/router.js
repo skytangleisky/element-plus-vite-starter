@@ -101,12 +101,14 @@ async function matchRoute(req,res,next,routes){
       })
       loggerOutput('request invoke', req.method.padEnd(10,' ') + req.url)
       if(Object.prototype.toString.call(routes[i].response)==='[object Object]'){
+        res.setHeader('Content-Type','application/json')
         res.write(JSON.stringify(routes[i].response))
         res.end()
         return true
       }else if(Object.prototype.toString.call(routes[i].response)==='[object Function]'){
         let tmp = routes[i].response(req, res,next)
         if(typeof tmp == 'object'){
+          res.setHeader('Content-Type','application/json')
           res.write(JSON.stringify(tmp))
           res.end()
         }
@@ -114,6 +116,7 @@ async function matchRoute(req,res,next,routes){
       } else if(Object.prototype.toString.call(routes[i].response)==='[object AsyncFunction]'){
         let tmp = await routes[i].response(req,res,next)
         if(typeof tmp == 'object'){
+          res.setHeader('Content-Type','application/json')
           res.write(JSON.stringify(tmp))
           res.end()
         }
