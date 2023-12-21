@@ -85,7 +85,6 @@ const submitForm = (formEl: FormInstance | undefined) => {
         .then((res: any) => {
           loading.value = false;
           if (res.data.code == 20000) {
-            console.log("logined", res.data);
             router.push({ path: "/", replace: true });
           } else {
             openVn(res.data.message);
