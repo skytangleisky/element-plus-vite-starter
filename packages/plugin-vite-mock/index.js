@@ -12,7 +12,7 @@ export function mock(opts) {
       return options
     },
     async configResolved(resolvedConfig){
-      await router.init(resolvedConfig)
+      await router.init(resolvedConfig,opts)
     },
     transform(code,id){
     },
