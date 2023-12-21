@@ -3,6 +3,13 @@ const cookie = require('cookie')
 const fg = require('fast-glob')
 const colors = require('picocolors')
 const { bundleRequire }  = require('bundle-require')
+async function sleep(timeout=0){
+  return new Promise(resolve=>{
+    timeout && setTimeout(()=>{
+      resolve(timeout)
+    },timeout)
+  })
+}
 function loggerOutput(title, msg, type = 'info') {
   const tag = type === 'info' ? colors.cyan(`[vite:mock]`) : colors.red(`[vite:mock-server]`)
   return console.log(
@@ -99,7 +106,8 @@ async function matchRoute(req,res,next,routes){
       }).then(body=>{
         req.body = body
       })
-      loggerOutput('request invoke', req.method.padEnd(10,' ') + req.url)
+      loggerOutput('request invoke', req.method.padEnd(10,' ') + req.url + '\t' + (routes[i].delay?(routes[i].delay+'ms'):''))
+      await sleep(routes[i].delay)
       if(Object.prototype.toString.call(routes[i].response)==='[object Object]'){
         res.setHeader('Content-Type','application/json')
         res.write(JSON.stringify(routes[i].response))
@@ -129,4 +137,3 @@ async function matchRoute(req,res,next,routes){
   }
   return false
 }
-
