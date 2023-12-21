@@ -11,7 +11,8 @@ export function mock(opts) {
     options(options){
       return options
     },
-    configResolved(resolvedConfig){
+    async configResolved(resolvedConfig){
+      await router.init(resolvedConfig)
     },
     transform(code,id){
     },
@@ -32,7 +33,7 @@ export function mock(opts) {
       return html
     },
     async handleHotUpdate(ctx) {},
-    async buildStart() { await router.init() },
+    async buildStart() {},
     async buildEnd() { await router.dispose() },
     async closeBundle() {}
   }

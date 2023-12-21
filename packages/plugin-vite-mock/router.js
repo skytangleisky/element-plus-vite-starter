@@ -70,7 +70,7 @@ module.exports = async(req, res, next) => {
 module.exports.dispose = async() => {
   await watcher.unwatch(process.cwd()+'/mock')
 }
-module.exports.init = async()=>{
+module.exports.init = async(resolvedConfig)=>{
   routes=[];
   (await Promise.all(fg.globSync(`**/*.{ts,mjs,js}`, {cwd: process.cwd() + '/mock',}).map(async(name)=>await bundleRequire({filepath: process.cwd() + '/mock/' + name})))).map(item=>{
     if(item.mod.default instanceof Array){
