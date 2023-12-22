@@ -106,19 +106,9 @@
 <script setup>
 import "../mapbox/mapbox-gl.css";
 import "../mapbox/mapbox-gl.js";
-import { getCoord, loadImage, getFeather } from "~/tools";
-import imageUrl from "~/assets/feather.svg?url";
+import { addFeatherImages, getFeather } from "~/tools";
 import { getLngLat } from "~/myComponents/map/js/core.js";
-import {
-  onMounted,
-  onBeforeUnmount,
-  watch,
-  ref,
-  computed,
-  h,
-  onActivated,
-  onDeactivated,
-} from "vue";
+import { watch, ref, onActivated, onDeactivated } from "vue";
 const info = ref({
   title: "南昌昌北国际机场(ZSCN)",
   time: "2020-09-24 16:00",
@@ -129,7 +119,6 @@ const info = ref({
   latitude: "",
   deg: "",
 });
-import { eventbus } from "~/eventbus";
 import { useStationStore } from "~/stores/station";
 import chartTh from "~/myComponents/echarts/T_H.vue";
 import chartDom from "~/myComponents/echarts/index.vue";
@@ -143,7 +132,6 @@ const route = useRoute();
 import radarStatistic from "./radarStatistic.vue";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
-import { storeToRefs } from "pinia";
 import Legend from "./legend.vue";
 import style from "./streets-v11.js";
 
@@ -158,7 +146,7 @@ const disappear = (e) => {
   setting.disappear = !setting.disappear;
 };
 let timer;
-onMounted(() => {
+onActivated(async () => {
   let map = new mapboxgl.Map({
     container: mapRef.value,
     // style: raster,
@@ -183,6 +171,7 @@ onMounted(() => {
     center: setting.openlayers.center,
     pitch: 0,
   });
+  await addFeatherImages(map);
   let speed = 20;
   const points = {
     type: "geojson",
@@ -251,151 +240,114 @@ onMounted(() => {
         visibility: setting.station ? "visible" : "none",
       },
     });
-    loadImage(imageUrl, 340, 188, {
-      feather0: getCoord(0, 0, 0),
-      feather1: getCoord(1, 0, 1),
-      feather2: getCoord(2, 0, 2),
-      feather4: getCoord(3, 0, 3),
-      feather6: getCoord(4, 0, 6),
-      feather8: getCoord(5, 0, 8),
-      feather10: getCoord(6, 0, 10),
-      feather12: getCoord(7, 0, 12),
-      feather14: getCoord(8, 0, 14),
-      feather16: getCoord(9, 0, 16),
-      feather18: getCoord(0, 1, 18),
-      feather20: getCoord(1, 1, 20),
-      feather22: getCoord(2, 1, 22),
-      feather24: getCoord(3, 1, 24),
-      feather26: getCoord(4, 1, 26),
-      feather28: getCoord(5, 1, 28),
-      feather30: getCoord(6, 1, 30),
-      feather32: getCoord(7, 1, 32),
-      feather34: getCoord(8, 1, 34),
-      feather36: getCoord(9, 1, 36),
-      feather38: getCoord(0, 2, 38),
-      feather40: getCoord(1, 2, 40),
-      feather42: getCoord(2, 2, 42),
-      feather44: getCoord(3, 2, 44),
-      feather46: getCoord(4, 2, 46),
-      feather48: getCoord(5, 2, 48),
-      feather50: getCoord(6, 2, 50),
-      feather52: getCoord(7, 2, 52),
-      feather54: getCoord(8, 2, 54),
-      feather56: getCoord(9, 2, 56),
-      feather58: getCoord(0, 3, 58),
-      feather60: getCoord(1, 3, 60),
-    }).then((result) => {
-      for (let k in result) {
-        map.addImage(k, result[k]);
-      }
-      map.addLayer({
-        id: "featherLayer",
-        source: "point",
-        type: "symbol",
-        layout: {
-          visibility: setting.station ? "visible" : "none",
-          // This icon is a part of the Mapbox Streets style.
-          // To view all images available in a Mapbox style, open
-          // the style in Mapbox Studio and click the "Images" tab.
-          // To add a new image to the style at runtime see
-          // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-          "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
-          "icon-image": ["get", "image"],
-          "icon-size": 1,
-          "icon-rotate": ["get", "风向"],
-          "icon-rotation-alignment": "map",
-          "icon-allow-overlap": true,
-          "icon-ignore-placement": true,
-          // "text-field": ["get", "风速"],
-          // "text-font": ["simkai"],
-          // "text-size": 20,
-          // "text-transform": "uppercase",
-          // // "text-letter-spacing": 0.05,
-          // "text-anchor": "center",
-          // "text-line-height": 1,
-          // // "text-justify": "center",
-          // "text-offset": [0, 0],
-          // "text-ignore-placement": true,
-          // "text-allow-overlap": true,
-          // "text-rotation-alignment": "map",
-        },
-        filter: ["==", ["get", "type"], "风羽"],
-      });
-      map.addLayer({
-        id: "textLayer",
-        source: "point",
-        type: "symbol",
-        layout: {
-          visibility: setting.station ? "visible" : "none",
-          "text-field": ["get", "name"],
-          "text-font": ["simkai"],
-          "text-size": 20,
-          "text-transform": "uppercase",
-          // "text-letter-spacing": 0.05,
-          "text-anchor": "center",
-          "text-line-height": 1,
-          "text-offset": [0, -1.2],
-          "text-ignore-placement": true,
-          "text-allow-overlap": true,
-          "text-rotation-alignment": "map",
-        },
-        paint: {
-          "text-color": "white",
-        },
-        filter: ["==", ["get", "type"], "站点"],
-      });
-      map.addLayer({
-        id: "temperatureLayer",
-        source: "point",
-        type: "symbol",
-        layout: {
-          visibility: setting.station ? "visible" : "none",
-          "text-field": ["get", "external_temperature"],
-          "text-font": ["simkai"],
-          "text-size": 20,
-          "text-transform": "uppercase",
-          // "text-letter-spacing": 0.05,
-          "text-anchor": "right",
-          "text-line-height": 1,
-          "text-offset": [-1, -0.2],
-          "text-ignore-placement": true,
-          "text-allow-overlap": true,
-          "text-rotation-alignment": "map",
-        },
-        paint: {
-          "text-opacity": setting.factor[7].val ? 1 : 0,
-          "text-color": "white",
-        },
-        filter: ["==", ["get", "type"], "站点"],
-      });
-      map.addLayer({
-        id: "humidityLayer",
-        source: "point",
-        type: "symbol",
-        layout: {
-          visibility: setting.station ? "visible" : "none",
-          "text-field": ["get", "external_humidity"],
-          "text-font": ["simkai"],
-          "text-size": 20,
-          "text-transform": "uppercase",
-          // "text-letter-spacing": 0.05,
-          "text-anchor": "right",
-          "text-line-height": 1,
-          "text-offset": [-1, 1.2],
-          "text-ignore-placement": true,
-          "text-allow-overlap": true,
-          "text-rotation-alignment": "map",
-        },
-        paint: {
-          "text-opacity": setting.factor[9].val ? 1 : 0,
-          "text-color": "white",
-        },
-        filter: ["==", ["get", "type"], "站点"],
-      });
+    map.addLayer({
+      id: "featherLayer",
+      source: "point",
+      type: "symbol",
+      layout: {
+        visibility: setting.station ? "visible" : "none",
+        // This icon is a part of the Mapbox Streets style.
+        // To view all images available in a Mapbox style, open
+        // the style in Mapbox Studio and click the "Images" tab.
+        // To add a new image to the style at runtime see
+        // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+        "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
+        "icon-image": ["get", "image"],
+        "icon-size": 1,
+        "icon-rotate": ["get", "风向"],
+        "icon-rotation-alignment": "map",
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+        // "text-field": ["get", "风速"],
+        // "text-font": ["simkai"],
+        // "text-size": 20,
+        // "text-transform": "uppercase",
+        // // "text-letter-spacing": 0.05,
+        // "text-anchor": "center",
+        // "text-line-height": 1,
+        // // "text-justify": "center",
+        // "text-offset": [0, 0],
+        // "text-ignore-placement": true,
+        // "text-allow-overlap": true,
+        // "text-rotation-alignment": "map",
+      },
+      paint: {
+        "icon-opacity": setting.feather ? 1 : 0,
+      },
+      filter: ["==", ["get", "type"], "风羽"],
+    });
+    map.addLayer({
+      id: "textLayer",
+      source: "point",
+      type: "symbol",
+      layout: {
+        visibility: setting.station ? "visible" : "none",
+        "text-field": ["get", "name"],
+        "text-font": ["simkai"],
+        "text-size": 20,
+        "text-transform": "uppercase",
+        // "text-letter-spacing": 0.05,
+        "text-anchor": "center",
+        "text-line-height": 1,
+        "text-offset": [0, -1.2],
+        "text-ignore-placement": true,
+        "text-allow-overlap": true,
+        "text-rotation-alignment": "map",
+      },
+      paint: {
+        "text-color": "white",
+      },
+      filter: ["==", ["get", "type"], "站点"],
+    });
+    map.addLayer({
+      id: "temperatureLayer",
+      source: "point",
+      type: "symbol",
+      layout: {
+        visibility: setting.station ? "visible" : "none",
+        "text-field": ["get", "external_temperature"],
+        "text-font": ["simkai"],
+        "text-size": 20,
+        "text-transform": "uppercase",
+        // "text-letter-spacing": 0.05,
+        "text-anchor": "right",
+        "text-line-height": 1,
+        "text-offset": [-1, -0.2],
+        "text-ignore-placement": true,
+        "text-allow-overlap": true,
+        "text-rotation-alignment": "map",
+      },
+      paint: {
+        "text-opacity": setting.factor[7].val ? 1 : 0,
+        "text-color": "white",
+      },
+      filter: ["==", ["get", "type"], "站点"],
+    });
+    map.addLayer({
+      id: "humidityLayer",
+      source: "point",
+      type: "symbol",
+      layout: {
+        visibility: setting.station ? "visible" : "none",
+        "text-field": ["get", "external_humidity"],
+        "text-font": ["simkai"],
+        "text-size": 20,
+        "text-transform": "uppercase",
+        // "text-letter-spacing": 0.05,
+        "text-anchor": "right",
+        "text-line-height": 1,
+        "text-offset": [-1, 1.2],
+        "text-ignore-placement": true,
+        "text-allow-overlap": true,
+        "text-rotation-alignment": "map",
+      },
+      paint: {
+        "text-opacity": setting.factor[9].val ? 1 : 0,
+        "text-color": "white",
+      },
+      filter: ["==", ["get", "type"], "站点"],
     });
   });
-  eventbus.on("将站点移动到屏幕中心", flyTo);
-  const container = popup.value;
   const closer = popup_closer.value;
   closer.onclick = function () {
     selected = null;
@@ -447,11 +399,6 @@ onMounted(() => {
             coordinates: [data[i].longitude, data[i].latitude],
           },
         });
-
-        // 模拟
-        // if (i == 0)
-        //   points.data.features[i].properties.radar_id =
-        //     "7dad08b8-2c89-47d4-9698-7e885090c3f6";
       }
       let source = map.getSource("point");
       source && source.setData(points.data);
@@ -479,7 +426,7 @@ onMounted(() => {
           });
       }
     },
-    { deep: true, immediate: false }
+    { deep: true }
   );
   map.on("click", "stationLayer", (e) => {
     if (e.features) {
@@ -494,12 +441,8 @@ onMounted(() => {
     }
   });
   watch(
-    [
-      storeToRefs(station).avgWindData,
-      storeToRefs(station).result,
-      storeToRefs(station).active,
-    ],
-    ([avgWindData]) => {
+    () => station.avgWindData,
+    (avgWindData) => {
       if (avgWindData) {
         avgWindData.forEach((v) => {
           for (let radar_id in v) {
@@ -555,151 +498,12 @@ onMounted(() => {
               }
             }
           }
-          // source3.getFeatures().forEach((feature) => {
-          //   let tmp = v[feature.get("radar_id")];
-          //   if (tmp) {
-          //     for (let k in tmp[0]) {
-          //       let tmp2 = tmp[0][k].slice().reverse()[0];
-          //       if (tmp2) {
-          //         for (let key in tmp2) {
-          //           feature.set("distance", tmp2[key].distance.toFixed(1));
-          //           feature.set("ex_temp", tmp2[key].ex_temp.toFixed(2));
-          //           if (tmp2[key].ex_hum == -1) {
-          //             feature.set("ex_hum", undefined);
-          //           } else {
-          //             feature.set("ex_hum", tmp2[key].ex_hum.toFixed(2));
-          //           }
-          //           if (setting.factor[10].val) {
-          //             feature.getStyle()[5].getText().setText(feature.get("distance"));
-          //           } else {
-          //             feature.getStyle()[5].getText().setText(undefined);
-          //           }
-          //           if (setting.factor[7].val) {
-          //             feature.getStyle()[8].getText().setText(feature.get("ex_temp"));
-          //           } else {
-          //             feature.getStyle()[8].getText().setText(undefined);
-          //           }
-          //           if (setting.factor[9].val) {
-          //             feature.getStyle()[10].getText().setText(feature.get("ex_hum"));
-          //           } else {
-          //             feature.getStyle()[10].getText().setText(undefined);
-          //           }
-          //           feature.changed();
-          //         }
-          //       } else {
-          //         for (let key in tmp2) {
-          //           feature.getStyle()[5].getText().setText(undefined);
-          //           feature.getStyle()[8].getText().setText(undefined);
-          //           feature.getStyle()[10].getText().setText(undefined);
-          //           feature.changed();
-          //         }
-          //       }
-          //     }
-          //   }
-          // });
         });
       }
     }
   );
-  function flyTo(v) {
-    console.log(v);
-    let zoom = map.getView().getZoom();
-    const duration = 2000;
-    // map.getView().animate({
-    //   center:fromLonLat([110,30]),
-    //   duration:2000
-    // })
-    map.getView().cancelAnimations();
-    map.getView().animate({
-      center: fromLonLat([v.longitude, v.latitude]),
-      duration: duration,
-      // easing: linear,
-    });
-    // map.getView().animate(
-    //   {
-    //     zoom: 6,
-    //     duration: duration/2,
-    //   },
-    //   {
-    //     zoom: 7,
-    //     duration: duration/2,
-    //   }
-    // )
-  }
-  // map.addControl(new FullScreen());
-  let selected = null;
-  const pointermoveFunc = (evt) => {
-    selected && selected.set("hover", 0);
-    map.forEachFeatureAtPixel(evt.pixel, (feature) => {
-      if (feature.get("station")) {
-        if (selected != feature) {
-          console.log("enter");
-          // const coordinate = evt.coordinate;
-          // const hdms = toStringHDMS(toLonLat(coordinate));
-          feature.set("hover", 1);
-          //   const hdms = toStringHDMS(feature.get('coords'));
-          info.value.time = feature.get("time");
-          info.value.title = feature.get("name");
-          info.value.status = feature.get("is_online");
-          info.value.speed = feature.get("speed");
-          info.value.longitude = feature.get("coords")[0] + "°";
-          info.value.latitude = feature.get("coords")[1] + "°";
-          info.value.deg = ((feature.get("rad") * 180) / Math.PI).toFixed(2);
-          overlay.setPosition(fromLonLat(feature.get("coords")));
-          //   const datetime = feature.get('datetime');
-          //   const duration = feature.get('duration');
-          //   const shape = feature.get('shape');
-          //   return `On ${datetime}, lasted ${duration} seconds and had a "${shape}" shape.`;
-        }
-        selected = feature;
-        selected.set("hover", 1);
-      }
-    });
-  };
-  const pointerdownFunc = (evt) => {
-    if (map.getView().getInteracting() || map.getView().getAnimating()) {
-      return;
-    }
-    map.forEachFeatureAtPixel(evt.pixel, (feature) => {
-      if (feature.get("station")) {
-        const text = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
-          setting.disappear = false;
-          station.active = -1;
-          for (let i = 0; i < station.result.length; i++) {
-            if (station.result[i].radar.name == feature.get("name")) {
-              station.active = i;
-            }
-          }
-        });
-      }
-    });
-  };
-  const moveendFunc = () => {
-    let view = map.getView();
-    setting.openlayers.zoom = view.getZoom();
-    setting.openlayers.center = toLonLat(view.getCenter());
-    // console.log(view.getZoom(), toLonLat(view.getCenter()));
-  };
   watch(
-    storeToRefs(setting).factor.value[0],
-    (newVal) => {
-      if (newVal.val) {
-        // source3.getFeatures().forEach((feature) => {
-        //   feature.getStyle()[0].getText().setText(feature.get("radar_id"));
-        //   feature.changed();
-        // });
-      } else {
-        // source3.getFeatures().forEach((feature) => {
-        //   feature.getStyle()[0].getText().setText(undefined);
-        //   feature.changed();
-        // });
-      }
-    },
-    { immediate: false, deep: true }
-  );
-  watch(
-    // storeToRefs(setting).factor.value[5],
-    storeToRefs(setting).station,
+    () => setting.station,
     (newVal) => {
       if (newVal) {
         map.setLayoutProperty("stationLayer", "visibility", "visible");
@@ -717,9 +521,9 @@ onMounted(() => {
     }
   );
   watch(
-    storeToRefs(setting).factor.value[7],
-    (newVal) => {
-      if (newVal.val) {
+    () => setting.factor[7],
+    ({ val }) => {
+      if (val) {
         map.setPaintProperty("temperatureLayer", "text-opacity", 1);
       } else {
         map.setPaintProperty("temperatureLayer", "text-opacity", 0);
@@ -728,9 +532,9 @@ onMounted(() => {
     { deep: true }
   );
   watch(
-    storeToRefs(setting).factor.value[9],
-    (newVal) => {
-      if (newVal.val) {
+    () => setting.factor[9],
+    ({ val }) => {
+      if (val) {
         map.setPaintProperty("humidityLayer", "text-opacity", 1);
       } else {
         map.setPaintProperty("humidityLayer", "text-opacity", 0);
@@ -739,67 +543,9 @@ onMounted(() => {
     { deep: true }
   );
   watch(
-    storeToRefs(setting).factor.value[10],
-    (newVal) => {
-      if (newVal.val) {
-        // source3.getFeatures().forEach((feature) => {
-        //   feature.getStyle()[5].getText().setText(feature.get("distance"));
-        //   feature.changed();
-        // });
-      } else {
-        // source3.getFeatures().forEach((feature) => {
-        //   feature.getStyle()[5].getText().setText(undefined);
-        //   feature.changed();
-        // });
-      }
-    },
-    { immediate: true, deep: true }
-  );
-  onActivated(() => {
-    removeAllFeatures();
-    station.result = [];
-    if (setting.checks[0].select) {
-      station.查询雷达列表接口({ user_id: route.query.user_id });
-    }
-    if (setting.checks[1].select) {
-      station.查询雷达在线列表接口({ user_id: route.query.user_id });
-    }
-    if (setting.checks[2].select) {
-      station.查询雷达离线列表接口({ user_id: route.query.user_id });
-    }
-    if (setting.checks[3].select) {
-      station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
-    }
-    station
-      .查询平均风数据接口({
-        user_id: route.query.user_id,
-      })
-      .then((res) => {
-        station.avgWindData = res.data.data;
-      });
-    station
-      .查询瞬时风数据接口({
-        user_id: route.query.user_id,
-      })
-      .then((res) => {
-        station.secondWindData = res.data.data;
-      });
-    station
-      .查询径向风数据接口({
-        user_id: route.query.user_id,
-      })
-      .then((res) => {
-        station.radialWindData = res.data.data;
-      });
-  });
-  onDeactivated(() => {
-    clearInterval(timer);
-  });
-  watch(
-    storeToRefs(setting).checks.value[0],
-    (newVal) => {
-      removeAllFeatures();
-      if (newVal.select) {
+    () => setting.checks[0],
+    ({ select }) => {
+      if (select) {
         station.查询雷达列表接口({ user_id: route.query.user_id });
       } else {
         station.result = [];
@@ -808,21 +554,20 @@ onMounted(() => {
     { deep: true, immediate: true }
   );
   watch(
-    storeToRefs(setting).checks.value[1],
-    (newVal) => {
-      if (newVal.select) {
+    () => setting.checks[1],
+    ({ select }) => {
+      if (select) {
         station.查询雷达在线列表接口({ user_id: route.query.user_id });
       } else {
         station.result = [];
       }
-      removeAllFeatures();
     },
     { deep: true, immediate: true }
   );
   watch(
-    storeToRefs(setting).checks.value[2],
-    (newVal) => {
-      if (newVal.select) {
+    () => setting.checks[2],
+    ({ select }) => {
+      if (select) {
         station.查询雷达离线列表接口({ user_id: route.query.user_id });
       } else {
         station.result = [];
@@ -831,9 +576,9 @@ onMounted(() => {
     { deep: true, immediate: true }
   );
   watch(
-    storeToRefs(setting).checks.value[3],
-    (newVal) => {
-      if (newVal.select) {
+    () => setting.checks[3],
+    ({ select }) => {
+      if (select) {
         station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
       } else {
         station.result = [];
@@ -841,11 +586,6 @@ onMounted(() => {
     },
     { deep: true, immediate: true }
   );
-  function removeAllFeatures() {
-    // source.getFeatures().forEach((feature) => source.removeFeature(feature));
-    // source2.getFeatures().forEach((feature) => source2.removeFeature(feature));
-    // source3.getFeatures().forEach((feature) => source3.removeFeature(feature));
-  }
   watch(
     () => setting.district,
     (newVal) => {
@@ -859,17 +599,6 @@ onMounted(() => {
     }
   );
   watch(
-    storeToRefs(setting).graticule,
-    (newVal) => {
-      // if (newVal) {
-      //   graticule.setVisible(true);
-      // } else {
-      //   graticule.setVisible(false);
-      // }
-    },
-    { immediate: true }
-  );
-  watch(
     () => setting.loadmap,
     (newVal) => {
       if (newVal) {
@@ -879,20 +608,17 @@ onMounted(() => {
       }
     }
   );
-  watch(storeToRefs(setting).feather, (newVal) => {
-    if (newVal) {
-      map.setPaintProperty("featherLayer", "text-opacity", 1);
-    } else {
-      map.setPaintProperty("featherLayer", "text-opacity", 0);
+  watch(
+    () => setting.feather,
+    (newVal) => {
+      if (newVal) {
+        map.setPaintProperty("featherLayer", "icon-opacity", 1);
+      } else {
+        map.setPaintProperty("featherLayer", "icon-opacity", 0);
+      }
     }
-  });
+  );
   timer = setInterval(() => {
-    //   source.getFeatures().forEach(feature=>{
-    //     feature.set('rad',Math.PI/180*Math.random()*360)
-    //     // let geometry = feature.get('geometry')
-    //     // geometry.setCoordinates(fromLonLat([110,30]))
-    //     // feature.set('geometry',geometry)
-    //   })
     station
       .查询平均风数据接口({
         user_id: route.query.user_id,
@@ -916,10 +642,9 @@ onMounted(() => {
         station.radialWindData = res.data.data;
       });
   }, 4 * 60 * 1000);
-  onBeforeUnmount(() => {
-    eventbus.off("将站点移动到屏幕中心");
-    clearInterval(timer);
-  });
+});
+onDeactivated(() => {
+  clearInterval(timer);
 });
 </script>
 

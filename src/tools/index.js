@@ -1,4 +1,5 @@
 const modules = import.meta.glob('~/**/*.vue')
+import imageUrl from "~/assets/feather.svg?url";
 /**
  * This is just a simple version of deep copy
  * Has a lot of edge cases bug
@@ -397,3 +398,46 @@ export const getCoord = (i, j, v) => ({
   y2: (j * (32 + 20)) / (32 * 4 + 20 * (4 - 1)) + 32 / (32 * 4 + 20 * (4 - 1)),
   fill: getColor(v),
 });
+export const addFeatherImages = async( map ) => {
+  return new Promise((resolve) => {
+    loadImage(imageUrl, 340, 188, {
+      feather0: getCoord(0, 0, 0),
+      feather1: getCoord(1, 0, 1),
+      feather2: getCoord(2, 0, 2),
+      feather4: getCoord(3, 0, 3),
+      feather6: getCoord(4, 0, 6),
+      feather8: getCoord(5, 0, 8),
+      feather10: getCoord(6, 0, 10),
+      feather12: getCoord(7, 0, 12),
+      feather14: getCoord(8, 0, 14),
+      feather16: getCoord(9, 0, 16),
+      feather18: getCoord(0, 1, 18),
+      feather20: getCoord(1, 1, 20),
+      feather22: getCoord(2, 1, 22),
+      feather24: getCoord(3, 1, 24),
+      feather26: getCoord(4, 1, 26),
+      feather28: getCoord(5, 1, 28),
+      feather30: getCoord(6, 1, 30),
+      feather32: getCoord(7, 1, 32),
+      feather34: getCoord(8, 1, 34),
+      feather36: getCoord(9, 1, 36),
+      feather38: getCoord(0, 2, 38),
+      feather40: getCoord(1, 2, 40),
+      feather42: getCoord(2, 2, 42),
+      feather44: getCoord(3, 2, 44),
+      feather46: getCoord(4, 2, 46),
+      feather48: getCoord(5, 2, 48),
+      feather50: getCoord(6, 2, 50),
+      feather52: getCoord(7, 2, 52),
+      feather54: getCoord(8, 2, 54),
+      feather56: getCoord(9, 2, 56),
+      feather58: getCoord(0, 3, 58),
+      feather60: getCoord(1, 3, 60),
+    }).then((result) => {
+      for (let k in result) {
+        map.addImage(k, result[k]);
+      }
+      resolve('finished');
+    });
+  })
+}

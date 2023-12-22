@@ -192,36 +192,6 @@ onActivated(() => {
 onDeactivated(() => {
   clearInterval(timer);
 });
-const options = [
-  {
-    value: 6,
-    label: "7层",
-  },
-  {
-    value: 5,
-    label: "6层",
-  },
-  {
-    value: 4,
-    label: "5层",
-  },
-  {
-    value: 3,
-    label: "4层",
-  },
-  {
-    value: 2,
-    label: "3层",
-  },
-  {
-    value: 1,
-    label: "2层",
-  },
-  {
-    value: 0,
-    label: "1层",
-  },
-];
 </script>
 <style lang="scss">
 .radarStatistic {
