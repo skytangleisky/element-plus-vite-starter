@@ -32,9 +32,9 @@ export function mock(opts) {
     transformIndexHtml(html){
       return html
     },
-    async handleHotUpdate(ctx) {},
-    async buildStart() {},
-    async buildEnd() { await router.dispose() },
-    async closeBundle() {}
+    handleHotUpdate(ctx) {},
+    buildStart() {},
+    buildEnd() { router.dispose() },
+    closeBundle() {}
   }
 }

@@ -1,10 +1,13 @@
 import Mock from 'mockjs';
 export default [
   {
-    url:'/backend/stations',
+    path:'/backend/:路径/test',
     method:'GET',
     response:(req)=>{
-      console.log(req.query)
+      console.log('params',req.params)
+      console.log('query',req.query)
+      console.log('body',req.body)
+      console.log('file',req.files)
       return Mock.mock({
         'list|1-10': [{
             'id|+1': 1
@@ -13,9 +16,10 @@ export default [
     }
   },
   {
-    url:'/api/weather/wind/avg',
+    path:'/api/weather/wind/avg/:time',
     method:'POST',
-    response:()=>{
+    response:(req)=>{
+      console.log(req.params)
       let mockData = Mock.mock({'list|20':[{
         "timestamp": "2023-10-26T23:50:00+08:00",
         "device_id": "",

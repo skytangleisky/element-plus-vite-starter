@@ -6,7 +6,6 @@ import { mock } from './packages/plugin-vite-mock'
 
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
-const fs = require('fs')
 
 import Unocss from 'unocss/vite'
 
@@ -83,13 +82,13 @@ export default defineConfig({
     lifecycle === 'report'? visualizer({ open: true, brotliSize: true, filename: 'report.html' }): null
   ],
   server:{
-    https:{
-      cert: fs.readFileSync('dev.tanglei.top.pem'),
-      key: fs.readFileSync('dev.tanglei.top.key')
-    },
+    // https:{
+    //   cert: fs.readFileSync('dev.tanglei.top.pem'),
+    //   key: fs.readFileSync('dev.tanglei.top.key')
+    // },
     host:'::',
-    // open:'http://localhost:5173',
-    open:'https://dev.tanglei.top',
+    open:'http://localhost:5173',
+    // open:'https://dev.tanglei.top',
     port:5173,
     proxy:{
       // '/guangheng':{
