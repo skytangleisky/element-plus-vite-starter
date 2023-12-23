@@ -20,7 +20,7 @@
 </template>
 <script lang="ts" setup>
 import { isDark } from "~/composables/dark";
-import { ref, onMounted, onBeforeUnmount, watch, onActivated } from "vue";
+import { ref, onMounted, onBeforeUnmount, watch } from "vue";
 watch(isDark, (isDark) => {
   draw(canvas, isDark);
 });

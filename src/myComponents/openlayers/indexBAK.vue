@@ -111,16 +111,7 @@ const graticule = new Graticule({
   visible: true,
   wrapX: true,
 });
-import {
-  onMounted,
-  onBeforeUnmount,
-  watch,
-  ref,
-  computed,
-  h,
-  onActivated,
-  onDeactivated,
-} from "vue";
+import { onMounted, onBeforeUnmount, watch, ref, computed, h } from "vue";
 const info = ref({
   title: "南昌昌北国际机场(ZSCN)",
   time: "2020-09-24 16:00",
@@ -1083,46 +1074,6 @@ onMounted(() => {
     },
     { immediate: true, deep: true }
   );
-  onActivated(() => {
-    removeAllFeatures();
-    station.result = [];
-    if (setting.checks[0].select) {
-      station.查询雷达列表接口({ user_id: route.query.user_id });
-    }
-    if (setting.checks[1].select) {
-      station.查询雷达在线列表接口({ user_id: route.query.user_id });
-    }
-    if (setting.checks[2].select) {
-      station.查询雷达离线列表接口({ user_id: route.query.user_id });
-    }
-    if (setting.checks[3].select) {
-      station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
-    }
-    station
-      .查询平均风数据接口({
-        user_id: route.query.user_id,
-      })
-      .then((res) => {
-        station.avgWindData = res.data.data;
-      });
-    station
-      .查询瞬时风数据接口({
-        user_id: route.query.user_id,
-      })
-      .then((res) => {
-        station.secondWindData = res.data.data;
-      });
-    station
-      .查询径向风数据接口({
-        user_id: route.query.user_id,
-      })
-      .then((res) => {
-        station.radialWindData = res.data.data;
-      });
-  });
-  onDeactivated(() => {
-    clearInterval(timer);
-  });
   watch(
     storeToRefs(setting).checks.value[0],
     (newVal) => {

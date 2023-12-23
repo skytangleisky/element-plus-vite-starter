@@ -9,13 +9,9 @@ const mockPath = process.cwd() + '/mock'
 const uploadPath = process.cwd() + '/uploads'
 async function sleep(timeout=0){
   return new Promise(resolve=>{
-    if(timeout){
-      setTimeout(()=>{
-        resolve(timeout)
-      },timeout)
-    }else {
+    setTimeout(()=>{
       resolve(timeout)
-    }
+    },timeout)
   })
 }
 function loggerOutput(title, msg, type = 'info') {
@@ -119,15 +115,18 @@ async function matchRoute(req,res,next,routes){
           await text(req,res)
           await raw(req,res)
           await multipart(req,res)
-          loggerOutput('request invoke', req.method.padEnd(10,' ') + req.url + '\t' + (routes[i].delay?(routes[i].delay+'ms'):''))
-          await sleep(routes[i].delay)
+          let delay = Object.prototype.toString.call(routes[i].delay)==='[object Function]'?routes[i].delay():routes[i].delay
+          loggerOutput('request invoke', req.method.padEnd(10,' ') + req.url + '\t' + (routes[i].delay?(delay+'ms'):''))
+          await sleep(delay)
           if(Object.prototype.toString.call(routes[i].response)==='[object Object]'){
+            res.setHeader('Content-Type','application/json')
             res.write(JSON.stringify(routes[i].response))
             res.end()
             return true
           }else if(Object.prototype.toString.call(routes[i].response)==='[object Function]'){
             let tmp = routes[i].response(req, res,next)
             if(typeof tmp == 'object'){
+              res.setHeader('Content-Type','application/json')
               res.write(JSON.stringify(tmp))
               res.end()
             }
@@ -135,6 +134,7 @@ async function matchRoute(req,res,next,routes){
           } else if(Object.prototype.toString.call(routes[i].response)==='[object AsyncFunction]'){
             let tmp = await routes[i].response(req,res,next)
             if(typeof tmp == 'object'){
+              res.setHeader('Content-Type','application/json')
               res.write(JSON.stringify(tmp))
               res.end()
             }

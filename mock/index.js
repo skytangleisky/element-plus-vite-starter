@@ -18,6 +18,7 @@ export default [
   {
     path:'/api/weather/wind/avg/:time',
     method:'POST',
+    delay:()=>Math.round(Math.random()*10000),
     response:(req)=>{
       console.log(req.params)
       let mockData = Mock.mock({'list|20':[{
@@ -63,6 +64,7 @@ export default [
         "rate_equi_ws": 0
       }]})
       let arr = []
+      mockData.list.reverse()
       for(let i=0;i<mockData.list.length;i++){
         let tmp = mockData.list[i]
         arr.push({[tmp.distance]:tmp})
@@ -72,7 +74,7 @@ export default [
         "message": "请求成功。",
         "data": [
           {
-            "c31c911e-1bb4-4272-b16e-e141bfaa0985": [
+            "12ba25da-e81c-4ef3-94ff-91591970b5fb": [
               {
                 "2023-10-26 23:50:00+08:00": arr
               }

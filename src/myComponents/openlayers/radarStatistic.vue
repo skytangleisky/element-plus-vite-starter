@@ -107,16 +107,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import {
-  watch,
-  ref,
-  onMounted,
-  onBeforeUnmount,
-  h,
-  toRef,
-  onActivated,
-  onDeactivated,
-} from "vue";
+import { watch, ref, onMounted, onBeforeUnmount, h, toRef } from "vue";
 import { Check, Close, Location } from "@element-plus/icons-vue";
 import { 雷达统计接口 } from "~/api/光恒/station";
 import collapseCard from "./collapseCard.vue";
@@ -185,11 +176,11 @@ const update = () => {
       });
     });
 };
-onActivated(() => {
+onMounted(() => {
   timer = setInterval(update, 3 * 60 * 1000);
   update();
 });
-onDeactivated(() => {
+onBeforeUnmount(() => {
   clearInterval(timer);
 });
 </script>

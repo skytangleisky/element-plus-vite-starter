@@ -108,7 +108,7 @@ import "../mapbox/mapbox-gl.css";
 import "../mapbox/mapbox-gl.js";
 import { addFeatherImages, getFeather } from "~/tools";
 import { getLngLat } from "~/myComponents/map/js/core.js";
-import { watch, ref, onActivated, onDeactivated } from "vue";
+import { watch, ref, onMounted, onBeforeUnmount, nextTick } from "vue";
 const info = ref({
   title: "南昌昌北国际机场(ZSCN)",
   time: "2020-09-24 16:00",
@@ -119,6 +119,7 @@ const info = ref({
   latitude: "",
   deg: "",
 });
+
 import { useStationStore } from "~/stores/station";
 import chartTh from "~/myComponents/echarts/T_H.vue";
 import chartDom from "~/myComponents/echarts/index.vue";
@@ -145,9 +146,236 @@ const popup_closer = ref(null);
 const disappear = (e) => {
   setting.disappear = !setting.disappear;
 };
-let timer;
-onActivated(async () => {
-  let map = new mapboxgl.Map({
+let timer, map;
+let speed = 20;
+const points = {
+  type: "geojson",
+  data: {
+    type: "FeatureCollection",
+    features: [
+      {
+        type: "Feature",
+        properties: {
+          风速: speed,
+          image: "feather" + getFeather(speed),
+          风向: 0,
+        },
+        geometry: {
+          type: "Point",
+          coordinates: [-122.414, 37.776],
+        },
+      },
+    ],
+  },
+};
+const clickFunc = (e) => {
+  if (e.features) {
+    setting.disappear = false;
+    station.active = -1;
+    for (let i = 0; i < station.result.length; i++) {
+      console.log(station.result[i].radar.name);
+      if (station.result[i].radar.radar_id == e.features[0].properties.radar_id) {
+        station.active = i;
+      }
+    }
+  }
+};
+const zoomFunc = () => {
+  setting.openlayers.zoom = map.getZoom();
+};
+const moveFunc = () => {
+  let center = map.getCenter();
+  setting.openlayers.center = [center.lng, center.lat];
+};
+const task = () => {
+  console.log("task");
+  station
+    .查询平均风数据接口({
+      user_id: route.query.user_id,
+    })
+    .then((res) => {
+      station.avgWindData = res.data.data;
+    });
+  station
+    .查询瞬时风数据接口({
+      user_id: route.query.user_id,
+    })
+    .then((res) => {
+      station.secondWindData = res.data.data;
+    });
+  station
+    .查询径向风数据接口({
+      user_id: route.query.user_id,
+    })
+    .then((res) => {
+      //太慢
+      station.radialWindData = res.data.data;
+    });
+};
+const loadFunc = () => {
+  map.addSource("point", points);
+  map.addLayer({
+    id: "stationLayer",
+    source: "point",
+    type: "circle",
+    paint: {
+      "circle-radius": [
+        "interpolate",
+        ["exponential", 1.5],
+        ["zoom"],
+        15,
+        4.5,
+        16,
+        8,
+        18,
+        20,
+        22,
+        200,
+      ],
+      "circle-color": ["get", "color"],
+      "circle-stroke-width": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        15,
+        0.8,
+        16,
+        1.2,
+        18,
+        2,
+      ],
+      // "circle-stroke-color": "hsl(220, 20%, 85%)",
+      "circle-pitch-alignment": "map",
+    },
+    filter: ["==", ["get", "type"], "站点"],
+    layout: {
+      visibility: setting.station ? "visible" : "none",
+    },
+  });
+  map.addLayer({
+    id: "featherLayer",
+    source: "point",
+    type: "symbol",
+    layout: {
+      visibility: setting.station ? "visible" : "none",
+      // This icon is a part of the Mapbox Streets style.
+      // To view all images available in a Mapbox style, open
+      // the style in Mapbox Studio and click the "Images" tab.
+      // To add a new image to the style at runtime see
+      // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+      "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
+      "icon-image": ["get", "image"],
+      "icon-size": 1,
+      "icon-rotate": ["get", "风向"],
+      "icon-rotation-alignment": "map",
+      "icon-allow-overlap": true,
+      "icon-ignore-placement": true,
+      // "text-field": ["get", "风速"],
+      // "text-font": ["simkai"],
+      // "text-size": 20,
+      // "text-transform": "uppercase",
+      // // "text-letter-spacing": 0.05,
+      // "text-anchor": "center",
+      // "text-line-height": 1,
+      // // "text-justify": "center",
+      // "text-offset": [0, 0],
+      // "text-ignore-placement": true,
+      // "text-allow-overlap": true,
+      // "text-rotation-alignment": "map",
+    },
+    paint: {
+      "icon-opacity": setting.feather ? 1 : 0,
+    },
+    filter: ["==", ["get", "type"], "风羽"],
+  });
+  map.addLayer({
+    id: "textLayer",
+    source: "point",
+    type: "symbol",
+    layout: {
+      visibility: setting.station ? "visible" : "none",
+      "text-field": ["get", "name"],
+      "text-font": ["simkai"],
+      "text-size": 20,
+      "text-transform": "uppercase",
+      // "text-letter-spacing": 0.05,
+      "text-anchor": "center",
+      "text-line-height": 1,
+      "text-offset": [0, -1.2],
+      "text-ignore-placement": true,
+      "text-allow-overlap": true,
+      "text-rotation-alignment": "map",
+    },
+    paint: {
+      "text-color": "white",
+    },
+    filter: ["==", ["get", "type"], "站点"],
+  });
+  map.addLayer({
+    id: "temperatureLayer",
+    source: "point",
+    type: "symbol",
+    layout: {
+      visibility: setting.station ? "visible" : "none",
+      "text-field": ["get", "external_temperature"],
+      "text-font": ["simkai"],
+      "text-size": 20,
+      "text-transform": "uppercase",
+      // "text-letter-spacing": 0.05,
+      "text-anchor": "right",
+      "text-line-height": 1,
+      "text-offset": [-1, -0.2],
+      "text-ignore-placement": true,
+      "text-allow-overlap": true,
+      "text-rotation-alignment": "map",
+    },
+    paint: {
+      "text-opacity": setting.factor[7].val ? 1 : 0,
+      "text-color": "white",
+    },
+    filter: ["==", ["get", "type"], "站点"],
+  });
+  map.addLayer({
+    id: "humidityLayer",
+    source: "point",
+    type: "symbol",
+    layout: {
+      visibility: setting.station ? "visible" : "none",
+      "text-field": ["get", "external_humidity"],
+      "text-font": ["simkai"],
+      "text-size": 20,
+      "text-transform": "uppercase",
+      // "text-letter-spacing": 0.05,
+      "text-anchor": "right",
+      "text-line-height": 1,
+      "text-offset": [-1, 1.2],
+      "text-ignore-placement": true,
+      "text-allow-overlap": true,
+      "text-rotation-alignment": "map",
+    },
+    paint: {
+      "text-opacity": setting.factor[9].val ? 1 : 0,
+      "text-color": "white",
+    },
+    filter: ["==", ["get", "type"], "站点"],
+  });
+  station.avgWindData = [];
+  station.secondWindData = [];
+  station.radialWindData = [];
+  // timer = setInterval(() => task(), 4 * 60 * 1000);
+  timer = setInterval(() => task(), 3 * 1000);
+
+  if (setting.checks[0].select)
+    station.查询雷达列表接口({ user_id: route.query.user_id });
+  if (setting.checks[1].select)
+    station.查询雷达在线列表接口({ user_id: route.query.user_id });
+  if (setting.checks[2].select)
+    station.查询雷达离线列表接口({ user_id: route.query.user_id });
+  if (setting.checks[3].select)
+    station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
+};
+onMounted(() => {
+  map = new mapboxgl.Map({
     container: mapRef.value,
     // style: raster,
     performanceMetricsCollection: false,
@@ -171,183 +399,11 @@ onActivated(async () => {
     center: setting.openlayers.center,
     pitch: 0,
   });
-  await addFeatherImages(map);
-  let speed = 20;
-  const points = {
-    type: "geojson",
-    data: {
-      type: "FeatureCollection",
-      features: [
-        {
-          type: "Feature",
-          properties: {
-            风速: speed,
-            image: "feather" + getFeather(speed),
-            风向: 0,
-          },
-          geometry: {
-            type: "Point",
-            coordinates: [-122.414, 37.776],
-          },
-        },
-      ],
-    },
-  };
-  map.on("zoom", () => {
-    setting.openlayers.zoom = map.getZoom();
-  });
-  map.on("move", () => {
-    let center = map.getCenter();
-    setting.openlayers.center = [center.lng, center.lat];
-  });
-  map.on("load", () => {
-    map.addSource("point", points);
-    map.addLayer({
-      id: "stationLayer",
-      source: "point",
-      type: "circle",
-      paint: {
-        "circle-radius": [
-          "interpolate",
-          ["exponential", 1.5],
-          ["zoom"],
-          15,
-          4.5,
-          16,
-          8,
-          18,
-          20,
-          22,
-          200,
-        ],
-        "circle-color": ["get", "color"],
-        "circle-stroke-width": [
-          "interpolate",
-          ["linear"],
-          ["zoom"],
-          15,
-          0.8,
-          16,
-          1.2,
-          18,
-          2,
-        ],
-        // "circle-stroke-color": "hsl(220, 20%, 85%)",
-        "circle-pitch-alignment": "map",
-      },
-      filter: ["==", ["get", "type"], "站点"],
-      layout: {
-        visibility: setting.station ? "visible" : "none",
-      },
-    });
-    map.addLayer({
-      id: "featherLayer",
-      source: "point",
-      type: "symbol",
-      layout: {
-        visibility: setting.station ? "visible" : "none",
-        // This icon is a part of the Mapbox Streets style.
-        // To view all images available in a Mapbox style, open
-        // the style in Mapbox Studio and click the "Images" tab.
-        // To add a new image to the style at runtime see
-        // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-        "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
-        "icon-image": ["get", "image"],
-        "icon-size": 1,
-        "icon-rotate": ["get", "风向"],
-        "icon-rotation-alignment": "map",
-        "icon-allow-overlap": true,
-        "icon-ignore-placement": true,
-        // "text-field": ["get", "风速"],
-        // "text-font": ["simkai"],
-        // "text-size": 20,
-        // "text-transform": "uppercase",
-        // // "text-letter-spacing": 0.05,
-        // "text-anchor": "center",
-        // "text-line-height": 1,
-        // // "text-justify": "center",
-        // "text-offset": [0, 0],
-        // "text-ignore-placement": true,
-        // "text-allow-overlap": true,
-        // "text-rotation-alignment": "map",
-      },
-      paint: {
-        "icon-opacity": setting.feather ? 1 : 0,
-      },
-      filter: ["==", ["get", "type"], "风羽"],
-    });
-    map.addLayer({
-      id: "textLayer",
-      source: "point",
-      type: "symbol",
-      layout: {
-        visibility: setting.station ? "visible" : "none",
-        "text-field": ["get", "name"],
-        "text-font": ["simkai"],
-        "text-size": 20,
-        "text-transform": "uppercase",
-        // "text-letter-spacing": 0.05,
-        "text-anchor": "center",
-        "text-line-height": 1,
-        "text-offset": [0, -1.2],
-        "text-ignore-placement": true,
-        "text-allow-overlap": true,
-        "text-rotation-alignment": "map",
-      },
-      paint: {
-        "text-color": "white",
-      },
-      filter: ["==", ["get", "type"], "站点"],
-    });
-    map.addLayer({
-      id: "temperatureLayer",
-      source: "point",
-      type: "symbol",
-      layout: {
-        visibility: setting.station ? "visible" : "none",
-        "text-field": ["get", "external_temperature"],
-        "text-font": ["simkai"],
-        "text-size": 20,
-        "text-transform": "uppercase",
-        // "text-letter-spacing": 0.05,
-        "text-anchor": "right",
-        "text-line-height": 1,
-        "text-offset": [-1, -0.2],
-        "text-ignore-placement": true,
-        "text-allow-overlap": true,
-        "text-rotation-alignment": "map",
-      },
-      paint: {
-        "text-opacity": setting.factor[7].val ? 1 : 0,
-        "text-color": "white",
-      },
-      filter: ["==", ["get", "type"], "站点"],
-    });
-    map.addLayer({
-      id: "humidityLayer",
-      source: "point",
-      type: "symbol",
-      layout: {
-        visibility: setting.station ? "visible" : "none",
-        "text-field": ["get", "external_humidity"],
-        "text-font": ["simkai"],
-        "text-size": 20,
-        "text-transform": "uppercase",
-        // "text-letter-spacing": 0.05,
-        "text-anchor": "right",
-        "text-line-height": 1,
-        "text-offset": [-1, 1.2],
-        "text-ignore-placement": true,
-        "text-allow-overlap": true,
-        "text-rotation-alignment": "map",
-      },
-      paint: {
-        "text-opacity": setting.factor[9].val ? 1 : 0,
-        "text-color": "white",
-      },
-      filter: ["==", ["get", "type"], "站点"],
-    });
-  });
+  addFeatherImages(map);
+  map.on("zoom", zoomFunc);
+  map.on("move", moveFunc);
+  map.on("load", loadFunc);
+  map.on("click", "stationLayer", clickFunc);
   const closer = popup_closer.value;
   closer.onclick = function () {
     selected = null;
@@ -355,299 +411,247 @@ onActivated(async () => {
     closer.blur();
     return false;
   };
-  watch(
-    () => station.result,
-    (newVal) => {
-      const data = newVal;
-      points.data = {
-        type: "FeatureCollection",
-        features: [],
-      };
-      for (let i = 0; i < data.length; i++) {
-        let color = "blue";
-        if (data[i].radar.data_status == false || data[i].radar.is_online == false) {
-          color = "red";
-        } else if (
-          data[i].compass_status == false ||
-          data[i].control_plate_status == false ||
-          data[i].edfa_status == false ||
-          data[i].external_status == false ||
-          data[i].gps_status == false ||
-          data[i].grabber_status == false
-        ) {
-          color = "orange";
-        } else {
-          color = "#0f0";
-        }
-        // console.log(data[i]);
-        points.data.features.push({
-          type: "Feature",
-          properties: {
-            type: "站点",
-            radar_id: data[i].radar.radar_id,
-            风速: speed,
-            time: data[i].data_time,
-            name: data[i].radar.name,
-            is_online: data[i].is_online,
-            external_temperature: data[i].external_temperature,
-            external_humidity: data[i].external_humidity,
-            image: "feather" + getFeather(speed),
-            color,
-          },
-          geometry: {
-            type: "Point",
-            coordinates: [data[i].longitude, data[i].latitude],
-          },
-        });
+});
+onBeforeUnmount(() => {
+  clearInterval(timer);
+  map.off("zoom", zoomFunc);
+  map.off("move", moveFunc);
+  map.off("load", loadFunc);
+  map.off("click", "stationLayer", clickFunc);
+  map.remove();
+});
+watch(
+  () => station.result,
+  (newVal) => {
+    const data = newVal;
+    points.data = {
+      type: "FeatureCollection",
+      features: [],
+    };
+    for (let i = 0; i < data.length; i++) {
+      let color = "blue";
+      if (data[i].radar.data_status == false || data[i].radar.is_online == false) {
+        color = "red";
+      } else if (
+        data[i].compass_status == false ||
+        data[i].control_plate_status == false ||
+        data[i].edfa_status == false ||
+        data[i].external_status == false ||
+        data[i].gps_status == false ||
+        data[i].grabber_status == false
+      ) {
+        color = "orange";
+      } else {
+        color = "#0f0";
       }
-      let source = map.getSource("point");
-      source && source.setData(points.data);
-      if (data.length) {
-        station
-          .查询平均风数据接口({
-            user_id: route.query.user_id,
-          })
-          .then((res) => {
-            station.avgWindData = res.data.data;
-          });
-        station
-          .查询瞬时风数据接口({
-            user_id: route.query.user_id,
-          })
-          .then((res) => {
-            station.secondWindData = res.data.data;
-          });
-        station
-          .查询径向风数据接口({
-            user_id: route.query.user_id,
-          })
-          .then((res) => {
-            station.radialWindData = res.data.data;
-          });
-      }
-    },
-    { deep: true }
-  );
-  map.on("click", "stationLayer", (e) => {
-    if (e.features) {
-      setting.disappear = false;
-      station.active = -1;
-      for (let i = 0; i < station.result.length; i++) {
-        console.log(station.result[i].radar.name);
-        if (station.result[i].radar.radar_id == e.features[0].properties.radar_id) {
-          station.active = i;
-        }
-      }
+      // console.log(data[i]);
+      points.data.features.push({
+        type: "Feature",
+        properties: {
+          type: "站点",
+          radar_id: data[i].radar.radar_id,
+          风速: speed,
+          time: data[i].data_time,
+          name: data[i].radar.name,
+          is_online: data[i].is_online,
+          external_temperature: data[i].external_temperature,
+          external_humidity: data[i].external_humidity,
+          image: "feather" + getFeather(speed),
+          color,
+        },
+        geometry: {
+          type: "Point",
+          coordinates: [data[i].longitude, data[i].latitude],
+        },
+      });
     }
-  });
-  watch(
-    () => station.avgWindData,
-    (avgWindData) => {
-      if (avgWindData) {
-        avgWindData.forEach((v) => {
-          for (let radar_id in v) {
-            //删除相关站点的风羽
-            for (let i = 0; i < points.data.features.length; i++) {
-              if (
-                radar_id == points.data.features[i].properties.radar_id &&
-                points.data.features[i].properties.type == "风羽"
-              ) {
-                points.data.features.splice(i, 1);
-              }
+    map.getSource("point").setData(points.data);
+    if (newVal.length) {
+      task();
+    }
+  },
+  { deep: true }
+);
+watch(
+  () => station.avgWindData,
+  (avgWindData) => {
+    if (avgWindData) {
+      avgWindData.forEach((v) => {
+        for (let radar_id in v) {
+          //删除相关站点的风羽
+          for (let i = 0; i < points.data.features.length; i++) {
+            if (
+              radar_id == points.data.features[i].properties.radar_id &&
+              points.data.features[i].properties.type == "风羽"
+            ) {
+              points.data.features.splice(i--, 1);
             }
-            //计算风羽的位置并添加
-            for (let i = 0; i < points.data.features.length; i++) {
-              if (
-                radar_id == points.data.features[i].properties.radar_id &&
-                points.data.features[i].properties.type == "站点"
-              ) {
-                const lngLat = points.data.features[i].geometry.coordinates;
-                let tmp = v[radar_id];
-                for (let k in tmp[0]) {
-                  let tmp2 = tmp[0][k].slice().reverse();
-                  tmp2.forEach((tmp3) => {
-                    for (let k in tmp3) {
-                      let item = tmp3[k];
-                      let ll = getLngLat(lngLat[0], lngLat[1], item.north_a, Number(k));
-                      // item.center_h_direction_abs = Math.random() * 360;
-                      // item.center_h_speed = Math.random() * 60;
-                      if (
-                        item.center_h_direction_abs != -1000 &&
-                        item.center_h_speed != -1000
-                      ) {
-                        points.data.features.push({
-                          type: "Feature",
-                          properties: {
-                            type: "风羽",
-                            radar_id: radar_id,
-                            风速: item.center_h_speed,
-                            image: "feather" + getFeather(item.center_h_speed),
-                            风向: item.center_h_direction_abs,
-                          },
-                          geometry: {
-                            type: "Point",
-                            coordinates: [ll.lng, ll.lat],
-                          },
-                        });
-                      }
+          }
+          //计算风羽的位置并添加
+          for (let i = 0; i < points.data.features.length; i++) {
+            if (
+              radar_id == points.data.features[i].properties.radar_id &&
+              points.data.features[i].properties.type == "站点"
+            ) {
+              const lngLat = points.data.features[i].geometry.coordinates;
+              let tmp = v[radar_id];
+              for (let k in tmp[0]) {
+                let tmp2 = tmp[0][k].slice().reverse();
+                tmp2.forEach((tmp3) => {
+                  for (let k in tmp3) {
+                    let item = tmp3[k];
+                    let ll = getLngLat(lngLat[0], lngLat[1], item.north_a, Number(k));
+                    // item.center_h_direction_abs = Math.random() * 360;
+                    // item.center_h_speed = Math.random() * 60;
+                    if (
+                      item.center_h_direction_abs != -1000 &&
+                      item.center_h_speed != -1000
+                    ) {
+                      points.data.features.push({
+                        type: "Feature",
+                        properties: {
+                          type: "风羽",
+                          radar_id: radar_id,
+                          风速: item.center_h_speed,
+                          image: "feather" + getFeather(item.center_h_speed),
+                          风向: item.center_h_direction_abs,
+                        },
+                        geometry: {
+                          type: "Point",
+                          coordinates: [ll.lng, ll.lat],
+                        },
+                      });
                     }
-                    let source = map.getSource("point");
-                    source && source.setData(points.data);
-                  });
-                }
+                  }
+                  let source = map.getSource("point");
+                  source && source.setData(points.data);
+                });
               }
             }
           }
-        });
-      }
-    }
-  );
-  watch(
-    () => setting.station,
-    (newVal) => {
-      if (newVal) {
-        map.setLayoutProperty("stationLayer", "visibility", "visible");
-        map.setLayoutProperty("featherLayer", "visibility", "visible");
-        map.setLayoutProperty("textLayer", "visibility", "visible");
-        map.setLayoutProperty("temperatureLayer", "visibility", "visible");
-        map.setLayoutProperty("humidityLayer", "visibility", "visible");
-      } else {
-        map.setLayoutProperty("stationLayer", "visibility", "none");
-        map.setLayoutProperty("featherLayer", "visibility", "none");
-        map.setLayoutProperty("textLayer", "visibility", "none");
-        map.setLayoutProperty("humidityLayer", "visibility", "none");
-        map.setLayoutProperty("temperatureLayer", "visibility", "none");
-      }
-    }
-  );
-  watch(
-    () => setting.factor[7],
-    ({ val }) => {
-      if (val) {
-        map.setPaintProperty("temperatureLayer", "text-opacity", 1);
-      } else {
-        map.setPaintProperty("temperatureLayer", "text-opacity", 0);
-      }
-    },
-    { deep: true }
-  );
-  watch(
-    () => setting.factor[9],
-    ({ val }) => {
-      if (val) {
-        map.setPaintProperty("humidityLayer", "text-opacity", 1);
-      } else {
-        map.setPaintProperty("humidityLayer", "text-opacity", 0);
-      }
-    },
-    { deep: true }
-  );
-  watch(
-    () => setting.checks[0],
-    ({ select }) => {
-      if (select) {
-        station.查询雷达列表接口({ user_id: route.query.user_id });
-      } else {
-        station.result = [];
-      }
-    },
-    { deep: true, immediate: true }
-  );
-  watch(
-    () => setting.checks[1],
-    ({ select }) => {
-      if (select) {
-        station.查询雷达在线列表接口({ user_id: route.query.user_id });
-      } else {
-        station.result = [];
-      }
-    },
-    { deep: true, immediate: true }
-  );
-  watch(
-    () => setting.checks[2],
-    ({ select }) => {
-      if (select) {
-        station.查询雷达离线列表接口({ user_id: route.query.user_id });
-      } else {
-        station.result = [];
-      }
-    },
-    { deep: true, immediate: true }
-  );
-  watch(
-    () => setting.checks[3],
-    ({ select }) => {
-      if (select) {
-        station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
-      } else {
-        station.result = [];
-      }
-    },
-    { deep: true, immediate: true }
-  );
-  watch(
-    () => setting.district,
-    (newVal) => {
-      if (newVal) {
-        map.setLayoutProperty("districtLayer", "visibility", "visible");
-        map.setLayoutProperty("districtOutline", "visibility", "visible");
-      } else {
-        map.setLayoutProperty("districtLayer", "visibility", "none");
-        map.setLayoutProperty("districtOutline", "visibility", "none");
-      }
-    }
-  );
-  watch(
-    () => setting.loadmap,
-    (newVal) => {
-      if (newVal) {
-        map.setLayoutProperty("simple-tiles", "visibility", "visible");
-      } else {
-        map.setLayoutProperty("simple-tiles", "visibility", "none");
-      }
-    }
-  );
-  watch(
-    () => setting.feather,
-    (newVal) => {
-      if (newVal) {
-        map.setPaintProperty("featherLayer", "icon-opacity", 1);
-      } else {
-        map.setPaintProperty("featherLayer", "icon-opacity", 0);
-      }
-    }
-  );
-  timer = setInterval(() => {
-    station
-      .查询平均风数据接口({
-        user_id: route.query.user_id,
-      })
-      .then((res) => {
-        station.avgWindData = res.data.data;
+        }
       });
-    station
-      .查询瞬时风数据接口({
-        user_id: route.query.user_id,
-      })
-      .then((res) => {
-        station.secondWindData = res.data.data;
-      });
-    station
-      .查询径向风数据接口({
-        user_id: route.query.user_id,
-      })
-      .then((res) => {
-        //太慢
-        station.radialWindData = res.data.data;
-      });
-  }, 4 * 60 * 1000);
-});
-onDeactivated(() => {
-  clearInterval(timer);
-});
+    }
+  },
+  { deep: true }
+);
+watch(
+  () => setting.station,
+  (newVal) => {
+    if (newVal) {
+      map.setLayoutProperty("stationLayer", "visibility", "visible");
+      map.setLayoutProperty("featherLayer", "visibility", "visible");
+      map.setLayoutProperty("textLayer", "visibility", "visible");
+      map.setLayoutProperty("temperatureLayer", "visibility", "visible");
+      map.setLayoutProperty("humidityLayer", "visibility", "visible");
+    } else {
+      map.setLayoutProperty("stationLayer", "visibility", "none");
+      map.setLayoutProperty("featherLayer", "visibility", "none");
+      map.setLayoutProperty("textLayer", "visibility", "none");
+      map.setLayoutProperty("humidityLayer", "visibility", "none");
+      map.setLayoutProperty("temperatureLayer", "visibility", "none");
+    }
+  }
+);
+watch(
+  () => setting.factor[7],
+  ({ val }) => {
+    if (val) {
+      map.setPaintProperty("temperatureLayer", "text-opacity", 1);
+    } else {
+      map.setPaintProperty("temperatureLayer", "text-opacity", 0);
+    }
+  },
+  { deep: true }
+);
+watch(
+  () => setting.factor[9],
+  ({ val }) => {
+    if (val) {
+      map.setPaintProperty("humidityLayer", "text-opacity", 1);
+    } else {
+      map.setPaintProperty("humidityLayer", "text-opacity", 0);
+    }
+  },
+  { deep: true }
+);
+watch(
+  () => setting.checks[0].select,
+  (newVal) => {
+    if (newVal) {
+      station.查询雷达列表接口({ user_id: route.query.user_id });
+    } else {
+      station.result = [];
+    }
+  },
+  { deep: true }
+);
+watch(
+  () => setting.checks[1].select,
+  (newVal) => {
+    if (newVal) {
+      station.查询雷达在线列表接口({ user_id: route.query.user_id });
+    } else {
+      station.result = [];
+    }
+  },
+  { deep: true }
+);
+watch(
+  () => setting.checks[2].select,
+  (newVal) => {
+    if (newVal) {
+      station.查询雷达离线列表接口({ user_id: route.query.user_id });
+    } else {
+      station.result = [];
+    }
+  },
+  { deep: true }
+);
+watch(
+  () => setting.checks[3].select,
+  (newVal) => {
+    if (newVal) {
+      station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
+    } else {
+      station.result = [];
+    }
+  },
+  { deep: true }
+);
+watch(
+  () => setting.district,
+  (newVal) => {
+    if (newVal) {
+      map.setLayoutProperty("districtLayer", "visibility", "visible");
+      map.setLayoutProperty("districtOutline", "visibility", "visible");
+    } else {
+      map.setLayoutProperty("districtLayer", "visibility", "none");
+      map.setLayoutProperty("districtOutline", "visibility", "none");
+    }
+  }
+);
+watch(
+  () => setting.loadmap,
+  (newVal) => {
+    if (newVal) {
+      map.setLayoutProperty("simple-tiles", "visibility", "visible");
+    } else {
+      map.setLayoutProperty("simple-tiles", "visibility", "none");
+    }
+  }
+);
+watch(
+  () => setting.feather,
+  (newVal) => {
+    if (newVal) {
+      map.setPaintProperty("featherLayer", "icon-opacity", 1);
+    } else {
+      map.setPaintProperty("featherLayer", "icon-opacity", 0);
+    }
+  }
+);
 </script>
-
 <style lang="scss">
 .ol-popup {
   width: 340px;

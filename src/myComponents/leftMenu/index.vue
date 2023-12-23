@@ -37,7 +37,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted, onActivated } from "vue";
+import { ref, onMounted } from "vue";
 import { useIconStore } from "~/stores/icon";
 const icon = useIconStore();
 const modules = import.meta.glob("~/**/*.vue");
@@ -49,9 +49,6 @@ const router = useRouter();
 import SubMenu from "./SubMenu.vue";
 import { array2components } from "~/tools";
 onMounted(() => {
-  icon.FetchList();
-});
-onActivated(() => {
   icon.FetchList();
 });
 const isCollapse = ref(false);

@@ -82,7 +82,6 @@ import Task from "./layers/task";
 let needRedraw = false;
 let aid: number;
 import { eventbus } from "~/eventbus";
-import { storeToRefs } from "pinia";
 const setting = useSettingStore();
 let mapLayer: MapLayer;
 let borderLayer: BorderLayer;
@@ -111,7 +110,7 @@ const urls = ref([
   },
 ]);
 if (setting.tileUrl == "") {
-  setting.tileUrl = urls.value[0].url;
+  setting.tileUrl = urls.value[3].url;
 }
 const tileSelect = (v: any) => {
   setting.tileUrl = v.url;
@@ -184,16 +183,6 @@ onMounted(async () => {
   } else {
     throw new Error("invalid ctx");
   }
-  // if (webgpu.value) run(webgpu.value);
-  // mapLayer.setSource({url:'https://webst01.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}'})
-  // mapLayer.setSource({url:'https://tanglei.site:444?z={z}&y={y}&x={x}'})//nps+go
-  // mapLayer.setSource({url:'http://tanglei.site:81?z={z}&y={y}&x={x}'})//nps+go
-  // mapLayer.setSource({url:'http://tanglei.site:8847?z={z}&y={y}&x={x}'})//tcp
-  // mapLayer.setSource({url:'http://127.0.0.1:8008/{z}/{y}/{x}.jpg'})//nginx
-  // mapLayer.setSource({url:'http://127.0.0.1:8001?z={z}&y={y}&x={x}'})//nodejs
-  // mapLayer.setSource({url:'https://tanglei.site?z={z}&y={y}&x={x}'})//nps->nodejs
-  // mapLayer.setSource({url:'/map1?z={z}&y={y}&x={x}'})//proxy->nps->nodejs
-  // mapLayer.setSource({url:'/data/google/terrain/Guangzhou/{z}/{x}/{y}.jpg'})
   init();
   lastTime = performance.now();
   loop(lastTime);
