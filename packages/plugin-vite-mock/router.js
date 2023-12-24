@@ -95,7 +95,7 @@ module.exports.init = async(resolvedConfig,opts)=>{
 async function matchRoute(req,res,next,routes){
   for(let i=0;i<routes.length;i++){
     let match = routes[i].path.match(/(?<=\/)[\w:\u4e00-\u9fa5][\w\u4e00-\u9fa5]*(\.[\w\u4e00-\u9fa5]*)*(?<!=\/)/g)
-    if(match.length
+    if(!routes[i].disable&&match.length
       &&(routes[i].method!=undefined&&routes[i].method!=null)
       &&(req.method.toUpperCase() == routes[i].method.toUpperCase()||(routes[i].method instanceof Array && routes[i].method.slice().map(item=>item.toUpperCase()).indexOf(req.method.toUpperCase())>=0))){
       let reqMatch = req.path.match(/(?<=\/)[\w\u4e00-\u9fa5]*(\.[\w\u4e00-\u9fa5]*)*(?<!=\/)/g)

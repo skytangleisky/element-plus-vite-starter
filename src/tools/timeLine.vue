@@ -1,6 +1,6 @@
 <template>
   <div class="w-full h-full" style="background: #2b2b2b">
-    <canvas ref="timeShaft"></canvas>
+    <canvas class="timeShaft" ref="timeShaft"></canvas>
     <div style="padding: 0 30px">
       <el-slider v-model="value" :min="1" :max="100" :step="1" @input="input"></el-slider>
     </div>
@@ -176,8 +176,8 @@ export default {
   },
 };
 </script>
-<style>
-canvas {
+<style scoped>
+.timeShaft {
   min-width: 800px;
   width: 100%;
   height: 30px;
