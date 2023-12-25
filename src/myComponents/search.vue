@@ -216,9 +216,8 @@ const languageChange = (lang) => {
 let tmpWindow;
 const login = () => {
   // user.Login({username:'admin',password:'admin'})
-  console.log(import.meta.env.MODE);
   tmpWindow && tmpWindow.close();
-  if (import.meta.env.MODE == "production") {
+  if (import.meta.env.PROD) {
     tmpWindow = window.open(
       `https://graph.qq.com/oauth2.0/authorize?response_type=token&client_id=101875878&redirect_uri=${
         window.location.protocol == "https:" ? "https:" : "http:"
@@ -226,7 +225,7 @@ const login = () => {
       "_blank"
       // "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=400, height=400"
     );
-  } else if (import.meta.env.MODE == "development") {
+  } else if (import.meta.env.DEV) {
     tmpWindow = window.open(
       `https://graph.qq.com/oauth2.0/authorize?response_type=token&client_id=101875878&redirect_uri=${
         window.location.protocol == "https:" ? "https:" : "http:"

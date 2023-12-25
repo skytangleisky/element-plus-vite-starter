@@ -188,7 +188,6 @@ const moveFunc = () => {
   setting.openlayers.center = [center.lng, center.lat];
 };
 const task = () => {
-  console.log("task");
   station
     .查询平均风数据接口({
       user_id: route.query.user_id,
@@ -196,13 +195,13 @@ const task = () => {
     .then((res) => {
       station.avgWindData = res.data.data;
     });
-  station
-    .查询瞬时风数据接口({
-      user_id: route.query.user_id,
-    })
-    .then((res) => {
-      station.secondWindData = res.data.data;
-    });
+  // station
+  //   .查询瞬时风数据接口({
+  //     user_id: route.query.user_id,
+  //   })
+  //   .then((res) => {
+  //     station.secondWindData = res.data.data;
+  //   });
   station
     .查询径向风数据接口({
       user_id: route.query.user_id,
@@ -362,8 +361,11 @@ const loadFunc = () => {
   station.avgWindData = [];
   station.secondWindData = [];
   station.radialWindData = [];
-  // timer = setInterval(() => task(), 4 * 60 * 1000);
-  timer = setInterval(() => task(), 3 * 1000);
+  if (import.meta.env.PROD) {
+    timer = setInterval(() => task(), 4 * 60 * 1000);
+  } else if (import.meta.env.DEV) {
+    timer = setInterval(() => task(), 3 * 1000);
+  }
 
   if (setting.checks[0].select)
     station.查询雷达列表接口({ user_id: route.query.user_id });

@@ -152,7 +152,7 @@ var option = {
     // name: "米",
   },
   legend: {
-    data: ["十分钟平均", "秒级"],
+    data: ["十分钟平均", "两分钟平均"],
     orient: "vertical",
     right: 0,
   },
@@ -176,7 +176,7 @@ var option = {
     },
     {
       coordinateSystem: "polar",
-      name: "秒级",
+      name: "两分钟平均",
       type: "line",
       data: [],
     },

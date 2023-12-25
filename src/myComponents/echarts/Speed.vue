@@ -133,7 +133,7 @@ var option = {
     boundaryGap: false,
   },
   legend: {
-    data: ["十分钟平均", "秒级"],
+    data: ["十分钟平均", "两分钟平均"],
   },
   grid: {
     top: 60,
@@ -161,7 +161,7 @@ var option = {
       yAxisIndex: 0,
     },
     {
-      name: "秒级",
+      name: "两分钟平均",
       data: new Array<number>(),
       type: "line",
       smooth: true,

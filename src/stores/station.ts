@@ -75,7 +75,6 @@ export const useStationStore = defineStore({
     查询雷达列表接口(query:any){
       return new Promise((resolve,reject)=>{
         查询雷达列表接口(query).then((res:any)=>{
-          console.log(0)
           let result = res.data.data
           this.$patch({result})
           resolve(result)
@@ -87,7 +86,6 @@ export const useStationStore = defineStore({
     查询雷达在线列表接口(query:any){
       return new Promise((resolve,reject)=>{
         查询雷达在线列表接口(query).then((res:any)=>{
-          console.log(1)
           let result = res.data.data
           this.$patch({result})
           resolve(result)
@@ -99,7 +97,6 @@ export const useStationStore = defineStore({
     查询雷达离线列表接口(query:any){
       return new Promise((resolve,reject)=>{
         查询雷达离线列表接口(query).then((res:any)=>{
-          console.log(2)
           let result = res.data.data
           this.$patch({result})
           resolve(result)
@@ -111,7 +108,6 @@ export const useStationStore = defineStore({
     查询近期新增雷达列表接口(query:any){
       return new Promise((resolve,reject)=>{
         查询近期新增雷达列表接口(query).then((res:any)=>{
-          console.log(3)
           let result = res.data.data
           this.$patch({result})
           resolve(result)
