@@ -382,6 +382,8 @@ onMounted(() => {
     style,
     dragRotate: false,
     touchRotate: false,
+    touchPitch: false,
+    dragPitch: false,
     // bounds: turf.bbox(boundaries),
     // localIdeographFontFamily: "Microsoft YoHei",
     localIdeographFontFamily: "",

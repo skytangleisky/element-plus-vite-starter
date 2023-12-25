@@ -1,4 +1,7 @@
-import url from "./satellite.json?url"
+// import url from "./satellite.json?url"
+import data from "./satellite.js"
+let url = URL.createObjectURL(new File([JSON.stringify(data)],"satellite.json",{type:"application/json"}))
+// URL.revokeObjectURL(url)//手动释放内存
 export default {
 	"version": 8,
 	"name": "Streets",
