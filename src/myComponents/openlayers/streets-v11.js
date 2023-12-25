@@ -1,6 +1,6 @@
 import url from "./satellite.json?url"
-const setting = useSettingStore()
 import { useSettingStore } from '~/stores/setting';
+const setting = useSettingStore()
 export default {
 	"version": 8,
 	"name": "Streets",
