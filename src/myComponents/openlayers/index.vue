@@ -104,11 +104,9 @@
   </div>
 </template>
 <script setup>
-import "../mapbox/mapbox-gl.css";
-import "../mapbox/mapbox-gl.js";
 import { addFeatherImages, getFeather } from "~/tools";
 import { getLngLat } from "~/myComponents/map/js/core.js";
-import { watch, ref, onMounted, onBeforeUnmount, nextTick } from "vue";
+import { watch, ref, onMounted, onBeforeUnmount } from "vue";
 const info = ref({
   title: "南昌昌北国际机场(ZSCN)",
   time: "2020-09-24 16:00",

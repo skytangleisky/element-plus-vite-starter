@@ -15,8 +15,6 @@
   </el-select>
 </template>
 <script lang="ts" setup>
-import "./mapbox-gl.css";
-import "./mapbox-gl.js";
 import plotUrl from "./data/plot/06040802.000?url";
 import irUrl1 from "./data/ir/m/0604091200.000?url";
 import irUrl2 from "./data/ir/m/0604091300.000?url";

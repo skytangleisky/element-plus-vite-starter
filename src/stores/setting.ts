@@ -181,7 +181,14 @@ export const state = {
       name: 'e4961e04-e574-0e1f-ae23-94f157b14a39',
       component: '/src/myComponents/fabric/index.vue',
       label: 'fabric',
-      svg:'11b6b95281e711ee98afb025aa2c9ada'
+      svg:'ef5f059d9cb611ee9b6cb025aa2c9ada'
+    },
+    {
+      path: 'timeline',
+      name: 'e4961e04-e574-0e1f-ae23-94f157b14a40',
+      component: '/src/tools/timeLine.vue',
+      label: 'timeline',
+      svg:'8fc8736b9cb611ee9b6cb025aa2c9ada'
     },
     {
       path: '',
