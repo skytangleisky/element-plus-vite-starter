@@ -156,7 +156,6 @@ let setEcharts = (isDark) => {
     tooltip: {
       trigger: "axis",
       formatter: function (params) {
-        console.log(params);
         return [
           echarts.format.formatTime("yyyy-MM-dd hh:mm:ss", params[0].value[dims.time]), //echarts.time.format("yyyy-MM-dd hh:mm:ss", params[0].value[dims.time])//官方源码正则没写对
           "风速：" + params[0].value[dims.windSpeed],

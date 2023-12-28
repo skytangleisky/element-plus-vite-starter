@@ -18,7 +18,7 @@ export default [
   {
     path:'/api/weather/wind/avg/:time',
     method:'POST',
-    disable: false,
+    disable: true,
     delay:()=>Math.round(Math.random()*10000),
     response:(req)=>{
       console.log(req.params)

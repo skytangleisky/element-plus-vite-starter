@@ -1,23 +1,64 @@
 <template>
-  <div class="w-full h-full" style="background: #2b2b2b">
-    <canvas class="timeShaft" ref="timeShaft"></canvas>
-    <el-button @click="play" size="small">播放</el-button>
-    <el-button @click="pause" size="small">暂停</el-button>
-    <el-button @click="speed" size="small">倍率x{{ options.times }}</el-button>
+  <div class="w-full h-full flex flex-col" style="background: #2b2b2b">
+    <canvas ref="timeShaft" class="w-100% h-30px bg-#646464"></canvas>
+    <div class="flex flex-row">
+      <el-icon
+        @click="prev"
+        style="overflow: hidden; font-size: 2rem; color: white; transform: rotate(180deg)"
+        v-dompurify-html="nextSvg"
+      />
+      <el-icon
+        @click="options.status == 'play' ? pause() : play()"
+        style="overflow: hidden; font-size: 2rem; color: white"
+        v-dompurify-html="options.status == 'play' ? pauseSvg : playSvg"
+      />
+      <el-icon
+        @click="next"
+        style="overflow: hidden; font-size: 2rem; color: white"
+        v-dompurify-html="nextSvg"
+      />
+    </div>
+    <span @click="speed" style="color: white">x{{ Math.pow(2, options.times) }}</span>
   </div>
 </template>
 <script setup>
+      // <img
+      //   :src="options.status == 'play' ? pauseUrl : playUrl"
+      //   style="
+      //     width: inherit;
+      //     height: inherit;
+      //     transform: translateY(-60px);
+      //     filter: drop-shadow(rgba(255, 255, 255, 1) 0 60px);
+      //   "
+      // />
+import pauseSvg from '~/assets/pause.svg?raw'
+import playSvg from '~/assets/play.svg?raw'
+import nextSvg from '~/assets/next.svg?raw'
 import { onMounted, onBeforeUnmount, ref, reactive } from "vue";
-let TMP;
 let now = Math.round(Date.now() / 1000) * 1000;
+let data = []
+for(let i=0;i<400;i++){
+  let time = now + 1000 * i
+  data.push({
+    time,
+    right: time >= now,
+    toLeft:(item)=>{
+      console.log('到了左边',item.time)
+    },
+    toRight:(item)=>{
+      console.log('到了右边',item.time)
+    }
+  })
+}
 let value = 27.5;
 let options = reactive({
-  times:2,
+  times:0,
   gap:20, //文字之间的最小间隙
   middle: 3, //中刻度
   short: 1, //短刻度
   long: 5, //长刻度
   bottom: 8, //文字到底部距离
+  status: 'play',//play|pause
 })
 const arr = [
   360 * 24 * 60 * 60000,
@@ -102,10 +143,13 @@ onMounted(() => {
     if (leftMouseDown) {
       left += evt.movementX;
       rateX = (mousemove.offsetX - left) / cvs.width / Math.pow(2, value);
-      if(new Date(rateX * duration + now - duration/2)>Date.now()){
-        options.times = 1
+      if(rateX * duration + now - duration/2>Date.now()){
+        options.times = 0
         left = mousemove.offsetX - ((Date.now() - now) / duration + 0.5) * cvs.width * Math.pow(2, value)
         rateX = (mousemove.offsetX - left) / cvs.width / Math.pow(2, value);
+        play()
+        leftMouseDown = false
+        return
       }
       draw();
     }
@@ -118,9 +162,9 @@ onMounted(() => {
       offsetX: cvs.width * rateX,
       offsetY: cvs.height * rateX,
     };
-    left = mousemove.offsetX - rateX * cvs.width * Math.pow(2, value);
     draw();
-    // play()
+    cancelAnimationFrame(aid)
+    requestAnimationFrame(loop)
   })
   observer.observe(cvs);
   // timer = setInterval(() => {
@@ -128,33 +172,29 @@ onMounted(() => {
   //   draw();
   // }, 1000);
 });
-let time = Date.now();
+let time;
 const loop = () => {
-  let cvs = timeShaft.value
-  let 𝛿 = (Date.now() - time) * options.times;
-  left -= 𝛿/duration*(cvs.width*Math.pow(2,value))
-  rateX = (mousemove.offsetX - left) / cvs.width / Math.pow(2, value);
-  if(new Date(rateX * duration + now - duration/2)>Date.now()){
-    options.times = 1
-    left = mousemove.offsetX - ((Date.now() - now) / duration + 0.5) * cvs.width * Math.pow(2, value)
-    rateX = (mousemove.offsetX - left) / cvs.width / Math.pow(2, value);
-  }
   draw();
-  time = Date.now();
   aid = requestAnimationFrame(loop);
 };
 const speed = ()=>{
   options.times++
+  if(options.times>3){
+    options.times=-3
+  }
+}
+const prev = ()=>{
+  console.log('prev')
 }
 const play = ()=>{
-  cancelAnimationFrame(aid)
-  time = Date.now();
-  loop()
+  options.status = 'play'
 }
 const pause = ()=>{
-  cancelAnimationFrame(aid)
+  options.status = 'pause'
 }
-
+const next = ()=>{
+  console.log('next')
+}
 /*
 const input = (value) => {
       // let tmp = -(rateX * cvs.width * Math.pow(2,value) - mousemove.offsetX);
@@ -196,13 +236,37 @@ const input = (value) => {
 const draw = () => {
   let cvs = timeShaft.value;
   let ctx = cvs.getContext("2d");
+  let currentTime = Date.now()
+  if(time==undefined){
+    time = currentTime
+    left = mousemove.offsetX - ((currentTime - now) / duration + 0.5) * cvs.width * Math.pow(2, value)
+    rateX = (mousemove.offsetX - left) / cvs.width / Math.pow(2, value);
+  }
+  if(options.status == 'play'){
+    let 𝛿 = (currentTime - time) * Math.pow(2,options.times);
+    left -= 𝛿/duration*(cvs.width*Math.pow(2,value))
+    rateX = (mousemove.offsetX - left) / cvs.width / Math.pow(2, value);
+    if(rateX * duration + now - duration/2>currentTime){
+      options.times = 0
+      left = mousemove.offsetX - ((currentTime - now) / duration + 0.5) * cvs.width * Math.pow(2, value)
+      rateX = (mousemove.offsetX - left) / cvs.width / Math.pow(2, value);
+    }
+  }
+  time = currentTime
   ctx.clearRect(0, 0, cvs.width, cvs.height);
   ctx.save();
   ctx.lineWidth = 2;
-  if (TMP === undefined) TMP = now;
-  for (let i = 1; i <= 400; i++) {
-    let tmp = TMP + 1000 * i;
-    let x = ((tmp - now) / duration + 0.5) * cvs.width * Math.pow(2, value) + left;
+  for (let i = 0; i < data.length; i++) {
+    let item = data[i]
+    let x = ((item.time - now) / duration + 0.5) * cvs.width * Math.pow(2, value) + left;
+    let middleTime = (rateX - 0.5) * duration + now // 中间刻度对应的时间
+    if(item.time<middleTime&&item.right){
+      item.toLeft(item)
+      item.right = false
+    }else if(item.time>middleTime&&!item.right){
+      item.toRight(item)
+      item.right = true
+    }
     ctx.strokeStyle = "#0f0";
     ctx.beginPath();
     ctx.moveTo(x, 0);
@@ -262,8 +326,8 @@ const draw = () => {
   ctx.stroke();
 
 
-  let x = ((Date.now() - now) / duration + 0.5) * cvs.width * Math.pow(2, value) + left
-  ctx.fillStyle = "#000";
+  let x = ((currentTime - now) / duration + 0.5) * cvs.width * Math.pow(2, value) + left
+  ctx.fillStyle = "#00000044";
   ctx.beginPath();
   ctx.fillRect(x,0,cvs.width-x,cvs.height);
 
@@ -274,11 +338,3 @@ onBeforeUnmount(() => {
   cancelAnimationFrame(aid);
 });
 </script>
-<style scoped>
-.timeShaft {
-  /* min-width: 800px; */
-  width: 100%;
-  height: 30px;
-  background: #646464;
-}
-</style>
