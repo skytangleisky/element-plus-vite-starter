@@ -31,7 +31,7 @@ watch(
   [() => station.secondWindData, () => station.result, () => station.active],
   ([windData, result, active]) => {
     option.series[1].data = [];
-    myChart.setOption(option);
+    myChart.setOption(option, false, true);
     if (windData.length) {
       windData.map((v, k) => {
         let data;
@@ -55,7 +55,7 @@ watch(
               }
             }
           });
-          myChart.setOption(option);
+          myChart.setOption(option, false, true);
         }
       });
     }
@@ -66,7 +66,7 @@ watch(
   [() => station.avgWindData, () => station.result, () => station.active],
   ([avgWindData, result, active]) => {
     option.series[0].data = [];
-    myChart.setOption(option);
+    myChart.setOption(option, false, true);
     if (avgWindData.length) {
       avgWindData.map((v, k) => {
         let data;
@@ -90,7 +90,7 @@ watch(
               }
             }
           });
-          myChart.setOption(option);
+          myChart.setOption(option, false, true);
         }
       });
     }
@@ -173,8 +173,7 @@ const setChart = (isDark: boolean) => {
     myChart.resize();
   });
   resizeObserver.observe(thContainer.value);
-
-  myChart.setOption(option);
+  myChart.setOption(option, false, true);
 };
 onBeforeUnmount(() => {
   resizeObserver.disconnect();

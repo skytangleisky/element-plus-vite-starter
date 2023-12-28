@@ -145,6 +145,7 @@ let setEcharts = (isDark) => {
     };
   };
   var option = {
+    animation: false,
     backgroundColor: "transparent",
     title: {
       text: "风速风向",
@@ -376,14 +377,14 @@ let setEcharts = (isDark) => {
   //   option.series[1].data = data;
   //   option.series[2].data = data;
   //   // option.series[3].data = weatherData;
-  //   myChart.setOption(option);
+  //   myChart.setOption(option, false, true);
   // });
   watch(
     [() => station.avgWindData, layerIndex, () => station.result, () => station.active],
     ([avgWindData, layerIdx, result, active]) => {
       option.series[1].data = [];
       option.series[2].data = [];
-      myChart.setOption(option);
+      myChart.setOption(option, false, true);
       if (avgWindData.length) {
         avgWindData.map((v, k) => {
           let data;
@@ -429,7 +430,7 @@ let setEcharts = (isDark) => {
             // option.series[0].data = Fdatas;
             option.series[1].data = Fdatas;
             option.series[2].data = Fdatas;
-            myChart.setOption(option);
+            myChart.setOption(option, false, true);
           }
         });
       }
@@ -437,7 +438,7 @@ let setEcharts = (isDark) => {
     { immediate: true }
   );
 
-  option && myChart.setOption(option);
+  option && myChart.setOption(option, false, true);
 };
 onBeforeUnmount(() => {
   resizeObserver.disconnect();

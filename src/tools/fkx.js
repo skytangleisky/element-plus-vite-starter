@@ -46,7 +46,7 @@ export default function DBS() {
   ]
   option = {
     backgroundColor:'transparent',
-    animation: true,
+    animation: false,
     tooltip: {
       hideDelay:0,
       position: 'top',
@@ -316,33 +316,31 @@ export default function DBS() {
     arg.text
     arg.subtext
     if (myChart) {
-      myChart.setOption({
-        title: arg
-      }, false, true)
+      option.title = arg
+      myChart.setOption(option, false, true);
     }
   }
   // this.process = function(fData) {
   //   option.series[0].data = []
-  //       for (let index = 0; index < fData.data.length; index++) {
-  //         fData.data[index].time = fData.timestamp
-  //         var fHei = fData.data[index].fHei
-  //         // var fHorChange = fData[index].fHorChange
-  //         // var fHAngle = fData.data[index].fHAngle
-  //         var fHSpeed = fData.data[index].fHSpeed
-  //         // var fSDev = fData.data[index].fSDev
-  //         var fVSpeed = fData.data[index].fVSpeed
-  //         // var fVerChange = fData.data[index].fVerChange
-  //         // var iBelieveable = fData.data[index].iBelieveable
-  //         if (Number(fHSpeed) === 999) continue
-  //         // option.series[1].data.push([1, fHei, fVSpeed, fData.data[index]])
-  //         option.series[0].data.push([0, fHei,fData.data[index]])
-  //         option.xAxis.data[0] = fData.timestamp.substr(11,8)
-  //       }
+  //   for (let index = 0; index < fData.data.length; index++) {
+  //     fData.data[index].time = fData.timestamp
+  //     var fHei = fData.data[index].fHei
+  //     // var fHorChange = fData[index].fHorChange
+  //     // var fHAngle = fData.data[index].fHAngle
+  //     var fHSpeed = fData.data[index].fHSpeed
+  //     // var fSDev = fData.data[index].fSDev
+  //     var fVSpeed = fData.data[index].fVSpeed
+  //     // var fVerChange = fData.data[index].fVerChange
+  //     // var iBelieveable = fData.data[index].iBelieveable
+  //     if (Number(fHSpeed) === 999) continue
+  //     // option.series[1].data.push([1, fHei, fVSpeed, fData.data[index]])
+  //     option.series[0].data.push([0, fHei,fData.data[index]])
+  //     option.xAxis.data[0] = fData.timestamp.substr(11,8)
+  //   }
   //   if (myChart) {
-  //     myChart.setOption({
-  //       series: option.series,
-  //       xAxis: option.xAxis
-  //     }, false, true)
+  //     option.series = option.series;
+  //     option.xAxis = option.xAxis;
+  //     myChart.setOption(option, false, true);
   //   }
   // }
   let arr = []
@@ -381,10 +379,7 @@ export default function DBS() {
       option.xAxis.data[k] = v.timestamp.substr(11,8)
     })
     if (myChart) {
-      myChart.setOption({
-        series: option.series,
-        xAxis: option.xAxis
-      })
+      myChart.setOption(option,false,true)
     }
   }
   var myChart
@@ -402,7 +397,7 @@ export default function DBS() {
     resizeObserver.observe(setting.el);
     myChart.group = 'group'
     echarts.connect('group')
-    myChart.setOption(option, false)
+    myChart.setOption(option, false,true)
   }
   this.destroy=function(){
     resizeObserver.disconnect()

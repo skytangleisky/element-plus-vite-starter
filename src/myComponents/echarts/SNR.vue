@@ -50,13 +50,13 @@ watch(
     //     });
     //   }
     // }
-    // myChart.setOption(option);
+    // myChart.setOption(option, false, true);
     // });
     option.series[0].data = [];
     option.series[1].data = [];
     option.series[2].data = [];
     option.series[3].data = [];
-    myChart.setOption(option);
+    myChart.setOption(option, false, true);
     if (radialWindData.length) {
       radialWindData.map((v, k) => {
         option.series[0].data = [];
@@ -94,13 +94,14 @@ watch(
               }
             }
           });
-          myChart.setOption(option);
+          myChart.setOption(option, false, true);
         }
       });
     }
   }
 );
 var option = {
+  animation: false,
   backgroundColor: "transparent",
   title: {
     show: false,
@@ -188,8 +189,7 @@ const setChart = (isDark: boolean) => {
     myChart.resize();
   });
   resizeObserver.observe(thContainer.value);
-
-  myChart.setOption(option);
+  myChart.setOption(option, false, true);
 };
 onBeforeUnmount(() => {
   resizeObserver.disconnect();

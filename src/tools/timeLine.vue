@@ -1,5 +1,5 @@
 <template>
-  <div class="h-auto flex flex-row" style="background: #646464; width: 100vw">
+  <div class="h-auto flex flex-row" style="background: #646464; width: 100%">
     <el-icon
       @click="prev"
       class="active:color-#2b2b2b color-#fff"
@@ -11,7 +11,7 @@
       "
       v-dompurify-html="nextSvg"
     />
-    <div class="relative w-full h-30px">
+    <div class="relative h-30px" style="width: 100%">
       <canvas
         ref="timeShaft"
         class="bg-#646464"
@@ -26,7 +26,8 @@
     />
     <el-icon
       @click="options.status == 'play' ? pause() : play()"
-      style="overflow: hidden; font-size: 2rem; color: white; min-width: 2rem"
+      class="active:color-#2b2b2b color-#fff"
+      style="overflow: hidden; font-size: 2rem; min-width: 2rem"
       v-dompurify-html="options.status == 'play' ? pauseSvg : playSvg"
     />
     <span @click="speed" style="color: white">x{{ Math.pow(2, options.times) }}</span>
@@ -173,7 +174,7 @@ onMounted(() => {
       offsetX: cvs.width * rateX,
       offsetY: cvs.height * rateX,
     };
-    left = mousemove.offsetX - ((Date.now() - now) / duration + 0.5) * cvs.width * Math.pow(2, value)
+    left = mousemove.offsetX - rateX * cvs.width * Math.pow(2, value)
     draw();
     cancelAnimationFrame(aid)
     requestAnimationFrame(loop)

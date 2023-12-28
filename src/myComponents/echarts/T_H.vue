@@ -35,7 +35,7 @@ watch(
     option.xAxis.data = [];
     option.series[0].data = [];
     option.series[1].data = [];
-    myChart.setOption(option);
+    myChart.setOption(option, false, true);
     if (avgWindData.length) {
       avgWindData.map((v, k) => {
         let data;
@@ -59,13 +59,14 @@ watch(
               }
             }
           });
-          myChart.setOption(option);
+          myChart.setOption(option, false, true);
         }
       });
     }
   }
 );
 var option = {
+  animation: false,
   backgroundColor: "transparent",
   title: {
     show: false,
@@ -145,8 +146,7 @@ const setChart = (isDark: boolean) => {
     myChart.resize();
   });
   resizeObserver.observe(thContainer.value);
-
-  myChart.setOption(option);
+  myChart.setOption(option, false, true);
 };
 // onBeforeUnmount(() => {
 //   resizeObserver.disconnect();

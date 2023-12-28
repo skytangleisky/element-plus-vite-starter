@@ -18,6 +18,7 @@
         width: 100%;
         height: 100%;
         line-height: 1;
+        outline: none;
       "
     ></div>
     <div ref="popup" class="ol-popup" style="display: none">
@@ -101,14 +102,14 @@
         </svg>
       </el-icon>
     </div>
-    <!-- <time-line class="absolute bottom-0"></time-line> -->
+    <time-line class="absolute bottom-0"></time-line>
   </div>
 </template>
 <script setup>
 import { addFeatherImages, getFeather } from "~/tools";
 import { getLngLat } from "~/myComponents/map/js/core.js";
 import { watch, ref, onMounted, onBeforeUnmount } from "vue";
-// import timeLine from "~/tools/timeLine.vue";
+import timeLine from "~/tools/timeLine.vue";
 const info = ref({
   title: "南昌昌北国际机场(ZSCN)",
   time: "2020-09-24 16:00",
@@ -743,5 +744,8 @@ watch(
 .disappear.right-drawer {
   transform: translateX(calc(100% + 28px));
   transition: all 250ms;
+}
+.mapboxgl-canvas:focus-visible {
+  outline: none;
 }
 </style>
