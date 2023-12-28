@@ -109,6 +109,14 @@
 import { addFeatherImages, getFeather } from "~/tools";
 import { getLngLat } from "~/myComponents/map/js/core.js";
 import { watch, ref, onMounted, onBeforeUnmount } from "vue";
+import { useBus } from "~/myComponents/bus";
+const bus = useBus();
+watch(
+  () => bus.test,
+  (val) => {
+    console.log(val);
+  }
+);
 import timeLine from "~/tools/timeLine.vue";
 const info = ref({
   title: "南昌昌北国际机场(ZSCN)",
@@ -173,9 +181,9 @@ const clickFunc = (e) => {
   if (e.features) {
     setting.disappear = false;
     station.active = -1;
-    for (let i = 0; i < station.result.length; i++) {
-      console.log(station.result[i].radar.name);
-      if (station.result[i].radar.radar_id == e.features[0].properties.radar_id) {
+    for (let i = 0; i < bus.result.length; i++) {
+      console.log(bus.result[i].radar.name);
+      if (bus.result[i].radar.radar_id == e.features[0].properties.radar_id) {
         station.active = i;
       }
     }
@@ -194,7 +202,7 @@ const task = () => {
       user_id: route.query.user_id,
     })
     .then((res) => {
-      station.avgWindData = res.data.data;
+      bus.avgWindData = res.data.data;
     });
   // station
   //   .查询瞬时风数据接口({
@@ -208,8 +216,7 @@ const task = () => {
       user_id: route.query.user_id,
     })
     .then((res) => {
-      //太慢
-      station.radialWindData = res.data.data;
+      bus.radialWindData = res.data.data;
     });
 };
 const loadFunc = () => {
@@ -359,9 +366,9 @@ const loadFunc = () => {
     },
     filter: ["==", ["get", "type"], "站点"],
   });
-  station.avgWindData = [];
-  station.secondWindData = [];
-  station.radialWindData = [];
+  bus.avgWindData = [];
+  bus.secondWindData = [];
+  bus.radialWindData = [];
   if (import.meta.env.PROD) {
     timer = setInterval(() => task(), 4 * 60 * 1000);
   } else if (import.meta.env.DEV) {
@@ -426,7 +433,7 @@ onBeforeUnmount(() => {
   map.remove();
 });
 watch(
-  () => station.result,
+  () => bus.result,
   (newVal) => {
     const data = newVal;
     points.data = {
@@ -474,11 +481,10 @@ watch(
     if (newVal.length) {
       task();
     }
-  },
-  { deep: true }
+  }
 );
 watch(
-  () => station.avgWindData,
+  () => bus.avgWindData,
   (avgWindData) => {
     if (avgWindData) {
       avgWindData.forEach((v) => {
@@ -537,8 +543,7 @@ watch(
         }
       });
     }
-  },
-  { deep: true }
+  }
 );
 watch(
   () => setting.station,
@@ -559,26 +564,24 @@ watch(
   }
 );
 watch(
-  () => setting.factor[7],
-  ({ val }) => {
-    if (val) {
+  () => setting.factor[7].val,
+  (newVal) => {
+    if (newVal) {
       map.setPaintProperty("temperatureLayer", "text-opacity", 1);
     } else {
       map.setPaintProperty("temperatureLayer", "text-opacity", 0);
     }
-  },
-  { deep: true }
+  }
 );
 watch(
-  () => setting.factor[9],
-  ({ val }) => {
-    if (val) {
+  () => setting.factor[9].val,
+  (newVal) => {
+    if (newVal) {
       map.setPaintProperty("humidityLayer", "text-opacity", 1);
     } else {
       map.setPaintProperty("humidityLayer", "text-opacity", 0);
     }
-  },
-  { deep: true }
+  }
 );
 watch(
   () => setting.checks[0].select,
@@ -586,10 +589,9 @@ watch(
     if (newVal) {
       station.查询雷达列表接口({ user_id: route.query.user_id });
     } else {
-      station.result = [];
+      bus.result = [];
     }
-  },
-  { deep: true }
+  }
 );
 watch(
   () => setting.checks[1].select,
@@ -597,10 +599,9 @@ watch(
     if (newVal) {
       station.查询雷达在线列表接口({ user_id: route.query.user_id });
     } else {
-      station.result = [];
+      bus.result = [];
     }
-  },
-  { deep: true }
+  }
 );
 watch(
   () => setting.checks[2].select,
@@ -608,10 +609,9 @@ watch(
     if (newVal) {
       station.查询雷达离线列表接口({ user_id: route.query.user_id });
     } else {
-      station.result = [];
+      bus.result = [];
     }
-  },
-  { deep: true }
+  }
 );
 watch(
   () => setting.checks[3].select,
@@ -619,10 +619,9 @@ watch(
     if (newVal) {
       station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
     } else {
-      station.result = [];
+      bus.result = [];
     }
-  },
-  { deep: true }
+  }
 );
 watch(
   () => setting.district,

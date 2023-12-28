@@ -46,6 +46,8 @@
 import pauseSvg from '~/assets/pause.svg?raw'
 import playSvg from '~/assets/play.svg?raw'
 import nextSvg from '~/assets/next.svg?raw'
+import { useBus } from '~/myComponents/bus'
+const bus = useBus();
 import { onMounted, onBeforeUnmount, ref, reactive } from "vue";
 let now = Math.round(Date.now() / 1000) * 1000;
 let data = []
@@ -168,16 +170,21 @@ onMounted(() => {
   });
   observer = new ResizeObserver(() => {
     let box = cvs.getBoundingClientRect();
-    cvs.width = box.width;
-    cvs.height = box.height;
-    mousemove = {
-      offsetX: cvs.width * rateX,
-      offsetY: cvs.height * rateX,
-    };
-    left = mousemove.offsetX - rateX * cvs.width * Math.pow(2, value)
-    draw();
-    cancelAnimationFrame(aid)
-    requestAnimationFrame(loop)
+    if(box.width==0||box.height==0){
+      cancelAnimationFrame(aid)
+    }else{
+      cvs.width = box.width;
+      cvs.height = box.height;
+      mousemove = {
+        offsetX: cvs.width * rateX,
+        offsetY: cvs.height * rateX,
+      };
+      left = mousemove.offsetX - rateX * cvs.width * Math.pow(2, value)
+      draw();
+      console.log(cvs.width,cvs.height)
+      cancelAnimationFrame(aid)
+      requestAnimationFrame(loop)
+    }
   })
   observer.observe(cvs);
   // timer = setInterval(() => {
@@ -207,6 +214,7 @@ const pause = ()=>{
   options.status = 'pause'
 }
 const next = ()=>{
+  bus.test = time
   pause()
   console.log('next')
 }

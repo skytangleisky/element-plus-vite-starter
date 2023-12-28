@@ -160,9 +160,10 @@ import { linear, inAndOut } from "ol/easing";
 import radarStatistic from "./radarStatistic.vue";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
-import { storeToRefs } from "pinia";
 import Legend from "./legend.vue";
 import { windArrowLayer } from "./windArrowLayer";
+import { useBus } from "~/myComponents/bus";
+const bus = useBus();
 
 console.log("route.query", route.query);
 const station = useStationStore();
@@ -533,8 +534,8 @@ onMounted(() => {
         const text = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
           setting.disappear = false;
           station.active = -1;
-          for (let i = 0; i < station.result.length; i++) {
-            if (station.result[i].radar.name == feature.get("name")) {
+          for (let i = 0; i < bus.result.length; i++) {
+            if (bus.result[i].radar.name == feature.get("name")) {
               station.active = i;
             }
           }
@@ -558,7 +559,7 @@ onMounted(() => {
   stationLayer.setSource(source2);
   featherLayer.setSource(source);
   watch(
-    storeToRefs(setting).factor.value[0],
+    () => setting.factor[0],
     (newVal) => {
       if (newVal.val) {
         source3.getFeatures().forEach((feature) => {
@@ -575,8 +576,8 @@ onMounted(() => {
     { immediate: false, deep: true }
   );
   watch(
-    // storeToRefs(setting).factor.value[5],
-    storeToRefs(setting).station,
+    // ()=>setting.factor[5],
+    () => setting.station,
     (newVal) => {
       if (newVal) {
         map
@@ -611,11 +612,7 @@ onMounted(() => {
     { immediate: false }
   );
   watch(
-    [
-      storeToRefs(station).avgWindData,
-      storeToRefs(station).result,
-      storeToRefs(station).active,
-    ],
+    [() => bus.avgWindData, () => bus.result, () => station.active],
     ([avgWindData]) => {
       if (avgWindData) {
         avgWindData.forEach((v) => {
@@ -726,7 +723,7 @@ onMounted(() => {
     }
   );
   watch(
-    storeToRefs(station).result,
+    () => bus.result,
     (newVal) => {
       const data = newVal;
       removeAllFeatures();
@@ -994,28 +991,28 @@ onMounted(() => {
             user_id: route.query.user_id,
           })
           .then((res) => {
-            station.avgWindData = res.data.data;
+            bus.avgWindData = res.data.data;
           });
         station
           .查询瞬时风数据接口({
             user_id: route.query.user_id,
           })
           .then((res) => {
-            station.secondWindData = res.data.data;
+            bus.secondWindData = res.data.data;
           });
         station
           .查询径向风数据接口({
             user_id: route.query.user_id,
           })
           .then((res) => {
-            station.radialWindData = res.data.data;
+            bus.radialWindData = res.data.data;
           });
       }
     },
     { deep: true, immediate: false }
   );
   watch(
-    storeToRefs(setting).factor.value[7],
+    () => setting.factor[7],
     (newVal) => {
       if (newVal.val) {
         source3.getFeatures().forEach((feature) => {
@@ -1041,7 +1038,7 @@ onMounted(() => {
     { immediate: true, deep: true }
   );
   watch(
-    storeToRefs(setting).factor.value[9],
+    () => setting.factor[9],
     (newVal) => {
       if (newVal.val) {
         source3.getFeatures().forEach((feature) => {
@@ -1058,7 +1055,7 @@ onMounted(() => {
     { immediate: true, deep: true }
   );
   watch(
-    storeToRefs(setting).factor.value[10],
+    () => setting.factor[10],
     (newVal) => {
       if (newVal.val) {
         source3.getFeatures().forEach((feature) => {
@@ -1075,47 +1072,47 @@ onMounted(() => {
     { immediate: true, deep: true }
   );
   watch(
-    storeToRefs(setting).checks.value[0],
+    () => setting.checks[0],
     (newVal) => {
       removeAllFeatures();
       if (newVal.select) {
         station.查询雷达列表接口({ user_id: route.query.user_id });
       } else {
-        station.result = [];
+        bus.result = [];
       }
     },
     { deep: true, immediate: true }
   );
   watch(
-    storeToRefs(setting).checks.value[1],
+    () => setting.checks[1],
     (newVal) => {
       if (newVal.select) {
         station.查询雷达在线列表接口({ user_id: route.query.user_id });
       } else {
-        station.result = [];
+        bus.result = [];
       }
       removeAllFeatures();
     },
     { deep: true, immediate: true }
   );
   watch(
-    storeToRefs(setting).checks.value[2],
+    () => setting.checks[2],
     (newVal) => {
       if (newVal.select) {
         station.查询雷达离线列表接口({ user_id: route.query.user_id });
       } else {
-        station.result = [];
+        bus.result = [];
       }
     },
     { deep: true, immediate: true }
   );
   watch(
-    storeToRefs(setting).checks.value[3],
+    () => setting.checks[3],
     (newVal) => {
       if (newVal.select) {
         station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
       } else {
-        station.result = [];
+        bus.result = [];
       }
     },
     { deep: true, immediate: true }
@@ -1126,7 +1123,7 @@ onMounted(() => {
     source3.getFeatures().forEach((feature) => source3.removeFeature(feature));
   }
   watch(
-    storeToRefs(setting).district,
+    () => setting.district,
     (newVal) => {
       if (newVal) {
         map
@@ -1149,7 +1146,7 @@ onMounted(() => {
     { immediate: true }
   );
   watch(
-    storeToRefs(setting).graticule,
+    () => setting.graticule,
     (newVal) => {
       if (newVal) {
         graticule.setVisible(true);
@@ -1160,7 +1157,7 @@ onMounted(() => {
     { immediate: true }
   );
   watch(
-    storeToRefs(setting).loadmap,
+    () => setting.loadmap,
     (newVal) => {
       if (newVal) {
         map
@@ -1183,7 +1180,7 @@ onMounted(() => {
     { immediate: true }
   );
   watch(
-    storeToRefs(setting).feather,
+    () => setting.feather,
     (newVal) => {
       if (newVal) {
         source.getFeatures().forEach((item) => {
@@ -1209,22 +1206,21 @@ onMounted(() => {
         user_id: route.query.user_id,
       })
       .then((res) => {
-        station.avgWindData = res.data.data;
+        bus.avgWindData = res.data.data;
       });
     station
       .查询瞬时风数据接口({
         user_id: route.query.user_id,
       })
       .then((res) => {
-        station.secondWindData = res.data.data;
+        bus.secondWindData = res.data.data;
       });
     station
       .查询径向风数据接口({
         user_id: route.query.user_id,
       })
       .then((res) => {
-        //太慢
-        station.radialWindData = res.data.data;
+        bus.radialWindData = res.data.data;
       });
   }, 4 * 60 * 1000);
   onBeforeUnmount(() => {

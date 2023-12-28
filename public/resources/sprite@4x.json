@@ -1,0 +1,6530 @@
+{
+  "pedestrian-polygon": {
+      "x": 0,
+      "y": 0,
+      "width": 256,
+      "height": 256,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "crosswalk-large": {
+      "x": 256,
+      "y": 0,
+      "width": 240,
+      "height": 240,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "crosswalk-small": {
+      "x": 0,
+      "y": 256,
+      "width": 240,
+      "height": 240,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "us-interstate-truck-2": {
+      "x": 240,
+      "y": 256,
+      "width": 80,
+      "height": 160,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          68,
+          80,
+          92
+      ],
+      "visible": true
+  },
+  "us-interstate-truck-3": {
+      "x": 320,
+      "y": 256,
+      "width": 104,
+      "height": 160,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          68,
+          104,
+          92
+      ],
+      "visible": true
+  },
+  "us-highway-business-2": {
+      "x": 424,
+      "y": 256,
+      "width": 80,
+      "height": 152,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          64,
+          80,
+          88
+      ],
+      "visible": true
+  },
+  "us-highway-business-3": {
+      "x": 504,
+      "y": 256,
+      "width": 104,
+      "height": 152,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          64,
+          104,
+          88
+      ],
+      "visible": true
+  },
+  "us-highway-bypass-2": {
+      "x": 608,
+      "y": 256,
+      "width": 80,
+      "height": 152,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          64,
+          80,
+          88
+      ],
+      "visible": true
+  },
+  "us-highway-bypass-3": {
+      "x": 688,
+      "y": 256,
+      "width": 104,
+      "height": 152,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          64,
+          104,
+          88
+      ],
+      "visible": true
+  },
+  "us-highway-truck-2": {
+      "x": 792,
+      "y": 256,
+      "width": 80,
+      "height": 152,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          64,
+          80,
+          88
+      ],
+      "visible": true
+  },
+  "us-highway-truck-3": {
+      "x": 872,
+      "y": 256,
+      "width": 104,
+      "height": 152,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          64,
+          104,
+          88
+      ],
+      "visible": true
+  },
+  "sa-highway-secondary-3": {
+      "x": 496,
+      "y": 0,
+      "width": 100,
+      "height": 132,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          54,
+          100,
+          78
+      ],
+      "visible": true
+  },
+  "us-state-dc-2": {
+      "x": 596,
+      "y": 0,
+      "width": 80,
+      "height": 128,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          52,
+          80,
+          76
+      ],
+      "visible": true
+  },
+  "us-state-dc-3": {
+      "x": 676,
+      "y": 0,
+      "width": 104,
+      "height": 128,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          52,
+          104,
+          76
+      ],
+      "visible": true
+  },
+  "us-state-dc-4": {
+      "x": 780,
+      "y": 0,
+      "width": 128,
+      "height": 128,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          52,
+          128,
+          76
+      ],
+      "visible": true
+  },
+  "us-state-florida-toll-2": {
+      "x": 908,
+      "y": 0,
+      "width": 84,
+      "height": 116,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          46,
+          84,
+          70
+      ],
+      "visible": true
+  },
+  "us-state-florida-toll-3": {
+      "x": 0,
+      "y": 496,
+      "width": 104,
+      "height": 116,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          46,
+          104,
+          70
+      ],
+      "visible": true
+  },
+  "ae-f-route-3": {
+      "x": 104,
+      "y": 496,
+      "width": 96,
+      "height": 108,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          42,
+          96,
+          66
+      ],
+      "visible": true
+  },
+  "ae-s-route-4": {
+      "x": 200,
+      "y": 496,
+      "width": 152,
+      "height": 104,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          40,
+          152,
+          64
+      ],
+      "visible": true
+  },
+  "pe-national-2": {
+      "x": 352,
+      "y": 496,
+      "width": 72,
+      "height": 104,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          40,
+          72,
+          64
+      ],
+      "visible": true
+  },
+  "pe-national-3": {
+      "x": 424,
+      "y": 496,
+      "width": 88,
+      "height": 104,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          40,
+          88,
+          64
+      ],
+      "visible": true
+  },
+  "us-state-colorado-2": {
+      "x": 512,
+      "y": 496,
+      "width": 80,
+      "height": 104,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          40,
+          80,
+          64
+      ],
+      "visible": true
+  },
+  "us-state-colorado-3": {
+      "x": 592,
+      "y": 496,
+      "width": 104,
+      "height": 104,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          40,
+          104,
+          64
+      ],
+      "visible": true
+  },
+  "ae-national-3": {
+      "x": 696,
+      "y": 496,
+      "width": 104,
+      "height": 100,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          38,
+          104,
+          62
+      ],
+      "visible": true
+  },
+  "ae-national-4": {
+      "x": 800,
+      "y": 496,
+      "width": 128,
+      "height": 100,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          38,
+          128,
+          62
+      ],
+      "visible": true
+  },
+  "mashreq-network-2": {
+      "x": 928,
+      "y": 496,
+      "width": 80,
+      "height": 100,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          38,
+          80,
+          62
+      ],
+      "visible": true
+  },
+  "us-state-idaho-2": {
+      "x": 0,
+      "y": 612,
+      "width": 100,
+      "height": 100,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          38,
+          100,
+          62
+      ],
+      "visible": true
+  },
+  "us-state-idaho-3": {
+      "x": 100,
+      "y": 612,
+      "width": 124,
+      "height": 100,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          38,
+          124,
+          62
+      ],
+      "visible": true
+  },
+  "us-state-minnesota-2": {
+      "x": 224,
+      "y": 612,
+      "width": 80,
+      "height": 100,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          38,
+          80,
+          62
+      ],
+      "visible": true
+  },
+  "us-state-minnesota-3": {
+      "x": 304,
+      "y": 612,
+      "width": 104,
+      "height": 100,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          38,
+          104,
+          62
+      ],
+      "visible": true
+  },
+  "us-state-nebraska-2": {
+      "x": 408,
+      "y": 612,
+      "width": 80,
+      "height": 100,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          38,
+          80,
+          62
+      ],
+      "visible": true
+  },
+  "us-state-nebraska-3": {
+      "x": 488,
+      "y": 612,
+      "width": 104,
+      "height": 100,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          38,
+          104,
+          62
+      ],
+      "visible": true
+  },
+  "ae-d-route-3": {
+      "x": 592,
+      "y": 612,
+      "width": 96,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          96,
+          60
+      ],
+      "visible": true
+  },
+  "ae-d-route-4": {
+      "x": 688,
+      "y": 612,
+      "width": 120,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          120,
+          60
+      ],
+      "visible": true
+  },
+  "jp-national-route-2": {
+      "x": 808,
+      "y": 612,
+      "width": 88,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          88,
+          60
+      ],
+      "visible": true
+  },
+  "jp-national-route-3": {
+      "x": 896,
+      "y": 612,
+      "width": 112,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          112,
+          60
+      ],
+      "visible": true
+  },
+  "tw-provincial-2": {
+      "x": 0,
+      "y": 712,
+      "width": 88,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          88,
+          60
+      ],
+      "visible": true
+  },
+  "tw-provincial-3": {
+      "x": 88,
+      "y": 712,
+      "width": 112,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          112,
+          60
+      ],
+      "visible": true
+  },
+  "tw-provincial-expy-2": {
+      "x": 200,
+      "y": 712,
+      "width": 88,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          88,
+          60
+      ],
+      "visible": true
+  },
+  "tw-provincial-expy-3": {
+      "x": 288,
+      "y": 712,
+      "width": 112,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          112,
+          60
+      ],
+      "visible": true
+  },
+  "us-state-maryland-2": {
+      "x": 400,
+      "y": 712,
+      "width": 80,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          80,
+          60
+      ],
+      "visible": true
+  },
+  "us-state-maryland-3": {
+      "x": 480,
+      "y": 712,
+      "width": 104,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          104,
+          60
+      ],
+      "visible": true
+  },
+  "us-state-maryland-4": {
+      "x": 584,
+      "y": 712,
+      "width": 128,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          128,
+          60
+      ],
+      "visible": true
+  },
+  "us-state-nevada-2": {
+      "x": 712,
+      "y": 712,
+      "width": 80,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          80,
+          60
+      ],
+      "visible": true
+  },
+  "us-state-nevada-3": {
+      "x": 792,
+      "y": 712,
+      "width": 104,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          104,
+          60
+      ],
+      "visible": true
+  },
+  "us-state-newhampshire-turnpike-everett": {
+      "x": 896,
+      "y": 712,
+      "width": 80,
+      "height": 96,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "us-state-newhampshire-turnpike-spaulding": {
+      "x": 0,
+      "y": 808,
+      "width": 80,
+      "height": 96,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "us-state-northdakota-2": {
+      "x": 80,
+      "y": 808,
+      "width": 88,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          88,
+          60
+      ],
+      "visible": true
+  },
+  "us-state-northdakota-3": {
+      "x": 168,
+      "y": 808,
+      "width": 112,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          112,
+          60
+      ],
+      "visible": true
+  },
+  "us-state-northdakota-4": {
+      "x": 280,
+      "y": 808,
+      "width": 136,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          136,
+          60
+      ],
+      "visible": true
+  },
+  "us-state-southcarolina-2": {
+      "x": 416,
+      "y": 808,
+      "width": 80,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          80,
+          60
+      ],
+      "visible": true
+  },
+  "us-state-southcarolina-3": {
+      "x": 496,
+      "y": 808,
+      "width": 104,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          104,
+          60
+      ],
+      "visible": true
+  },
+  "us-state-tennessee-2": {
+      "x": 600,
+      "y": 808,
+      "width": 80,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          80,
+          60
+      ],
+      "visible": true
+  },
+  "us-state-tennessee-3": {
+      "x": 680,
+      "y": 808,
+      "width": 104,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          104,
+          60
+      ],
+      "visible": true
+  },
+  "us-state-tennessee-4": {
+      "x": 784,
+      "y": 808,
+      "width": 128,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          128,
+          60
+      ],
+      "visible": true
+  },
+  "us-state-vermont-2": {
+      "x": 912,
+      "y": 808,
+      "width": 80,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          80,
+          60
+      ],
+      "visible": true
+  },
+  "us-state-vermont-3": {
+      "x": 0,
+      "y": 904,
+      "width": 104,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          104,
+          60
+      ],
+      "visible": true
+  },
+  "us-state-vermont-4": {
+      "x": 104,
+      "y": 904,
+      "width": 128,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          128,
+          60
+      ],
+      "visible": true
+  },
+  "za-provincial-2": {
+      "x": 232,
+      "y": 904,
+      "width": 96,
+      "height": 96,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          36,
+          96,
+          60
+      ],
+      "visible": true
+  },
+  "cn-nths-expy-2": {
+      "x": 328,
+      "y": 904,
+      "width": 80,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          80,
+          58
+      ],
+      "visible": true
+  },
+  "cn-nths-expy-3": {
+      "x": 408,
+      "y": 904,
+      "width": 104,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          104,
+          58
+      ],
+      "visible": true
+  },
+  "cn-nths-expy-4": {
+      "x": 512,
+      "y": 904,
+      "width": 128,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          128,
+          58
+      ],
+      "visible": true
+  },
+  "cn-nths-expy-5": {
+      "x": 640,
+      "y": 904,
+      "width": 152,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          152,
+          58
+      ],
+      "visible": true
+  },
+  "cn-provincial-expy-2": {
+      "x": 792,
+      "y": 904,
+      "width": 80,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          80,
+          58
+      ],
+      "visible": true
+  },
+  "cn-provincial-expy-3": {
+      "x": 872,
+      "y": 904,
+      "width": 104,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          104,
+          58
+      ],
+      "visible": true
+  },
+  "cn-provincial-expy-4": {
+      "x": 976,
+      "y": 712,
+      "width": 128,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          128,
+          58
+      ],
+      "visible": true
+  },
+  "cn-provincial-expy-5": {
+      "x": 1104,
+      "y": 712,
+      "width": 152,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          152,
+          58
+      ],
+      "visible": true
+  },
+  "qa-main-2": {
+      "x": 1256,
+      "y": 712,
+      "width": 80,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          80,
+          58
+      ],
+      "visible": true
+  },
+  "qa-main-3": {
+      "x": 1336,
+      "y": 712,
+      "width": 104,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          104,
+          58
+      ],
+      "visible": true
+  },
+  "qa-main-4": {
+      "x": 1440,
+      "y": 712,
+      "width": 128,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          128,
+          58
+      ],
+      "visible": true
+  },
+  "th-highway-2": {
+      "x": 1568,
+      "y": 712,
+      "width": 80,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          80,
+          58
+      ],
+      "visible": true
+  },
+  "th-highway-3": {
+      "x": 1648,
+      "y": 712,
+      "width": 104,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          104,
+          58
+      ],
+      "visible": true
+  },
+  "th-highway-4": {
+      "x": 1752,
+      "y": 712,
+      "width": 128,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          128,
+          58
+      ],
+      "visible": true
+  },
+  "th-motorway-2": {
+      "x": 1880,
+      "y": 712,
+      "width": 80,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          80,
+          58
+      ],
+      "visible": true
+  },
+  "th-motorway-toll-2": {
+      "x": 1960,
+      "y": 712,
+      "width": 80,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          80,
+          58
+      ],
+      "visible": true
+  },
+  "us-state-alabama-2": {
+      "x": 992,
+      "y": 808,
+      "width": 80,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          80,
+          58
+      ],
+      "visible": true
+  },
+  "us-state-alabama-3": {
+      "x": 1072,
+      "y": 808,
+      "width": 104,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          104,
+          58
+      ],
+      "visible": true
+  },
+  "us-state-california-2": {
+      "x": 1176,
+      "y": 808,
+      "width": 80,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          80,
+          58
+      ],
+      "visible": true
+  },
+  "us-state-california-3": {
+      "x": 1256,
+      "y": 808,
+      "width": 104,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          104,
+          58
+      ],
+      "visible": true
+  },
+  "us-state-florida-2": {
+      "x": 1360,
+      "y": 808,
+      "width": 84,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          84,
+          58
+      ],
+      "visible": true
+  },
+  "us-state-florida-3": {
+      "x": 1444,
+      "y": 808,
+      "width": 108,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          108,
+          58
+      ],
+      "visible": true
+  },
+  "us-state-oklahoma-2": {
+      "x": 1552,
+      "y": 808,
+      "width": 80,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          80,
+          58
+      ],
+      "visible": true
+  },
+  "us-state-oklahoma-3": {
+      "x": 1632,
+      "y": 808,
+      "width": 104,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          104,
+          58
+      ],
+      "visible": true
+  },
+  "us-state-oklahoma-4": {
+      "x": 1736,
+      "y": 808,
+      "width": 128,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          128,
+          58
+      ],
+      "visible": true
+  },
+  "us-state-virginia-2": {
+      "x": 1864,
+      "y": 808,
+      "width": 80,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          80,
+          58
+      ],
+      "visible": true
+  },
+  "us-state-virginia-3": {
+      "x": 1944,
+      "y": 808,
+      "width": 104,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          104,
+          58
+      ],
+      "visible": true
+  },
+  "us-state-virginia-4": {
+      "x": 976,
+      "y": 904,
+      "width": 128,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          128,
+          58
+      ],
+      "visible": true
+  },
+  "us-state-washington-2": {
+      "x": 1104,
+      "y": 904,
+      "width": 80,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          80,
+          58
+      ],
+      "visible": true
+  },
+  "us-state-washington-3": {
+      "x": 1184,
+      "y": 904,
+      "width": 104,
+      "height": 92,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          34,
+          104,
+          58
+      ],
+      "visible": true
+  },
+  "br-federal-3": {
+      "x": 1288,
+      "y": 904,
+      "width": 104,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          104,
+          56
+      ],
+      "visible": true
+  },
+  "hk-strategic-route-2": {
+      "x": 1392,
+      "y": 904,
+      "width": 72,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          72,
+          56
+      ],
+      "visible": true
+  },
+  "in-national-2": {
+      "x": 1464,
+      "y": 904,
+      "width": 64,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          64,
+          56
+      ],
+      "visible": true
+  },
+  "in-national-3": {
+      "x": 1528,
+      "y": 904,
+      "width": 80,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          80,
+          56
+      ],
+      "visible": true
+  },
+  "in-national-4": {
+      "x": 1608,
+      "y": 904,
+      "width": 96,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          96,
+          56
+      ],
+      "visible": true
+  },
+  "in-state-2": {
+      "x": 1704,
+      "y": 904,
+      "width": 64,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          64,
+          56
+      ],
+      "visible": true
+  },
+  "in-state-3": {
+      "x": 1768,
+      "y": 904,
+      "width": 80,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          80,
+          56
+      ],
+      "visible": true
+  },
+  "kr-natl-expy-2": {
+      "x": 1848,
+      "y": 904,
+      "width": 80,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          80,
+          56
+      ],
+      "visible": true
+  },
+  "kr-natl-expy-3": {
+      "x": 1928,
+      "y": 904,
+      "width": 104,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          104,
+          56
+      ],
+      "visible": true
+  },
+  "mx-federal-2": {
+      "x": 1008,
+      "y": 612,
+      "width": 72,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          72,
+          56
+      ],
+      "visible": true
+  },
+  "mx-federal-3": {
+      "x": 1080,
+      "y": 612,
+      "width": 92,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          92,
+          56
+      ],
+      "visible": true
+  },
+  "mx-federal-4": {
+      "x": 1172,
+      "y": 612,
+      "width": 112,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          112,
+          56
+      ],
+      "visible": true
+  },
+  "mx-state-2": {
+      "x": 1284,
+      "y": 612,
+      "width": 72,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          72,
+          56
+      ],
+      "visible": true
+  },
+  "mx-state-3": {
+      "x": 1356,
+      "y": 612,
+      "width": 92,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          92,
+          56
+      ],
+      "visible": true
+  },
+  "mx-state-4": {
+      "x": 1448,
+      "y": 612,
+      "width": 112,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          112,
+          56
+      ],
+      "visible": true
+  },
+  "pe-regional-3": {
+      "x": 1560,
+      "y": 612,
+      "width": 92,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          92,
+          56
+      ],
+      "visible": true
+  },
+  "pe-regional-4": {
+      "x": 1652,
+      "y": 612,
+      "width": 112,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          112,
+          56
+      ],
+      "visible": true
+  },
+  "tw-national-2": {
+      "x": 1764,
+      "y": 612,
+      "width": 84,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          84,
+          56
+      ],
+      "visible": true
+  },
+  "us-interstate-2": {
+      "x": 1848,
+      "y": 612,
+      "width": 80,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          80,
+          56
+      ],
+      "visible": true
+  },
+  "us-interstate-3": {
+      "x": 1928,
+      "y": 612,
+      "width": 104,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          104,
+          56
+      ],
+      "visible": true
+  },
+  "us-interstate-4": {
+      "x": 1008,
+      "y": 496,
+      "width": 128,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          128,
+          56
+      ],
+      "visible": true
+  },
+  "us-interstate-business-2": {
+      "x": 1136,
+      "y": 496,
+      "width": 80,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          80,
+          56
+      ],
+      "visible": true
+  },
+  "us-interstate-business-3": {
+      "x": 1216,
+      "y": 496,
+      "width": 104,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          104,
+          56
+      ],
+      "visible": true
+  },
+  "us-interstate-duplex-4": {
+      "x": 1320,
+      "y": 496,
+      "width": 128,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          128,
+          56
+      ],
+      "visible": true
+  },
+  "us-interstate-duplex-5": {
+      "x": 1448,
+      "y": 496,
+      "width": 152,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          152,
+          56
+      ],
+      "visible": true
+  },
+  "us-state-alaska-2": {
+      "x": 1600,
+      "y": 496,
+      "width": 96,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          96,
+          56
+      ],
+      "visible": true
+  },
+  "us-state-alaska-3": {
+      "x": 1696,
+      "y": 496,
+      "width": 120,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          120,
+          56
+      ],
+      "visible": true
+  },
+  "us-state-florida-turnpike": {
+      "x": 1816,
+      "y": 496,
+      "width": 80,
+      "height": 88,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "us-state-louisiana-2": {
+      "x": 1896,
+      "y": 496,
+      "width": 80,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          80,
+          56
+      ],
+      "visible": true
+  },
+  "us-state-louisiana-3": {
+      "x": 976,
+      "y": 256,
+      "width": 104,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          104,
+          56
+      ],
+      "visible": true
+  },
+  "us-state-louisiana-4": {
+      "x": 1080,
+      "y": 256,
+      "width": 128,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          128,
+          56
+      ],
+      "visible": true
+  },
+  "us-state-louisiana-5": {
+      "x": 1208,
+      "y": 256,
+      "width": 152,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          152,
+          56
+      ],
+      "visible": true
+  },
+  "us-state-louisiana-6": {
+      "x": 1360,
+      "y": 256,
+      "width": 176,
+      "height": 88,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          32,
+          176,
+          56
+      ],
+      "visible": true
+  },
+  "au-tourist-2": {
+      "x": 1536,
+      "y": 256,
+      "width": 80,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          80,
+          54
+      ],
+      "visible": true
+  },
+  "au-tourist-3": {
+      "x": 1616,
+      "y": 256,
+      "width": 112,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          112,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-arizona-2": {
+      "x": 1728,
+      "y": 256,
+      "width": 80,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          80,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-arizona-3": {
+      "x": 1808,
+      "y": 256,
+      "width": 104,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          104,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-arizona-historic-2": {
+      "x": 1912,
+      "y": 256,
+      "width": 80,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          80,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-arkansas-2": {
+      "x": 992,
+      "y": 0,
+      "width": 80,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          80,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-arkansas-3": {
+      "x": 1072,
+      "y": 0,
+      "width": 104,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          104,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-arkansas-4": {
+      "x": 1176,
+      "y": 0,
+      "width": 128,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          128,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-hawaii-2": {
+      "x": 1304,
+      "y": 0,
+      "width": 80,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          80,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-hawaii-3": {
+      "x": 1384,
+      "y": 0,
+      "width": 104,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          104,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-missouri-2": {
+      "x": 1488,
+      "y": 0,
+      "width": 80,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          80,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-missouri-3": {
+      "x": 1568,
+      "y": 0,
+      "width": 104,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          104,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-missouri-4": {
+      "x": 1672,
+      "y": 0,
+      "width": 128,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          128,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-montana-alt-2": {
+      "x": 1800,
+      "y": 0,
+      "width": 80,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          80,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-montana-alt-3": {
+      "x": 1880,
+      "y": 0,
+      "width": 104,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          104,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-newhampshire-2": {
+      "x": 0,
+      "y": 1000,
+      "width": 88,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          88,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-newhampshire-3": {
+      "x": 88,
+      "y": 1000,
+      "width": 112,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          112,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-newhampshire-4": {
+      "x": 200,
+      "y": 1000,
+      "width": 136,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          136,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-newmexico-2": {
+      "x": 336,
+      "y": 1000,
+      "width": 84,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          84,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-newmexico-3": {
+      "x": 420,
+      "y": 1000,
+      "width": 108,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          108,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-newmexico-4": {
+      "x": 528,
+      "y": 1000,
+      "width": 132,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          132,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-oregon-2": {
+      "x": 660,
+      "y": 1000,
+      "width": 80,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          80,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-oregon-3": {
+      "x": 740,
+      "y": 1000,
+      "width": 104,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          104,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-pennsylvania-2": {
+      "x": 844,
+      "y": 1000,
+      "width": 80,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          80,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-pennsylvania-3": {
+      "x": 924,
+      "y": 1000,
+      "width": 104,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          104,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-pennsylvania-turnpike": {
+      "x": 1028,
+      "y": 1000,
+      "width": 80,
+      "height": 84,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "us-state-southdakota-2": {
+      "x": 1108,
+      "y": 1000,
+      "width": 80,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          80,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-southdakota-3": {
+      "x": 1188,
+      "y": 1000,
+      "width": 104,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          104,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-southdakota-4": {
+      "x": 1292,
+      "y": 1000,
+      "width": 128,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          128,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-texas-farm-ranch-2": {
+      "x": 1420,
+      "y": 1000,
+      "width": 80,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          80,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-texas-farm-ranch-3": {
+      "x": 1500,
+      "y": 1000,
+      "width": 104,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          104,
+          54
+      ],
+      "visible": true
+  },
+  "us-state-texas-farm-ranch-4": {
+      "x": 1604,
+      "y": 1000,
+      "width": 128,
+      "height": 84,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          30,
+          128,
+          54
+      ],
+      "visible": true
+  },
+  "ar-national-2": {
+      "x": 1732,
+      "y": 1000,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "ar-national-3": {
+      "x": 1812,
+      "y": 1000,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "ar-national-4": {
+      "x": 1916,
+      "y": 1000,
+      "width": 128,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          128,
+          52
+      ],
+      "visible": true
+  },
+  "au-national-highway-2": {
+      "x": 0,
+      "y": 1084,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "au-national-highway-3": {
+      "x": 80,
+      "y": 1084,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "au-national-route-2": {
+      "x": 184,
+      "y": 1084,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "au-national-route-3": {
+      "x": 264,
+      "y": 1084,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "au-national-route-4": {
+      "x": 368,
+      "y": 1084,
+      "width": 128,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          128,
+          52
+      ],
+      "visible": true
+  },
+  "au-national-route-5": {
+      "x": 496,
+      "y": 1084,
+      "width": 152,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          152,
+          52
+      ],
+      "visible": true
+  },
+  "au-national-route-6": {
+      "x": 648,
+      "y": 1084,
+      "width": 172,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          172,
+          52
+      ],
+      "visible": true
+  },
+  "au-state-2": {
+      "x": 820,
+      "y": 1084,
+      "width": 72,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          72,
+          52
+      ],
+      "visible": true
+  },
+  "au-state-3": {
+      "x": 892,
+      "y": 1084,
+      "width": 92,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          92,
+          52
+      ],
+      "visible": true
+  },
+  "au-state-4": {
+      "x": 984,
+      "y": 1084,
+      "width": 116,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          116,
+          52
+      ],
+      "visible": true
+  },
+  "au-state-5": {
+      "x": 1100,
+      "y": 1084,
+      "width": 136,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          136,
+          52
+      ],
+      "visible": true
+  },
+  "au-state-6": {
+      "x": 1236,
+      "y": 1084,
+      "width": 156,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          156,
+          52
+      ],
+      "visible": true
+  },
+  "br-state-2": {
+      "x": 1392,
+      "y": 1084,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "br-state-3": {
+      "x": 1472,
+      "y": 1084,
+      "width": 112,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          112,
+          52
+      ],
+      "visible": true
+  },
+  "ca-trans-canada-2": {
+      "x": 1584,
+      "y": 1084,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "ca-trans-canada-3": {
+      "x": 1664,
+      "y": 1084,
+      "width": 128,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          128,
+          52
+      ],
+      "visible": true
+  },
+  "circle-white-2": {
+      "x": 1792,
+      "y": 1084,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "circle-white-3": {
+      "x": 1872,
+      "y": 1084,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "circle-white-4": {
+      "x": 0,
+      "y": 1164,
+      "width": 128,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          128,
+          52
+      ],
+      "visible": true
+  },
+  "cl-highway-2": {
+      "x": 128,
+      "y": 1164,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "cl-highway-3": {
+      "x": 208,
+      "y": 1164,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "co-national-2": {
+      "x": 312,
+      "y": 1164,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "co-national-3": {
+      "x": 392,
+      "y": 1164,
+      "width": 96,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          96,
+          52
+      ],
+      "visible": true
+  },
+  "gate": {
+      "x": 488,
+      "y": 1164,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "hot-spring": {
+      "x": 568,
+      "y": 1164,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "hu-main-2": {
+      "x": 648,
+      "y": 1164,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "hu-main-3": {
+      "x": 728,
+      "y": 1164,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "hu-main-4": {
+      "x": 832,
+      "y": 1164,
+      "width": 128,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          128,
+          52
+      ],
+      "visible": true
+  },
+  "hu-main-5": {
+      "x": 960,
+      "y": 1164,
+      "width": 152,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          152,
+          52
+      ],
+      "visible": true
+  },
+  "hu-motorway-2": {
+      "x": 1112,
+      "y": 1164,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "hu-motorway-3": {
+      "x": 1192,
+      "y": 1164,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "lift-gate": {
+      "x": 1296,
+      "y": 1164,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "marker": {
+      "x": 1976,
+      "y": 1084,
+      "width": 48,
+      "height": 80,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "md-local-2": {
+      "x": 1376,
+      "y": 1164,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "md-local-3": {
+      "x": 1456,
+      "y": 1164,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "md-local-4": {
+      "x": 1560,
+      "y": 1164,
+      "width": 128,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          128,
+          52
+      ],
+      "visible": true
+  },
+  "md-local-5": {
+      "x": 1688,
+      "y": 1164,
+      "width": 152,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          152,
+          52
+      ],
+      "visible": true
+  },
+  "md-local-6": {
+      "x": 1840,
+      "y": 1164,
+      "width": 172,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          172,
+          52
+      ],
+      "visible": true
+  },
+  "md-main-2": {
+      "x": 0,
+      "y": 1244,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "md-main-3": {
+      "x": 80,
+      "y": 1244,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "md-main-4": {
+      "x": 184,
+      "y": 1244,
+      "width": 128,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          128,
+          52
+      ],
+      "visible": true
+  },
+  "mountain": {
+      "x": 312,
+      "y": 1244,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "nz-state-2": {
+      "x": 392,
+      "y": 1244,
+      "width": 72,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          72,
+          52
+      ],
+      "visible": true
+  },
+  "nz-state-3": {
+      "x": 464,
+      "y": 1244,
+      "width": 92,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          92,
+          52
+      ],
+      "visible": true
+  },
+  "nz-urban-2": {
+      "x": 556,
+      "y": 1244,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "pe-departmental-3": {
+      "x": 636,
+      "y": 1244,
+      "width": 96,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          96,
+          52
+      ],
+      "visible": true
+  },
+  "ph-expressway-2": {
+      "x": 732,
+      "y": 1244,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "ph-primary-2": {
+      "x": 812,
+      "y": 1244,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "ph-primary-3": {
+      "x": 892,
+      "y": 1244,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "ro-communal-2": {
+      "x": 996,
+      "y": 1244,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "ro-communal-3": {
+      "x": 1076,
+      "y": 1244,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "ro-communal-4": {
+      "x": 1180,
+      "y": 1244,
+      "width": 128,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          128,
+          52
+      ],
+      "visible": true
+  },
+  "ro-county-3": {
+      "x": 1308,
+      "y": 1244,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "ro-county-4": {
+      "x": 1412,
+      "y": 1244,
+      "width": 128,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          128,
+          52
+      ],
+      "visible": true
+  },
+  "ro-national-2": {
+      "x": 1540,
+      "y": 1244,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "ro-national-3": {
+      "x": 1620,
+      "y": 1244,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "sa-highway-2": {
+      "x": 1724,
+      "y": 1244,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "sa-highway-3": {
+      "x": 1804,
+      "y": 1244,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "tw-county-township-2": {
+      "x": 1908,
+      "y": 1244,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "tw-county-township-3": {
+      "x": 0,
+      "y": 1324,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "tw-county-township-4": {
+      "x": 104,
+      "y": 1324,
+      "width": 128,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          128,
+          52
+      ],
+      "visible": true
+  },
+  "tw-county-township-5": {
+      "x": 232,
+      "y": 1324,
+      "width": 152,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          152,
+          52
+      ],
+      "visible": true
+  },
+  "tw-county-township-6": {
+      "x": 384,
+      "y": 1324,
+      "width": 176,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          176,
+          52
+      ],
+      "visible": true
+  },
+  "us-bia-2": {
+      "x": 560,
+      "y": 1324,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "us-bia-3": {
+      "x": 640,
+      "y": 1324,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "us-bia-4": {
+      "x": 744,
+      "y": 1324,
+      "width": 120,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          120,
+          52
+      ],
+      "visible": true
+  },
+  "us-highway-2": {
+      "x": 864,
+      "y": 1324,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "us-highway-3": {
+      "x": 944,
+      "y": 1324,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "us-highway-4": {
+      "x": 1048,
+      "y": 1324,
+      "width": 128,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          128,
+          52
+      ],
+      "visible": true
+  },
+  "us-highway-alternate-2": {
+      "x": 1176,
+      "y": 1324,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "us-highway-alternate-3": {
+      "x": 1256,
+      "y": 1324,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "us-highway-duplex-3": {
+      "x": 1360,
+      "y": 1324,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "us-highway-duplex-4": {
+      "x": 1464,
+      "y": 1324,
+      "width": 128,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          128,
+          52
+      ],
+      "visible": true
+  },
+  "us-highway-duplex-5": {
+      "x": 1592,
+      "y": 1324,
+      "width": 152,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          152,
+          52
+      ],
+      "visible": true
+  },
+  "us-state-circle-2": {
+      "x": 1744,
+      "y": 1324,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "us-state-circle-3": {
+      "x": 1824,
+      "y": 1324,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "us-state-circle-4": {
+      "x": 0,
+      "y": 1404,
+      "width": 128,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          128,
+          52
+      ],
+      "visible": true
+  },
+  "us-state-colorado-toll": {
+      "x": 1928,
+      "y": 1324,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "us-state-diamond-2": {
+      "x": 128,
+      "y": 1404,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "us-state-diamond-3": {
+      "x": 208,
+      "y": 1404,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "us-state-georgia-2": {
+      "x": 312,
+      "y": 1404,
+      "width": 84,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          84,
+          52
+      ],
+      "visible": true
+  },
+  "us-state-georgia-3": {
+      "x": 396,
+      "y": 1404,
+      "width": 108,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          108,
+          52
+      ],
+      "visible": true
+  },
+  "us-state-kansas-2": {
+      "x": 504,
+      "y": 1404,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "us-state-kansas-3": {
+      "x": 584,
+      "y": 1404,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "us-state-newjersey-expressway-atlantic": {
+      "x": 688,
+      "y": 1404,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "us-state-newjersey-parkway-garden": {
+      "x": 768,
+      "y": 1404,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "us-state-newjersey-toll-turnpike": {
+      "x": 848,
+      "y": 1404,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "us-state-newyork-2": {
+      "x": 928,
+      "y": 1404,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "us-state-newyork-3": {
+      "x": 1008,
+      "y": 1404,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "us-state-newyork-4": {
+      "x": 1112,
+      "y": 1404,
+      "width": 128,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          128,
+          52
+      ],
+      "visible": true
+  },
+  "us-state-newyork-parkway-ontario": {
+      "x": 1240,
+      "y": 1404,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "us-state-newyork-parkway-palisades": {
+      "x": 1320,
+      "y": 1404,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "us-state-ohio-2": {
+      "x": 1400,
+      "y": 1404,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "us-state-ohio-3": {
+      "x": 1480,
+      "y": 1404,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "us-state-ohio-4": {
+      "x": 1584,
+      "y": 1404,
+      "width": 128,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          128,
+          52
+      ],
+      "visible": true
+  },
+  "us-state-ohio-turnpike": {
+      "x": 1712,
+      "y": 1404,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "us-state-oklahoma-turnpike": {
+      "x": 1792,
+      "y": 1404,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "us-state-square-2": {
+      "x": 1872,
+      "y": 1404,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "us-state-square-3": {
+      "x": 0,
+      "y": 1484,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "us-state-square-4": {
+      "x": 104,
+      "y": 1484,
+      "width": 128,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          128,
+          52
+      ],
+      "visible": true
+  },
+  "us-state-utah-2": {
+      "x": 1952,
+      "y": 1404,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "us-state-utah-3": {
+      "x": 232,
+      "y": 1484,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "us-state-wisconsin-2": {
+      "x": 336,
+      "y": 1484,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "us-state-wisconsin-3": {
+      "x": 416,
+      "y": 1484,
+      "width": 104,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          104,
+          52
+      ],
+      "visible": true
+  },
+  "volcano": {
+      "x": 520,
+      "y": 1484,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "waterfall": {
+      "x": 600,
+      "y": 1484,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "za-national-2": {
+      "x": 680,
+      "y": 1484,
+      "width": 80,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          80,
+          52
+      ],
+      "visible": true
+  },
+  "za-national-3": {
+      "x": 760,
+      "y": 1484,
+      "width": 112,
+      "height": 80,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          28,
+          112,
+          52
+      ],
+      "visible": true
+  },
+  "barcelona-metro": {
+      "x": 872,
+      "y": 1484,
+      "width": 76,
+      "height": 76,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "boston-t": {
+      "x": 948,
+      "y": 1484,
+      "width": 76,
+      "height": 76,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "de-s-bahn": {
+      "x": 1024,
+      "y": 1484,
+      "width": 76,
+      "height": 76,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "de-s-bahn.de-u-bahn": {
+      "x": 1100,
+      "y": 1484,
+      "width": 140,
+      "height": 76,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "delhi-metro": {
+      "x": 1240,
+      "y": 1484,
+      "width": 76,
+      "height": 76,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "id-national-2": {
+      "x": 1316,
+      "y": 1484,
+      "width": 88,
+      "height": 76,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          26,
+          88,
+          50
+      ],
+      "visible": true
+  },
+  "kiev-metro": {
+      "x": 1404,
+      "y": 1484,
+      "width": 76,
+      "height": 76,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "kr-metro-expy-2": {
+      "x": 1480,
+      "y": 1484,
+      "width": 80,
+      "height": 76,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          26,
+          80,
+          50
+      ],
+      "visible": true
+  },
+  "kr-metro-expy-3": {
+      "x": 1560,
+      "y": 1484,
+      "width": 104,
+      "height": 76,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          26,
+          104,
+          50
+      ],
+      "visible": true
+  },
+  "kr-metro-expy-4": {
+      "x": 1664,
+      "y": 1484,
+      "width": 128,
+      "height": 76,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          26,
+          128,
+          50
+      ],
+      "visible": true
+  },
+  "madrid-metro": {
+      "x": 1792,
+      "y": 1484,
+      "width": 76,
+      "height": 76,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "new-york-subway": {
+      "x": 1868,
+      "y": 1484,
+      "width": 76,
+      "height": 76,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "oslo-metro": {
+      "x": 1944,
+      "y": 1484,
+      "width": 76,
+      "height": 76,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "paris-metro": {
+      "x": 0,
+      "y": 1564,
+      "width": 76,
+      "height": 76,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "paris-metro.paris-rer": {
+      "x": 76,
+      "y": 1564,
+      "width": 148,
+      "height": 76,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "paris-rer": {
+      "x": 224,
+      "y": 1564,
+      "width": 76,
+      "height": 76,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "paris-rer.paris-transilien": {
+      "x": 300,
+      "y": 1564,
+      "width": 140,
+      "height": 76,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "road-closure": {
+      "x": 440,
+      "y": 1564,
+      "width": 76,
+      "height": 76,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "stockholm-metro": {
+      "x": 516,
+      "y": 1564,
+      "width": 76,
+      "height": 76,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "taipei-metro": {
+      "x": 592,
+      "y": 1564,
+      "width": 76,
+      "height": 76,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "us-state-connecticut-parkway-merrit": {
+      "x": 668,
+      "y": 1564,
+      "width": 80,
+      "height": 76,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "us-state-newyork-parkway-alt": {
+      "x": 748,
+      "y": 1564,
+      "width": 80,
+      "height": 76,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "vienna-u-bahn": {
+      "x": 828,
+      "y": 1564,
+      "width": 76,
+      "height": 76,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "il-highway-black-4": {
+      "x": 904,
+      "y": 1564,
+      "width": 132,
+      "height": 72,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          24,
+          132,
+          48
+      ],
+      "visible": true
+  },
+  "il-highway-blue-2": {
+      "x": 1036,
+      "y": 1564,
+      "width": 88,
+      "height": 72,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          24,
+          88,
+          48
+      ],
+      "visible": true
+  },
+  "il-highway-blue-3": {
+      "x": 1124,
+      "y": 1564,
+      "width": 112,
+      "height": 72,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          24,
+          112,
+          48
+      ],
+      "visible": true
+  },
+  "il-highway-green-3": {
+      "x": 1236,
+      "y": 1564,
+      "width": 112,
+      "height": 72,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          24,
+          112,
+          48
+      ],
+      "visible": true
+  },
+  "il-highway-red-2": {
+      "x": 1348,
+      "y": 1564,
+      "width": 88,
+      "height": 72,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          24,
+          88,
+          48
+      ],
+      "visible": true
+  },
+  "kr-natl-hwy-2": {
+      "x": 1436,
+      "y": 1564,
+      "width": 88,
+      "height": 72,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          24,
+          88,
+          48
+      ],
+      "visible": true
+  },
+  "us-state-kentucky-highway-aa": {
+      "x": 1524,
+      "y": 1564,
+      "width": 80,
+      "height": 72,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "us-state-kentucky-parkway-purchase": {
+      "x": 1604,
+      "y": 1564,
+      "width": 80,
+      "height": 72,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "us-state-newyork-parkway": {
+      "x": 1684,
+      "y": 1564,
+      "width": 80,
+      "height": 72,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "us-state-wyoming-2": {
+      "x": 1764,
+      "y": 1564,
+      "width": 72,
+      "height": 72,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          24,
+          72,
+          48
+      ],
+      "visible": true
+  },
+  "us-state-wyoming-3": {
+      "x": 1836,
+      "y": 1564,
+      "width": 96,
+      "height": 72,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          24,
+          96,
+          48
+      ],
+      "visible": true
+  },
+  "chongqing-rail-transit": {
+      "x": 1932,
+      "y": 1564,
+      "width": 100,
+      "height": 68,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "de-u-bahn": {
+      "x": 1976,
+      "y": 496,
+      "width": 68,
+      "height": 68,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "hong-kong-mtr": {
+      "x": 0,
+      "y": 1640,
+      "width": 76,
+      "height": 68,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "jp-urban-expressway-2": {
+      "x": 76,
+      "y": 1640,
+      "width": 80,
+      "height": 68,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          22,
+          80,
+          46
+      ],
+      "visible": true
+  },
+  "jp-urban-expressway-3": {
+      "x": 156,
+      "y": 1640,
+      "width": 104,
+      "height": 68,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          22,
+          104,
+          46
+      ],
+      "visible": true
+  },
+  "mexico-city-metro": {
+      "x": 260,
+      "y": 1640,
+      "width": 68,
+      "height": 68,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "milan-metro": {
+      "x": 328,
+      "y": 1640,
+      "width": 68,
+      "height": 68,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "moscow-metro": {
+      "x": 396,
+      "y": 1640,
+      "width": 68,
+      "height": 68,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "osaka-subway": {
+      "x": 464,
+      "y": 1640,
+      "width": 68,
+      "height": 68,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "paris-transilien": {
+      "x": 532,
+      "y": 1640,
+      "width": 68,
+      "height": 68,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "philadelphia-septa": {
+      "x": 600,
+      "y": 1640,
+      "width": 76,
+      "height": 68,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "pk-motorway-2": {
+      "x": 676,
+      "y": 1640,
+      "width": 80,
+      "height": 68,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          22,
+          80,
+          46
+      ],
+      "visible": true
+  },
+  "pk-motorway-3": {
+      "x": 756,
+      "y": 1640,
+      "width": 104,
+      "height": 68,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          22,
+          104,
+          46
+      ],
+      "visible": true
+  },
+  "san-francisco-bart": {
+      "x": 860,
+      "y": 1640,
+      "width": 68,
+      "height": 68,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "singapore-mrt": {
+      "x": 928,
+      "y": 1640,
+      "width": 68,
+      "height": 68,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "tokyo-metro": {
+      "x": 996,
+      "y": 1640,
+      "width": 68,
+      "height": 68,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "traffic-signal": {
+      "x": 1064,
+      "y": 1640,
+      "width": 32,
+      "height": 68,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "us-state-northcarolina-parkway-blueridge": {
+      "x": 1096,
+      "y": 1640,
+      "width": 80,
+      "height": 68,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "washington-metro": {
+      "x": 1176,
+      "y": 1640,
+      "width": 68,
+      "height": 68,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "airfield": {
+      "x": 1244,
+      "y": 1640,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "airport": {
+      "x": 1308,
+      "y": 1640,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "al-motorway-2": {
+      "x": 1372,
+      "y": 1640,
+      "width": 80,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          80,
+          44
+      ],
+      "visible": true
+  },
+  "alcohol-shop": {
+      "x": 1452,
+      "y": 1640,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "american-football": {
+      "x": 1516,
+      "y": 1640,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "amusement-park": {
+      "x": 1580,
+      "y": 1640,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "aquarium": {
+      "x": 1644,
+      "y": 1640,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "art-gallery": {
+      "x": 1708,
+      "y": 1640,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "attraction": {
+      "x": 1772,
+      "y": 1640,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "bakery": {
+      "x": 1836,
+      "y": 1640,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "bank": {
+      "x": 1900,
+      "y": 1640,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "bar": {
+      "x": 1964,
+      "y": 1640,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "baseball": {
+      "x": 1984,
+      "y": 0,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "basketball": {
+      "x": 0,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "beach": {
+      "x": 64,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "beer": {
+      "x": 128,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "bicycle": {
+      "x": 192,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "bicycle-share": {
+      "x": 256,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "bowling-alley": {
+      "x": 320,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "bridge": {
+      "x": 384,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "bus": {
+      "x": 448,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "cafe": {
+      "x": 512,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "campsite": {
+      "x": 576,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "car": {
+      "x": 640,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "car-rental": {
+      "x": 704,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "car-repair": {
+      "x": 768,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "casino": {
+      "x": 832,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "castle": {
+      "x": 896,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "cemetery": {
+      "x": 960,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "ch-motorway-2": {
+      "x": 1024,
+      "y": 1708,
+      "width": 88,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          88,
+          44
+      ],
+      "visible": true
+  },
+  "ch-motorway-3": {
+      "x": 1112,
+      "y": 1708,
+      "width": 112,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          112,
+          44
+      ],
+      "visible": true
+  },
+  "charging-station": {
+      "x": 1224,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "cinema": {
+      "x": 1288,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "clothing-store": {
+      "x": 1352,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "college": {
+      "x": 1416,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "communications-tower": {
+      "x": 1480,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "confectionery": {
+      "x": 1544,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "convenience": {
+      "x": 1608,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "cy-motorway-2": {
+      "x": 1672,
+      "y": 1708,
+      "width": 88,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          88,
+          44
+      ],
+      "visible": true
+  },
+  "cy-motorway-3": {
+      "x": 1760,
+      "y": 1708,
+      "width": 112,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          112,
+          44
+      ],
+      "visible": true
+  },
+  "de-motorway-2": {
+      "x": 1872,
+      "y": 1708,
+      "width": 88,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          88,
+          44
+      ],
+      "visible": true
+  },
+  "de-motorway-3": {
+      "x": 0,
+      "y": 1772,
+      "width": 112,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          112,
+          44
+      ],
+      "visible": true
+  },
+  "dentist": {
+      "x": 1960,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "doctor": {
+      "x": 112,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "dog-park": {
+      "x": 176,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "drinking-water": {
+      "x": 240,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "embassy": {
+      "x": 304,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "entrance": {
+      "x": 368,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "farm": {
+      "x": 432,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "fast-food": {
+      "x": 496,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "ferry": {
+      "x": 560,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "fire-station": {
+      "x": 624,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "fitness-centre": {
+      "x": 688,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "fuel": {
+      "x": 752,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "furniture": {
+      "x": 816,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "garden": {
+      "x": 880,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "gb-national-rail.london-dlr": {
+      "x": 944,
+      "y": 1772,
+      "width": 144,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "gb-national-rail.london-dlr.london-overground.london-tfl-rail.london-underground": {
+      "x": 1088,
+      "y": 1772,
+      "width": 372,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "gb-national-rail.london-dlr.london-overground.london-underground": {
+      "x": 1460,
+      "y": 1772,
+      "width": 296,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "gb-national-rail.london-dlr.london-underground": {
+      "x": 1756,
+      "y": 1772,
+      "width": 220,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "gb-national-rail.london-overground": {
+      "x": 0,
+      "y": 1836,
+      "width": 144,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "gb-national-rail.london-overground.london-tfl-rail.london-underground": {
+      "x": 144,
+      "y": 1836,
+      "width": 296,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "gb-national-rail.london-overground.london-underground": {
+      "x": 440,
+      "y": 1836,
+      "width": 220,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "gb-national-rail.london-tfl-rail": {
+      "x": 660,
+      "y": 1836,
+      "width": 144,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "gb-national-rail.london-tfl-rail.london-overground": {
+      "x": 804,
+      "y": 1836,
+      "width": 220,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "gb-national-rail.london-tfl-rail.london-underground": {
+      "x": 1024,
+      "y": 1836,
+      "width": 220,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "gb-national-rail.london-underground": {
+      "x": 1244,
+      "y": 1836,
+      "width": 144,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "globe": {
+      "x": 1976,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "golf": {
+      "x": 1388,
+      "y": 1836,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "gr-motorway-2": {
+      "x": 1452,
+      "y": 1836,
+      "width": 88,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          88,
+          44
+      ],
+      "visible": true
+  },
+  "gr-motorway-3": {
+      "x": 1540,
+      "y": 1836,
+      "width": 112,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          112,
+          44
+      ],
+      "visible": true
+  },
+  "gr-motorway-4": {
+      "x": 1652,
+      "y": 1836,
+      "width": 136,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          136,
+          44
+      ],
+      "visible": true
+  },
+  "grocery": {
+      "x": 1788,
+      "y": 1836,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "harbor": {
+      "x": 1852,
+      "y": 1836,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "hardware": {
+      "x": 1916,
+      "y": 1836,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "heliport": {
+      "x": 1980,
+      "y": 1836,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "highway-rest-area": {
+      "x": 0,
+      "y": 1900,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "historic": {
+      "x": 64,
+      "y": 1900,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "horse-riding": {
+      "x": 128,
+      "y": 1900,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "hospital": {
+      "x": 192,
+      "y": 1900,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "hr-motorway-3": {
+      "x": 256,
+      "y": 1900,
+      "width": 112,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          112,
+          44
+      ],
+      "visible": true
+  },
+  "hr-motorway-4": {
+      "x": 368,
+      "y": 1900,
+      "width": 136,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          136,
+          44
+      ],
+      "visible": true
+  },
+  "ice-cream": {
+      "x": 504,
+      "y": 1900,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "industry": {
+      "x": 568,
+      "y": 1900,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "information": {
+      "x": 632,
+      "y": 1900,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "it-motorway-2": {
+      "x": 696,
+      "y": 1900,
+      "width": 80,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          80,
+          44
+      ],
+      "visible": true
+  },
+  "it-motorway-3": {
+      "x": 776,
+      "y": 1900,
+      "width": 112,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          112,
+          44
+      ],
+      "visible": true
+  },
+  "jewelry-store": {
+      "x": 888,
+      "y": 1900,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "jp-metropolitan-road-2": {
+      "x": 952,
+      "y": 1900,
+      "width": 80,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          80,
+          44
+      ],
+      "visible": true
+  },
+  "jp-metropolitan-road-3": {
+      "x": 1032,
+      "y": 1900,
+      "width": 104,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          104,
+          44
+      ],
+      "visible": true
+  },
+  "jp-metropolitan-road-4": {
+      "x": 1136,
+      "y": 1900,
+      "width": 128,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          128,
+          44
+      ],
+      "visible": true
+  },
+  "jp-prefectural-road-2": {
+      "x": 1264,
+      "y": 1900,
+      "width": 80,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          80,
+          44
+      ],
+      "visible": true
+  },
+  "jp-prefectural-road-3": {
+      "x": 1344,
+      "y": 1900,
+      "width": 104,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          104,
+          44
+      ],
+      "visible": true
+  },
+  "jp-prefectural-road-4": {
+      "x": 1448,
+      "y": 1900,
+      "width": 128,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          128,
+          44
+      ],
+      "visible": true
+  },
+  "kr-metropolitan-2": {
+      "x": 1576,
+      "y": 1900,
+      "width": 80,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          80,
+          44
+      ],
+      "visible": true
+  },
+  "kr-metropolitan-3": {
+      "x": 1656,
+      "y": 1900,
+      "width": 104,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          104,
+          44
+      ],
+      "visible": true
+  },
+  "kr-metropolitan-4": {
+      "x": 1760,
+      "y": 1900,
+      "width": 128,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          128,
+          44
+      ],
+      "visible": true
+  },
+  "kr-metropolitan-5": {
+      "x": 1888,
+      "y": 1900,
+      "width": 152,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          152,
+          44
+      ],
+      "visible": true
+  },
+  "kr-metropolitan-6": {
+      "x": 0,
+      "y": 1964,
+      "width": 176,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          176,
+          44
+      ],
+      "visible": true
+  },
+  "landmark": {
+      "x": 176,
+      "y": 1964,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "laundry": {
+      "x": 240,
+      "y": 1964,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "library": {
+      "x": 304,
+      "y": 1964,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "lighthouse": {
+      "x": 368,
+      "y": 1964,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "lodging": {
+      "x": 432,
+      "y": 1964,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "london-dlr": {
+      "x": 496,
+      "y": 1964,
+      "width": 80,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "london-dlr.london-tfl-rail": {
+      "x": 576,
+      "y": 1964,
+      "width": 156,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "london-dlr.london-tfl-rail.london-underground": {
+      "x": 732,
+      "y": 1964,
+      "width": 232,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "london-dlr.london-underground": {
+      "x": 964,
+      "y": 1964,
+      "width": 156,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "london-overground": {
+      "x": 1120,
+      "y": 1964,
+      "width": 80,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "london-overground.london-tfl-rail": {
+      "x": 1200,
+      "y": 1964,
+      "width": 156,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "london-overground.london-tfl-rail.london-underground": {
+      "x": 1356,
+      "y": 1964,
+      "width": 232,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "london-overground.london-underground": {
+      "x": 1588,
+      "y": 1964,
+      "width": 156,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "london-tfl-rail": {
+      "x": 1744,
+      "y": 1964,
+      "width": 80,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "london-tfl-rail.london-underground": {
+      "x": 1824,
+      "y": 1964,
+      "width": 156,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "london-underground": {
+      "x": 2024,
+      "y": 1708,
+      "width": 80,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "mobile-phone": {
+      "x": 2104,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "monument": {
+      "x": 2168,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "museum": {
+      "x": 2232,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "music": {
+      "x": 2296,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "my-expressway-2": {
+      "x": 2360,
+      "y": 1708,
+      "width": 88,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          88,
+          44
+      ],
+      "visible": true
+  },
+  "my-expressway-3": {
+      "x": 2448,
+      "y": 1708,
+      "width": 112,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          112,
+          44
+      ],
+      "visible": true
+  },
+  "my-federal-2": {
+      "x": 2560,
+      "y": 1708,
+      "width": 88,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          88,
+          44
+      ],
+      "visible": true
+  },
+  "my-federal-3": {
+      "x": 2648,
+      "y": 1708,
+      "width": 112,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          112,
+          44
+      ],
+      "visible": true
+  },
+  "my-federal-4": {
+      "x": 2760,
+      "y": 1708,
+      "width": 136,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          136,
+          44
+      ],
+      "visible": true
+  },
+  "my-state-2": {
+      "x": 2896,
+      "y": 1708,
+      "width": 88,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          88,
+          44
+      ],
+      "visible": true
+  },
+  "my-state-3": {
+      "x": 2984,
+      "y": 1708,
+      "width": 112,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          112,
+          44
+      ],
+      "visible": true
+  },
+  "my-state-4": {
+      "x": 3096,
+      "y": 1708,
+      "width": 136,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          136,
+          44
+      ],
+      "visible": true
+  },
+  "observation-tower": {
+      "x": 3232,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "optician": {
+      "x": 3296,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "park": {
+      "x": 3360,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "parking": {
+      "x": 3424,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "parking-garage": {
+      "x": 3488,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "pharmacy": {
+      "x": 3552,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "picnic-site": {
+      "x": 3616,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "pitch": {
+      "x": 3680,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "pk-national-highway-2": {
+      "x": 3744,
+      "y": 1708,
+      "width": 88,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          88,
+          44
+      ],
+      "visible": true
+  },
+  "pk-national-highway-3": {
+      "x": 3832,
+      "y": 1708,
+      "width": 112,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          112,
+          44
+      ],
+      "visible": true
+  },
+  "place-of-worship": {
+      "x": 3944,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "playground": {
+      "x": 4008,
+      "y": 1708,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "police": {
+      "x": 2040,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "post": {
+      "x": 2104,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "prison": {
+      "x": 2168,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "racetrack": {
+      "x": 2232,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "racetrack-boat": {
+      "x": 2296,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "racetrack-cycling": {
+      "x": 2360,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "racetrack-horse": {
+      "x": 2424,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "rail": {
+      "x": 2488,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "rail-light": {
+      "x": 2552,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "rail-metro": {
+      "x": 2616,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "ranger-station": {
+      "x": 2680,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "religious-buddhist": {
+      "x": 2744,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "religious-christian": {
+      "x": 2808,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "religious-jewish": {
+      "x": 2872,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "religious-muslim": {
+      "x": 2936,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "religious-shinto": {
+      "x": 3000,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "restaurant": {
+      "x": 3064,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "restaurant-bbq": {
+      "x": 3128,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "restaurant-noodle": {
+      "x": 3192,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "restaurant-pizza": {
+      "x": 3256,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "restaurant-seafood": {
+      "x": 3320,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "rocket": {
+      "x": 3384,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "school": {
+      "x": 3448,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "shoe": {
+      "x": 3512,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "shop": {
+      "x": 3576,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "si-motorway-2": {
+      "x": 3640,
+      "y": 1772,
+      "width": 88,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          88,
+          44
+      ],
+      "visible": true
+  },
+  "skateboard": {
+      "x": 3728,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "skiing": {
+      "x": 3792,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "slipway": {
+      "x": 3856,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "stadium": {
+      "x": 3920,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "suitcase": {
+      "x": 3984,
+      "y": 1772,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "swimming": {
+      "x": 2044,
+      "y": 1836,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "table-tennis": {
+      "x": 2108,
+      "y": 1836,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "tennis": {
+      "x": 2172,
+      "y": 1836,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "theatre": {
+      "x": 2236,
+      "y": 1836,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "toilet": {
+      "x": 2300,
+      "y": 1836,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "toll": {
+      "x": 2364,
+      "y": 1836,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "town-hall": {
+      "x": 2428,
+      "y": 1836,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "tr-motorway-3": {
+      "x": 2492,
+      "y": 1836,
+      "width": 112,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          112,
+          44
+      ],
+      "visible": true
+  },
+  "tr-motorway-4": {
+      "x": 2604,
+      "y": 1836,
+      "width": 136,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          136,
+          44
+      ],
+      "visible": true
+  },
+  "tr-motorway-5": {
+      "x": 2740,
+      "y": 1836,
+      "width": 152,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          152,
+          44
+      ],
+      "visible": true
+  },
+  "tr-motorway-6": {
+      "x": 2892,
+      "y": 1836,
+      "width": 176,
+      "height": 64,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          20,
+          176,
+          44
+      ],
+      "visible": true
+  },
+  "tunnel": {
+      "x": 3068,
+      "y": 1836,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "veterinary": {
+      "x": 3132,
+      "y": 1836,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "viewpoint": {
+      "x": 3196,
+      "y": 1836,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "volleyball": {
+      "x": 3260,
+      "y": 1836,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "watch": {
+      "x": 3324,
+      "y": 1836,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "watermill": {
+      "x": 3388,
+      "y": 1836,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "wetland": {
+      "x": 3452,
+      "y": 1836,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "windmill": {
+      "x": 3516,
+      "y": 1836,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "zoo": {
+      "x": 3580,
+      "y": 1836,
+      "width": 64,
+      "height": 64,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "level-crossing": {
+      "x": 3644,
+      "y": 1836,
+      "width": 60,
+      "height": 60,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "oneway-large": {
+      "x": 3704,
+      "y": 1836,
+      "width": 60,
+      "height": 60,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "oneway-white-large": {
+      "x": 3764,
+      "y": 1836,
+      "width": 60,
+      "height": 60,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "default-2": {
+      "x": 3824,
+      "y": 1836,
+      "width": 80,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          80,
+          40
+      ],
+      "visible": true
+  },
+  "default-3": {
+      "x": 3904,
+      "y": 1836,
+      "width": 104,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          104,
+          40
+      ],
+      "visible": true
+  },
+  "default-4": {
+      "x": 2040,
+      "y": 1900,
+      "width": 128,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          128,
+          40
+      ],
+      "visible": true
+  },
+  "default-5": {
+      "x": 2168,
+      "y": 1900,
+      "width": 152,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          152,
+          40
+      ],
+      "visible": true
+  },
+  "default-6": {
+      "x": 2320,
+      "y": 1900,
+      "width": 176,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          176,
+          40
+      ],
+      "visible": true
+  },
+  "gb-national-rail": {
+      "x": 4008,
+      "y": 1836,
+      "width": 68,
+      "height": 56,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "intersection": {
+      "x": 2496,
+      "y": 1900,
+      "width": 104,
+      "height": 56,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "jp-expressway-2": {
+      "x": 2600,
+      "y": 1900,
+      "width": 80,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          80,
+          40
+      ],
+      "visible": true
+  },
+  "jp-expressway-3": {
+      "x": 2680,
+      "y": 1900,
+      "width": 104,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          104,
+          40
+      ],
+      "visible": true
+  },
+  "motorway-exit-1": {
+      "x": 2784,
+      "y": 1900,
+      "width": 80,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          80,
+          40
+      ],
+      "visible": true
+  },
+  "motorway-exit-2": {
+      "x": 2864,
+      "y": 1900,
+      "width": 80,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          80,
+          40
+      ],
+      "visible": true
+  },
+  "motorway-exit-3": {
+      "x": 2944,
+      "y": 1900,
+      "width": 104,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          104,
+          40
+      ],
+      "visible": true
+  },
+  "motorway-exit-4": {
+      "x": 3048,
+      "y": 1900,
+      "width": 128,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          128,
+          40
+      ],
+      "visible": true
+  },
+  "motorway-exit-5": {
+      "x": 3176,
+      "y": 1900,
+      "width": 152,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          152,
+          40
+      ],
+      "visible": true
+  },
+  "motorway-exit-6": {
+      "x": 3328,
+      "y": 1900,
+      "width": 176,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          176,
+          40
+      ],
+      "visible": true
+  },
+  "motorway-exit-7": {
+      "x": 3504,
+      "y": 1900,
+      "width": 200,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          200,
+          40
+      ],
+      "visible": true
+  },
+  "motorway-exit-8": {
+      "x": 3704,
+      "y": 1900,
+      "width": 224,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          224,
+          40
+      ],
+      "visible": true
+  },
+  "motorway-exit-9": {
+      "x": 1980,
+      "y": 1964,
+      "width": 248,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          248,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-blue-2": {
+      "x": 3928,
+      "y": 1900,
+      "width": 80,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          80,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-blue-3": {
+      "x": 2228,
+      "y": 1964,
+      "width": 104,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          104,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-blue-4": {
+      "x": 2332,
+      "y": 1964,
+      "width": 128,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          128,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-blue-5": {
+      "x": 2460,
+      "y": 1964,
+      "width": 152,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          152,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-blue-6": {
+      "x": 2612,
+      "y": 1964,
+      "width": 176,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          176,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-green-2": {
+      "x": 4008,
+      "y": 1900,
+      "width": 80,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          80,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-green-3": {
+      "x": 2788,
+      "y": 1964,
+      "width": 104,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          104,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-green-4": {
+      "x": 2892,
+      "y": 1964,
+      "width": 128,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          128,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-green-5": {
+      "x": 3020,
+      "y": 1964,
+      "width": 152,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          152,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-green-6": {
+      "x": 3172,
+      "y": 1964,
+      "width": 176,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          176,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-red-2": {
+      "x": 3348,
+      "y": 1964,
+      "width": 80,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          80,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-red-3": {
+      "x": 3428,
+      "y": 1964,
+      "width": 104,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          104,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-red-4": {
+      "x": 3532,
+      "y": 1964,
+      "width": 128,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          128,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-red-5": {
+      "x": 3660,
+      "y": 1964,
+      "width": 152,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          152,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-red-6": {
+      "x": 3812,
+      "y": 1964,
+      "width": 176,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          176,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-white-2": {
+      "x": 3988,
+      "y": 1964,
+      "width": 80,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          80,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-white-3": {
+      "x": 2028,
+      "y": 1640,
+      "width": 104,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          104,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-white-4": {
+      "x": 2132,
+      "y": 1640,
+      "width": 128,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          128,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-white-5": {
+      "x": 2260,
+      "y": 1640,
+      "width": 152,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          152,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-white-6": {
+      "x": 2412,
+      "y": 1640,
+      "width": 176,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          176,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-yellow-2": {
+      "x": 2588,
+      "y": 1640,
+      "width": 80,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          80,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-yellow-3": {
+      "x": 2668,
+      "y": 1640,
+      "width": 104,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          104,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-yellow-4": {
+      "x": 2772,
+      "y": 1640,
+      "width": 128,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          128,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-yellow-5": {
+      "x": 2900,
+      "y": 1640,
+      "width": 152,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          152,
+          40
+      ],
+      "visible": true
+  },
+  "rectangle-yellow-6": {
+      "x": 3052,
+      "y": 1640,
+      "width": 176,
+      "height": 56,
+      "pixelRatio": 4,
+      "placeholder": [
+          0,
+          16,
+          176,
+          40
+      ],
+      "visible": true
+  },
+  "border-dot-13": {
+      "x": 3228,
+      "y": 1640,
+      "width": 52,
+      "height": 52,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "oneway-small": {
+      "x": 4048,
+      "y": 1772,
+      "width": 48,
+      "height": 48,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "oneway-white-small": {
+      "x": 3280,
+      "y": 1640,
+      "width": 48,
+      "height": 48,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "dot-10": {
+      "x": 3328,
+      "y": 1640,
+      "width": 44,
+      "height": 44,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "dot-11": {
+      "x": 3372,
+      "y": 1640,
+      "width": 44,
+      "height": 44,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "dot-9": {
+      "x": 3416,
+      "y": 1640,
+      "width": 44,
+      "height": 44,
+      "pixelRatio": 4,
+      "visible": true
+  },
+  "cliff": {
+      "x": 3460,
+      "y": 1640,
+      "width": 32,
+      "height": 28,
+      "pixelRatio": 4,
+      "visible": true
+  }
+}

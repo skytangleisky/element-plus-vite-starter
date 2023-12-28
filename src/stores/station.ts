@@ -1,6 +1,8 @@
 // @ts-check
 import { defineStore, acceptHMRUpdate } from "pinia"
 import { 查询雷达列表接口, 查询雷达在线列表接口,查询雷达离线列表接口,查询近期新增雷达列表接口,查询平均风数据接口,查询瞬时风数据接口,查询径向风数据接口} from '../api/光恒/station'
+import {useBus} from '~/myComponents/bus'
+const bus = useBus()
 interface Station {
   "radar": {
     "radar_id": "c5f8c28e-1a3d-4dca-93ef-25fe76ee8b6b",
@@ -76,7 +78,8 @@ export const useStationStore = defineStore({
       return new Promise((resolve,reject)=>{
         查询雷达列表接口(query).then((res:any)=>{
           let result = res.data.data
-          this.$patch({result})
+          // this.$patch({result})
+          bus.result = result
           resolve(result)
         }).catch((e)=>{
           reject(e)
@@ -87,7 +90,8 @@ export const useStationStore = defineStore({
       return new Promise((resolve,reject)=>{
         查询雷达在线列表接口(query).then((res:any)=>{
           let result = res.data.data
-          this.$patch({result})
+          // this.$patch({result})
+          bus.result = result
           resolve(result)
         }).catch((e)=>{
           reject(e)
@@ -98,7 +102,8 @@ export const useStationStore = defineStore({
       return new Promise((resolve,reject)=>{
         查询雷达离线列表接口(query).then((res:any)=>{
           let result = res.data.data
-          this.$patch({result})
+          // this.$patch({result})
+          bus.result = result
           resolve(result)
         }).catch((e)=>{
           reject(e)
@@ -109,7 +114,8 @@ export const useStationStore = defineStore({
       return new Promise((resolve,reject)=>{
         查询近期新增雷达列表接口(query).then((res:any)=>{
           let result = res.data.data
-          this.$patch({result})
+          // this.$patch({result})
+          bus.result = result
           resolve(result)
         }).catch((e)=>{
           reject(e)

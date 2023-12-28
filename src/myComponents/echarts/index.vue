@@ -49,6 +49,8 @@ import { useStationStore } from "~/stores/station";
 const station = useStationStore();
 import { Fdata } from "~/tools/fkx";
 import { isDark } from "~/composables";
+import { useBus } from "~/myComponents/bus";
+const bus = useBus();
 const chartDom = ref(null);
 const layerIndex = ref(null);
 const options = ref([]);
@@ -380,7 +382,7 @@ let setEcharts = (isDark) => {
   //   myChart.setOption(option, false, true);
   // });
   watch(
-    [() => station.avgWindData, layerIndex, () => station.result, () => station.active],
+    [() => bus.avgWindData, layerIndex, () => bus.result, () => station.active],
     ([avgWindData, layerIdx, result, active]) => {
       option.series[1].data = [];
       option.series[2].data = [];

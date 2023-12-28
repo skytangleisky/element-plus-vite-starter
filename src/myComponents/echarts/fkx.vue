@@ -19,6 +19,8 @@ import { useStationStore } from "~/stores/station";
 const station = useStationStore();
 import DBS, { Fdata } from "~/tools/fkx.js";
 import { isDark } from "~/composables";
+import { useBus } from "~/myComponents/bus";
+const bus = useBus();
 const fkxContainer = ref(null);
 watch(isDark, (isDark) => {
   if (dbs) {
@@ -45,7 +47,7 @@ const setDBS = (isDark: boolean) => {
   //   // clearInterval(timer);
   // }, 5000);
   watch(
-    [() => station.avgWindData, () => station.result, () => station.active],
+    [() => bus.avgWindData, () => bus.result, () => station.active],
     ([avgWindData, result, active]) => {
       dbs.clear();
       if (avgWindData.length && result.length) {

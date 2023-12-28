@@ -17,6 +17,8 @@
 import { ref, onMounted, onBeforeUnmount, watch } from "vue";
 import { useStationStore } from "~/stores/station";
 const station = useStationStore();
+import { useBus } from "~/myComponents/bus";
+const bus = useBus();
 import * as echarts from "echarts";
 import { isDark } from "~/composables";
 
@@ -29,7 +31,7 @@ onMounted(() => {
 });
 
 watch(
-  [() => station.avgWindData, () => station.result, () => station.active],
+  [() => bus.avgWindData, () => bus.result, () => station.active],
   ([avgWindData, result, active]) => {
     option.series[0].data = [];
     myChart.setOption(option, false, true);
@@ -67,7 +69,7 @@ watch(
   }
 );
 watch(
-  [() => station.secondWindData, () => station.result, () => station.active],
+  [() => bus.secondWindData, () => bus.result, () => station.active],
   ([avgWindData, result, active]) => {
     option.series[1].data = [];
     myChart.setOption(option, false, true);

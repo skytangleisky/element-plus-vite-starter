@@ -21,6 +21,8 @@ import { useStationStore } from "~/stores/station";
 const station = useStationStore();
 import * as echarts from "echarts";
 import { isDark } from "~/composables";
+import { useBus } from "~/myComponents/bus";
+const bus = useBus();
 
 var thContainer = ref(null);
 watch(isDark, (isDark) => {
@@ -30,7 +32,7 @@ onMounted(() => {
   setChart(isDark.value);
 });
 watch(
-  [() => station.avgWindData, () => station.result, () => station.active],
+  [() => bus.avgWindData, () => bus.result, () => station.active],
   ([avgWindData, result, active]) => {
     option.xAxis.data = [];
     option.series[0].data = [];

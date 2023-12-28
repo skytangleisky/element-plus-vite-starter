@@ -59,7 +59,7 @@
           </thead>
           <tbody style="position: relative">
             <tr
-              v-for="(v, k) in station.result"
+              v-for="(v, k) in bus.result"
               :key="v.radar.radar_id"
               @contextmenu.prevent="(event) => contextmenu(event, v)"
               @click="flyTo(v)"
@@ -95,6 +95,8 @@ import { reactive, onMounted } from "vue";
 import { useStationStore } from "~/stores/station";
 import { eventbus } from "~/eventbus";
 const station = useStationStore();
+import { useBus } from "~/myComponents/bus";
+const bus = useBus();
 const menus = reactive([
   { code: 291, name: "白河堡作业点", status: "离线", equipment: "火箭", id: "110229041" },
   { code: 295, name: "千家店作业点", status: "在线", equipment: "火箭", id: "110229042" },

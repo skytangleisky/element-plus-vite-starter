@@ -18,11 +18,11 @@ export default [
   {
     path:'/api/weather/wind/avg/:time',
     method:'POST',
-    disable: true,
-    delay:()=>Math.round(Math.random()*10000),
+    disable: false,
+    // delay:()=>Math.round(Math.random()*10000),
     response:(req)=>{
       console.log(req.params)
-      let mockData = Mock.mock({'list|20':[{
+      let mockData = Mock.mock({'list|40':[{
         "timestamp": "2023-10-26T23:50:00+08:00",
         "device_id": "",
         "distance|+39": 70,
