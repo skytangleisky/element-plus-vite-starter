@@ -14,8 +14,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted, onBeforeUnmount, watch } from "vue";
-import { storeToRefs } from "pinia";
+import { ref, onMounted, watch } from "vue";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
 import { useStationStore } from "~/stores/station";
@@ -31,16 +30,13 @@ onMounted(() => {
   setChart(isDark.value);
 });
 watch(
-  [
-    storeToRefs(station).avgWindData,
-    storeToRefs(station).result,
-    storeToRefs(station).active,
-  ],
+  [() => station.avgWindData, () => station.result, () => station.active],
   ([avgWindData, result, active]) => {
     option.xAxis.data = [];
     option.series[0].data = [];
     option.series[1].data = [];
-    if (avgWindData) {
+    myChart.setOption(option);
+    if (avgWindData.length) {
       avgWindData.map((v, k) => {
         let data;
         for (let key in v) {
@@ -58,15 +54,11 @@ watch(
                   let temperature = tmp2[key].ex_temp;
                   let humidity = tmp2[key].ex_hum;
                   option.series[0].data.push(temperature);
-                  // option.series[1].data.push(humidity);
+                  option.series[1].data.push(humidity);
                 }
               }
             }
           });
-          myChart.setOption(option);
-        } else {
-          option.series[0].data = [];
-          option.series[1].data = [];
           myChart.setOption(option);
         }
       });

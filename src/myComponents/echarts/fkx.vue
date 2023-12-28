@@ -15,11 +15,8 @@
 </template>
 <script lang="ts" setup>
 import { ref, onMounted, onBeforeUnmount, watch } from "vue";
-import { storeToRefs } from "pinia";
 import { useStationStore } from "~/stores/station";
-import { useSettingStore } from "~/stores/setting";
 const station = useStationStore();
-const setting = useSettingStore();
 import DBS, { Fdata } from "~/tools/fkx.js";
 import { isDark } from "~/composables";
 const fkxContainer = ref(null);
@@ -48,13 +45,10 @@ const setDBS = (isDark: boolean) => {
   //   // clearInterval(timer);
   // }, 5000);
   watch(
-    [
-      storeToRefs(station).avgWindData,
-      storeToRefs(station).result,
-      storeToRefs(station).active,
-    ],
+    [() => station.avgWindData, () => station.result, () => station.active],
     ([avgWindData, result, active]) => {
-      if (avgWindData) {
+      dbs.clear();
+      if (avgWindData.length && result.length) {
         avgWindData.map((v, k) => {
           let data;
           for (let key in v) {
@@ -69,13 +63,13 @@ const setDBS = (isDark: boolean) => {
                 let fData: { [key: string]: any } = {};
                 fData.timestamp = k;
                 fData.data = [];
-                v[k].map((v) => {
-                  for (let k in v) {
+                v[k].map((item) => {
+                  for (let tmp in item) {
                     fData.data.push({
-                      fHei: v[k].distance.toString(),
-                      fHAngle: v[k].center_h_direction_abs.toString(),
-                      fHSpeed: v[k].center_h_speed.toString(),
-                      fVSpeed: v[k].vert_airflow.toString(),
+                      fHei: item[tmp].distance.toString(),
+                      fHAngle: item[tmp].center_h_direction_abs.toString(),
+                      fHSpeed: item[tmp].center_h_speed.toString(),
+                      fVSpeed: item[tmp].vert_airflow.toString(),
                       // iBelieveable: v[k].reliability,
                     });
                   }
@@ -86,13 +80,10 @@ const setDBS = (isDark: boolean) => {
               }
             });
             dbs.process(Fdatas);
-          } else {
-            dbs.clear();
           }
         });
       }
-    },
-    { immediate: true }
+    }
   );
 };
 onBeforeUnmount(() => {

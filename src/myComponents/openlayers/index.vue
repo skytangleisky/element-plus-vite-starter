@@ -101,12 +101,14 @@
         </svg>
       </el-icon>
     </div>
+    <!-- <time-line class="absolute bottom-0"></time-line> -->
   </div>
 </template>
 <script setup>
 import { addFeatherImages, getFeather } from "~/tools";
 import { getLngLat } from "~/myComponents/map/js/core.js";
 import { watch, ref, onMounted, onBeforeUnmount } from "vue";
+// import timeLine from "~/tools/timeLine.vue";
 const info = ref({
   title: "南昌昌北国际机场(ZSCN)",
   time: "2020-09-24 16:00",

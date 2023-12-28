@@ -47,7 +47,6 @@ import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
 import { useStationStore } from "~/stores/station";
 const station = useStationStore();
-import { storeToRefs } from "pinia";
 import { Fdata } from "~/tools/fkx";
 import { isDark } from "~/composables";
 const chartDom = ref(null);
@@ -380,14 +379,12 @@ let setEcharts = (isDark) => {
   //   myChart.setOption(option);
   // });
   watch(
-    [
-      storeToRefs(station).avgWindData,
-      layerIndex,
-      storeToRefs(station).result,
-      storeToRefs(station).active,
-    ],
+    [() => station.avgWindData, layerIndex, () => station.result, () => station.active],
     ([avgWindData, layerIdx, result, active]) => {
-      if (avgWindData) {
+      option.series[1].data = [];
+      option.series[2].data = [];
+      myChart.setOption(option);
+      if (avgWindData.length) {
         avgWindData.map((v, k) => {
           let data;
           for (let key in v) {
@@ -432,10 +429,6 @@ let setEcharts = (isDark) => {
             // option.series[0].data = Fdatas;
             option.series[1].data = Fdatas;
             option.series[2].data = Fdatas;
-            myChart.setOption(option);
-          } else {
-            option.series[1].data = [];
-            option.series[2].data = [];
             myChart.setOption(option);
           }
         });

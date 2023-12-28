@@ -1,23 +1,34 @@
 <template>
-  <div class="w-full h-full flex flex-col" style="background: #2b2b2b">
-    <canvas ref="timeShaft" class="w-100% h-30px bg-#646464"></canvas>
-    <div class="flex flex-row">
-      <el-icon
-        @click="prev"
-        style="overflow: hidden; font-size: 2rem; color: white; transform: rotate(180deg)"
-        v-dompurify-html="nextSvg"
-      />
-      <el-icon
-        @click="options.status == 'play' ? pause() : play()"
-        style="overflow: hidden; font-size: 2rem; color: white"
-        v-dompurify-html="options.status == 'play' ? pauseSvg : playSvg"
-      />
-      <el-icon
-        @click="next"
-        style="overflow: hidden; font-size: 2rem; color: white"
-        v-dompurify-html="nextSvg"
-      />
+  <div class="h-auto flex flex-row" style="background: #646464; width: 100vw">
+    <el-icon
+      @click="prev"
+      class="active:color-#2b2b2b color-#fff"
+      style="
+        overflow: hidden;
+        font-size: 2rem;
+        transform: rotate(180deg);
+        min-width: 2rem;
+      "
+      v-dompurify-html="nextSvg"
+    />
+    <div class="relative w-full h-30px">
+      <canvas
+        ref="timeShaft"
+        class="bg-#646464"
+        style="width: 100%; height: 100%"
+      ></canvas>
     </div>
+    <el-icon
+      @click="next"
+      class="active:color-#2b2b2b color-#fff"
+      style="overflow: hidden; font-size: 2rem; min-width: 2rem"
+      v-dompurify-html="nextSvg"
+    />
+    <el-icon
+      @click="options.status == 'play' ? pause() : play()"
+      style="overflow: hidden; font-size: 2rem; color: white; min-width: 2rem"
+      v-dompurify-html="options.status == 'play' ? pauseSvg : playSvg"
+    />
     <span @click="speed" style="color: white">x{{ Math.pow(2, options.times) }}</span>
   </div>
 </template>
@@ -162,6 +173,7 @@ onMounted(() => {
       offsetX: cvs.width * rateX,
       offsetY: cvs.height * rateX,
     };
+    left = mousemove.offsetX - ((Date.now() - now) / duration + 0.5) * cvs.width * Math.pow(2, value)
     draw();
     cancelAnimationFrame(aid)
     requestAnimationFrame(loop)
@@ -184,6 +196,7 @@ const speed = ()=>{
   }
 }
 const prev = ()=>{
+  pause()
   console.log('prev')
 }
 const play = ()=>{
@@ -193,6 +206,7 @@ const pause = ()=>{
   options.status = 'pause'
 }
 const next = ()=>{
+  pause()
   console.log('next')
 }
 /*

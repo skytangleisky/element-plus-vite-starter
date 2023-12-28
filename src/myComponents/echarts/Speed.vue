@@ -15,7 +15,6 @@
 </template>
 <script lang="ts" setup>
 import { ref, onMounted, onBeforeUnmount, watch } from "vue";
-import { storeToRefs } from "pinia";
 import { useStationStore } from "~/stores/station";
 const station = useStationStore();
 import * as echarts from "echarts";
@@ -29,14 +28,11 @@ onMounted(() => {
   setChart(isDark.value);
 });
 watch(
-  [
-    storeToRefs(station).secondWindData,
-    storeToRefs(station).result,
-    storeToRefs(station).active,
-  ],
+  [() => station.secondWindData, () => station.result, () => station.active],
   ([windData, result, active]) => {
-    if (windData) {
-      option.series[1].data = [];
+    option.series[1].data = [];
+    myChart.setOption(option);
+    if (windData.length) {
       windData.map((v, k) => {
         let data;
         for (let key in v) {
@@ -60,9 +56,6 @@ watch(
             }
           });
           myChart.setOption(option);
-        } else {
-          option.series[1].data = [];
-          myChart.setOption(option);
         }
       });
     }
@@ -70,14 +63,11 @@ watch(
 );
 
 watch(
-  [
-    storeToRefs(station).avgWindData,
-    storeToRefs(station).result,
-    storeToRefs(station).active,
-  ],
+  [() => station.avgWindData, () => station.result, () => station.active],
   ([avgWindData, result, active]) => {
     option.series[0].data = [];
-    if (avgWindData) {
+    myChart.setOption(option);
+    if (avgWindData.length) {
       avgWindData.map((v, k) => {
         let data;
         for (let key in v) {
@@ -100,9 +90,6 @@ watch(
               }
             }
           });
-          myChart.setOption(option);
-        } else {
-          option.series[0].data = [];
           myChart.setOption(option);
         }
       });
