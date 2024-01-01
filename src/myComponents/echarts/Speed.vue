@@ -69,7 +69,7 @@ watch(
   ([avgWindData, result, active]) => {
     option.series[0].data = [];
     myChart.setOption(option, false, true);
-    if (avgWindData.length) {
+    if (avgWindData) {
       avgWindData.map((v, k) => {
         let data;
         for (let key in v) {

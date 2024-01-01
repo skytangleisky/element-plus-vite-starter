@@ -191,6 +191,13 @@ export const state = {
       svg:'8fc8736b9cb611ee9b6cb025aa2c9ada'
     },
     {
+      path: 'graph',
+      name: 'e4961e04-e574-0e1f-ae23-94f157b14a41',
+      component: '/src/tools/graph.vue',
+      label: 'graph',
+      svg:'8fc8736b9cb611ee9b6cb025aa2c9ada'
+    },
+    {
       path: '',
       redirect: '/contain/map',
     },

@@ -50,7 +50,7 @@ const setDBS = (isDark: boolean) => {
     [() => bus.avgWindData, () => bus.result, () => station.active],
     ([avgWindData, result, active]) => {
       dbs.clear();
-      if (avgWindData.length && result.length) {
+      if (avgWindData) {
         avgWindData.map((v, k) => {
           let data;
           for (let key in v) {

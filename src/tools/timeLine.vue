@@ -1,5 +1,9 @@
 <template>
-  <div class="h-auto flex flex-row" style="background: #646464; width: 100%">
+  <div
+    class="timeline h-auto flex flex-row"
+    style="background: #646464; width: 100%"
+    tabindex="-1"
+  >
     <el-icon
       @click="prev"
       class="active:color-#2b2b2b color-#fff"
@@ -12,6 +16,21 @@
       v-dompurify-html="nextSvg"
     />
     <div class="relative h-30px" style="width: 100%">
+      <span
+        class="currentTime"
+        style="
+          position: absolute;
+          box-sizing: content-box;
+          left: 50%;
+          transform: translateX(-50%);
+          bottom: 100%;
+          background: #646464;
+          padding: 4px;
+          margin: 4px;
+          border-radius: 4px;
+        "
+        >{{ options.currentTime }}</span
+      >
       <canvas
         ref="timeShaft"
         class="bg-#646464"
@@ -66,6 +85,7 @@ for(let i=0;i<400;i++){
 }
 let value = 27.5;
 let options = reactive({
+  frameCount:0,
   times:0,
   gap:20, //文字之间的最小间隙
   middle: 3, //中刻度
@@ -73,6 +93,7 @@ let options = reactive({
   long: 5, //长刻度
   bottom: 8, //文字到底部距离
   status: 'play',//play|pause
+  currentTime:'',
 })
 const arr = [
   360 * 24 * 60 * 60000,
@@ -173,20 +194,19 @@ onMounted(() => {
     if(box.width==0||box.height==0){
       cancelAnimationFrame(aid)
     }else{
-      cvs.width = box.width;
-      cvs.height = box.height;
+      cvs.width = box.width
+      cvs.height = box.height
       mousemove = {
         offsetX: cvs.width * rateX,
         offsetY: cvs.height * rateX,
-      };
+      }
       left = mousemove.offsetX - rateX * cvs.width * Math.pow(2, value)
-      draw();
-      console.log(cvs.width,cvs.height)
+      draw()
       cancelAnimationFrame(aid)
       requestAnimationFrame(loop)
     }
   })
-  observer.observe(cvs);
+  observer.observe(cvs)
   // timer = setInterval(() => {
   //   now = Math.round(Date.now() / 1000) * 1000;
   //   draw();
@@ -194,6 +214,7 @@ onMounted(() => {
 });
 let time;
 const loop = () => {
+  options.frameCount++;
   draw();
   aid = requestAnimationFrame(loop);
 };
@@ -347,8 +368,8 @@ const draw = () => {
   ctx.moveTo(mousemove.offsetX, 0);
   ctx.lineTo(mousemove.offsetX, cvs.height);
   ctx.stroke();
-
-
+  let a = ((mousemove.offsetX - left)/cvs.width/Math.pow(2,value) - 0.5) * duration + now
+  options.currentTime = new Date(a).Format('yyyy-MM-dd HH:mm:ss')
   let x = ((currentTime - now) / duration + 0.5) * cvs.width * Math.pow(2, value) + left
   ctx.fillStyle = "#00000044";
   ctx.beginPath();
@@ -361,3 +382,12 @@ onBeforeUnmount(() => {
   cancelAnimationFrame(aid);
 });
 </script>
+<style scoped>
+.timeline:focus .currentTime {
+  display: block;
+}
+.currentTime {
+  text-wrap: nowrap;
+  display: none;
+}
+</style>

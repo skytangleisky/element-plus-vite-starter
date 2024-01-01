@@ -387,7 +387,7 @@ let setEcharts = (isDark) => {
       option.series[1].data = [];
       option.series[2].data = [];
       myChart.setOption(option, false, true);
-      if (avgWindData.length) {
+      if (avgWindData) {
         avgWindData.map((v, k) => {
           let data;
           for (let key in v) {

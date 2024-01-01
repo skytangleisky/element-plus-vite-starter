@@ -103,14 +103,19 @@
       </el-icon>
     </div>
     <time-line class="absolute bottom-0"></time-line>
+    <graph class="absolute right-0" v-model:args="graphArgs"></graph>
   </div>
 </template>
 <script setup>
 import { addFeatherImages, getFeather } from "~/tools";
 import { getLngLat } from "~/myComponents/map/js/core.js";
-import { watch, ref, onMounted, onBeforeUnmount } from "vue";
+import { watch, ref, onMounted, onBeforeUnmount, reactive } from "vue";
 import { useBus } from "~/myComponents/bus";
 const bus = useBus();
+const graphArgs = reactive({
+  fps: { value: 0, min: 0, max: 120, top: 4, bottom: 4, strokeStyle: "#fff" },
+  // memory: { value: 0, min: 0, max: 120, top: 4, bottom: 4, strokeStyle: "#0f0" },
+});
 watch(
   () => bus.test,
   (val) => {
@@ -118,6 +123,7 @@ watch(
   }
 );
 import timeLine from "~/tools/timeLine.vue";
+import graph from "~/tools/graph.vue";
 const info = ref({
   title: "南昌昌北国际机场(ZSCN)",
   time: "2020-09-24 16:00",
@@ -156,6 +162,7 @@ const disappear = (e) => {
   setting.disappear = !setting.disappear;
 };
 let timer, map;
+let mock;
 let speed = 20;
 const points = {
   type: "geojson",
@@ -374,6 +381,13 @@ const loadFunc = () => {
   } else if (import.meta.env.DEV) {
     timer = setInterval(() => task(), 3 * 1000);
   }
+  let frameCounter = map.painter.frameCounter;
+  mock = setInterval(() => {
+    graphArgs.fps.value = map.painter.frameCounter - frameCounter;
+    frameCounter = map.painter.frameCounter;
+    // graphArgs.memory.value = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
+    // graphArgs.memory.max = Math.round(performance.memory.jsHeapSizeLimit / 1024 / 1024);
+  }, 1000);
 
   if (setting.checks[0].select)
     station.查询雷达列表接口({ user_id: route.query.user_id });
@@ -411,6 +425,7 @@ onMounted(() => {
     center: setting.openlayers.center,
     pitch: 0,
   });
+  map.repaint = false;
   addFeatherImages(map);
   map.on("zoom", zoomFunc);
   map.on("move", moveFunc);
@@ -426,6 +441,7 @@ onMounted(() => {
 });
 onBeforeUnmount(() => {
   clearInterval(timer);
+  clearInterval(mock);
   map.off("zoom", zoomFunc);
   map.off("move", moveFunc);
   map.off("load", loadFunc);
