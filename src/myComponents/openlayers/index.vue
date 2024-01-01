@@ -103,7 +103,7 @@
       </el-icon>
     </div>
     <time-line class="absolute bottom-0"></time-line>
-    <graph class="absolute right-0" v-model:args="graphArgs"></graph>
+    <graph class="absolute right-0 bottom-30px" v-model:args="graphArgs"></graph>
   </div>
 </template>
 <script setup>

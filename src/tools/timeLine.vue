@@ -389,5 +389,15 @@ onBeforeUnmount(() => {
 .currentTime {
   text-wrap: nowrap;
   display: none;
+  &::before {
+    position: absolute;
+    content: "";
+    border-width: 4px;
+    border-style: solid;
+    border-color: #646464 transparent transparent transparent;
+    left: 50%;
+    bottom: 0;
+    transform: translateY(100%);
+  }
 }
 </style>
