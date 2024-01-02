@@ -1,7 +1,7 @@
 <template>
   <div
-    class="timeline h-auto flex flex-row"
-    style="background: #646464; width: 100%"
+    class="timeline h-auto flex flex-row absolute"
+    style="background: #646464; width: 100%; bottom: 0"
     tabindex="-1"
   >
     <el-icon
@@ -21,7 +21,7 @@
       >
       <canvas
         ref="timeShaft"
-        class="bg-#646464"
+        class="bg-#646464 absolute"
         style="width: 100%; height: 100%"
       ></canvas>
     </div>
@@ -38,6 +38,10 @@
       v-dompurify-html="options.status == 'play' ? pauseSvg : playSvg"
     />
     <span @click="speed" style="color: white">x{{ Math.pow(2, options.times) }}</span>
+    <graph
+      :args="graphArgs"
+      style="position: absolute; right: 30px; bottom: 100%"
+    ></graph>
   </div>
 </template>
 <script setup>
@@ -54,10 +58,19 @@ import pauseSvg from '~/assets/pause.svg?raw'
 import playSvg from '~/assets/play.svg?raw'
 import nextSvg from '~/assets/next.svg?raw'
 import { useBus } from '~/myComponents/bus'
+import graph from './graph.vue'
 const bus = useBus();
 import { onMounted, onBeforeUnmount, ref, reactive } from "vue";
 let now = Math.round(Date.now() / 1000) * 1000;
 let data = []
+const graphArgs = reactive({
+  fps:{
+    min:0,
+    max:144,
+    value:0,
+    strokeStyle:'#ffffff88'
+  }
+})
 for(let i=0;i<400;i++){
   let time = now + 1000 * i
   data.push({
@@ -195,12 +208,13 @@ onMounted(() => {
     }
   })
   observer.observe(cvs)
-  // timer = setInterval(() => {
-  //   now = Math.round(Date.now() / 1000) * 1000;
-  //   draw();
-  // }, 1000);
+  timer = setInterval(() => {
+    graphArgs.fps.value = options.frameCount - prevFrameCount;
+    prevFrameCount = options.frameCount;
+  }, 1000);
 });
 let time;
+let prevFrameCount = options.frameCount;
 const loop = () => {
   options.frameCount++;
   draw();
@@ -366,6 +380,7 @@ const draw = () => {
   ctx.restore();
 };
 onBeforeUnmount(() => {
+  clearInterval(timer)
   observer.disconnect()
   cancelAnimationFrame(aid);
 });

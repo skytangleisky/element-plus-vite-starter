@@ -113,7 +113,7 @@ import { watch, ref, onMounted, onBeforeUnmount, reactive } from "vue";
 import { useBus } from "~/myComponents/bus";
 const bus = useBus();
 const graphArgs = reactive({
-  fps: { value: 0, min: 0, max: 120, strokeStyle: "#ffffff88" },
+  fps: { value: 0, min: 0, max: 144, strokeStyle: "#ffffff88" },
   // memory: { value: 0, min: 0, max: 120, strokeStyle: "#0f0" },
 });
 watch(
