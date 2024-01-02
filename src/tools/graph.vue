@@ -12,7 +12,13 @@
           background-color: rgba(0, 0, 0, 0.2);
         "
       ></canvas>
-      <span ref="tooltipRef" class="tp-grlv_t tp-ttv">{{ currentFps }}</span>
+      <template v-for="(v, k) in data" :key="k">
+        <span
+          class="tp-grlv_t tp-ttv"
+          :style="`left: ${data[k].left}px;top:${data[k].top}px`"
+          >{{ data[k].value }}</span
+        >
+      </template>
     </div>
   </div>
 </template>
@@ -21,8 +27,6 @@ import { onMounted, onBeforeUnmount, ref, reactive } from "vue";
 type Item = {
   value?: number;
   max?: number;
-  top?: number;
-  bottom?: number;
   min?: number;
   strokeStyle?: string;
 };
@@ -35,29 +39,23 @@ const props = withDefaults(defineProps<propsType>(), {
       value: 0,
       min: 0,
       max: 120,
-      top: 4,
-      bottom: 4,
       strokeStyle: "white",
     }),
   }),
 });
 const count = 100;
-const currentFps = ref(0);
 let timer = 0;
 let timeShaft = ref(undefined);
-let tooltipRef = ref(undefined);
 let leftMouseDown = false;
 let aid: number;
 let observer: any;
-let data: any = {};
+let data: any = reactive({});
 let offsetX: any;
 const interval = 200;
 let cvs: HTMLCanvasElement | undefined;
-let tooltip: HTMLCanvasElement | undefined;
 onMounted(() => {
   cvs = timeShaft.value as HTMLCanvasElement | undefined;
-  tooltip = tooltipRef.value as HTMLCanvasElement | undefined;
-  if (cvs && tooltip) {
+  if (cvs) {
     cvs.addEventListener("mousedown", (evt) => {
       if (evt.which == 1 && cvs) {
         leftMouseDown = true;
@@ -94,14 +92,24 @@ onMounted(() => {
     });
     observer.observe(cvs);
     timer = setInterval(() => {
-      for (let k in props.args) {
-        if (data[k] == undefined) data[k] = [];
-        data[k].push(Object.assign({}, props.args[k]));
-        while (data[k].length > count) {
-          data[k].shift();
+      if (cvs) {
+        for (let k in props.args) {
+          if (data[k] == undefined)
+            data[k] = {
+              left: 0,
+              top: cvs.height,
+              value: 0,
+              "padding-top": 4,
+              "padding-bottom": 4,
+              items: [],
+            };
+          data[k].items.push(Object.assign({}, props.args[k]));
+          while (data[k].items.length > count) {
+            data[k].items.shift();
+          }
         }
+        aid = requestAnimationFrame(loop);
       }
-      aid = requestAnimationFrame(loop);
     }, interval);
   }
 });
@@ -118,14 +126,14 @@ const loop = () => {
 };
 let time: any;
 const draw = () => {
-  if (cvs && tooltip) {
+  if (cvs) {
     let ctx: CanvasRenderingContext2D | null = cvs.getContext("2d");
     if (ctx) {
       ctx.clearRect(0, 0, cvs.width, cvs.height);
       ctx.save();
-      let flag = true;
       for (let k in data) {
-        let list = data[k];
+        let list = data[k].items;
+        data[k].flag = true;
         ctx.beginPath();
         for (let i = 0; i < list.length; i++) {
           ctx.lineWidth = 1;
@@ -133,13 +141,13 @@ const draw = () => {
           let x = (i / (count - 1)) * cvs.width;
           let y =
             (1 - (list[i].value - list[i].min) / (list[i].max - list[i].min)) *
-              (cvs.height - list[i].top - list[i].bottom) +
-            list[i].top;
-          if (flag && x >= offsetX) {
-            tooltip.style.left = x + "px";
-            tooltip.style.top = y + "px";
-            currentFps.value = list[i].value;
-            flag = false;
+              (cvs.height - data[k]["padding-top"] - data[k]["padding-bottom"]) +
+            data[k]["padding-top"];
+          if (data[k].flag && x >= offsetX) {
+            data[k].left = x;
+            data[k].top = y;
+            data[k].value = list[i].value;
+            data[k].flag = false;
           }
           if (i == 0) {
             ctx.moveTo(x, y);
@@ -147,9 +155,9 @@ const draw = () => {
             ctx.lineTo(x, y);
             ctx.stroke();
             if (offsetX == undefined || x < offsetX) {
-              tooltip.style.left = x + "px";
-              tooltip.style.top = y + "px";
-              currentFps.value = list[i].value;
+              data[k].left = x;
+              data[k].top = y;
+              data[k].value = list[i].value;
             }
           } else {
             ctx.lineTo(x, y);
@@ -189,16 +197,25 @@ onBeforeUnmount(() => {
     pointer-events: none;
     position: absolute;
     transform: translate(-50%, -100%);
+    border: 1px solid gray;
     &::before {
-      border-color: #bbbcc4 transparent transparent transparent;
+      border-color: gray transparent transparent transparent;
       border-style: solid;
-      border-width: 2px;
+      border-width: 4px;
       box-sizing: border-box;
       content: "";
-      width: 4px;
-      height: 4px;
       top: 100%;
-      left: calc(50% - 2px);
+      left: calc(50% - 4px);
+      position: absolute;
+    }
+    &::after {
+      border-color: #bbbcc4 transparent transparent transparent;
+      border-style: solid;
+      border-width: 4px;
+      box-sizing: border-box;
+      content: "";
+      top: calc(100% - 1px);
+      left: calc(50% - 4px);
       position: absolute;
     }
   }

@@ -16,20 +16,8 @@
       v-dompurify-html="nextSvg"
     />
     <div class="relative h-30px" style="width: 100%">
-      <span
-        class="currentTime"
-        style="
-          position: absolute;
-          box-sizing: content-box;
-          left: 50%;
-          transform: translateX(-50%);
-          bottom: 100%;
-          background: #646464;
-          padding: 4px;
-          margin: 4px;
-          border-radius: 4px;
-        "
-        >{{ options.currentTime }}</span
+      <span class="currentTime"
+        ><div>{{ options.currentTime }}</div></span
       >
       <canvas
         ref="timeShaft"
@@ -382,22 +370,36 @@ onBeforeUnmount(() => {
   cancelAnimationFrame(aid);
 });
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .timeline:focus .currentTime {
-  display: block;
+  visibility: visible;
 }
 .currentTime {
-  text-wrap: nowrap;
-  display: none;
-  &::before {
-    position: absolute;
-    content: "";
-    border-width: 4px;
-    border-style: solid;
-    border-color: #646464 transparent transparent transparent;
-    left: 50%;
-    bottom: 0;
-    transform: translateY(100%);
+  position: absolute;
+  box-sizing: content-box;
+  width: 100%;
+  bottom: 100%;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  div {
+    pointer-events: auto;
+    text-wrap: nowrap;
+    padding: 4px;
+    margin: 4px;
+    border-radius: 4px;
+    background-color: #646464;
+    /* visibility: hidden; */
+    &::before {
+      position: absolute;
+      content: "";
+      border-width: 4px;
+      border-style: solid;
+      border-color: #646464 transparent transparent transparent;
+      left: calc(50% - 4px);
+      top: calc(100% - 4px);
+    }
   }
 }
 </style>

@@ -103,7 +103,7 @@
       </el-icon>
     </div>
     <time-line class="absolute bottom-0"></time-line>
-    <graph class="absolute right-0 bottom-30px" v-model:args="graphArgs"></graph>
+    <graph class="absolute left-0 bottom-30px" v-model:args="graphArgs"></graph>
   </div>
 </template>
 <script setup>
@@ -113,8 +113,8 @@ import { watch, ref, onMounted, onBeforeUnmount, reactive } from "vue";
 import { useBus } from "~/myComponents/bus";
 const bus = useBus();
 const graphArgs = reactive({
-  fps: { value: 0, min: 0, max: 120, top: 4, bottom: 4, strokeStyle: "#fff" },
-  // memory: { value: 0, min: 0, max: 120, top: 4, bottom: 4, strokeStyle: "#0f0" },
+  fps: { value: 0, min: 0, max: 120, strokeStyle: "#ffffff88" },
+  // memory: { value: 0, min: 0, max: 120, strokeStyle: "#0f0" },
 });
 watch(
   () => bus.test,
