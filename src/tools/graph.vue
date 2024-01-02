@@ -31,16 +31,16 @@ type Item = {
   strokeStyle?: string;
 };
 type propsType = {
-  args: { [key: string]: Array<Item> };
+  args?: { [key: string]: Item };
 };
 const props = withDefaults(defineProps<propsType>(), {
   args: () => ({
-    fps: new Array<Item>({
+    fps: {
       value: 0,
       min: 0,
       max: 120,
       strokeStyle: "white",
-    }),
+    },
   }),
 });
 const count = 100;
@@ -97,7 +97,7 @@ onMounted(() => {
           if (data[k] == undefined)
             data[k] = {
               left: 0,
-              top: cvs.height,
+              top: cvs.height - 4,
               value: 0,
               "padding-top": 4,
               "padding-bottom": 4,
