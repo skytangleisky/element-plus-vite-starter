@@ -40,7 +40,7 @@ export const array2components = array => {
 Date.prototype.Format = function(format){
   let that = this;
   if(format==undefined) format = "yyyy-MM-dd HH:mm:ss";
-  return format.replace(/yyyy|MM|dd|HH|mm|ss|SSS|S/g, function(a){
+  return format.replace(/yyyy|MM|dd|HH|mm|ss|SSS|SS|S/g, function(a){
     switch(a){
       case 'yyyy':
         return function(i){return (i < 10 ? '0' : '') + i}(that.getFullYear());
@@ -56,8 +56,10 @@ Date.prototype.Format = function(format){
         return function(i){return (i < 10 ? '0' : '') + i}(that.getSeconds());
       case 'S':
         return function(i){return i}(Math.floor(that.getMilliseconds()*10/1000));
+      case 'SS':
+        return function(i){return i.toFixed().padStart(2,'0')}(Math.floor(that.getMilliseconds()*100/1000));
       case 'SSS':
-        return function(i){return (i < 10 ? '00' : i<100 ? '0' : '') + i}(that.getMilliseconds());
+        return function(i){return i.toFixed().padStart(3,'0')}(that.getMilliseconds());
       case 'q':
         return Math.floor((that.getMonth() + 3) / 3)+'';
     }

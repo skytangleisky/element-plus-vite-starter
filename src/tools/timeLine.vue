@@ -6,7 +6,7 @@
   >
     <el-icon
       @click="prev"
-      class="active:color-#2b2b2b color-#fff"
+      class="btn"
       style="
         overflow: hidden;
         font-size: 2rem;
@@ -16,8 +16,8 @@
       v-dompurify-html="nextSvg"
     />
     <div class="relative h-30px" style="width: 100%">
-      <span class="currentTime"
-        ><div>{{ options.currentTime }}</div></span
+      <span class="currentTime">
+        <div>{{ options.currentTime }}</div></span
       >
       <canvas
         ref="timeShaft"
@@ -27,13 +27,13 @@
     </div>
     <el-icon
       @click="next"
-      class="active:color-#2b2b2b color-#fff"
+      class="btn"
       style="overflow: hidden; font-size: 2rem; min-width: 2rem"
       v-dompurify-html="nextSvg"
     />
     <el-icon
       @click="options.status == 'play' ? pause() : play()"
-      class="active:color-#2b2b2b color-#fff"
+      class="btn"
       style="overflow: hidden; font-size: 2rem; min-width: 2rem"
       v-dompurify-html="options.status == 'play' ? pauseSvg : playSvg"
     />
@@ -45,90 +45,60 @@
   </div>
 </template>
 <script setup>
-      // <img
-      //   :src="options.status == 'play' ? pauseUrl : playUrl"
-      //   style="
-      //     width: inherit;
-      //     height: inherit;
-      //     transform: translateY(-60px);
-      //     filter: drop-shadow(rgba(255, 255, 255, 1) 0 60px);
-      //   "
-      // />
-import pauseSvg from '~/assets/pause.svg?raw'
-import playSvg from '~/assets/play.svg?raw'
-import nextSvg from '~/assets/next.svg?raw'
-import { useBus } from '~/myComponents/bus'
-import graph from './graph.vue'
+// <img
+//   :src="options.status == 'play' ? pauseUrl : playUrl"
+//   style="
+//     width: inherit;
+//     height: inherit;
+//     transform: translateY(-60px);
+//     filter: drop-shadow(rgba(255, 255, 255, 1) 0 60px);
+//   "
+// />
+import pauseSvg from "~/assets/pause.svg?raw";
+import playSvg from "~/assets/play.svg?raw";
+import nextSvg from "~/assets/next.svg?raw";
+import { useBus } from "~/myComponents/bus";
+import graph from "./graph.vue";
 const bus = useBus();
 import { onMounted, onBeforeUnmount, ref, reactive } from "vue";
-let now = Math.round(Date.now() / 1000) * 1000;
-let data = []
+let now = Date.now();
+let data = [];
 const graphArgs = reactive({
-  fps:{
-    min:0,
-    max:144,
-    value:0,
-    strokeStyle:'#ffffff88'
-  }
-})
-for(let i=0;i<400;i++){
-  let time = now + 1000 * i
+  fps: {
+    min: 0,
+    max: 144,
+    value: 0,
+    strokeStyle: "#ffffff88",
+  },
+});
+for (let i = 0; i < 400; i++) {
+  let time = now + 1000 * i;
   data.push({
     time,
     right: time >= now,
-    toLeft:(item)=>{
-      console.log('到了左边',item.time)
+    toLeft: (item) => {
+      console.log("到了左边", item.time);
     },
-    toRight:(item)=>{
-      console.log('到了右边',item.time)
-    }
-  })
+    toRight: (item) => {
+      console.log("到了右边", item.time);
+    },
+  });
 }
-let value = 27.5;
+let value = 6.75;
 let options = reactive({
-  frameCount:0,
-  times:0,
-  gap:20, //文字之间的最小间隙
+  frameCount: 0,
+  times: 0,
+  gap: 20, //文字之间的最小间隙
   middle: 3, //中刻度
   short: 1, //短刻度
   long: 5, //长刻度
   bottom: 8, //文字到底部距离
-  status: 'play',//play|pause
-  currentTime:'',
-})
-const arr = [
-  360 * 24 * 60 * 60000,
-  180 * 24 * 60 * 60000,
-  90 * 24 * 60 * 60000,
-  30 * 24 * 60 * 60000,
-  7 * 24 * 60 * 60000,
-  24 * 60 * 60000,
-  12 * 60 * 60000,
-  6 * 60 * 60000,
-  2 * 60 * 60000,
-  60 * 60000,
-  30 * 60000,
-  10 * 60000,
-  6 * 60000,
-  2 * 60000,
-  60000,
-  20000,
-  10000,
-  5000,
-  2000,
-  1000,
-  500,
-  200,
-  100,
-  50,
-  20,
-  10,
-  5,
-  2,
-  1,
-];
-const duration = Math.round(Date.now() / 24 / 3600 / 1000) * 1000 * 3600 * 24;
+  status: "play", //play|pause
+  currentTime: "",
+});
+const arr = ["milliseconds", "seconds", "minutes", "hours", "day", "month", "year" ];
 let left = 0;
+let right = 0;
 let rateX = 0.5;
 let timer = 0;
 let timeShaft = ref(undefined);
@@ -144,30 +114,18 @@ onMounted(() => {
   };
   cvs.addEventListener("mousewheel", (evt) => {
     let deltaY = evt.wheelDeltaY / 120 / 10;
-    let ctx = cvs.getContext("2d");
-    let delta,
-      step,
-      Num,
-      tmpIndex = arr.length,
-      text_width = ctx.measureText("yyyy-MM-dd HH:mm:ss.SSS").width;
-    while (tmpIndex === arr.length || (delta < text_width + options.gap && arr[tmpIndex - 1])) {
-      step = arr[--tmpIndex];
-      Num = duration / step;
-      delta = (cvs.width * Math.pow(2, value)) / Num;
+    value -= deltaY;
+    if (value > 27.5) {
+      value = 27.5;
+    } else if (value < -7.5) {
+      value = -7.5;
     }
-    if (
-      (deltaY > 0 && step > arr.slice(-1)[0]) ||
-      (deltaY < 0 && step < arr.slice(0)[0])
-    ) {
-      value += deltaY;
-      left = mousemove.offsetX - rateX * cvs.width * Math.pow(2, value);
-      draw();
-    }
+    draw();
   });
   cvs.addEventListener("mousedown", (evt) => {
     if (evt.which == 1) {
       leftMouseDown = true;
-      pause()
+      pause();
     }
   });
   document.addEventListener("mouseup", (evt) => {
@@ -177,141 +135,156 @@ onMounted(() => {
   });
   document.addEventListener("mousemove", (evt) => {
     if (leftMouseDown) {
-      left += evt.movementX;
-      rateX = (mousemove.offsetX - left) / cvs.width / Math.pow(2, value);
-      if(rateX * duration + now - duration/2>Date.now()){
+      // left += evt.movementX;
+      // rateX = (mousemove.offsetX - left) / cvs.width / Math.pow(2, value);
+      // if (rateX * duration + now - duration / 2 > Date.now()) {
+      //   options.times = 0;
+      //   left =
+      //     mousemove.offsetX -
+      //     ((Date.now() - now) / duration + 0.5) * cvs.width * Math.pow(2, value);
+      //   rateX = (mousemove.offsetX - left) / cvs.width / Math.pow(2, value);
+      //   play();
+      //   leftMouseDown = false;
+      //   return;
+      // }
+      // draw();
+      now-=evt.movementX*Math.pow(2,value)
+      if(now>Date.now()){
         options.times = 0
-        left = mousemove.offsetX - ((Date.now() - now) / duration + 0.5) * cvs.width * Math.pow(2, value)
-        rateX = (mousemove.offsetX - left) / cvs.width / Math.pow(2, value);
-        play()
-        leftMouseDown = false
-        return
+        now = Date.now()
+        leftMouseDown = false;
+        play();
+      }else{
+        draw()
       }
-      draw();
     }
   });
   observer = new ResizeObserver(() => {
     let box = cvs.getBoundingClientRect();
-    if(box.width==0||box.height==0){
-      cancelAnimationFrame(aid)
-    }else{
-      cvs.width = box.width
-      cvs.height = box.height
+    if (box.width == 0 || box.height == 0) {
+      cancelAnimationFrame(aid);
+    } else {
+      cvs.width = box.width;
+      cvs.height = box.height;
       mousemove = {
         offsetX: cvs.width * rateX,
         offsetY: cvs.height * rateX,
-      }
-      left = mousemove.offsetX - rateX * cvs.width * Math.pow(2, value)
-      draw()
-      cancelAnimationFrame(aid)
-      requestAnimationFrame(loop)
+      };
+      left = mousemove.offsetX - rateX * cvs.width * Math.pow(2, value);
+      draw();
+      cancelAnimationFrame(aid);
+      requestAnimationFrame(loop);
     }
-  })
-  observer.observe(cvs)
+  });
+  observer.observe(cvs);
   timer = setInterval(() => {
     graphArgs.fps.value = options.frameCount - prevFrameCount;
     prevFrameCount = options.frameCount;
   }, 1000);
 });
-let time;
+let time = now;
 let prevFrameCount = options.frameCount;
 const loop = () => {
   options.frameCount++;
   draw();
   aid = requestAnimationFrame(loop);
 };
-const speed = ()=>{
-  options.times++
-  if(options.times>3){
-    options.times=-3
+const speed = () => {
+  options.times++;
+  if (options.times > 3) {
+    options.times = -3;
   }
-}
-const prev = ()=>{
-  pause()
-  console.log('prev')
-}
-const play = ()=>{
-  options.status = 'play'
-}
-const pause = ()=>{
-  options.status = 'pause'
-}
-const next = ()=>{
-  bus.test = time
-  pause()
-  console.log('next')
-}
-/*
-const input = (value) => {
-      // let tmp = -(rateX * cvs.width * Math.pow(2,value) - mousemove.offsetX);
-      // if (tmp > 0) {
-      //   left = 0;
-      //   mousemove.offsetX = rateX * cvs.width * Math.pow(2,value) + left;
-      // } else if (tmp < cvs.width - cvs.width * Math.pow(2,value)) {
-      //   left = cvs.width - cvs.width * Math.pow(2,value);
-      //   mousemove.offsetX = rateX * cvs.width * Math.pow(2,value) + left;
-      // }
-      // if (mousemove.offsetX < cvs.width / 2) {
-      //   let tmpLeft = 0;
-      //   let tmpOffsetX = rateX * cvs.width * Math.pow(2,value) + tmpLeft;
-      //   if (tmpOffsetX < cvs.width / 2) {
-      //     left = tmpLeft;
-      //     mousemove.offsetX = tmpOffsetX;
-      //   } else {
-      //     mousemove.offsetX = cvs.width / 2;
-      //     left = -(rateX * cvs.width * Math.pow(2,value) - mousemove.offsetX);
-      //   }
-      // } else if (mousemove.offsetX > cvs.width / 2) {
-      //   let tmpLeft = cvs.width - cvs.width * Math.pow(2,value);
-      //   let tmpOffsetX = rateX * cvs.width * Math.pow(2,value) + tmpLeft;
-      //   if (tmpOffsetX > cvs.width / 2) {
-      //     left = tmpLeft;
-      //     mousemove.offsetX = tmpOffsetX;
-      //   } else {
-      //     mousemove.offsetX = cvs.width / 2;
-      //     left = -(rateX * cvs.width * Math.pow(2,value) - mousemove.offsetX);
-      //   }
-      // } else {
-      //   left = tmp;
-      // }
-      left =
-        mousemove.offsetX - rateX * cvs.width * Math.pow(2, value);
-      draw();
-    }
-    */
+};
+const prev = () => {
+  pause();
+  console.log("prev");
+};
+const play = () => {
+  options.status = "play";
+};
+const pause = () => {
+  options.status = "pause";
+};
+const next = () => {
+  bus.test = time;
+  pause();
+  console.log("next");
+};
+const drawShortLine = (cvs, time) => {
+  let ctx = cvs.getContext("2d");
+  ctx.save();
+  let x = ((time - left) / (right - left)) * cvs.width;
+  ctx.beginPath();
+  ctx.moveTo(x, cvs.height - options.short);
+  ctx.lineTo(x, cvs.height);
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "#fff";
+  ctx.stroke();
+  ctx.restore();
+};
+const drawMiddleLine = (cvs, time) => {
+  let ctx = cvs.getContext("2d");
+  ctx.save();
+  let x = ((time - left) / (right - left)) * cvs.width;
+  ctx.beginPath();
+  ctx.moveTo(x, cvs.height - options.middle);
+  ctx.lineTo(x, cvs.height);
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "#fff";
+  ctx.stroke();
+  ctx.restore();
+};
+const drawLongLine = (cvs, time) => {
+  let ctx = cvs.getContext("2d");
+  ctx.save();
+  let x = ((time - left) / (right - left)) * cvs.width;
+  ctx.beginPath();
+  ctx.moveTo(x, cvs.height - options.long);
+  ctx.lineTo(x, cvs.height);
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "#fff";
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.fillStyle = "white";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "bottom";
+  ctx.fillText(
+    new Date(time).Format("yyyy-MM-dd HH:mm:ss.SSS"),
+    x,
+    cvs.height - options.long
+  );
+  ctx.restore();
+};
 const draw = () => {
   let cvs = timeShaft.value;
   let ctx = cvs.getContext("2d");
+  ctx.font = "10px Menlo,Consolas,Monaco";
   let currentTime = Date.now()
-  if(time==undefined){
-    time = currentTime
-    left = mousemove.offsetX - ((currentTime - now) / duration + 0.5) * cvs.width * Math.pow(2, value)
-    rateX = (mousemove.offsetX - left) / cvs.width / Math.pow(2, value);
-  }
   if(options.status == 'play'){
-    let 𝛿 = (currentTime - time) * Math.pow(2,options.times);
-    left -= 𝛿/duration*(cvs.width*Math.pow(2,value))
-    rateX = (mousemove.offsetX - left) / cvs.width / Math.pow(2, value);
-    if(rateX * duration + now - duration/2>currentTime){
+    let 𝛿 = (currentTime - time)
+    now += 𝛿*Math.pow(2,options.times)
+    if(now>currentTime){
+      now = currentTime
       options.times = 0
-      left = mousemove.offsetX - ((currentTime - now) / duration + 0.5) * cvs.width * Math.pow(2, value)
-      rateX = (mousemove.offsetX - left) / cvs.width / Math.pow(2, value);
     }
   }
-  time = currentTime
+  time = currentTime;
   ctx.clearRect(0, 0, cvs.width, cvs.height);
   ctx.save();
-  ctx.lineWidth = 2;
+  options.currentTime = new Date(now).Format("yyyy-MM-dd HH:mm:ss");
+  let text_width = ctx.measureText("yyyy-MM-dd HH:mm:ss.SSS").width;
+  left = now - cvs.width * Math.pow(2, value) * rateX;
+  right = now + cvs.width * Math.pow(2, value) * (1 - rateX);
+  drawMiddleLine(cvs, now, cvs.height);
   for (let i = 0; i < data.length; i++) {
-    let item = data[i]
-    let x = ((item.time - now) / duration + 0.5) * cvs.width * Math.pow(2, value) + left;
-    let middleTime = (rateX - 0.5) * duration + now // 中间刻度对应的时间
-    if(item.time<middleTime&&item.right){
-      item.toLeft(item)
-      item.right = false
-    }else if(item.time>middleTime&&!item.right){
-      item.toRight(item)
-      item.right = true
+    let item = data[i];
+    let x = ((item.time - left) / (right - left)) * cvs.width;;
+    if (item.time < now && item.right) {
+      item.toLeft(item);
+      item.right = false;
+    } else if (item.time > now && !item.right) {
+      item.toRight(item);
+      item.right = true;
     }
     ctx.strokeStyle = "#0f0";
     ctx.beginPath();
@@ -319,73 +292,179 @@ const draw = () => {
     ctx.lineTo(x, cvs.height);
     ctx.stroke();
   }
-  ctx.strokeStyle = "black";
-  ctx.lineWidth = 1;
-  ctx.fillStyle = "white";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "bottom";
-  // ctx.fillRect(0,0,cvs.width,cvs.height)
-  // ctx.strokeRect(0,0,cvs.width,cvs.height)
-  ctx.strokeStyle = "white";
-  let tmpIndex = arr.length,
-    step,
-    Num,
-    delta,
-    text_width = ctx.measureText("yyyy-MM-dd HH:mm:ss.SSS").width;
-  while (tmpIndex === arr.length || (delta < text_width + options.gap && arr[tmpIndex - 1])) {
-    step = arr[--tmpIndex];
-    // console.log(step);
-    Num = duration / step;
-    delta = (cvs.width * Math.pow(2, value)) / Num;
-  }
-  let minDelta = delta / 10;
-  for (
-    let i = Math.max(0, -Math.floor(left / delta + 1));
-    i < Math.min(Num + 1, Math.floor((cvs.width - left) / delta) + 2);
-    i++
-  ) {
-    ctx.font = "10px Menlo,Consolas,Monaco";
-    ctx.lineWidth = 2
-    ctx.fillText(new Date(now + i * step - duration / 2).Format("yyyy-MM-dd HH:mm:ss.SSS"), left + delta * i, cvs.height - options.bottom);
-    ctx.beginPath();
-    ctx.moveTo(left + delta * i, cvs.height);
-    ctx.lineTo(left + delta * i, cvs.height - options.long);
-    ctx.closePath();
-    ctx.stroke();
-    for (let j = 1; j < 10; j++) {
-      ctx.beginPath();
-      if (j === 5) {
-        ctx.moveTo(left + delta * i + minDelta * j, cvs.height);
-        ctx.lineTo(left + delta * i + minDelta * j, cvs.height - options.middle);
-      } else {
-        ctx.moveTo(left + delta * i + minDelta * j, cvs.height);
-        ctx.lineTo(left + delta * i + minDelta * j, cvs.height - options.short);
+
+  let leftDate = new Date(Math.round(left));
+  let rightDate = new Date(Math.round(right));
+  for (let index = 0; index < arr.length; index++) {
+    if (arr[index] === "year") {
+      let x1 =
+        ((new Date(leftDate.getFullYear(), 0, 1).getTime() - left) / (right - left)) *
+        cvs.width;
+      let x2 =
+        ((new Date(leftDate.getFullYear() + 1, 0, 1).getTime() - left) / (right - left)) *
+        cvs.width;
+      if (x2 - x1 >= text_width + options.gap) {
+        for (let i = leftDate.getFullYear(); i <= rightDate.getFullYear() + 1; i++) {
+          drawLongLine(cvs, new Date(i, 0, 1).getTime());
+          for (let j = 1; j < 12; j++) {
+            if (j == 6) {
+              drawMiddleLine(cvs, new Date(i, j, 1).getTime());
+            } else {
+              drawShortLine(cvs, new Date(i, j, 1).getTime());
+            }
+          }
+        }
+        break;
       }
-      ctx.stroke();
+    } else if (arr[index] === "month") {
+      let x1 =
+        ((new Date(leftDate.getFullYear(), 0, 1).getTime() - left) / (right - left)) *
+        cvs.width;
+      let x2 =
+        ((new Date(leftDate.getFullYear(), 1, 1).getTime() - left) / (right - left)) *
+        cvs.width;
+      if (x2 - x1 >= text_width + options.gap) {
+        let totalMonth =
+          (rightDate.getFullYear() - leftDate.getFullYear()) * 12 +
+          rightDate.getMonth() -
+          leftDate.getMonth();
+        for (let i = 0; i <= totalMonth + 1; i++) {
+          drawLongLine(
+            cvs,
+            new Date(leftDate.getFullYear(), leftDate.getMonth() + i, 1).getTime()
+          );
+          for (
+            let j = 1;
+            j <=
+            new Date(leftDate.getFullYear(), leftDate.getMonth() + i + 1, 0).getDate();
+            j++
+          ) {
+            drawShortLine(
+              cvs,
+              new Date(leftDate.getFullYear(), leftDate.getMonth() + i, j)
+            );
+          }
+        }
+        break;
+      }
+    } else if (arr[index] === "day") {
+      let delta = 24 * 60 * 60 * 1000;
+      if ((cvs.width / (right - left)) * delta >= text_width + options.gap) {
+        for (
+          let i = left - delta + 8 * 60 * 60 * 1000;
+          i < right + delta + 8 * 60 * 60 * 1000;
+          i += delta
+        ) {
+          drawLongLine(cvs, Math.round(i / delta) * delta - 8 * 60 * 60 * 1000);
+          for (let j = 1; j < 24; j++) {
+            if (j == 12) {
+              drawMiddleLine(
+                cvs,
+                Math.round(i / delta) * delta - 8 * 60 * 60 * 1000 + j * 60 * 60 * 1000
+              );
+            } else {
+              drawShortLine(
+                cvs,
+                Math.round(i / delta) * delta - 8 * 60 * 60 * 1000 + j * 60 * 60 * 1000
+              );
+            }
+          }
+        }
+        break;
+      }
+    } else if (arr[index] === "hours") {
+      let delta = 60 * 60 * 1000;
+      if ((cvs.width / (right - left)) * delta >= text_width + options.gap) {
+        for (
+          let i = left - delta + 8 * 60 * 60 * 1000;
+          i < right + delta + 8 * 60 * 60 * 1000;
+          i += delta
+        ) {
+          drawLongLine(cvs, Math.round(i / delta) * delta - 8 * 60 * 60 * 1000);
+          for (let j = 1; j < 60; j++) {
+            if (j == 30) {
+              drawMiddleLine(
+                cvs,
+                Math.round(i / delta) * delta - 8 * 60 * 60 * 1000 + j * 60 * 1000
+              );
+            } else {
+              drawShortLine(
+                cvs,
+                Math.round(i / delta) * delta - 8 * 60 * 60 * 1000 + j * 60 * 1000
+              );
+            }
+          }
+        }
+        break;
+      }
+    } else if (arr[index] === "minutes") {
+      let delta = 60 * 1000;
+      if ((cvs.width / (right - left)) * delta >= text_width + options.gap) {
+        for (let i = left - delta; i < right + delta; i += delta) {
+          drawLongLine(cvs, Math.round(i / delta) * delta);
+          for (let j = 1; j < 60; j++) {
+            if (j == 30) {
+              drawMiddleLine(cvs, Math.round(i / delta) * delta + j * 1000);
+            } else {
+              drawShortLine(cvs, Math.round(i / delta) * delta + j * 1000);
+            }
+          }
+        }
+        break;
+      }
+    } else if (arr[index] === "seconds") {
+      let delta = 1000;
+      if ((cvs.width / (right - left)) * delta >= text_width + options.gap) {
+        for (let i = left - delta; i < right + delta; i += delta) {
+          drawLongLine(cvs, Math.round(i / delta) * delta);
+          for (let j = 1; j < 10; j++) {
+            if (j == 5) {
+              drawMiddleLine(cvs, Math.round(i / delta) * delta + j * 100);
+            } else {
+              drawShortLine(cvs, Math.round(i / delta) * delta + j * 100);
+            }
+          }
+        }
+        break;
+      }
+    } else if (arr[index] === "milliseconds") {
+      let delta = 1;
+      if ((cvs.width / (right - left)) * delta >= text_width + options.gap) {
+        for (let i = left - delta; i < right + delta; i += delta) {
+          drawLongLine(cvs, Math.round(i / delta) * delta);
+        }
+        break;
+      }
+    } else {
+      throw Error(arr[index]);
     }
   }
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = "white";
-  ctx.beginPath();
-  ctx.moveTo(mousemove.offsetX, 0);
-  ctx.lineTo(mousemove.offsetX, cvs.height);
-  ctx.stroke();
-  let a = ((mousemove.offsetX - left)/cvs.width/Math.pow(2,value) - 0.5) * duration + now
-  options.currentTime = new Date(a).Format('yyyy-MM-dd HH:mm:ss')
-  let x = ((currentTime - now) / duration + 0.5) * cvs.width * Math.pow(2, value) + left
-  ctx.fillStyle = "#00000044";
-  ctx.beginPath();
-  ctx.fillRect(x,0,cvs.width-x,cvs.height);
+  let x = ((time - left) / (right - left)) * cvs.width;
+  ctx.fillStyle = '#00000044'
+  ctx.fillRect(x,0,cvs.width-x,cvs.height)
 
+  x = ((now - left) / (right - left)) * cvs.width;
+  ctx.beginPath();
+  ctx.moveTo(x, 0);
+  ctx.lineTo(x, cvs.height);
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "#fff";
+  ctx.stroke();
   ctx.restore();
 };
 onBeforeUnmount(() => {
-  clearInterval(timer)
-  observer.disconnect()
+  clearInterval(timer);
+  observer.disconnect();
   cancelAnimationFrame(aid);
 });
 </script>
 <style lang="scss" scoped>
+.btn {
+  color: white;
+  &:active {
+    color: #2b2b2b;
+  }
+}
 .timeline:focus .currentTime {
   visibility: visible;
 }
@@ -405,6 +484,7 @@ onBeforeUnmount(() => {
     margin: 4px;
     border-radius: 4px;
     background-color: #646464;
+    color: white;
     /* visibility: hidden; */
     &::before {
       position: absolute;
