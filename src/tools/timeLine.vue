@@ -17,8 +17,23 @@
     />
     <div class="relative h-30px" style="width: 100%">
       <span class="currentTime">
-        <div>{{ options.currentTime }}</div></span
-      >
+        <div style="display: flex; align-items: center">
+          <el-icon
+            class="active:color-#2b2b2b"
+            style="overflow: hidden; transform: rotate(180deg)"
+            v-dompurify-html="rightSvg"
+            @click="leftClick"
+          />
+          {{ options.currentTime
+          }}<span style="text-decoration: underline">{{ options.underlineText }}</span
+          ><el-icon
+            class="active:color-#2b2b2b"
+            style="overflow: hidden"
+            v-dompurify-html="rightSvg"
+            @click="rightClick"
+          />
+        </div>
+      </span>
       <canvas
         ref="timeShaft"
         class="bg-#646464 absolute"
@@ -57,6 +72,7 @@
 import pauseSvg from "~/assets/pause.svg?raw";
 import playSvg from "~/assets/play.svg?raw";
 import nextSvg from "~/assets/next.svg?raw";
+import rightSvg from "~/assets/right.svg?raw";
 import { useBus } from "~/myComponents/bus";
 import graph from "./graph.vue";
 const bus = useBus();
@@ -95,6 +111,7 @@ let options = reactive({
   bottom: 8, //文字到底部距离
   status: "play", //play|pause
   currentTime: "",
+  underlineText:"00",
 });
 const arr = ["milliseconds", "seconds", "minutes", "hours", "day", "month", "year" ];
 let left = 0;
@@ -205,6 +222,14 @@ const play = () => {
 const pause = () => {
   options.status = "pause";
 };
+const leftClick = () => {
+  console.log('leftClick')
+  pause()
+}
+const rightClick = () => {
+  console.log('rightClick')
+  pause()
+}
 const next = () => {
   bus.test = time;
   pause();

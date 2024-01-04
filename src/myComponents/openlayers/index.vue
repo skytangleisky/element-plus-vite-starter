@@ -102,8 +102,8 @@
         </svg>
       </el-icon>
     </div>
-    <time-line class="absolute bottom-0"></time-line>
-    <graph class="absolute left-0 bottom-30px" v-model:args="graphArgs"></graph>
+    <!--<time-line class="absolute bottom-0"></time-line>
+    <graph class="absolute left-0 bottom-30px" v-model:args="graphArgs"></graph>-->
   </div>
 </template>
 <script setup>
@@ -233,31 +233,33 @@ const loadFunc = () => {
     source: "point",
     type: "circle",
     paint: {
-      "circle-radius": [
-        "interpolate",
-        ["exponential", 1.5],
-        ["zoom"],
-        15,
-        4.5,
-        16,
-        8,
-        18,
-        20,
-        22,
-        200,
-      ],
+      // "circle-radius": [
+      //   "interpolate",
+      //   ["exponential", 1.5],
+      //   ["zoom"],
+      //   15,
+      //   4.5,
+      //   16,
+      //   8,
+      //   18,
+      //   20,
+      //   22,
+      //   200,
+      // ],
+      "circle-radius": 5,
       "circle-color": ["get", "color"],
-      "circle-stroke-width": [
-        "interpolate",
-        ["linear"],
-        ["zoom"],
-        15,
-        0.8,
-        16,
-        1.2,
-        18,
-        2,
-      ],
+      // "circle-stroke-width": [
+      //   "interpolate",
+      //   ["linear"],
+      //   ["zoom"],
+      //   15,
+      //   0.8,
+      //   16,
+      //   1.2,
+      //   18,
+      //   2,
+      // ],
+      "circle-stroke-width": 1,
       // "circle-stroke-color": "hsl(220, 20%, 85%)",
       "circle-pitch-alignment": "map",
     },
@@ -286,7 +288,7 @@ const loadFunc = () => {
       "icon-ignore-placement": true,
       // "text-field": ["get", "风速"],
       // "text-font": ["simkai"],
-      // "text-size": 20,
+      // "text-size": 14,
       // "text-transform": "uppercase",
       // // "text-letter-spacing": 0.05,
       // "text-anchor": "center",
@@ -310,7 +312,7 @@ const loadFunc = () => {
       visibility: setting.station ? "visible" : "none",
       "text-field": ["get", "name"],
       "text-font": ["simkai"],
-      "text-size": 20,
+      "text-size": 14,
       "text-transform": "uppercase",
       // "text-letter-spacing": 0.05,
       "text-anchor": "center",
@@ -319,8 +321,10 @@ const loadFunc = () => {
       "text-ignore-placement": true,
       "text-allow-overlap": true,
       "text-rotation-alignment": "map",
+      "text-max-width": 400,
     },
     paint: {
+      "text-opacity": setting.factor[1].val ? 1 : 0,
       "text-color": "white",
     },
     filter: ["==", ["get", "type"], "站点"],
@@ -333,7 +337,7 @@ const loadFunc = () => {
       visibility: setting.station ? "visible" : "none",
       "text-field": ["get", "external_temperature"],
       "text-font": ["simkai"],
-      "text-size": 20,
+      "text-size": 14,
       "text-transform": "uppercase",
       // "text-letter-spacing": 0.05,
       "text-anchor": "right",
@@ -357,7 +361,7 @@ const loadFunc = () => {
       visibility: setting.station ? "visible" : "none",
       "text-field": ["get", "external_humidity"],
       "text-font": ["simkai"],
-      "text-size": 20,
+      "text-size": 14,
       "text-transform": "uppercase",
       // "text-letter-spacing": 0.05,
       "text-anchor": "right",
@@ -413,6 +417,7 @@ onMounted(() => {
     localIdeographFontFamily: "",
     antialias: true,
     renderWorldCopies: true,
+    maxZoom: 17,
     // minZoom: 1,
     // maxBounds: [
     //   [60.0, 0],
@@ -576,6 +581,16 @@ watch(
       map.setLayoutProperty("textLayer", "visibility", "none");
       map.setLayoutProperty("humidityLayer", "visibility", "none");
       map.setLayoutProperty("temperatureLayer", "visibility", "none");
+    }
+  }
+);
+watch(
+  () => setting.factor[1].val,
+  (newVal) => {
+    if (newVal) {
+      map.setPaintProperty("textLayer", "text-opacity", 1);
+    } else {
+      map.setPaintProperty("textLayer", "text-opacity", 0);
     }
   }
 );

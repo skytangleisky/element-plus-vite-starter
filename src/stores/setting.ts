@@ -24,7 +24,7 @@ export const state = {
   component:'/src/myComponents/menu/index.vue',
   factor:[
     {toolTips:'站号',name:'ZH',val:false,visible:false},
-    {toolTips:'站名',name:'ZN',val:true,visible:false},
+    {toolTips:'站名',name:'ZN',val:true,visible:true},
     {toolTips:'风羽',name:'FY',val:false,visible:false},
     {toolTips:'信噪比',name:'SNR',val:false,visible:false},
     {toolTips:'垂直气流',name:'W',val:false,visible:false},

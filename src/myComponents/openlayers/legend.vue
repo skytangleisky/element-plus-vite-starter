@@ -31,7 +31,7 @@ const click = () => {
   color: black;
   background: white;
   position: absolute;
-  bottom: 40px;
+  bottom: 10px;
   left: 10px;
   padding: 10px;
   border-radius: 4px;

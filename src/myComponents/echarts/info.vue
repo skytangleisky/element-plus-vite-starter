@@ -37,7 +37,7 @@
         <span>数据采集状态:</span>
         <div
           :class="`${
-            bus.result[station.active]?.radar.is_online ? 'bg-green' : 'bg-red'
+            bus.result[station.active]?.radar.data_status ? 'bg-green' : 'bg-red'
           }`"
           style="border-radius: 50%; width: 1rem; height: 1rem"
         ></div>
