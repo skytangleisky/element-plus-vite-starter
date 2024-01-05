@@ -99,19 +99,6 @@ let options = reactive({
   value:6.75,
   targetValue:6.75,
 });
-for (let i = 0; i < 400; i++) {
-  let time = options.now + 1000 * i;
-  data.push({
-    time,
-    right: time >= options.now,
-    toLeft: (item) => {
-      // console.log("到了左边", item.time);
-    },
-    toRight: (item) => {
-      // console.log("到了右边", item.time);
-    },
-  });
-}
 const arr = ["milliseconds", "seconds", "minutes", "hours", "day", "month", "year" ];
 let left = 0;
 let right = 0;
@@ -165,6 +152,19 @@ onMounted(() => {
       })
     }
   });
+  for (let i = 0; i < 400; i++) {
+    let time = options.now + 1000 * i;
+    data.push({
+      time,
+      right: time >= options.now,
+      toLeft: (item) => {
+        // console.log("到了左边", item.time);
+      },
+      toRight: (item) => {
+        // console.log("到了右边", item.time);
+      },
+    });
+  }
   observer = new ResizeObserver(() => {
     let box = cvs.getBoundingClientRect();
     if (box.width == 0 || box.height == 0) {
@@ -172,7 +172,6 @@ onMounted(() => {
     } else {
       cvs.width = box.width;
       cvs.height = box.height;
-      // left = mousemove.offsetX - rateX * cvs.width * Math.pow(2, value);
       draw();
       cancelAnimationFrame(aid);
       requestAnimationFrame(loop);
@@ -198,6 +197,7 @@ const speed = () => {
   }
 };
 const play = () => {
+  time = Date.now()
   options.status = "play";
 };
 const pause = () => {
