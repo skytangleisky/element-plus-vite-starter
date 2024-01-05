@@ -85,9 +85,9 @@ let options = reactive({
   frameCount: 0,
   times: 0,
   gap: 20, //文字之间的最小间隙
-  middle: 3, //中刻度
-  short: 1, //短刻度
-  long: 5, //长刻度
+  middle: 4, //中刻度
+  short: 2, //短刻度
+  long: 8, //长刻度
   bottom: 8, //文字到底部距离
   status: "play", //play|pause
   strScaleType: 'milliseconds',
@@ -96,7 +96,7 @@ let options = reactive({
   rightText:"R",
   now:Date.now(),
   targetNow:Date.now(),
-  value:6.75,
+  value:8,
   targetValue:6.75,
 });
 const arr = ["milliseconds", "seconds", "minutes", "hours", "day", "month", "year" ];
@@ -113,10 +113,15 @@ onMounted(() => {
   cvs.addEventListener("mousewheel", (evt) => {
     let deltaY = evt.wheelDeltaY / 120 / 10;
     options.targetValue -= deltaY;
-    if (options.targetValue > 27.5) {
-      options.targetValue = 27.5;
-    } else if (options.targetValue < -7.5) {
-      options.targetValue = -7.5;
+    // if (options.targetValue > 27) {
+    //   options.targetValue = 27;
+    // } else if (options.targetValue < -8) {
+    //   options.targetValue = -8;
+    // }
+    if (options.targetValue > 27) {
+      options.targetValue = 27;
+    } else if (options.targetValue < 7.5) {
+      options.targetValue = 7.5;
     }
     gsap.killTweensOf(options)
     gsap.to(options,{
@@ -382,7 +387,7 @@ const drawLongLine = (cvs, time) => {
 const draw = () => {
   let cvs = timeShaft.value;
   let ctx = cvs.getContext("2d");
-  ctx.font = "10px Menlo,Consolas,Monaco";
+  ctx.font = "14px Menlo,Consolas,Monaco";
   let currentTime = Date.now()
   if(options.status == 'play'){
     let 𝛿 = (currentTime - time)
@@ -399,10 +404,9 @@ const draw = () => {
   let text_width = ctx.measureText("yyyy-MM-dd HH:mm:ss.SSS").width;
   left = options.now - cvs.width * Math.pow(2, options.value) * rateX;
   right = options.now + cvs.width * Math.pow(2, options.value) * (1 - rateX);
-  drawMiddleLine(cvs, options.now, cvs.height);
   for (let i = 0; i < data.length; i++) {
     let item = data[i];
-    let x = ((item.time - left) / (right - left)) * cvs.width;;
+    let x = ((item.time - left) / (right - left)) * cvs.width;
     if (item.time < options.now && item.right) {
       item.toLeft(item);
       item.right = false;
@@ -433,9 +437,9 @@ const draw = () => {
   for (let index = 0; index < arr.length; index++) {
     if (arr[index] === "year") {
       options.strScaleType = "year"
-      options.leftText = ""
-      options.underlineText = new Date(options.now).Format('yyyy')
-      options.rightText = new Date(options.now).Format('-MM-dd HH:mm:ss.SSS')
+      options.leftText = new Date(options.now).Format('yyyy-')
+      options.underlineText = new Date(options.now).Format('MM')
+      options.rightText = new Date(options.now).Format('-dd HH:mm:ss.SSS')
       let x1 =
         ((new Date(leftDate.getFullYear(), 0, 1).getTime() - left) / (right - left)) *
         cvs.width;
@@ -457,9 +461,9 @@ const draw = () => {
       }
     } else if (arr[index] === "month") {
       options.strScaleType = "month"
-      options.leftText = new Date(options.now).Format('yyyy-')
-      options.underlineText = new Date(options.now).Format('MM')
-      options.rightText = new Date(options.now).Format('-dd HH:mm:ss.SSS')
+      options.leftText = new Date(options.now).Format('yyyy-MM-')
+      options.underlineText = new Date(options.now).Format('dd')
+      options.rightText = new Date(options.now).Format('&nbsp;HH:mm:ss.SSS')
       let x1 =
         ((new Date(leftDate.getFullYear(), 0, 1).getTime() - left) / (right - left)) *
         cvs.width;
@@ -492,9 +496,9 @@ const draw = () => {
       }
     } else if (arr[index] === "day") {
       options.strScaleType = "day"
-      options.leftText = new Date(options.now).Format('yyyy-MM-')
-      options.underlineText = new Date(options.now).Format('dd')
-      options.rightText = new Date(options.now).Format('&nbsp;HH:mm:ss.SSS')
+      options.leftText = new Date(options.now).Format('yyyy-MM-dd&nbsp;')
+      options.underlineText = new Date(options.now).Format('HH')
+      options.rightText = new Date(options.now).Format(':mm:ss.SSS')
       let delta = 24 * 60 * 60 * 1000;
       if ((cvs.width / (right - left)) * delta >= text_width + options.gap) {
         for (
@@ -521,9 +525,9 @@ const draw = () => {
       }
     } else if (arr[index] === "hours") {
       options.strScaleType = "hours"
-      options.leftText = new Date(options.now).Format('yyyy-MM-dd&nbsp;')
-      options.underlineText = new Date(options.now).Format('HH')
-      options.rightText = new Date(options.now).Format(':mm:ss.SSS')
+      options.leftText = new Date(options.now).Format('yyyy-MM-dd HH:')
+      options.underlineText = new Date(options.now).Format('mm')
+      options.rightText = new Date(options.now).Format(':ss.SSS')
       let delta = 60 * 60 * 1000;
       if ((cvs.width / (right - left)) * delta >= text_width + options.gap) {
         for (
@@ -550,9 +554,9 @@ const draw = () => {
       }
     } else if (arr[index] === "minutes") {
       options.strScaleType = "minutes"
-      options.leftText = new Date(options.now).Format('yyyy-MM-dd HH:')
-      options.underlineText = new Date(options.now).Format('mm')
-      options.rightText = new Date(options.now).Format(':ss.SSS')
+      options.leftText = new Date(options.now).Format('yyyy-MM-dd HH:mm:')
+      options.underlineText = new Date(options.now).Format('ss')
+      options.rightText = new Date(options.now).Format('.SSS')
       let delta = 60 * 1000;
       if ((cvs.width / (right - left)) * delta >= text_width + options.gap) {
         for (let i = left - delta; i < right + delta; i += delta) {

@@ -195,7 +195,7 @@ export const state = {
       name: 'e4961e04-e574-0e1f-ae23-94f157b14a41',
       component: '/src/tools/graph.vue',
       label: 'graph',
-      svg:'8fc8736b9cb611ee9b6cb025aa2c9ada'
+      svg:'5e38a2e3aaf011eeb80bb025aa2c9ada'
     },
     {
       path: '',
