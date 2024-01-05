@@ -59,7 +59,7 @@
       <div ref="popup_closer" class="ol-popup-closer"></div>
     </div>
     <radar-statistic></radar-statistic>
-    <Legend></Legend>
+    <Legend style="bottom: 40px"></Legend>
     <div
       :class="`right-drawer ${
         setting.disappear ? 'disappear' : ''
@@ -102,8 +102,8 @@
         </svg>
       </el-icon>
     </div>
-    <!--<time-line class="absolute bottom-0"></time-line>
-    <graph class="absolute left-0 bottom-30px" v-model:args="graphArgs"></graph>-->
+    <time-line class="absolute bottom-0"></time-line>
+    <graph class="absolute left-0 bottom-30px" v-model:args="graphArgs"></graph>
   </div>
 </template>
 <script setup>
