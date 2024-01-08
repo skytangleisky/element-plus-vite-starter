@@ -96,8 +96,9 @@ let options = reactive({
   rightText:"R",
   now:Date.now(),
   targetNow:Date.now(),
-  value:8,
-  targetValue:6.75,
+  value:10,
+  targetValue:10,
+  devicePixelRatio,
 });
 const arr = ["milliseconds", "seconds", "minutes", "hours", "day", "month", "year" ];
 let left = 0;
@@ -118,10 +119,13 @@ onMounted(() => {
     // } else if (options.targetValue < -8) {
     //   options.targetValue = -8;
     // }
-    if (options.targetValue > 27) {
-      options.targetValue = 27;
-    } else if (options.targetValue < 7.5) {
-      options.targetValue = 7.5;
+    let ctx = cvs.getContext('2d')
+    let text_width = ctx.measureText("yyyy-MM-dd HH:mm:ss.SSS").width
+    console.log((text_width+options.gap*devicePixelRatio)*Math.pow(2,options.targetValue),options.value)
+    if (options.targetValue > 26) {
+      options.targetValue = 26;
+    } else if (options.targetValue < 0) {
+      options.targetValue = 0;
     }
     gsap.killTweensOf(options)
     gsap.to(options,{
@@ -149,6 +153,7 @@ onMounted(() => {
         now:options.targetNow,
         onUpdate:()=>{
           if(options.now>Date.now()){
+            leftMouseDown = false
             gsap.killTweensOf(options)
             options.targetNow = Date.now()
             play();
@@ -175,8 +180,8 @@ onMounted(() => {
     if (box.width == 0 || box.height == 0) {
       cancelAnimationFrame(aid);
     } else {
-      cvs.width = box.width;
-      cvs.height = box.height;
+      cvs.width = box.width*options.devicePixelRatio;
+      cvs.height = box.height*options.devicePixelRatio;
       draw();
       cancelAnimationFrame(aid);
       requestAnimationFrame(loop);
@@ -344,9 +349,9 @@ const drawShortLine = (cvs, time) => {
   ctx.save();
   let x = ((time - left) / (right - left)) * cvs.width;
   ctx.beginPath();
-  ctx.moveTo(x, cvs.height - options.short);
+  ctx.moveTo(x, cvs.height - options.short*options.devicePixelRatio);
   ctx.lineTo(x, cvs.height);
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 2*options.devicePixelRatio;
   ctx.strokeStyle = "#fff";
   ctx.stroke();
   ctx.restore();
@@ -356,9 +361,9 @@ const drawMiddleLine = (cvs, time) => {
   ctx.save();
   let x = ((time - left) / (right - left)) * cvs.width;
   ctx.beginPath();
-  ctx.moveTo(x, cvs.height - options.middle);
+  ctx.moveTo(x, cvs.height - options.middle*options.devicePixelRatio);
   ctx.lineTo(x, cvs.height);
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 2*options.devicePixelRatio;
   ctx.strokeStyle = "#fff";
   ctx.stroke();
   ctx.restore();
@@ -368,9 +373,9 @@ const drawLongLine = (cvs, time) => {
   ctx.save();
   let x = ((time - left) / (right - left)) * cvs.width;
   ctx.beginPath();
-  ctx.moveTo(x, cvs.height - options.long);
+  ctx.moveTo(x, cvs.height - options.long*options.devicePixelRatio);
   ctx.lineTo(x, cvs.height);
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 2*options.devicePixelRatio;
   ctx.strokeStyle = "#fff";
   ctx.stroke();
   ctx.beginPath();
@@ -380,14 +385,20 @@ const drawLongLine = (cvs, time) => {
   ctx.fillText(
     new Date(time).Format("yyyy-MM-dd HH:mm:ss.SSS"),
     x,
-    cvs.height - options.long
+    cvs.height - options.long*options.devicePixelRatio
   );
   ctx.restore();
 };
 const draw = () => {
   let cvs = timeShaft.value;
+  if(options.devicePixelRatio!==devicePixelRatio){
+    options.devicePixelRatio = devicePixelRatio
+    let box = cvs.getBoundingClientRect();
+    cvs.width = box.width*options.devicePixelRatio
+    cvs.height = box.height*options.devicePixelRatio
+  }
   let ctx = cvs.getContext("2d");
-  ctx.font = "14px Menlo,Consolas,Monaco";
+  ctx.font = `${14*options.devicePixelRatio}px Menlo,Consolas,Monaco`;
   let currentTime = Date.now()
   if(options.status == 'play'){
     let 𝛿 = (currentTime - time)
@@ -414,6 +425,7 @@ const draw = () => {
       item.toRight(item);
       item.right = true;
     }
+    ctx.lineWidth = 1*options.devicePixelRatio
     ctx.strokeStyle = "#0f0";
     ctx.beginPath();
     ctx.moveTo(x, 0);
@@ -430,7 +442,7 @@ const draw = () => {
   ctx.beginPath();
   ctx.moveTo(x, 0);
   ctx.lineTo(x, cvs.height);
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 2*options.devicePixelRatio;
   ctx.strokeStyle = "#f00";
   ctx.stroke();
   ctx.restore();
@@ -446,7 +458,7 @@ const draw = () => {
       let x2 =
         ((new Date(leftDate.getFullYear() + 1, 0, 1).getTime() - left) / (right - left)) *
         cvs.width;
-      if (x2 - x1 >= text_width + options.gap) {
+      if (x2 - x1 >= text_width + options.gap*options.devicePixelRatio) {
         for (let i = leftDate.getFullYear(); i <= rightDate.getFullYear() + 1; i++) {
           drawLongLine(cvs, new Date(i, 0, 1).getTime());
           for (let j = 1; j < 12; j++) {
@@ -470,7 +482,7 @@ const draw = () => {
       let x2 =
         ((new Date(leftDate.getFullYear(), 1, 1).getTime() - left) / (right - left)) *
         cvs.width;
-      if (x2 - x1 >= text_width + options.gap) {
+      if (x2 - x1 >= text_width + options.gap*options.devicePixelRatio) {
         let totalMonth =
           (rightDate.getFullYear() - leftDate.getFullYear()) * 12 +
           rightDate.getMonth() -
@@ -500,7 +512,7 @@ const draw = () => {
       options.underlineText = new Date(options.now).Format('HH')
       options.rightText = new Date(options.now).Format(':mm:ss.SSS')
       let delta = 24 * 60 * 60 * 1000;
-      if ((cvs.width / (right - left)) * delta >= text_width + options.gap) {
+      if ((cvs.width / (right - left)) * delta >= text_width + options.gap*options.devicePixelRatio) {
         for (
           let i = left - delta + 8 * 60 * 60 * 1000;
           i < right + delta + 8 * 60 * 60 * 1000;
@@ -529,7 +541,7 @@ const draw = () => {
       options.underlineText = new Date(options.now).Format('mm')
       options.rightText = new Date(options.now).Format(':ss.SSS')
       let delta = 60 * 60 * 1000;
-      if ((cvs.width / (right - left)) * delta >= text_width + options.gap) {
+      if ((cvs.width / (right - left)) * delta >= text_width + options.gap*options.devicePixelRatio) {
         for (
           let i = left - delta + 8 * 60 * 60 * 1000;
           i < right + delta + 8 * 60 * 60 * 1000;
@@ -558,7 +570,7 @@ const draw = () => {
       options.underlineText = new Date(options.now).Format('ss')
       options.rightText = new Date(options.now).Format('.SSS')
       let delta = 60 * 1000;
-      if ((cvs.width / (right - left)) * delta >= text_width + options.gap) {
+      if ((cvs.width / (right - left)) * delta >= text_width + options.gap*options.devicePixelRatio) {
         for (let i = left - delta; i < right + delta; i += delta) {
           drawLongLine(cvs, Math.round(i / delta) * delta);
           for (let j = 1; j < 60; j++) {
@@ -577,7 +589,7 @@ const draw = () => {
       options.underlineText = new Date(options.now).Format('ss')
       options.rightText = new Date(options.now).Format('.SSS')
       let delta = 1000;
-      if ((cvs.width / (right - left)) * delta >= text_width + options.gap) {
+      if ((cvs.width / (right - left)) * delta >= text_width + options.gap*options.devicePixelRatio) {
         for (let i = left - delta; i < right + delta; i += delta) {
           drawLongLine(cvs, Math.round(i / delta) * delta);
           for (let j = 1; j < 10; j++) {
@@ -596,7 +608,7 @@ const draw = () => {
       options.underlineText = new Date(options.now).Format('ss')
       options.rightText = new Date(options.now).Format('.SSS')
       let delta = 1;
-      if ((cvs.width / (right - left)) * delta >= text_width + options.gap) {
+      if ((cvs.width / (right - left)) * delta >= text_width + options.gap*options.devicePixelRatio) {
         for (let i = left - delta; i < right + delta; i += delta) {
           drawLongLine(cvs, Math.round(i / delta) * delta);
         }
