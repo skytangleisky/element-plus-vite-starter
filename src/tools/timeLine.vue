@@ -184,7 +184,7 @@ onMounted(() => {
       cvs.height = box.height*options.devicePixelRatio;
       draw();
       cancelAnimationFrame(aid);
-      requestAnimationFrame(loop);
+      aid = requestAnimationFrame(loop);
     }
   });
   observer.observe(cvs);
