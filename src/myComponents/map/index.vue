@@ -661,9 +661,7 @@ const limitScale = () => {
       obj.targetL = maxLevel;
     }
     // 下面7行代码是让地图不能缩放得太小，并且最小时地图不能因放大而模糊。
-    let tmpL = Math.ceil(
-      Math.log(Math.max(cvs.width, cvs.height) / tileWidth) / Math.log(2)
-    );
+    let tmpL = Math.ceil(Math.log2(Math.max(cvs.width, cvs.height) / tileWidth));
     if (obj.targetL < tmpL) {
       obj.targetL = tmpL;
     }
