@@ -383,7 +383,7 @@ const loadFunc = () => {
   if (import.meta.env.PROD) {
     timer = setInterval(() => task(), 4 * 60 * 1000);
   } else if (import.meta.env.DEV) {
-    timer = setInterval(() => task(), 3 * 1000);
+    timer = setInterval(() => task(), 3 * 60 * 1000);
   }
   let frameCounter = map.painter.frameCounter;
   mock = setInterval(() => {
