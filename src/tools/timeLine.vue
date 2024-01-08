@@ -121,11 +121,12 @@ onMounted(() => {
     // }
     let ctx = cvs.getContext('2d')
     let text_width = ctx.measureText("yyyy-MM-dd HH:mm:ss.SSS").width
-    console.log((text_width+options.gap*devicePixelRatio)*Math.pow(2,options.targetValue),options.value)
-    if (options.targetValue > 26) {
-      options.targetValue = 26;
-    } else if (options.targetValue < 0) {
-      options.targetValue = 0;
+    let min = Math.log2(1000 / (text_width + options.gap * devicePixelRatio) / 1.5)
+    let max = Math.log2(365 * 24 * 60 * 60 * 1000 / (text_width + options.gap * devicePixelRatio) / 1.5)
+    if (options.targetValue > max) {
+      options.targetValue = max;
+    } else if (options.targetValue < min) {
+      options.targetValue = min;
     }
     gsap.killTweensOf(options)
     gsap.to(options,{
