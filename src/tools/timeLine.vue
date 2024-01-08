@@ -347,7 +347,7 @@ const drawShortLine = (cvs, time) => {
   ctx.beginPath();
   ctx.moveTo(x, cvs.height - options.short*options.devicePixelRatio);
   ctx.lineTo(x, cvs.height);
-  ctx.lineWidth = 2*options.devicePixelRatio;
+  ctx.lineWidth = 2 * options.devicePixelRatio;
   ctx.strokeStyle = "#fff";
   ctx.stroke();
   ctx.restore();
@@ -359,7 +359,7 @@ const drawMiddleLine = (cvs, time) => {
   ctx.beginPath();
   ctx.moveTo(x, cvs.height - options.middle*options.devicePixelRatio);
   ctx.lineTo(x, cvs.height);
-  ctx.lineWidth = 2*options.devicePixelRatio;
+  ctx.lineWidth = 2 * options.devicePixelRatio;
   ctx.strokeStyle = "#fff";
   ctx.stroke();
   ctx.restore();
@@ -371,7 +371,7 @@ const drawLongLine = (cvs, time) => {
   ctx.beginPath();
   ctx.moveTo(x, cvs.height - options.long*options.devicePixelRatio);
   ctx.lineTo(x, cvs.height);
-  ctx.lineWidth = 2*options.devicePixelRatio;
+  ctx.lineWidth = 2 * options.devicePixelRatio;
   ctx.strokeStyle = "#fff";
   ctx.stroke();
   ctx.beginPath();
@@ -421,7 +421,7 @@ const draw = () => {
       item.toRight(item);
       item.right = true;
     }
-    ctx.lineWidth = 1*options.devicePixelRatio
+    ctx.lineWidth = 2 * options.devicePixelRatio
     ctx.strokeStyle = "#0f0";
     ctx.beginPath();
     ctx.moveTo(x, 0);
@@ -438,7 +438,7 @@ const draw = () => {
   ctx.beginPath();
   ctx.moveTo(x, 0);
   ctx.lineTo(x, cvs.height);
-  ctx.lineWidth = 2*options.devicePixelRatio;
+  ctx.lineWidth = 2 * options.devicePixelRatio;
   ctx.strokeStyle = "#f00";
   ctx.stroke();
   ctx.restore();
