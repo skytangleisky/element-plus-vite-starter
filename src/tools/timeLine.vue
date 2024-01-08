@@ -114,11 +114,6 @@ onMounted(() => {
   cvs.addEventListener("mousewheel", (evt) => {
     let deltaY = evt.wheelDeltaY / 120 / 10;
     options.targetValue -= deltaY;
-    // if (options.targetValue > 27) {
-    //   options.targetValue = 27;
-    // } else if (options.targetValue < -8) {
-    //   options.targetValue = -8;
-    // }
     let ctx = cvs.getContext('2d')
     let text_width = ctx.measureText("yyyy-MM-dd HH:mm:ss.SSS").width
     let min = Math.log2(1000 / (text_width + options.gap * devicePixelRatio) / 1.5)
