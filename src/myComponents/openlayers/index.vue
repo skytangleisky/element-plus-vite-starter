@@ -102,8 +102,18 @@
         </svg>
       </el-icon>
     </div>
-    <time-line class="absolute bottom-0"></time-line>
-    <graph class="absolute left-0 bottom-30px" v-model:args="graphArgs"></graph>
+    <time-line
+      :data="data"
+      :toLeft="change"
+      :toRight="change"
+      :toMiddle="change"
+      class="absolute bottom-0"
+    ></time-line>
+    <graph
+      v-if="DEV"
+      class="absolute left-0 bottom-30px"
+      v-model:args="graphArgs"
+    ></graph>
   </div>
 </template>
 <script setup>
@@ -112,10 +122,67 @@ import { getLngLat } from "~/myComponents/map/js/core.js";
 import { watch, ref, onMounted, onBeforeUnmount, reactive } from "vue";
 import { useBus } from "~/myComponents/bus";
 const bus = useBus();
+const DEV = import.meta.env.DEV;
 const graphArgs = reactive({
   fps: { value: 0, min: 0, max: 144, strokeStyle: "#ffffff88" },
   // memory: { value: 0, min: 0, max: 120, strokeStyle: "#0f0" },
 });
+const data = reactive([]);
+let preTime = 0;
+const change = (it) => {
+  if (it.time !== preTime) {
+    console.log("change");
+    //删除相关站点的风羽
+    for (let i = 0; i < points.data.features.length; i++) {
+      if (
+        it.radar_id == points.data.features[i].properties.radar_id &&
+        points.data.features[i].properties.type == "风羽"
+      ) {
+        points.data.features.splice(i--, 1);
+      }
+    }
+    for (let k in it.attributes) {
+      let tmp2 = it.attributes[k].slice().reverse();
+      tmp2.forEach((tmp3) => {
+        for (let k in tmp3) {
+          let item = tmp3[k];
+          let ll = getLngLat(it.lngLat[0], it.lngLat[1], item.north_a, Number(k));
+          // item.center_h_direction_abs = Math.random() * 360;
+          // item.center_h_speed = Math.random() * 60;
+          if (item.center_h_direction_abs != -1000 && item.center_h_speed != -1000) {
+            points.data.features.push({
+              type: "Feature",
+              properties: {
+                type: "风羽",
+                radar_id: it.radar_id,
+                风速: item.center_h_speed,
+                image: "feather" + getFeather(item.center_h_speed),
+                风向: item.center_h_direction_abs,
+              },
+              geometry: {
+                type: "Point",
+                coordinates: [ll.lng, ll.lat],
+              },
+            });
+          }
+        }
+        let source = map.getSource("point");
+        source && source.setData(points.data);
+      });
+    }
+    preTime = it.time;
+  }
+};
+const toLeft = () => {
+  console.log("toLeft");
+};
+const toMiddle = () => {
+  console.log("toMiddle");
+};
+const toRight = () => {
+  console.log("toRight");
+};
+
 watch(
   () => bus.test,
   (val) => {
@@ -284,8 +351,8 @@ const loadFunc = () => {
       "icon-size": 1,
       "icon-rotate": ["get", "风向"],
       "icon-rotation-alignment": "map",
-      "icon-allow-overlap": true,
-      "icon-ignore-placement": true,
+      "icon-allow-overlap": false,
+      "icon-ignore-placement": false,
       // "text-field": ["get", "风速"],
       // "text-font": ["simkai"],
       // "text-size": 14,
@@ -392,7 +459,6 @@ const loadFunc = () => {
     // graphArgs.memory.value = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
     // graphArgs.memory.max = Math.round(performance.memory.jsHeapSizeLimit / 1024 / 1024);
   }, 1000);
-
   if (setting.checks[0].select)
     station.查询雷达列表接口({ user_id: route.query.user_id });
   if (setting.checks[1].select)
@@ -508,17 +574,9 @@ watch(
   () => bus.avgWindData,
   (avgWindData) => {
     if (avgWindData) {
+      data.length = 0;
       avgWindData.forEach((v) => {
         for (let radar_id in v) {
-          //删除相关站点的风羽
-          for (let i = 0; i < points.data.features.length; i++) {
-            if (
-              radar_id == points.data.features[i].properties.radar_id &&
-              points.data.features[i].properties.type == "风羽"
-            ) {
-              points.data.features.splice(i--, 1);
-            }
-          }
           //计算风羽的位置并添加
           for (let i = 0; i < points.data.features.length; i++) {
             if (
@@ -527,37 +585,17 @@ watch(
             ) {
               const lngLat = points.data.features[i].geometry.coordinates;
               let tmp = v[radar_id];
-              for (let k in tmp[0]) {
-                let tmp2 = tmp[0][k].slice().reverse();
-                tmp2.forEach((tmp3) => {
-                  for (let k in tmp3) {
-                    let item = tmp3[k];
-                    let ll = getLngLat(lngLat[0], lngLat[1], item.north_a, Number(k));
-                    // item.center_h_direction_abs = Math.random() * 360;
-                    // item.center_h_speed = Math.random() * 60;
-                    if (
-                      item.center_h_direction_abs != -1000 &&
-                      item.center_h_speed != -1000
-                    ) {
-                      points.data.features.push({
-                        type: "Feature",
-                        properties: {
-                          type: "风羽",
-                          radar_id: radar_id,
-                          风速: item.center_h_speed,
-                          image: "feather" + getFeather(item.center_h_speed),
-                          风向: item.center_h_direction_abs,
-                        },
-                        geometry: {
-                          type: "Point",
-                          coordinates: [ll.lng, ll.lat],
-                        },
-                      });
-                    }
-                  }
-                  let source = map.getSource("point");
-                  source && source.setData(points.data);
-                });
+              for (let key in tmp) {
+                for (let k in tmp[key]) {
+                  data.push({
+                    position: "left",
+                    time: Date.parse(k),
+                    attributes: tmp[key],
+                    lngLat,
+                    radar_id,
+                  });
+                  data.sort((a, b) => a.time - b.time);
+                }
               }
             }
           }

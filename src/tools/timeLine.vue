@@ -57,22 +57,35 @@
     />
     <span @click="speed" style="color: white">x{{ Math.pow(2, options.times) }}</span>
     <graph
+      v-if="DEV"
       :args="graphArgs"
       style="position: absolute; right: 30px; bottom: 100%"
     ></graph>
   </div>
 </template>
-<script setup>
-import {gsap} from 'gsap'
+<script lang="ts" setup>
+import { gsap } from "gsap";
 import pauseSvg from "~/assets/pause.svg?raw";
 import playSvg from "~/assets/play.svg?raw";
 import nextSvg from "~/assets/next.svg?raw";
 import rightSvg from "~/assets/right.svg?raw";
-import { useBus } from "~/myComponents/bus";
 import graph from "./graph.vue";
-const bus = useBus();
 import { onMounted, onBeforeUnmount, ref, reactive } from "vue";
-let data = [];
+const DEV = ref(import.meta.env.DEV);
+const props = withDefaults(
+  defineProps<{
+    data: Array<{ time: number; position: "left" | "right" | "middle" }>;
+    toLeft: Function | undefined;
+    toRight: Function | undefined;
+    toMiddle: Function | undefined;
+  }>(),
+  {
+    data: () => new Array<{ time: number; position: "left" }>(),
+    toLeft: undefined,
+    toRight: undefined,
+    toMiddle: undefined,
+  }
+);
 const graphArgs = reactive({
   fps: {
     min: 0,
@@ -90,44 +103,63 @@ let options = reactive({
   long: 8, //长刻度
   bottom: 8, //文字到底部距离
   status: "play", //play|pause
-  strScaleType: 'milliseconds',
-  leftText:"L",
-  underlineText:"M",
-  rightText:"R",
-  now:Date.now(),
-  targetNow:Date.now(),
-  value:10,
-  targetValue:10,
+  strScaleType: "milliseconds",
+  leftText: "L",
+  underlineText: "M",
+  rightText: "R",
+  now: Date.now(),
+  targetNow: Date.now(),
+  value: 13,
+  targetValue: 10,
   devicePixelRatio,
 });
-const arr = ["milliseconds", "seconds", "minutes", "hours", "day", "month", "year" ];
+const arr = ["milliseconds", "seconds", "minutes", "hours", "day", "month", "year"];
 let left = 0;
 let right = 0;
 let rateX = 0.5;
 let timer = 0;
 let timeShaft = ref(undefined);
 let leftMouseDown = false;
-let aid;
-let observer;
+let aid: number;
+let observer: ResizeObserver;
 onMounted(() => {
   let cvs = timeShaft.value;
+  let ctx = cvs.getContext("2d");
+  ctx.font = `${14 * options.devicePixelRatio}px Menlo,Consolas,Monaco`;
+  let text_width = ctx.measureText("yyyy-MM-dd HH:mm:ss.SSS").width;
+  options.value = Math.log2(
+    (60 * 60 * 1000) / (text_width + options.gap * devicePixelRatio) / 1.5
+  );
+  let min = Math.log2(1000 / (text_width + options.gap * devicePixelRatio) / 1.5);
+  let max = Math.log2(
+    (365 * 24 * 60 * 60 * 1000) / (text_width + options.gap * devicePixelRatio) / 1.5
+  );
+  if (options.value < min) {
+    options.value = min;
+  }
+  if (options.value > max) {
+    options.value = max;
+  }
+
   cvs.addEventListener("mousewheel", (evt) => {
     let deltaY = evt.wheelDeltaY / 120 / 10;
     options.targetValue -= deltaY;
-    let ctx = cvs.getContext('2d')
-    let text_width = ctx.measureText("yyyy-MM-dd HH:mm:ss.SSS").width
-    let min = Math.log2(1000 / (text_width + options.gap * devicePixelRatio) / 1.5)
-    let max = Math.log2(365 * 24 * 60 * 60 * 1000 / (text_width + options.gap * devicePixelRatio) / 1.5)
+    let ctx = cvs.getContext("2d");
+    let text_width = ctx.measureText("yyyy-MM-dd HH:mm:ss.SSS").width;
+    let min = Math.log2(1000 / (text_width + options.gap * devicePixelRatio) / 1.5);
+    let max = Math.log2(
+      (365 * 24 * 60 * 60 * 1000) / (text_width + options.gap * devicePixelRatio) / 1.5
+    );
     if (options.targetValue > max) {
       options.targetValue = max;
     } else if (options.targetValue < min) {
       options.targetValue = min;
     }
-    gsap.killTweensOf(options)
-    gsap.to(options,{
-      duration:1,
-      value:options.targetValue
-    })
+    gsap.killTweensOf(options);
+    gsap.to(options, {
+      duration: 1,
+      value: options.targetValue,
+    });
   });
   cvs.addEventListener("mousedown", (evt) => {
     if (evt.which == 1) {
@@ -142,42 +174,36 @@ onMounted(() => {
   });
   document.addEventListener("mousemove", (evt) => {
     if (leftMouseDown) {
-      options.targetNow-=evt.movementX*Math.pow(2,options.value)
-      gsap.killTweensOf(options)
-      gsap.to(options,{
-        duration:1,
-        now:options.targetNow,
-        onUpdate:()=>{
-          if(options.now>Date.now()){
-            leftMouseDown = false
-            gsap.killTweensOf(options)
-            options.targetNow = Date.now()
+      options.targetNow -= evt.movementX * Math.pow(2, options.value);
+      gsap.killTweensOf(options);
+      gsap.to(options, {
+        duration: 1,
+        now: options.targetNow,
+        onUpdate: () => {
+          if (options.now > Date.now()) {
+            leftMouseDown = false;
+            gsap.killTweensOf(options);
+            options.targetNow = Date.now();
             play();
           }
-        }
-      })
+        },
+      });
     }
   });
-  for (let i = 0; i < 400; i++) {
-    let time = options.now + 1000 * i;
-    data.push({
-      time,
-      right: time >= options.now,
-      toLeft: (item) => {
-        // console.log("到了左边", item.time);
-      },
-      toRight: (item) => {
-        // console.log("到了右边", item.time);
-      },
-    });
-  }
+  // for (let i = 0; i < 400; i++) {
+  //   let time = options.now + 1000 * i;
+  //   props.data.push({
+  //     time,
+  //     right: time >= options.now
+  //   });
+  // }
   observer = new ResizeObserver(() => {
     let box = cvs.getBoundingClientRect();
     if (box.width == 0 || box.height == 0) {
       cancelAnimationFrame(aid);
     } else {
-      cvs.width = box.width*options.devicePixelRatio;
-      cvs.height = box.height*options.devicePixelRatio;
+      cvs.width = box.width * options.devicePixelRatio;
+      cvs.height = box.height * options.devicePixelRatio;
       draw();
       cancelAnimationFrame(aid);
       aid = requestAnimationFrame(loop);
@@ -198,154 +224,162 @@ const loop = () => {
 };
 const speed = () => {
   options.times++;
-  if (options.times > 3) {
+  if (options.times > 8) {
     options.times = -3;
   }
 };
 const play = () => {
-  time = Date.now()
+  time = Date.now();
   options.status = "play";
 };
 const pause = () => {
   options.status = "pause";
 };
 const leftClick = () => {
-  pause()
-  let date = new Date(options.now)
-  let year = date.getFullYear()
-  let month = date.getMonth()
-  let day = date.getDate()
-  let hours = date.getHours()
-  let minutes = date.getMinutes()
-  let seconds = date.getSeconds()
-  if(options.strScaleType=='milliseconds'){
-    if(options.targetNow>Math.floor(options.targetNow)){
-      options.targetNow = Math.floor(options.targetNow)
-    }else{
-      options.targetNow = Math.floor(options.targetNow)-1
+  pause();
+  let date = new Date(options.now);
+  let year = date.getFullYear();
+  let month = date.getMonth();
+  let day = date.getDate();
+  let hours = date.getHours();
+  let minutes = date.getMinutes();
+  let seconds = date.getSeconds();
+  if (options.strScaleType == "milliseconds") {
+    if (options.targetNow > Math.floor(options.targetNow)) {
+      options.targetNow = Math.floor(options.targetNow);
+    } else {
+      options.targetNow = Math.floor(options.targetNow) - 1;
     }
-  }else if(options.strScaleType=='seconds'){
-    if(options.targetNow>Math.floor(options.targetNow/100)*100){
-      options.targetNow = Math.floor(options.targetNow/100)*100
-    }else{
-      options.targetNow= Math.floor(options.targetNow/100)*100 - 100
+  } else if (options.strScaleType == "seconds") {
+    if (options.targetNow > Math.floor(options.targetNow / 100) * 100) {
+      options.targetNow = Math.floor(options.targetNow / 100) * 100;
+    } else {
+      options.targetNow = Math.floor(options.targetNow / 100) * 100 - 100;
     }
-  }else if(options.strScaleType=='minutes'){
-    if(options.targetNow>new Date(year,month,day,hours,minutes,seconds).getTime()){
-      options.targetNow = new Date(year,month,day,hours,minutes,seconds).getTime()
-    }else{
-      options.targetNow = new Date(year,month,day,hours,minutes,seconds-1).getTime()
+  } else if (options.strScaleType == "minutes") {
+    if (
+      options.targetNow > new Date(year, month, day, hours, minutes, seconds).getTime()
+    ) {
+      options.targetNow = new Date(year, month, day, hours, minutes, seconds).getTime();
+    } else {
+      options.targetNow = new Date(
+        year,
+        month,
+        day,
+        hours,
+        minutes,
+        seconds - 1
+      ).getTime();
     }
-  }else if(options.strScaleType=='hours'){
-    if(options.targetNow>new Date(year,month,day,hours,minutes,0).getTime()){
-      options.targetNow = new Date(year,month,day,hours,minutes,0).getTime()
-    }else{
-      options.targetNow = new Date(year,month,day,hours,minutes-1,0).getTime()
+  } else if (options.strScaleType == "hours") {
+    if (options.targetNow > new Date(year, month, day, hours, minutes, 0).getTime()) {
+      options.targetNow = new Date(year, month, day, hours, minutes, 0).getTime();
+    } else {
+      options.targetNow = new Date(year, month, day, hours, minutes - 1, 0).getTime();
     }
-  }else if(options.strScaleType=='day'){
-    if(options.targetNow>new Date(year,month,day,hours,0,0).getTime()){
-      options.targetNow = new Date(year,month,day,hours,0,0).getTime()
-    }else{
-      options.targetNow = new Date(year,month,day,hours-1,0,0).getTime()
+  } else if (options.strScaleType == "day") {
+    if (options.targetNow > new Date(year, month, day, hours, 0, 0).getTime()) {
+      options.targetNow = new Date(year, month, day, hours, 0, 0).getTime();
+    } else {
+      options.targetNow = new Date(year, month, day, hours - 1, 0, 0).getTime();
     }
-  }else if(options.strScaleType=='month'){
-    if(options.targetNow>new Date(year,month,day).getTime()){
-      options.targetNow = new Date(year,month,day).getTime()
-    }else{
-      options.targetNow = new Date(year,month,day-1).getTime()
+  } else if (options.strScaleType == "month") {
+    if (options.targetNow > new Date(year, month, day).getTime()) {
+      options.targetNow = new Date(year, month, day).getTime();
+    } else {
+      options.targetNow = new Date(year, month, day - 1).getTime();
     }
-  }else if(options.strScaleType=='year'){
-    if(options.targetNow>new Date(year,month,1).getTime()){
-      options.targetNow=new Date(year,month,1).getTime()
-    }else{
-      options.targetNow = new Date(year,month-1,1).getTime()
+  } else if (options.strScaleType == "year") {
+    if (options.targetNow > new Date(year, month, 1).getTime()) {
+      options.targetNow = new Date(year, month, 1).getTime();
+    } else {
+      options.targetNow = new Date(year, month - 1, 1).getTime();
     }
   }
-  gsap.killTweensOf(options)
-  gsap.to(options,{
-    now:options.targetNow,
-    duration:1,
-  })
-}
+  gsap.killTweensOf(options);
+  gsap.to(options, {
+    now: options.targetNow,
+    duration: 1,
+  });
+};
 const rightClick = () => {
-  pause()
-  let date = new Date(options.targetNow)
-  let year = date.getFullYear()
-  let month = date.getMonth()
-  let day = date.getDate()
-  let hours = date.getHours()
-  let minutes = date.getMinutes()
-  let seconds = date.getSeconds()
-  if(options.strScaleType=='milliseconds'){
-    options.targetNow = Math.floor(options.targetNow) + 1
-  }else if(options.strScaleType=='seconds'){
-    options.targetNow= Math.floor((options.targetNow+100)/100)*100
-  }else if(options.strScaleType=='minutes'){
-    options.targetNow = new Date(year,month,day,hours,minutes,seconds+1).getTime()
-  }else if(options.strScaleType=='hours'){
-    options.targetNow = new Date(year,month,day,hours,minutes+1,0).getTime()
-  }else if(options.strScaleType=='day'){
-    options.targetNow = new Date(year,month,day,hours+1,0,0).getTime()
-  }else if(options.strScaleType=='month'){
-    options.targetNow = new Date(year,month,day+1).getTime()
-  }else if(options.strScaleType=='year'){
-    options.targetNow = new Date(year,month+1,1).getTime()
+  pause();
+  let date = new Date(options.targetNow);
+  let year = date.getFullYear();
+  let month = date.getMonth();
+  let day = date.getDate();
+  let hours = date.getHours();
+  let minutes = date.getMinutes();
+  let seconds = date.getSeconds();
+  if (options.strScaleType == "milliseconds") {
+    options.targetNow = Math.floor(options.targetNow) + 1;
+  } else if (options.strScaleType == "seconds") {
+    options.targetNow = Math.floor((options.targetNow + 100) / 100) * 100;
+  } else if (options.strScaleType == "minutes") {
+    options.targetNow = new Date(year, month, day, hours, minutes, seconds + 1).getTime();
+  } else if (options.strScaleType == "hours") {
+    options.targetNow = new Date(year, month, day, hours, minutes + 1, 0).getTime();
+  } else if (options.strScaleType == "day") {
+    options.targetNow = new Date(year, month, day, hours + 1, 0, 0).getTime();
+  } else if (options.strScaleType == "month") {
+    options.targetNow = new Date(year, month, day + 1).getTime();
+  } else if (options.strScaleType == "year") {
+    options.targetNow = new Date(year, month + 1, 1).getTime();
   }
-  gsap.killTweensOf(options)
-  gsap.to(options,{
-    now:options.targetNow,
-    duration:1,
-    onUpdate:()=>{
-      if(options.now>Date.now()){
-        gsap.killTweensOf(options)
-        options.targetNow = Date.now()
-        play()
+  gsap.killTweensOf(options);
+  gsap.to(options, {
+    now: options.targetNow,
+    duration: 1,
+    onUpdate: () => {
+      if (options.now > Date.now()) {
+        gsap.killTweensOf(options);
+        options.targetNow = Date.now();
+        play();
       }
-    }
-  })
-}
+    },
+  });
+};
 const prev = () => {
   pause();
-  for(let i=data.length-1;i>=0;i--){
-    if(data[i].time<options.targetNow){
-      options.targetNow = data[i].time
+  for (let i = props.data.length - 1; i >= 0; i--) {
+    if (props.data[i].time < options.targetNow) {
+      options.targetNow = props.data[i].time;
       break;
     }
   }
-  gsap.killTweensOf(options)
-  gsap.to(options,{
-    now:options.targetNow,
-    duration:1,
-  })
+  gsap.killTweensOf(options);
+  gsap.to(options, {
+    now: options.targetNow,
+    duration: 1,
+  });
 };
 const next = () => {
-  bus.test = time;
   pause();
-  for(let i=0;i<data.length;i++){
-    if(data[i].time>options.targetNow){
-      options.targetNow = data[i].time
+  for (let i = 0; i < props.data.length; i++) {
+    if (props.data[i].time > options.targetNow) {
+      options.targetNow = props.data[i].time;
       break;
     }
   }
-  gsap.killTweensOf(options)
-  gsap.to(options,{
-    now:options.targetNow,
-    duration:1,
-    onUpdate:()=>{
-      if(options.now>Date.now()){
-        gsap.killTweensOf(options)
-        options.targetNow = Date.now()
-        play()
+  gsap.killTweensOf(options);
+  gsap.to(options, {
+    now: options.targetNow,
+    duration: 1,
+    onUpdate: () => {
+      if (options.now > Date.now()) {
+        gsap.killTweensOf(options);
+        options.targetNow = Date.now();
+        play();
       }
-    }
-  })
+    },
+  });
 };
 const drawShortLine = (cvs, time) => {
   let ctx = cvs.getContext("2d");
   ctx.save();
   let x = ((time - left) / (right - left)) * cvs.width;
   ctx.beginPath();
-  ctx.moveTo(x, cvs.height - options.short*options.devicePixelRatio);
+  ctx.moveTo(x, cvs.height - options.short * options.devicePixelRatio);
   ctx.lineTo(x, cvs.height);
   ctx.lineWidth = 2 * options.devicePixelRatio;
   ctx.strokeStyle = "#fff";
@@ -357,7 +391,7 @@ const drawMiddleLine = (cvs, time) => {
   ctx.save();
   let x = ((time - left) / (right - left)) * cvs.width;
   ctx.beginPath();
-  ctx.moveTo(x, cvs.height - options.middle*options.devicePixelRatio);
+  ctx.moveTo(x, cvs.height - options.middle * options.devicePixelRatio);
   ctx.lineTo(x, cvs.height);
   ctx.lineWidth = 2 * options.devicePixelRatio;
   ctx.strokeStyle = "#fff";
@@ -369,7 +403,7 @@ const drawLongLine = (cvs, time) => {
   ctx.save();
   let x = ((time - left) / (right - left)) * cvs.width;
   ctx.beginPath();
-  ctx.moveTo(x, cvs.height - options.long*options.devicePixelRatio);
+  ctx.moveTo(x, cvs.height - options.long * options.devicePixelRatio);
   ctx.lineTo(x, cvs.height);
   ctx.lineWidth = 2 * options.devicePixelRatio;
   ctx.strokeStyle = "#fff";
@@ -381,28 +415,28 @@ const drawLongLine = (cvs, time) => {
   ctx.fillText(
     new Date(time).Format("yyyy-MM-dd HH:mm:ss.SSS"),
     x,
-    cvs.height - options.long*options.devicePixelRatio
+    cvs.height - options.long * options.devicePixelRatio
   );
   ctx.restore();
 };
 const draw = () => {
   let cvs = timeShaft.value;
-  if(options.devicePixelRatio!==devicePixelRatio){
-    options.devicePixelRatio = devicePixelRatio
+  if (options.devicePixelRatio !== devicePixelRatio) {
+    options.devicePixelRatio = devicePixelRatio;
     let box = cvs.getBoundingClientRect();
-    cvs.width = box.width*options.devicePixelRatio
-    cvs.height = box.height*options.devicePixelRatio
+    cvs.width = box.width * options.devicePixelRatio;
+    cvs.height = box.height * options.devicePixelRatio;
   }
   let ctx = cvs.getContext("2d");
-  ctx.font = `${14*options.devicePixelRatio}px Menlo,Consolas,Monaco`;
-  let currentTime = Date.now()
-  if(options.status == 'play'){
-    let 𝛿 = (currentTime - time)
-    options.now += 𝛿*Math.pow(2,options.times)
-    options.targetNow = options.now
-    if(options.now>currentTime){
-      options.now = currentTime
-      options.times = 0
+  ctx.font = `${14 * options.devicePixelRatio}px Menlo,Consolas,Monaco`;
+  let currentTime = Date.now();
+  if (options.status == "play") {
+    let 𝛿 = currentTime - time;
+    options.now += 𝛿 * Math.pow(2, options.times);
+    options.targetNow = options.now;
+    if (options.now > currentTime) {
+      options.now = currentTime;
+      options.times = 0;
     }
   }
   time = currentTime;
@@ -411,17 +445,22 @@ const draw = () => {
   let text_width = ctx.measureText("yyyy-MM-dd HH:mm:ss.SSS").width;
   left = options.now - cvs.width * Math.pow(2, options.value) * rateX;
   right = options.now + cvs.width * Math.pow(2, options.value) * (1 - rateX);
-  for (let i = 0; i < data.length; i++) {
-    let item = data[i];
+  for (let i = 0; i < props.data.length; i++) {
+    let item = props.data[i];
     let x = ((item.time - left) / (right - left)) * cvs.width;
-    if (item.time < options.now && item.right) {
-      item.toLeft(item);
-      item.right = false;
-    } else if (item.time > options.now && !item.right) {
-      item.toRight(item);
-      item.right = true;
+    if (item.time < options.now && item.position !== "left") {
+      props.toLeft && props.toLeft(item);
+      item.position = "left";
     }
-    ctx.lineWidth = 2 * options.devicePixelRatio
+    if (item.time > options.now && item.position !== "right") {
+      props.toRight && props.toRight(item);
+      item.position = "right";
+    }
+    if (item.time === options.now && item.position !== "middle") {
+      props.toMiddle && props.toMiddle(item);
+      item.position = "middle";
+    }
+    ctx.lineWidth = 2 * options.devicePixelRatio;
     ctx.strokeStyle = "#0f0";
     ctx.beginPath();
     ctx.moveTo(x, 0);
@@ -432,8 +471,8 @@ const draw = () => {
   let leftDate = new Date(Math.round(left));
   let rightDate = new Date(Math.round(right));
   let x = ((time - left) / (right - left)) * cvs.width;
-  ctx.fillStyle = '#00000044'
-  ctx.fillRect(x,0,cvs.width-x,cvs.height)
+  ctx.fillStyle = "#00000044";
+  ctx.fillRect(x, 0, cvs.width - x, cvs.height);
   x = ((options.now - left) / (right - left)) * cvs.width;
   ctx.beginPath();
   ctx.moveTo(x, 0);
@@ -444,17 +483,17 @@ const draw = () => {
   ctx.restore();
   for (let index = 0; index < arr.length; index++) {
     if (arr[index] === "year") {
-      options.strScaleType = "year"
-      options.leftText = new Date(options.now).Format('yyyy-')
-      options.underlineText = new Date(options.now).Format('MM')
-      options.rightText = new Date(options.now).Format('-dd HH:mm:ss.SSS')
+      options.strScaleType = "year";
+      options.leftText = new Date(options.now).Format("yyyy-");
+      options.underlineText = new Date(options.now).Format("MM");
+      options.rightText = new Date(options.now).Format("-dd HH:mm:ss.SSS");
       let x1 =
         ((new Date(leftDate.getFullYear(), 0, 1).getTime() - left) / (right - left)) *
         cvs.width;
       let x2 =
         ((new Date(leftDate.getFullYear() + 1, 0, 1).getTime() - left) / (right - left)) *
         cvs.width;
-      if (x2 - x1 >= text_width + options.gap*options.devicePixelRatio) {
+      if (x2 - x1 >= text_width + options.gap * options.devicePixelRatio) {
         for (let i = leftDate.getFullYear(); i <= rightDate.getFullYear() + 1; i++) {
           drawLongLine(cvs, new Date(i, 0, 1).getTime());
           for (let j = 1; j < 12; j++) {
@@ -468,17 +507,17 @@ const draw = () => {
         break;
       }
     } else if (arr[index] === "month") {
-      options.strScaleType = "month"
-      options.leftText = new Date(options.now).Format('yyyy-MM-')
-      options.underlineText = new Date(options.now).Format('dd')
-      options.rightText = new Date(options.now).Format('&nbsp;HH:mm:ss.SSS')
+      options.strScaleType = "month";
+      options.leftText = new Date(options.now).Format("yyyy-MM-");
+      options.underlineText = new Date(options.now).Format("dd");
+      options.rightText = new Date(options.now).Format("&nbsp;HH:mm:ss.SSS");
       let x1 =
         ((new Date(leftDate.getFullYear(), 0, 1).getTime() - left) / (right - left)) *
         cvs.width;
       let x2 =
         ((new Date(leftDate.getFullYear(), 1, 1).getTime() - left) / (right - left)) *
         cvs.width;
-      if (x2 - x1 >= text_width + options.gap*options.devicePixelRatio) {
+      if (x2 - x1 >= text_width + options.gap * options.devicePixelRatio) {
         let totalMonth =
           (rightDate.getFullYear() - leftDate.getFullYear()) * 12 +
           rightDate.getMonth() -
@@ -503,12 +542,15 @@ const draw = () => {
         break;
       }
     } else if (arr[index] === "day") {
-      options.strScaleType = "day"
-      options.leftText = new Date(options.now).Format('yyyy-MM-dd&nbsp;')
-      options.underlineText = new Date(options.now).Format('HH')
-      options.rightText = new Date(options.now).Format(':mm:ss.SSS')
+      options.strScaleType = "day";
+      options.leftText = new Date(options.now).Format("yyyy-MM-dd&nbsp;");
+      options.underlineText = new Date(options.now).Format("HH");
+      options.rightText = new Date(options.now).Format(":mm:ss.SSS");
       let delta = 24 * 60 * 60 * 1000;
-      if ((cvs.width / (right - left)) * delta >= text_width + options.gap*options.devicePixelRatio) {
+      if (
+        (cvs.width / (right - left)) * delta >=
+        text_width + options.gap * options.devicePixelRatio
+      ) {
         for (
           let i = left - delta + 8 * 60 * 60 * 1000;
           i < right + delta + 8 * 60 * 60 * 1000;
@@ -532,12 +574,15 @@ const draw = () => {
         break;
       }
     } else if (arr[index] === "hours") {
-      options.strScaleType = "hours"
-      options.leftText = new Date(options.now).Format('yyyy-MM-dd HH:')
-      options.underlineText = new Date(options.now).Format('mm')
-      options.rightText = new Date(options.now).Format(':ss.SSS')
+      options.strScaleType = "hours";
+      options.leftText = new Date(options.now).Format("yyyy-MM-dd HH:");
+      options.underlineText = new Date(options.now).Format("mm");
+      options.rightText = new Date(options.now).Format(":ss.SSS");
       let delta = 60 * 60 * 1000;
-      if ((cvs.width / (right - left)) * delta >= text_width + options.gap*options.devicePixelRatio) {
+      if (
+        (cvs.width / (right - left)) * delta >=
+        text_width + options.gap * options.devicePixelRatio
+      ) {
         for (
           let i = left - delta + 8 * 60 * 60 * 1000;
           i < right + delta + 8 * 60 * 60 * 1000;
@@ -561,12 +606,15 @@ const draw = () => {
         break;
       }
     } else if (arr[index] === "minutes") {
-      options.strScaleType = "minutes"
-      options.leftText = new Date(options.now).Format('yyyy-MM-dd HH:mm:')
-      options.underlineText = new Date(options.now).Format('ss')
-      options.rightText = new Date(options.now).Format('.SSS')
+      options.strScaleType = "minutes";
+      options.leftText = new Date(options.now).Format("yyyy-MM-dd HH:mm:");
+      options.underlineText = new Date(options.now).Format("ss");
+      options.rightText = new Date(options.now).Format(".SSS");
       let delta = 60 * 1000;
-      if ((cvs.width / (right - left)) * delta >= text_width + options.gap*options.devicePixelRatio) {
+      if (
+        (cvs.width / (right - left)) * delta >=
+        text_width + options.gap * options.devicePixelRatio
+      ) {
         for (let i = left - delta; i < right + delta; i += delta) {
           drawLongLine(cvs, Math.round(i / delta) * delta);
           for (let j = 1; j < 60; j++) {
@@ -580,12 +628,15 @@ const draw = () => {
         break;
       }
     } else if (arr[index] === "seconds") {
-      options.strScaleType = "seconds"
-      options.leftText = new Date(options.now).Format('yyyy-MM-dd HH:mm:')
-      options.underlineText = new Date(options.now).Format('ss')
-      options.rightText = new Date(options.now).Format('.SSS')
+      options.strScaleType = "seconds";
+      options.leftText = new Date(options.now).Format("yyyy-MM-dd HH:mm:");
+      options.underlineText = new Date(options.now).Format("ss");
+      options.rightText = new Date(options.now).Format(".SSS");
       let delta = 1000;
-      if ((cvs.width / (right - left)) * delta >= text_width + options.gap*options.devicePixelRatio) {
+      if (
+        (cvs.width / (right - left)) * delta >=
+        text_width + options.gap * options.devicePixelRatio
+      ) {
         for (let i = left - delta; i < right + delta; i += delta) {
           drawLongLine(cvs, Math.round(i / delta) * delta);
           for (let j = 1; j < 10; j++) {
@@ -599,12 +650,15 @@ const draw = () => {
         break;
       }
     } else if (arr[index] === "milliseconds") {
-      options.strScaleType = "milliseconds"
-      options.leftText = new Date(options.now).Format('yyyy-MM-dd HH:mm:')
-      options.underlineText = new Date(options.now).Format('ss')
-      options.rightText = new Date(options.now).Format('.SSS')
+      options.strScaleType = "milliseconds";
+      options.leftText = new Date(options.now).Format("yyyy-MM-dd HH:mm:");
+      options.underlineText = new Date(options.now).Format("ss");
+      options.rightText = new Date(options.now).Format(".SSS");
       let delta = 1;
-      if ((cvs.width / (right - left)) * delta >= text_width + options.gap*options.devicePixelRatio) {
+      if (
+        (cvs.width / (right - left)) * delta >=
+        text_width + options.gap * options.devicePixelRatio
+      ) {
         for (let i = left - delta; i < right + delta; i += delta) {
           drawLongLine(cvs, Math.round(i / delta) * delta);
         }
