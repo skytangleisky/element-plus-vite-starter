@@ -70,7 +70,8 @@ import playSvg from "~/assets/play.svg?raw";
 import nextSvg from "~/assets/next.svg?raw";
 import rightSvg from "~/assets/right.svg?raw";
 import graph from "./graph.vue";
-import { onMounted, onBeforeUnmount, ref, reactive } from "vue";
+import { onMounted, onBeforeUnmount, ref, reactive, watch } from "vue";
+const emit = defineEmits(["update:now"]);
 const DEV = ref(import.meta.env.DEV);
 const props = withDefaults(
   defineProps<{
@@ -78,12 +79,14 @@ const props = withDefaults(
     toLeft: Function | undefined;
     toRight: Function | undefined;
     toMiddle: Function | undefined;
+    now: number;
   }>(),
   {
     data: () => new Array<{ time: number; position: "left" }>(),
     toLeft: undefined,
     toRight: undefined,
     toMiddle: undefined,
+    now: 0,
   }
 );
 const graphArgs = reactive({
@@ -107,12 +110,18 @@ let options = reactive({
   leftText: "L",
   underlineText: "M",
   rightText: "R",
-  now: Date.now(),
-  targetNow: Date.now(),
+  now: props.now,
+  targetNow: props.now,
   value: 13,
   targetValue: 10,
   devicePixelRatio,
 });
+watch(
+  () => options.now,
+  (newVal) => {
+    emit("update:now", newVal);
+  }
+);
 const arr = ["milliseconds", "seconds", "minutes", "hours", "day", "month", "year"];
 let left = 0;
 let right = 0;
@@ -140,7 +149,7 @@ onMounted(() => {
   if (options.value > max) {
     options.value = max;
   }
-
+  options.targetValue = options.value;
   cvs.addEventListener("mousewheel", (evt) => {
     let deltaY = evt.wheelDeltaY / 120 / 10;
     options.targetValue -= deltaY;
@@ -224,7 +233,7 @@ const loop = () => {
 };
 const speed = () => {
   options.times++;
-  if (options.times > 8) {
+  if (options.times > 16) {
     options.times = -3;
   }
 };

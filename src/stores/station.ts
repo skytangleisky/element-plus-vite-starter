@@ -122,9 +122,9 @@ export const useStationStore = defineStore({
         })
       })
     },
-    查询平均风数据接口(query:any){
+    查询平均风数据接口(query:any,time:string){
       return new Promise((resolve,reject)=>{
-        查询平均风数据接口(query).then((res:any)=>{
+        查询平均风数据接口(query,time).then((res:any)=>{
           resolve(res)
         }).catch((e)=>{
           reject(e)

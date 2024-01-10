@@ -107,6 +107,7 @@
       :toLeft="change"
       :toRight="change"
       :toMiddle="change"
+      v-model:now="now"
       class="absolute bottom-0"
     ></time-line>
     <graph
@@ -126,6 +127,25 @@ const DEV = import.meta.env.DEV;
 const graphArgs = reactive({
   fps: { value: 0, min: 0, max: 144, strokeStyle: "#ffffff88" },
   // memory: { value: 0, min: 0, max: 120, strokeStyle: "#0f0" },
+});
+const now = ref(Date.now());
+let prevDate = new Date().Format("yyyy-MM-dd");
+watch(now, (newVal) => {
+  let strDate = new Date(newVal).Format("yyyyMMdd");
+  if (strDate !== prevDate) {
+    console.log(strDate);
+    station
+      .查询平均风数据接口(
+        {
+          user_id: route.query.user_id,
+        },
+        strDate
+      )
+      .then((res) => {
+        bus.avgWindData = res.data.data;
+      });
+    prevDate = strDate;
+  }
 });
 const data = reactive([]);
 let preTime = 0;
@@ -271,13 +291,18 @@ const moveFunc = () => {
   setting.openlayers.center = [center.lng, center.lat];
 };
 const task = () => {
-  station
-    .查询平均风数据接口({
-      user_id: route.query.user_id,
-    })
-    .then((res) => {
-      bus.avgWindData = res.data.data;
-    });
+  if (prevDate === new Date().Format("yyyyMMdd")) {
+    station
+      .查询平均风数据接口(
+        {
+          user_id: route.query.user_id,
+        },
+        new Date().Format("yyyyMMdd")
+      )
+      .then((res) => {
+        bus.avgWindData = res.data.data;
+      });
+  }
   // station
   //   .查询瞬时风数据接口({
   //     user_id: route.query.user_id,

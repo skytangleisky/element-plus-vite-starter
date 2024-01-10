@@ -56,7 +56,7 @@ export function 查询近期新增雷达列表接口(query) {
     data: query
   })
 }
-export function 查询平均风数据接口(query) {
+export function 查询平均风数据接口(query,time) {
   if(!query.user_id){
     query.user_id = user_id
   }

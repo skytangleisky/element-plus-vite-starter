@@ -97,6 +97,7 @@ export default [
     {
         path:'/api/radars/count',
         method:'POST',
+        disable:true,
         response:()=>{
             return {
                 "code": 200,
@@ -136,6 +137,7 @@ export default [
     },
     {
         path:'/api/weather/wind/radial/:time',
+        disable:true,
         method:'POST',
         response:()=>{
             return radialData
