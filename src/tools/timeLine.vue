@@ -225,7 +225,12 @@ onMounted(() => {
   watch(
     () => options.now,
     (newVal) => {
-      emit("update:now", newVal);
+      if (time === newVal) {
+        //当前时间为系统时间
+        emit("update:now", undefined);
+      } else {
+        emit("update:now", newVal);
+      }
     }
   );
   watch(
