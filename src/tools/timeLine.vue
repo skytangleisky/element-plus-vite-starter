@@ -237,7 +237,7 @@ onMounted(() => {
 });
 let time: number;
 if (options.now == undefined) {
-  time = options.now = options.targetNow = 0;
+  time = options.now = options.targetNow = Date.now();
 } else {
   time = Date.now();
 }
