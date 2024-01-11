@@ -617,9 +617,16 @@ watch(
               let tmp = v[radar_id];
               for (let key in tmp) {
                 for (let k in tmp[key]) {
+                  let t = Date.parse(k);
+                  let position = "left";
+                  if (setting.now > t) {
+                    position = "right";
+                  } else if (setting.now == t) {
+                    position = "middle";
+                  }
                   data.push({
-                    position: "left",
-                    time: Date.parse(k),
+                    position,
+                    time: t,
                     attributes: tmp[key],
                     lngLat,
                     radar_id,
