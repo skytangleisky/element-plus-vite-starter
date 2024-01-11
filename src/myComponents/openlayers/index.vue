@@ -107,7 +107,9 @@
       :toLeft="change"
       :toRight="change"
       :toMiddle="change"
-      v-model:now="now"
+      v-model:now="setting.now"
+      v-model:status="setting.status"
+      v-model:level="setting.level"
       class="absolute bottom-0"
     ></time-line>
     <graph
@@ -127,25 +129,6 @@ const DEV = import.meta.env.DEV;
 const graphArgs = reactive({
   fps: { value: 0, min: 0, max: 144, strokeStyle: "#ffffff88" },
   // memory: { value: 0, min: 0, max: 120, strokeStyle: "#0f0" },
-});
-const now = ref(Date.now());
-let prevDate = new Date().Format("yyyy-MM-dd");
-watch(now, (newVal) => {
-  let strDate = new Date(newVal).Format("yyyyMMdd");
-  if (strDate !== prevDate) {
-    console.log(strDate);
-    station
-      .查询平均风数据接口(
-        {
-          user_id: route.query.user_id,
-        },
-        strDate
-      )
-      .then((res) => {
-        bus.avgWindData = res.data.data;
-      });
-    prevDate = strDate;
-  }
 });
 const data = reactive([]);
 let preTime = 0;
@@ -237,6 +220,28 @@ import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
 import Legend from "./legend.vue";
 import style from "./streets-v11.js";
+
+let prevDate = new Date().Format("yyyy-MM-dd");
+watch(
+  () => setting.now,
+  (newVal) => {
+    let strDate = new Date(newVal).Format("yyyyMMdd");
+    if (strDate !== prevDate) {
+      console.log(strDate);
+      station
+        .查询平均风数据接口(
+          {
+            user_id: route.query.user_id,
+          },
+          strDate
+        )
+        .then((res) => {
+          bus.avgWindData = res.data.data;
+        });
+      prevDate = strDate;
+    }
+  }
+);
 
 console.log("route.query", route.query);
 const station = useStationStore();

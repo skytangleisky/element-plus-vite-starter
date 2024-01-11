@@ -50,10 +50,10 @@
       v-dompurify-html="nextSvg"
     />
     <el-icon
-      @click="options.status == 'play' ? pause() : play()"
+      @click="status == 'play' ? pause() : play()"
       class="btn"
       style="overflow: hidden; font-size: 2rem; min-width: 2rem"
-      v-dompurify-html="options.status == 'play' ? pauseSvg : playSvg"
+      v-dompurify-html="status == 'play' ? pauseSvg : playSvg"
     />
     <span @click="speed" style="color: white">x{{ Math.pow(2, options.times) }}</span>
     <graph
@@ -71,7 +71,7 @@ import nextSvg from "~/assets/next.svg?raw";
 import rightSvg from "~/assets/right.svg?raw";
 import graph from "./graph.vue";
 import { onMounted, onBeforeUnmount, ref, reactive, watch } from "vue";
-const emit = defineEmits(["update:now"]);
+const emit = defineEmits(["update:now", "update:status", "update:level"]);
 const DEV = ref(import.meta.env.DEV);
 const props = withDefaults(
   defineProps<{
@@ -79,14 +79,18 @@ const props = withDefaults(
     toLeft: Function | undefined;
     toRight: Function | undefined;
     toMiddle: Function | undefined;
-    now: number;
+    now: number | undefined;
+    status: "play" | "pause";
+    level: number | undefined;
   }>(),
   {
     data: () => new Array<{ time: number; position: "left" }>(),
     toLeft: undefined,
     toRight: undefined,
     toMiddle: undefined,
-    now: 0,
+    now: undefined,
+    status: "play",
+    level: undefined,
   }
 );
 const graphArgs = reactive({
@@ -105,23 +109,16 @@ let options = reactive({
   short: 2, //短刻度
   long: 8, //长刻度
   bottom: 8, //文字到底部距离
-  status: "play", //play|pause
   strScaleType: "milliseconds",
   leftText: "L",
   underlineText: "M",
   rightText: "R",
   now: props.now,
   targetNow: props.now,
-  value: 13,
-  targetValue: 10,
+  value: props.level,
+  targetValue: props.level,
   devicePixelRatio,
 });
-watch(
-  () => options.now,
-  (newVal) => {
-    emit("update:now", newVal);
-  }
-);
 const arr = ["milliseconds", "seconds", "minutes", "hours", "day", "month", "year"];
 let left = 0;
 let right = 0;
@@ -135,21 +132,23 @@ onMounted(() => {
   let cvs = timeShaft.value;
   let ctx = cvs.getContext("2d");
   ctx.font = `${14 * options.devicePixelRatio}px Menlo,Consolas,Monaco`;
-  let text_width = ctx.measureText("yyyy-MM-dd HH:mm:ss.SSS").width;
-  options.value = Math.log2(
-    (60 * 60 * 1000) / (text_width + options.gap * devicePixelRatio) / 1.5
-  );
-  let min = Math.log2(1000 / (text_width + options.gap * devicePixelRatio) / 1.5);
-  let max = Math.log2(
-    (365 * 24 * 60 * 60 * 1000) / (text_width + options.gap * devicePixelRatio) / 1.5
-  );
-  if (options.value < min) {
-    options.value = min;
+  if (options.value === undefined) {
+    let text_width = ctx.measureText("yyyy-MM-dd HH:mm:ss.SSS").width;
+    options.value = Math.log2(
+      (60 * 60 * 1000) / (text_width + options.gap * devicePixelRatio) / 1.5
+    );
+    let min = Math.log2(1000 / (text_width + options.gap * devicePixelRatio) / 1.5);
+    let max = Math.log2(
+      (365 * 24 * 60 * 60 * 1000) / (text_width + options.gap * devicePixelRatio) / 1.5
+    );
+    if (options.value < min) {
+      options.value = min;
+    }
+    if (options.value > max) {
+      options.value = max;
+    }
+    options.targetValue = options.value;
   }
-  if (options.value > max) {
-    options.value = max;
-  }
-  options.targetValue = options.value;
   cvs.addEventListener("mousewheel", (evt) => {
     let deltaY = evt.wheelDeltaY / 120 / 10;
     options.targetValue -= deltaY;
@@ -223,8 +222,25 @@ onMounted(() => {
     graphArgs.fps.value = options.frameCount - prevFrameCount;
     prevFrameCount = options.frameCount;
   }, 1000);
+  watch(
+    () => options.now,
+    (newVal) => {
+      emit("update:now", newVal);
+    }
+  );
+  watch(
+    () => options.value,
+    (newVal) => {
+      emit("update:level", newVal);
+    }
+  );
 });
-let time = options.now;
+let time: number;
+if (options.now == undefined) {
+  time = options.now = options.targetNow = 0;
+} else {
+  time = Date.now();
+}
 let prevFrameCount = options.frameCount;
 const loop = () => {
   options.frameCount++;
@@ -239,10 +255,10 @@ const speed = () => {
 };
 const play = () => {
   time = Date.now();
-  options.status = "play";
+  emit("update:status", "play");
 };
 const pause = () => {
-  options.status = "pause";
+  emit("update:status", "pause");
 };
 const leftClick = () => {
   pause();
@@ -439,7 +455,7 @@ const draw = () => {
   let ctx = cvs.getContext("2d");
   ctx.font = `${14 * options.devicePixelRatio}px Menlo,Consolas,Monaco`;
   let currentTime = Date.now();
-  if (options.status == "play") {
+  if (props.status == "play") {
     let 𝛿 = currentTime - time;
     options.now += 𝛿 * Math.pow(2, options.times);
     options.targetNow = options.now;
@@ -476,7 +492,6 @@ const draw = () => {
     ctx.lineTo(x, cvs.height);
     ctx.stroke();
   }
-
   let leftDate = new Date(Math.round(left));
   let rightDate = new Date(Math.round(right));
   let x = ((time - left) / (right - left)) * cvs.width;

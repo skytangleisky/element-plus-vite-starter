@@ -21,6 +21,9 @@ export const state = {
   feather:true,
   legend:false,
   disappear:true,
+  status: 'play',//记录时间轴的播放状态
+  now: undefined,//时间轴的当前时间
+  level:undefined,//时间轴的缩放等级
   component:'/src/myComponents/menu/index.vue',
   factor:[
     {toolTips:'站号',name:'ZH',val:false,visible:false},
