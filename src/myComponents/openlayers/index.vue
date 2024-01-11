@@ -619,7 +619,7 @@ watch(
                 for (let k in tmp[key]) {
                   let t = Date.parse(k);
                   let position = "left";
-                  if (setting.now > t) {
+                  if (t > setting.now) {
                     position = "right";
                   } else if (setting.now == t) {
                     position = "middle";
