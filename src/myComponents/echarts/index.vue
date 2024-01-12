@@ -384,8 +384,6 @@ let setEcharts = (isDark) => {
   watch(
     [() => bus.avgWindData, layerIndex, () => bus.result, () => station.active],
     ([avgWindData, layerIdx, result, active]) => {
-      option.series[1].data = [];
-      option.series[2].data = [];
       myChart.setOption(option, false, true);
       if (avgWindData) {
         avgWindData.map((v, k) => {
@@ -430,8 +428,16 @@ let setEcharts = (isDark) => {
               }
             });
             // option.series[0].data = Fdatas;
-            option.series[1].data = Fdatas;
-            option.series[2].data = Fdatas;
+            for (let i = 0; i < Fdatas.length; i++) {
+              option.series[1].data.push(Fdatas[i]);
+              option.series[2].data.push(Fdatas[i]);
+              if (option.series[1].data.length > 20) {
+                option.series[1].data.shift();
+              }
+              if (option.series[2].data.length > 20) {
+                option.series[2].data.shift();
+              }
+            }
             myChart.setOption(option, false, true);
           }
         });

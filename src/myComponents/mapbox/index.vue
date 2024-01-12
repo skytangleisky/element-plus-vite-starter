@@ -1,5 +1,10 @@
 <template>
   <div ref="mapRef" class="w-full h-full bg-white"></div>
+  <!-- <el-button
+    type="primary"
+    style="position: absolute; left: 0; top: 0"
+    @click="setting.mapbox.showStream = !setting.mapbox.showStream"
+  ></el-button> -->
   <el-select
     v-model="setting.projection"
     placeholder="projection"
@@ -454,107 +459,109 @@ onMounted(() => {
     }
   });
   map.on("load", () => {
-    getMicapsData(plotUrl).then((result: any) => {
-      let points = {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: [
-            {
+    if (setting.mapbox.showStation) {
+      getMicapsData(plotUrl).then((result: any) => {
+        let points = {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: [
+              {
+                type: "Feature",
+                properties: {},
+                geometry: {
+                  type: "Point",
+                  coordinates: [-122.414, 37.776],
+                },
+              },
+            ],
+          },
+        };
+        points.data.features = [];
+        result.data.forEach((v: any) => {
+          if (v.风速 != 9999) {
+            points.data.features.push({
               type: "Feature",
-              properties: {},
+              properties: Object.assign({ image: "feather" + getFeather(v.风速) }, v),
               geometry: {
                 type: "Point",
-                coordinates: [-122.414, 37.776],
+                coordinates: [v.经度, v.纬度],
               },
-            },
-          ],
-        },
-      };
-      points.data.features = [];
-      result.data.forEach((v: any) => {
-        if (v.风速 != 9999) {
-          points.data.features.push({
-            type: "Feature",
-            properties: Object.assign({ image: "feather" + getFeather(v.风速) }, v),
-            geometry: {
-              type: "Point",
-              coordinates: [v.经度, v.纬度],
+            });
+          }
+        });
+        map.addSource("point", points);
+        loadImage(imageUrl, 340, 188, {
+          feather0: getCoord(0, 0, 0),
+          feather1: getCoord(1, 0, 1),
+          feather2: getCoord(2, 0, 2),
+          feather4: getCoord(3, 0, 3),
+          feather6: getCoord(4, 0, 6),
+          feather8: getCoord(5, 0, 8),
+          feather10: getCoord(6, 0, 10),
+          feather12: getCoord(7, 0, 12),
+          feather14: getCoord(8, 0, 14),
+          feather16: getCoord(9, 0, 16),
+          feather18: getCoord(0, 1, 18),
+          feather20: getCoord(1, 1, 20),
+          feather22: getCoord(2, 1, 22),
+          feather24: getCoord(3, 1, 24),
+          feather26: getCoord(4, 1, 26),
+          feather28: getCoord(5, 1, 28),
+          feather30: getCoord(6, 1, 30),
+          feather32: getCoord(7, 1, 32),
+          feather34: getCoord(8, 1, 34),
+          feather36: getCoord(9, 1, 36),
+          feather38: getCoord(0, 2, 38),
+          feather40: getCoord(1, 2, 40),
+          feather42: getCoord(2, 2, 42),
+          feather44: getCoord(3, 2, 44),
+          feather46: getCoord(4, 2, 46),
+          feather48: getCoord(5, 2, 48),
+          feather50: getCoord(6, 2, 50),
+          feather52: getCoord(7, 2, 52),
+          feather54: getCoord(8, 2, 54),
+          feather56: getCoord(9, 2, 56),
+          feather58: getCoord(0, 3, 58),
+          feather60: getCoord(1, 3, 60),
+        }).then((result) => {
+          for (let k in result) {
+            map.addImage(k, result[k]);
+          }
+          map.addLayer({
+            id: "plane",
+            source: "point",
+            type: "symbol",
+            layout: {
+              // This icon is a part of the Mapbox Streets style.
+              // To view all images available in a Mapbox style, open
+              // the style in Mapbox Studio and click the "Images" tab.
+              // To add a new image to the style at runtime see
+              // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+              "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
+              "icon-image": ["get", "image"],
+              "icon-size": 1,
+              "icon-rotate": ["get", "风向"],
+              "icon-rotation-alignment": "map",
+              "icon-allow-overlap": true,
+              "icon-ignore-placement": true,
+              "text-field": ["get", "风速"],
+              "text-font": ["simkai"],
+              "text-size": 20,
+              "text-transform": "uppercase",
+              // "text-letter-spacing": 0.05,
+              "text-anchor": "center",
+              "text-line-height": 1,
+              // "text-justify": "center",
+              "text-offset": [0, 0],
+              "text-ignore-placement": true,
+              "text-allow-overlap": true,
+              "text-rotation-alignment": "map",
             },
           });
-        }
-      });
-      map.addSource("point", points);
-      loadImage(imageUrl, 340, 188, {
-        feather0: getCoord(0, 0, 0),
-        feather1: getCoord(1, 0, 1),
-        feather2: getCoord(2, 0, 2),
-        feather4: getCoord(3, 0, 3),
-        feather6: getCoord(4, 0, 6),
-        feather8: getCoord(5, 0, 8),
-        feather10: getCoord(6, 0, 10),
-        feather12: getCoord(7, 0, 12),
-        feather14: getCoord(8, 0, 14),
-        feather16: getCoord(9, 0, 16),
-        feather18: getCoord(0, 1, 18),
-        feather20: getCoord(1, 1, 20),
-        feather22: getCoord(2, 1, 22),
-        feather24: getCoord(3, 1, 24),
-        feather26: getCoord(4, 1, 26),
-        feather28: getCoord(5, 1, 28),
-        feather30: getCoord(6, 1, 30),
-        feather32: getCoord(7, 1, 32),
-        feather34: getCoord(8, 1, 34),
-        feather36: getCoord(9, 1, 36),
-        feather38: getCoord(0, 2, 38),
-        feather40: getCoord(1, 2, 40),
-        feather42: getCoord(2, 2, 42),
-        feather44: getCoord(3, 2, 44),
-        feather46: getCoord(4, 2, 46),
-        feather48: getCoord(5, 2, 48),
-        feather50: getCoord(6, 2, 50),
-        feather52: getCoord(7, 2, 52),
-        feather54: getCoord(8, 2, 54),
-        feather56: getCoord(9, 2, 56),
-        feather58: getCoord(0, 3, 58),
-        feather60: getCoord(1, 3, 60),
-      }).then((result) => {
-        for (let k in result) {
-          map.addImage(k, result[k]);
-        }
-        map.addLayer({
-          id: "plane",
-          source: "point",
-          type: "symbol",
-          layout: {
-            // This icon is a part of the Mapbox Streets style.
-            // To view all images available in a Mapbox style, open
-            // the style in Mapbox Studio and click the "Images" tab.
-            // To add a new image to the style at runtime see
-            // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-            "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
-            "icon-image": ["get", "image"],
-            "icon-size": 1,
-            "icon-rotate": ["get", "风向"],
-            "icon-rotation-alignment": "map",
-            "icon-allow-overlap": true,
-            "icon-ignore-placement": true,
-            "text-field": ["get", "风速"],
-            "text-font": ["simkai"],
-            "text-size": 20,
-            "text-transform": "uppercase",
-            // "text-letter-spacing": 0.05,
-            "text-anchor": "center",
-            "text-line-height": 1,
-            // "text-justify": "center",
-            "text-offset": [0, 0],
-            "text-ignore-placement": true,
-            "text-allow-overlap": true,
-            "text-rotation-alignment": "map",
-          },
         });
       });
-    });
+    }
 
     // map.addLayer({
     //   id: "park-volcanoes",
@@ -581,7 +588,16 @@ onMounted(() => {
     //   },
     //   filter: ["==", "$type", "Point"],
     // });
-    map.addLayer(new CustomLayer());
+    watch(
+      () => setting.mapbox.showStream,
+      (v) => {
+        if (v) {
+          map.addLayer(new CustomLayer());
+        } else {
+          map.removeLayer("null-island");
+        }
+      }
+    );
     let irCvs = document.createElement("canvas") as HTMLCanvasElement;
     let urls = [
       irUrl1,
@@ -599,107 +615,108 @@ onMounted(() => {
     ];
     let INDEX = 0;
     let url = urls[INDEX++ % urls.length];
-
-    getMicapsData(url).then((result: any) => {
-      let minLng = result.minLng;
-      let minLat = result.minLat;
-      let cenPos = lngLat2XY(result.cenLng, result.cenLat);
-      let minPos = lngLat2XY(minLng, minLat);
-      let maxPos = { x: 2 * cenPos.x - minPos.x, y: 2 * cenPos.y - minPos.y };
-      let maxLngLat = XY2LngLat(maxPos.x, maxPos.y);
-      let maxLng = maxLngLat.lng;
-      let maxLat = maxLngLat.lat;
-      let array = new Uint8ClampedArray(4 * result.xCount * result.yCount);
-      for (let j = 0; j < result.xCount; j++) {
-        for (let i = 0; i < result.yCount; i++) {
-          let value = result.pixelData[(result.yCount - j - 1) * result.xCount + i];
-          // let color = getColor(value / 255);
-          let color = Color[value];
-          color[3] = value;
-          if (color?.length) {
-            array[4 * (j * result.xCount + i) + 0] = color[0];
-            array[4 * (j * result.xCount + i) + 1] = color[1];
-            array[4 * (j * result.xCount + i) + 2] = color[2];
-            array[4 * (j * result.xCount + i) + 3] = color[3]; // color[3]
+    if (setting.mapbox.satellite) {
+      getMicapsData(url).then((result: any) => {
+        let minLng = result.minLng;
+        let minLat = result.minLat;
+        let cenPos = lngLat2XY(result.cenLng, result.cenLat);
+        let minPos = lngLat2XY(minLng, minLat);
+        let maxPos = { x: 2 * cenPos.x - minPos.x, y: 2 * cenPos.y - minPos.y };
+        let maxLngLat = XY2LngLat(maxPos.x, maxPos.y);
+        let maxLng = maxLngLat.lng;
+        let maxLat = maxLngLat.lat;
+        let array = new Uint8ClampedArray(4 * result.xCount * result.yCount);
+        for (let j = 0; j < result.xCount; j++) {
+          for (let i = 0; i < result.yCount; i++) {
+            let value = result.pixelData[(result.yCount - j - 1) * result.xCount + i];
+            // let color = getColor(value / 255);
+            let color = Color[value];
+            color[3] = value;
+            if (color?.length) {
+              array[4 * (j * result.xCount + i) + 0] = color[0];
+              array[4 * (j * result.xCount + i) + 1] = color[1];
+              array[4 * (j * result.xCount + i) + 2] = color[2];
+              array[4 * (j * result.xCount + i) + 3] = color[3]; // color[3]
+            }
           }
         }
-      }
-      let imgData = new ImageData(array, result.xCount, result.yCount);
-      irCvs.width = result.xCount;
-      irCvs.height = result.yCount;
-      let ctx = irCvs.getContext("2d");
-      console.log(maxLng, minLng, maxLat, minLat);
-      if (ctx) {
-        ctx.putImageData(imgData, 0, 0);
-        map.addSource("irSource", {
-          type: "image",
-          url: irCvs.toDataURL(),
-          coordinates: [
-            [minLng, maxLat],
-            [maxLng, maxLat],
-            [maxLng, minLat],
-            [minLng, minLat],
-          ],
-        });
-        map.addLayer({
-          id: "irLayer",
-          type: "raster",
-          source: "irSource",
-          paint: {
-            "raster-fade-duration": 0,
-            "raster-opacity": 0.8,
-            "raster-resampling": "nearest",
-          },
-          layout: {
-            visibility: "visible",
-          },
-        });
-        // timer = setInterval(() => {
-        //   let url = urls[INDEX++ % urls.length];
-        //   getMicapsData(url).then((result: any) => {
-        //     let minLng = result.minLng;
-        //     let minLat = result.minLat;
-        //     let cenPos = lngLat2XY(result.cenLng, result.cenLat);
-        //     let minPos = lngLat2XY(minLng, minLat);
-        //     let maxPos = { x: 2 * cenPos.x - minPos.x, y: 2 * cenPos.y - minPos.y };
-        //     let maxLngLat = XY2LngLat(maxPos.x, maxPos.y);
-        //     let maxLng = maxLngLat.lng;
-        //     let maxLat = maxLngLat.lat;
-        //     let array = new Uint8ClampedArray(4 * result.xCount * result.yCount);
-        //     for (let j = 0; j < result.xCount; j++) {
-        //       for (let i = 0; i < result.yCount; i++) {
-        //         let value = result.pixelData[(result.yCount - j - 1) * result.xCount + i];
-        //         // let color = getColor(value / 255);
-        //         let color = Color[value];
-        //         color[3] = value;
-        //         if (color?.length) {
-        //           array[4 * (j * result.xCount + i) + 0] = color[0];
-        //           array[4 * (j * result.xCount + i) + 1] = color[1];
-        //           array[4 * (j * result.xCount + i) + 2] = color[2];
-        //           array[4 * (j * result.xCount + i) + 3] = color[3]; // color[3]
-        //         }
-        //       }
-        //     }
-        //     let imgData = new ImageData(array, result.xCount, result.yCount);
-        //     irCvs.width = result.xCount;
-        //     irCvs.height = result.yCount;
-        //     let ctx = irCvs.getContext("2d");
-        //     if (ctx) {
-        //       ctx.putImageData(imgData, 0, 0);
-        //       map.getSource("irSource").updateImage({
-        //         url: irCvs.toDataURL(),
-        //         coordinates: [
-        //           [minLng, maxLat],
-        //           [maxLng, maxLat],
-        //           [maxLng, minLat],
-        //           [minLng, minLat],
-        //         ],
-        //       });
-        //     }
-        //   });
-        // }, 1000);
-      }
-    });
+        let imgData = new ImageData(array, result.xCount, result.yCount);
+        irCvs.width = result.xCount;
+        irCvs.height = result.yCount;
+        let ctx = irCvs.getContext("2d");
+        console.log(maxLng, minLng, maxLat, minLat);
+        if (ctx) {
+          ctx.putImageData(imgData, 0, 0);
+          map.addSource("irSource", {
+            type: "image",
+            url: irCvs.toDataURL(),
+            coordinates: [
+              [minLng, maxLat],
+              [maxLng, maxLat],
+              [maxLng, minLat],
+              [minLng, minLat],
+            ],
+          });
+          map.addLayer({
+            id: "irLayer",
+            type: "raster",
+            source: "irSource",
+            paint: {
+              "raster-fade-duration": 0,
+              "raster-opacity": 0.8,
+              "raster-resampling": "nearest",
+            },
+            layout: {
+              visibility: "visible",
+            },
+          });
+          // timer = setInterval(() => {
+          //   let url = urls[INDEX++ % urls.length];
+          //   getMicapsData(url).then((result: any) => {
+          //     let minLng = result.minLng;
+          //     let minLat = result.minLat;
+          //     let cenPos = lngLat2XY(result.cenLng, result.cenLat);
+          //     let minPos = lngLat2XY(minLng, minLat);
+          //     let maxPos = { x: 2 * cenPos.x - minPos.x, y: 2 * cenPos.y - minPos.y };
+          //     let maxLngLat = XY2LngLat(maxPos.x, maxPos.y);
+          //     let maxLng = maxLngLat.lng;
+          //     let maxLat = maxLngLat.lat;
+          //     let array = new Uint8ClampedArray(4 * result.xCount * result.yCount);
+          //     for (let j = 0; j < result.xCount; j++) {
+          //       for (let i = 0; i < result.yCount; i++) {
+          //         let value = result.pixelData[(result.yCount - j - 1) * result.xCount + i];
+          //         // let color = getColor(value / 255);
+          //         let color = Color[value];
+          //         color[3] = value;
+          //         if (color?.length) {
+          //           array[4 * (j * result.xCount + i) + 0] = color[0];
+          //           array[4 * (j * result.xCount + i) + 1] = color[1];
+          //           array[4 * (j * result.xCount + i) + 2] = color[2];
+          //           array[4 * (j * result.xCount + i) + 3] = color[3]; // color[3]
+          //         }
+          //       }
+          //     }
+          //     let imgData = new ImageData(array, result.xCount, result.yCount);
+          //     irCvs.width = result.xCount;
+          //     irCvs.height = result.yCount;
+          //     let ctx = irCvs.getContext("2d");
+          //     if (ctx) {
+          //       ctx.putImageData(imgData, 0, 0);
+          //       map.getSource("irSource").updateImage({
+          //         url: irCvs.toDataURL(),
+          //         coordinates: [
+          //           [minLng, maxLat],
+          //           [maxLng, maxLat],
+          //           [maxLng, minLat],
+          //           [minLng, minLat],
+          //         ],
+          //       });
+          //     }
+          //   });
+          // }, 1000);
+        }
+      });
+    }
   });
   let timer: number;
   var Color: { [key: string]: any } = {};

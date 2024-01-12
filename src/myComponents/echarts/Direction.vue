@@ -40,28 +40,23 @@ watch(
         let data;
         for (let key in v) {
           if (result[active] && key == result[active].radar.radar_id) {
-            data = v[key];
+            data = v[key][0];
           }
         }
         if (data) {
-          data.map((v, k) => {
-            if (k == 0) {
-              for (let k in v) {
-                let tmp2 = v[k].slice().reverse();
-                for (let i = 0; i < tmp2.length; i++) {
-                  for (let k in tmp2[i]) {
-                    let item = tmp2[i][k];
-                    if (item.center_h_direction_abs != -1000) {
-                      option.series[0].data.push([
-                        item.distance,
-                        item.center_h_direction_abs,
-                      ]);
-                    }
-                  }
-                }
+          let tmpArr = [];
+          for (let key in data) {
+            tmpArr.unshift({ key, value: data[key] });
+          }
+          let tmp2 = tmpArr.slice(-1)[0].value.slice().reverse();
+          for (let i = 0; i < tmp2.length; i++) {
+            for (let k in tmp2[i]) {
+              let item = tmp2[i][k];
+              if (item.center_h_direction_abs != -1000) {
+                option.series[0].data.push([item.distance, item.center_h_direction_abs]);
               }
             }
-          });
+          }
           myChart.setOption(option, false, true);
         }
       });

@@ -34,33 +34,43 @@ onMounted(() => {
 watch(
   [() => bus.avgWindData, () => bus.result, () => station.active],
   ([avgWindData, result, active]) => {
-    option.xAxis.data = [];
-    option.series[0].data = [];
-    option.series[1].data = [];
     myChart.setOption(option, false, true);
     if (avgWindData) {
       avgWindData.map((v, k) => {
         let data;
         for (let key in v) {
           if (result[active] && key == result[active].radar.radar_id) {
-            data = v[key];
+            data = v[key][0];
           }
         }
         if (data) {
-          data.map((v, k) => {
-            for (let k in v) {
-              option.xAxis.data.push(k.substring(10));
-              let tmp2 = v[k].slice().reverse()[0];
-              if (tmp2) {
-                for (let key in tmp2) {
-                  let temperature = tmp2[key].ex_temp;
-                  let humidity = tmp2[key].ex_hum;
-                  option.series[0].data.push(temperature);
-                  option.series[1].data.push(humidity);
+          let tmpArr: any = [];
+          for (let key in data) {
+            tmpArr.unshift({ key, value: data[key] });
+          }
+          for (let index in tmpArr) {
+            let k = tmpArr[index].key;
+            let v = tmpArr[index].value;
+            option.xAxis.data.unshift(k.substring(11, 19));
+            let tmp2 = v.slice().reverse()[0];
+            if (tmp2) {
+              for (let key in tmp2) {
+                let temperature = tmp2[key].ex_temp;
+                let humidity = tmp2[key].ex_hum;
+                option.series[0].data.unshift(temperature);
+                option.series[1].data.unshift(humidity);
+                if (option.series[0].data.length > 20) {
+                  option.series[0].data.pop();
+                }
+                if (option.series[1].data.length > 20) {
+                  option.series[1].data.pop();
                 }
               }
             }
-          });
+            if (option.xAxis.data.length > 20) {
+              option.xAxis.data.pop();
+            }
+          }
           myChart.setOption(option, false, true);
         }
       });
@@ -87,7 +97,7 @@ var option = {
   xAxis: {
     type: "category",
     boundaryGap: false,
-    data: ["15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00"],
+    data: [], //["15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00"]
   },
   legend: {
     data: ["温度(℃)", "湿度(%)"],

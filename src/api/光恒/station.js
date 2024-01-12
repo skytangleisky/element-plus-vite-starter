@@ -35,6 +35,17 @@ export function 查询雷达在线列表接口(query) {
   })
 }
 
+export function 查询某一天的雷达状态数据接口(query,time){
+  if(!query.user_id){
+    query.user_id = user_id
+  }
+  return request({
+    url: '/api/radar/status/' + time,
+    method: 'post',
+    data: query
+  })
+}
+
 export function 查询雷达离线列表接口(query) {
   if(!query.user_id){
     query.user_id = user_id

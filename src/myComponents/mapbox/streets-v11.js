@@ -7091,7 +7091,17 @@ export default {
 				layout:{
 					visibility:'visible'
 				}
-			}
+			},
+			{
+				"id": "tmp-tiles",
+				"type": "raster",
+				"source": "raster-tiles",
+				"minzoom": 0,
+				"maxzoom": 22,
+				layout:{
+					visibility:'visible'
+				}
+			},
 	],
 	"created": "2023-11-07T03:38:34.435Z",
 	"modified": "2023-11-14T11:53:57.549Z",

@@ -1,6 +1,34 @@
 import radarsData from './radars.json'
 import radialData from './radial.json'
 import Mock from 'mockjs';
+Date.prototype.Format = function(format){
+    let that = this;
+    if(format==undefined) format = "yyyy-MM-dd HH:mm:ss";
+    return format.replace(/yyyy|MM|dd|HH|mm|ss|SSS|SS|S/g, function(a){
+        switch(a){
+        case 'yyyy':
+            return function(i){return (i < 10 ? '0' : '') + i}(that.getFullYear());
+        case 'MM':
+            return function(i){return (i < 10 ? '0' : '') + i}(that.getMonth() + 1);
+        case 'dd':
+            return function(i){return (i < 10 ? '0' : '') + i}(that.getDate());
+        case 'HH':
+            return function(i){return (i < 10 ? '0' : '') + i}(that.getHours());
+        case 'mm':
+            return function(i){return (i < 10 ? '0' : '') + i}(that.getMinutes());
+        case 'ss':
+            return function(i){return (i < 10 ? '0' : '') + i}(that.getSeconds());
+        case 'S':
+            return function(i){return i}(Math.floor(that.getMilliseconds()*10/1000));
+        case 'SS':
+            return function(i){return i.toFixed().padStart(2,'0')}(Math.floor(that.getMilliseconds()*100/1000));
+        case 'SSS':
+            return function(i){return i.toFixed().padStart(3,'0')}(that.getMilliseconds());
+        case 'q':
+            return Math.floor((that.getMonth() + 3) / 3)+'';
+        }
+    });
+};
 export default [
     {
         path:'/backend/:路径/test',
@@ -20,7 +48,7 @@ export default [
     {
         path:'/api/weather/wind/avg/:time',
         method:'POST',
-        disable: true,
+        disable: false,
         // delay:()=>Math.round(Math.random()*10000),
         response:(req)=>{
         console.log(req.params)
@@ -30,7 +58,7 @@ export default [
             "distance|+39": 70,
             "layers": 19,
             "ex_temp": 0,
-            "ex_hum": -1,
+            "ex_hum": Math.random(),
             "north_a": 320.61,
             "pitch_a": 1.44,
             "roll_a": 0.23,
@@ -79,9 +107,12 @@ export default [
             {
                 // "12ba25da-e81c-4ef3-94ff-91591970b5fb": [
                 // "7e36842c-db83-41fc-8c87-d12d3d30c3b3": [
-                "66d7a2b0-f72a-4395-95fb-fe737c73107e": [
+                "a0024732-ee5e-4d14-b98c-feb418b198bd": [
                 {
-                    "2023-10-26 23:50:00+08:00": arr
+                    [new Date().Format('yyyy-MM-dd HH:mm:ss')]: arr,
+                    [new Date(Date.now() - 1000).Format('yyyy-MM-dd HH:mm:ss')]: arr,
+                    // "2023-10-27 00:00:00+08:00": arr,
+                    // "2023-10-26 23:50:00+08:00": arr,
                 }
                 ],
                 "c6e49c9d-140f-4496-b02a-9c645c3bf7ea": [
@@ -137,7 +168,7 @@ export default [
     },
     {
         path:'/api/weather/wind/radial/:time',
-        disable:true,
+        disable:false,
         method:'POST',
         response:()=>{
             return radialData

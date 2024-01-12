@@ -74,25 +74,24 @@ watch(
         let data;
         for (let key in v) {
           if (result[active] && key == result[active].radar.radar_id) {
-            data = v[key];
+            data = v[key][0];
           }
         }
         if (data) {
-          data.map((v, k) => {
-            if (k == 0) {
-              for (let k in v) {
-                let tmp2 = v[k].slice().reverse();
-                for (let i = 0; i < tmp2.length; i++) {
-                  for (let k in tmp2[i]) {
-                    let item = tmp2[i][k];
-                    if (item.center_h_speed != -1000)
-                      option.series[0].data.push([item.center_h_speed, item.distance]);
-                  }
-                }
+          let tmpArr = [];
+          for (let key in data) {
+            tmpArr.unshift({ key, value: data[key] });
+          }
+          let tmp2 = tmpArr[tmpArr.length - 1].value.slice().reverse();
+          for (let key in tmp2) {
+            for (let k in tmp2[key]) {
+              let item = tmp2[key][k];
+              if (item.center_h_speed != -1000) {
+                option.series[0].data.push([item.center_h_speed, item.distance]);
               }
+              myChart.setOption(option, false, true);
             }
-          });
-          myChart.setOption(option, false, true);
+          }
         }
       });
     }

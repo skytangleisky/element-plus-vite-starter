@@ -2,6 +2,11 @@ import { defineStore, acceptHMRUpdate } from "pinia"
 import zhCn from '../languages/zh-cn.mjs'
 import en from '../languages/en.mjs'
 export const state = {
+  mapbox:{
+    showStation:false,
+    showStream:false,
+    satellite:false,
+  },
   openlayers:{
     zoom:5,
     center:[100.41462758184835, 36.57697037305711],
