@@ -75,13 +75,13 @@ const emit = defineEmits(["update:now", "update:status", "update:level"]);
 const DEV = ref(import.meta.env.DEV);
 const props = withDefaults(
   defineProps<{
-    data: Array<{ time: number; position: "left" | "right" | "middle" }>;
-    toLeft: Function | undefined;
-    toRight: Function | undefined;
-    toMiddle: Function | undefined;
-    now: number | undefined;
-    status: "play" | "pause";
-    level: number | undefined;
+    data?: Array<{ time: number; position: "left" | "right" | "middle" }>;
+    toLeft?: Function | undefined;
+    toRight?: Function | undefined;
+    toMiddle?: Function | undefined;
+    now?: number | undefined;
+    status?: "play" | "pause";
+    level?: number | undefined;
   }>(),
   {
     data: () => new Array<{ time: number; position: "left" }>(),
