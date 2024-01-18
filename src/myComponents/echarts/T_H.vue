@@ -9,7 +9,10 @@
       flex-direction: column;
     "
   >
-    <div style="color: rgb(78, 129, 184); font-size: 20px">温湿度曲线</div>
+    <div style="display: flex; flex-direction: row; justify-content: space-between">
+      <div style="color: rgb(78, 129, 184); font-size: 20px">温湿度曲线</div>
+      <div style="color: grey">{{ currentTime }}</div>
+    </div>
     <div ref="thContainer" class="w-full h-full flex-1"></div>
   </div>
 </template>
@@ -31,45 +34,32 @@ watch(isDark, (isDark) => {
 onMounted(() => {
   setChart(isDark.value);
 });
+const currentTime = ref("");
 watch(
   [() => bus.avgWindData, () => bus.result, () => station.active],
   ([avgWindData, result, active]) => {
+    option.xAxis.data = [];
+    option.series[0].data = [];
+    option.series[1].data = [];
     myChart.setOption(option, false, true);
     if (avgWindData) {
       avgWindData.map((v, k) => {
         let data;
         for (let key in v) {
-          if (result[active] && key == result[active].radar.radar_id) {
-            data = v[key][0];
+          if (key == active) {
+            data = v[key];
           }
         }
         if (data) {
-          let tmpArr: any = [];
-          for (let key in data) {
-            tmpArr.unshift({ key, value: data[key] });
-          }
-          for (let index in tmpArr) {
-            let k = tmpArr[index].key;
-            let v = tmpArr[index].value;
-            option.xAxis.data.unshift(k.substring(11, 19));
-            let tmp2 = v.slice().reverse()[0];
-            if (tmp2) {
-              for (let key in tmp2) {
-                let temperature = tmp2[key].ex_temp;
-                let humidity = tmp2[key].ex_hum;
-                option.series[0].data.unshift(temperature);
-                option.series[1].data.unshift(humidity);
-                if (option.series[0].data.length > 20) {
-                  option.series[0].data.pop();
-                }
-                if (option.series[1].data.length > 20) {
-                  option.series[1].data.pop();
-                }
-              }
+          for (let i = 0; i < data.length; i++) {
+            if (i == 0) {
+              currentTime.value = data[i].data_time;
             }
-            if (option.xAxis.data.length > 20) {
-              option.xAxis.data.pop();
-            }
+            let data_time = data[i].data_time;
+            let data_list = data[i].data_list;
+            option.xAxis.data.push(data_time.substring(11, 19));
+            option.series[0].data.push(data_list[0].ex_temp);
+            option.series[1].data.push(data_list[0].ex_hum);
           }
           myChart.setOption(option, false, true);
         }

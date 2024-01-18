@@ -533,10 +533,9 @@ onMounted(() => {
       if (feature.get("station")) {
         const text = map.forEachFeatureAtPixel(evt.pixel, function (feature) {
           setting.disappear = false;
-          station.active = -1;
           for (let i = 0; i < bus.result.length; i++) {
             if (bus.result[i].radar.name == feature.get("name")) {
-              station.active = i;
+              station.active = feature.get("name");
             }
           }
         });
@@ -987,7 +986,7 @@ onMounted(() => {
       }
       if (data.length) {
         station
-          .查询平均风数据接口({
+          .查询雷达最新的平均风数据接口({
             user_id: route.query.user_id,
           })
           .then((res) => {
@@ -1001,7 +1000,7 @@ onMounted(() => {
             bus.secondWindData = res.data.data;
           });
         station
-          .查询径向风数据接口({
+          .查询雷达最新的径向风数据接口({
             user_id: route.query.user_id,
           })
           .then((res) => {
@@ -1202,7 +1201,7 @@ onMounted(() => {
     //     // feature.set('geometry',geometry)
     //   })
     station
-      .查询平均风数据接口({
+      .查询雷达最新的平均风数据接口({
         user_id: route.query.user_id,
       })
       .then((res) => {
@@ -1216,7 +1215,7 @@ onMounted(() => {
         bus.secondWindData = res.data.data;
       });
     station
-      .查询径向风数据接口({
+      .查询雷达最新的径向风数据接口({
         user_id: route.query.user_id,
       })
       .then((res) => {

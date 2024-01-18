@@ -9,7 +9,10 @@
       flex-direction: column;
     "
   >
-    <div style="color: rgb(78, 129, 184); font-size: 20px">距离信噪比曲线</div>
+    <div style="display: flex; flex-direction: row; justify-content: space-between">
+      <div style="color: rgb(78, 129, 184); font-size: 20px">距离信噪比曲线</div>
+      <div style="color: grey">{{ currentTime }}</div>
+    </div>
     <div ref="thContainer" class="w-full h-full flex-1"></div>
   </div>
 </template>
@@ -29,76 +32,32 @@ watch(isDark, (isDark) => {
 onMounted(() => {
   setChart(isDark.value);
 });
+const currentTime = ref("");
 watch(
-  [() => bus.radialWindData, () => bus.result, () => station.active],
-  ([radialWindData, result, active]) => {
-    // option.series[0].data = [];
-    // option.series[1].data = [];
-    // option.series[2].data = [];
-    // option.series[3].data = [];
-    // radialWindData.map((v, k) => {
-    // if (k == 0) {
-    //   for (let timestamp in v) {
-    //     v[timestamp].map((value: any, key: number) => {
-    //       for (let index in value) {
-    //         //index序号
-    //         value[index].map((v: any) => {
-    //           for (let k in v) {
-    //             let item = v[k];
-    //             option.series[Number(index) - 1].data.push([item.snr, item.distance]);
-    //           }
-    //         });
-    //       }
-    //     });
-    //   }
-    // }
-    // myChart.setOption(option, false, true);
-    // });
+  () => bus.radialWindData,
+  (radialWindData) => {
     option.series[0].data = [];
     option.series[1].data = [];
     option.series[2].data = [];
     option.series[3].data = [];
     myChart.setOption(option, false, true);
     if (radialWindData && radialWindData.length) {
-      radialWindData.map((v, k) => {
+      for (let k in radialWindData[0]) {
+        let list = radialWindData[0][k];
         option.series[0].data = [];
         option.series[1].data = [];
         option.series[2].data = [];
         option.series[3].data = [];
-        let data;
-        for (let key in v) {
-          if (result[active] && key == result[active].radar.radar_id) {
-            data = v[key];
-          }
-        }
-        if (data) {
-          data.map((v, k) => {
-            if (k == 0) {
-              for (let k in v) {
-                //k为时间
-                let tmp2 = v[k];
-                if (tmp2) {
-                  for (let key in tmp2) {
-                    for (let index in tmp2[key]) {
-                      for (let m in tmp2[key][index]) {
-                        let tmp3 = tmp2[key][index][m];
-                        for (let n in tmp3) {
-                          let item = tmp3[n];
-                          option.series[Number(index) - 1].data.push([
-                            item.snr,
-                            item.distance,
-                          ]);
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
+        list.map((item) => {
+          let beam = item.beam;
+          let data_list = item.data_list;
+          data_list.map((it) => {
+            currentTime.value = it.timestamp;
+            option.series[beam - 1].data.push([it.snr, it.distance]);
           });
-          myChart.setOption(option, false, true);
-        }
-      });
+        });
+        myChart.setOption(option, false, true);
+      }
     }
   }
 );

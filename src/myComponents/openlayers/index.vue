@@ -133,48 +133,48 @@ const graphArgs = reactive({
 const data = reactive([]);
 let preTime = 0;
 const change = (it) => {
-  if (it.time !== preTime) {
-    console.log("change");
-    //删除相关站点的风羽
-    for (let i = 0; i < points.data.features.length; i++) {
-      if (
-        it.radar_id == points.data.features[i].properties.radar_id &&
-        points.data.features[i].properties.type == "风羽"
-      ) {
-        points.data.features.splice(i--, 1);
-      }
-    }
-    for (let k in it.attributes) {
-      let tmp2 = it.attributes[k].slice().reverse();
-      tmp2.forEach((tmp3) => {
-        for (let k in tmp3) {
-          let item = tmp3[k];
-          let ll = getLngLat(it.lngLat[0], it.lngLat[1], item.north_a, Number(k));
-          // item.center_h_direction_abs = Math.random() * 360;
-          // item.center_h_speed = Math.random() * 60;
-          if (item.center_h_direction_abs != -1000 && item.center_h_speed != -1000) {
-            points.data.features.push({
-              type: "Feature",
-              properties: {
-                type: "风羽",
-                radar_id: it.radar_id,
-                风速: item.center_h_speed,
-                image: "feather" + getFeather(item.center_h_speed),
-                风向: item.center_h_direction_abs,
-              },
-              geometry: {
-                type: "Point",
-                coordinates: [ll.lng, ll.lat],
-              },
-            });
-          }
-        }
-        let source = map.getSource("point");
-        source && source.setData(points.data);
-      });
-    }
-    preTime = it.time;
-  }
+  // if (it.time !== preTime) {
+  //   console.log("change");
+  //   //删除相关站点的风羽
+  //   for (let i = 0; i < points.data.features.length; i++) {
+  //     if (
+  //       it.radar_id == points.data.features[i].properties.radar_id &&
+  //       points.data.features[i].properties.type == "风羽"
+  //     ) {
+  //       points.data.features.splice(i--, 1);
+  //     }
+  //   }
+  //   for (let k in it.attributes) {
+  //     let tmp2 = it.attributes[k].slice().reverse();
+  //     tmp2.forEach((tmp3) => {
+  //       for (let k in tmp3) {
+  //         let item = tmp3[k];
+  //         let ll = getLngLat(it.lngLat[0], it.lngLat[1], item.north_a, Number(k));
+  //         // item.center_h_direction_abs = Math.random() * 360;
+  //         // item.center_h_speed = Math.random() * 60;
+  //         if (item.center_h_direction_abs != -1000 && item.center_h_speed != -1000) {
+  //           points.data.features.push({
+  //             type: "Feature",
+  //             properties: {
+  //               type: "风羽",
+  //               radar_id: it.radar_id,
+  //               风速: item.center_h_speed,
+  //               image: "feather" + getFeather(item.center_h_speed),
+  //               风向: item.center_h_direction_abs,
+  //             },
+  //             geometry: {
+  //               type: "Point",
+  //               coordinates: [ll.lng, ll.lat],
+  //             },
+  //           });
+  //         }
+  //       }
+  //       let source = map.getSource("point");
+  //       source && source.setData(points.data);
+  //     });
+  //   }
+  //   preTime = it.time;
+  // }
 };
 const toLeft = () => {
   console.log("toLeft");
@@ -221,20 +221,20 @@ const setting = useSettingStore();
 import Legend from "./legend.vue";
 import style from "./streets-v11.js";
 
-let prevDate = new Date().Format("yyyy-MM-dd");
+let prevDate;
 watch(
   () => setting.now,
   (newVal) => {
+    if (newVal == undefined) {
+      newVal = Date.now();
+    }
     let strDate = new Date(newVal).Format("yyyyMMdd");
     if (strDate !== prevDate) {
       console.log(strDate);
       station
-        .查询平均风数据接口(
-          {
-            user_id: route.query.user_id,
-          },
-          strDate
-        )
+        .查询雷达最新的平均风数据接口({
+          user_id: route.query.user_id,
+        })
         .then((res) => {
           bus.avgWindData = res.data.data;
         });
@@ -279,11 +279,16 @@ const points = {
 const clickFunc = (e) => {
   if (e.features) {
     setting.disappear = false;
-    station.active = -1;
     for (let i = 0; i < bus.result.length; i++) {
-      console.log(bus.result[i].radar.name);
       if (bus.result[i].radar.radar_id == e.features[0].properties.radar_id) {
-        station.active = i;
+        station
+          .查询雷达最新的径向风数据接口({
+            radar_id: e.features[0].properties.radar_id.replaceAll("-", ""),
+          })
+          .then((res) => {
+            bus.radialWindData = res.data.data;
+          });
+        station.active = bus.result[i].radar.radar_id;
       }
     }
   }
@@ -296,18 +301,15 @@ const moveFunc = () => {
   setting.openlayers.center = [center.lng, center.lat];
 };
 const task = () => {
-  if (prevDate === new Date().Format("yyyyMMdd")) {
-    station
-      .查询平均风数据接口(
-        {
-          user_id: route.query.user_id,
-        },
-        new Date().Format("yyyyMMdd")
-      )
-      .then((res) => {
-        bus.avgWindData = res.data.data;
-      });
-  }
+  // if (prevDate === new Date(setting.now).Format("yyyyMMdd")) {
+  station
+    .查询雷达最新的平均风数据接口({
+      user_id: route.query.user_id,
+    })
+    .then((res) => {
+      bus.avgWindData = res.data.data;
+    });
+  // }
   // station
   //   .查询瞬时风数据接口({
   //     user_id: route.query.user_id,
@@ -315,14 +317,17 @@ const task = () => {
   //   .then((res) => {
   //     station.secondWindData = res.data.data;
   //   });
-  station
-    .查询径向风数据接口({
-      user_id: route.query.user_id,
-    })
-    .then((res) => {
-      bus.radialWindData = res.data.data;
-    });
+  // if (station.active) {//会导致服务器阻塞
+  //   station
+  //     .查询雷达最新的径向风数据接口({
+  //       radar_id: station.active.replaceAll("-", ""),
+  //     })
+  //     .then((res) => {
+  //       bus.radialWindData = res.data.data;
+  //     });
+  // }
 };
+task();
 const loadFunc = () => {
   map.addSource("point", points);
   map.addLayer({
@@ -381,8 +386,8 @@ const loadFunc = () => {
       "icon-size": 1,
       "icon-rotate": ["get", "风向"],
       "icon-rotation-alignment": "map",
-      "icon-allow-overlap": false,
-      "icon-ignore-placement": false,
+      "icon-allow-overlap": true,
+      "icon-ignore-placement": true,
       // "text-field": ["get", "风速"],
       // "text-font": ["simkai"],
       // "text-size": 14,
@@ -480,7 +485,7 @@ const loadFunc = () => {
   if (import.meta.env.PROD) {
     timer = setInterval(() => task(), 4 * 60 * 1000);
   } else if (import.meta.env.DEV) {
-    timer = setInterval(() => task(), 3 * 1000);
+    timer = setInterval(() => task(), 4 * 60 * 1000);
   }
   let frameCounter = map.painter.frameCounter;
   mock = setInterval(() => {
@@ -513,7 +518,8 @@ onMounted(() => {
     localIdeographFontFamily: "",
     antialias: true,
     renderWorldCopies: true,
-    maxZoom: 17,
+    // maxZoom: 17,
+    maxZoom: 18,
     // minZoom: 1,
     // maxBounds: [
     //   [60.0, 0],
@@ -595,9 +601,6 @@ watch(
       });
     }
     map.getSource("point").setData(points.data);
-    if (newVal.length) {
-      task();
-    }
   }
 );
 watch(
@@ -605,33 +608,62 @@ watch(
   (avgWindData) => {
     if (avgWindData) {
       data.length = 0;
-      avgWindData.forEach((v) => {
-        for (let radar_id in v) {
-          //计算风羽的位置并添加
+      avgWindData.map((v) => {
+        for (let k in v) {
+          let radar_id = k;
+          let list = v[k];
+          //删除相关站点的风羽
           for (let i = 0; i < points.data.features.length; i++) {
             if (
               radar_id == points.data.features[i].properties.radar_id &&
-              points.data.features[i].properties.type == "站点"
+              points.data.features[i].properties.type == "风羽"
             ) {
-              const lngLat = points.data.features[i].geometry.coordinates;
-              let tmp = v[radar_id];
-              for (let key in tmp) {
-                for (let k in tmp[key]) {
-                  let t = Date.parse(k);
-                  let position = "left";
-                  if (t > setting.now) {
-                    position = "right";
-                  } else if (setting.now == t) {
-                    position = "middle";
-                  }
-                  data.push({
-                    position,
-                    time: t,
-                    attributes: tmp[key],
-                    lngLat,
-                    radar_id,
+              points.data.features.splice(i--, 1);
+            }
+          }
+          for (let i = 0; i < list.length; i++) {
+            let data_time = list[i].data_time;
+            let data_list = list[i].data_list;
+            if (i == 0) {
+              //计算风羽的位置并添加
+              for (let i = 0; i < points.data.features.length; i++) {
+                if (
+                  radar_id == points.data.features[i].properties.radar_id &&
+                  points.data.features[i].properties.type == "站点"
+                ) {
+                  const lngLat = points.data.features[i].geometry.coordinates;
+
+                  data_list.map((item) => {
+                    let ll = getLngLat(
+                      lngLat[0],
+                      lngLat[1],
+                      item.north_a,
+                      Number(item.distance)
+                    );
+                    // item.center_h_direction_abs = Math.random() * 360;
+                    // item.center_h_speed = Math.random() * 60;
+                    if (
+                      item.center_h_direction_abs != -1000 &&
+                      item.center_h_speed != -1000
+                    ) {
+                      points.data.features.push({
+                        type: "Feature",
+                        properties: {
+                          type: "风羽",
+                          radar_id: radar_id,
+                          风速: item.center_h_speed,
+                          image: "feather" + getFeather(item.center_h_speed),
+                          风向: item.center_h_direction_abs,
+                        },
+                        geometry: {
+                          type: "Point",
+                          coordinates: [ll.lng, ll.lat],
+                        },
+                      });
+                    }
                   });
-                  data.sort((a, b) => a.time - b.time);
+                  let source = map.getSource("point");
+                  source && source.setData(points.data);
                 }
               }
             }

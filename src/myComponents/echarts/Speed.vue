@@ -9,7 +9,10 @@
       flex-direction: column;
     "
   >
-    <div style="color: rgb(78, 129, 184); font-size: 20px">距离风速曲线</div>
+    <div style="display: flex; flex-direction: row; justify-content: space-between">
+      <div style="color: rgb(78, 129, 184); font-size: 20px">距离风速曲线</div>
+      <div style="color: grey">{{ currentTime }}</div>
+    </div>
     <div ref="thContainer" class="w-full h-full flex-1"></div>
   </div>
 </template>
@@ -32,13 +35,14 @@ onMounted(() => {
 watch(
   [() => bus.secondWindData, () => bus.result, () => station.active],
   ([windData, result, active]) => {
+    return;
     option.series[1].data = [];
     myChart.setOption(option, false, true);
     if (windData.length) {
       windData.map((v, k) => {
         let data;
         for (let key in v) {
-          if (result[active] && key == result[active].radar.radar_id) {
+          if (key === active) {
             data = v[key];
           }
         }
@@ -63,7 +67,7 @@ watch(
     }
   }
 );
-
+const currentTime = ref("");
 watch(
   [() => bus.avgWindData, () => bus.result, () => station.active],
   ([avgWindData, result, active]) => {
@@ -73,25 +77,20 @@ watch(
       avgWindData.map((v, k) => {
         let data;
         for (let key in v) {
-          if (result[active] && key == result[active].radar.radar_id) {
+          if (key === active) {
             data = v[key][0];
           }
         }
         if (data) {
-          let tmpArr = [];
-          for (let key in data) {
-            tmpArr.unshift({ key, value: data[key] });
-          }
-          let tmp2 = tmpArr[tmpArr.length - 1].value.slice().reverse();
-          for (let key in tmp2) {
-            for (let k in tmp2[key]) {
-              let item = tmp2[key][k];
-              if (item.center_h_speed != -1000) {
-                option.series[0].data.push([item.center_h_speed, item.distance]);
-              }
-              myChart.setOption(option, false, true);
+          currentTime.value = data.data_time;
+          let data_list = data.data_list;
+          for (let i = 0; i < data_list.length; i++) {
+            let item = data_list[i];
+            if (item.center_h_speed != -1000) {
+              option.series[0].data.push([item.center_h_speed, item.distance]);
             }
           }
+          myChart.setOption(option, false, true);
         }
       });
     }

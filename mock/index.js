@@ -48,7 +48,7 @@ export default [
     {
         path:'/api/weather/wind/avg/:time',
         method:'POST',
-        disable: false,
+        disable: true,
         // delay:()=>Math.round(Math.random()*10000),
         response:(req)=>{
         console.log(req.params)
@@ -167,8 +167,8 @@ export default [
         }
     },
     {
-        path:'/api/weather/wind/radial/:time',
-        disable:false,
+        path:'/api/weather/wind/latest-radial',
+        disable:true,
         method:'POST',
         response:()=>{
             return radialData

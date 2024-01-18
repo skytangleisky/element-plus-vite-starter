@@ -9,7 +9,10 @@
       flex-direction: column;
     "
   >
-    <div style="color: rgb(78, 129, 184); font-size: 20px">风向廓线</div>
+    <div style="display: flex; flex-direction: row; justify-content: space-between">
+      <div style="color: rgb(78, 129, 184); font-size: 20px">风向廓线</div>
+      <div style="color: grey">{{ currentTime }}</div>
+    </div>
     <div ref="thContainer" class="w-full h-full flex-1"></div>
   </div>
 </template>
@@ -29,7 +32,7 @@ watch(isDark, (isDark) => {
 onMounted(() => {
   setChart(isDark.value);
 });
-
+const currentTime = ref("");
 watch(
   [() => bus.avgWindData, () => bus.result, () => station.active],
   ([avgWindData, result, active]) => {
@@ -39,22 +42,19 @@ watch(
       avgWindData.map((v, k) => {
         let data;
         for (let key in v) {
-          if (result[active] && key == result[active].radar.radar_id) {
+          if (key == active) {
             data = v[key][0];
           }
         }
         if (data) {
-          let tmpArr = [];
-          for (let key in data) {
-            tmpArr.unshift({ key, value: data[key] });
-          }
-          let tmp2 = tmpArr.slice(-1)[0].value.slice().reverse();
-          for (let i = 0; i < tmp2.length; i++) {
-            for (let k in tmp2[i]) {
-              let item = tmp2[i][k];
-              if (item.center_h_direction_abs != -1000) {
-                option.series[0].data.push([item.distance, item.center_h_direction_abs]);
-              }
+          currentTime.value = data.data_time;
+          let data_list = data.data_list;
+          for (let i = 0; i < data_list.length; i++) {
+            if (data_list[i].center_h_direction_abs != -1000) {
+              option.series[0].data.push([
+                data_list[i].distance,
+                data_list[i].center_h_direction_abs,
+              ]);
             }
           }
           myChart.setOption(option, false, true);
@@ -66,13 +66,14 @@ watch(
 watch(
   [() => bus.secondWindData, () => bus.result, () => station.active],
   ([avgWindData, result, active]) => {
+    return;
     option.series[1].data = [];
     myChart.setOption(option, false, true);
     if (avgWindData) {
       avgWindData.map((v, k) => {
         let data;
         for (let key in v) {
-          if (result[active] && key == result[active].radar.radar_id) {
+          if (key == active) {
             data = v[key];
           }
         }

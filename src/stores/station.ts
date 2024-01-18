@@ -1,6 +1,6 @@
 // @ts-check
 import { defineStore, acceptHMRUpdate } from "pinia"
-import { 查询雷达列表接口, 查询雷达在线列表接口,查询雷达离线列表接口,查询近期新增雷达列表接口,查询平均风数据接口,查询瞬时风数据接口,查询径向风数据接口} from '../api/光恒/station'
+import { 查询雷达列表接口, 查询雷达在线列表接口,查询雷达离线列表接口,查询近期新增雷达列表接口,查询雷达最新的平均风数据接口,查询瞬时风数据接口,查询雷达最新的径向风数据接口} from '../api/光恒/station'
 import {useBus} from '~/myComponents/bus'
 const bus = useBus()
 interface Station {
@@ -71,7 +71,7 @@ export const useStationStore = defineStore({
     avgWindData: new Array<Wind>(),//平均风数据
     secondWindData: new Array<Wind>(),//平均风数据
     radialWindData: new Array(),
-    active:-1
+    active:""
   }),
   actions: {
     查询雷达列表接口(query:any){
@@ -122,9 +122,9 @@ export const useStationStore = defineStore({
         })
       })
     },
-    查询平均风数据接口(query:any,time:string){
+    查询雷达最新的平均风数据接口(query:any){
       return new Promise((resolve,reject)=>{
-        查询平均风数据接口(query,time).then((res:any)=>{
+        查询雷达最新的平均风数据接口(query).then((res:any)=>{
           resolve(res)
         }).catch((e)=>{
           reject(e)
@@ -140,9 +140,9 @@ export const useStationStore = defineStore({
         })
       })
     },
-    查询径向风数据接口(query:any){
+    查询雷达最新的径向风数据接口(query:any){
       return new Promise((resolve,reject)=>{
-        查询径向风数据接口(query).then((res:any)=>{
+        查询雷达最新的径向风数据接口(query).then((res:any)=>{
           resolve(res)
         }).catch((e)=>{
           reject(e)

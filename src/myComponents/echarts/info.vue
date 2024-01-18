@@ -2,10 +2,10 @@
   <div style="scroll-snap-align: start; scroll-snap-stop: always; width: 100%">
     <div
       style="
+        color: rgb(78, 129, 184);
         font-size: 20px;
         scroll-snap-align: start;
         scroll-snap-stop: always;
-        color: rgb(78, 129, 184);
         width: 100%;
         box-sizing: border-box;
         display: flex;
@@ -15,30 +15,24 @@
         min-height: 60px;
       "
     >
-      {{ bus.result[station.active]?.radar.name }}
-      <span style="font-size: small; color: grey; right: 0">{{
-        bus.result[station.active]?.data_time
-      }}</span>
+      <div @click="click" style="position: relative">{{ item?.radar.name }}</div>
+      <span style="font-size: small; color: grey; right: 0">{{ item?.data_time }}</span>
     </div>
     <div class="grid grid-cols-3 grid-rows-4 w-full h-auto">
       <div class="info_item" style="grid-column: 1/2">
-        <span>序列号:</span><span>{{ bus.result[station.active]?.radar.sn_code }}</span>
+        <span>序列号:</span><span>{{ item?.radar.sn_code }}</span>
       </div>
       <div class="info_item" style="grid-column: 1/2">
         <span>在线状态:</span>
         <div
-          :class="`${
-            bus.result[station.active]?.radar.is_online ? 'bg-green' : 'bg-red'
-          }`"
+          :class="`${item?.radar.is_online ? 'bg-green' : 'bg-red'}`"
           style="border-radius: 50%; width: 1rem; height: 1rem"
         ></div>
       </div>
       <div class="info_item" style="grid-column: 1/2">
         <span>数据采集状态:</span>
         <div
-          :class="`${
-            bus.result[station.active]?.radar.data_status ? 'bg-green' : 'bg-red'
-          }`"
+          :class="`${item?.radar.data_status ? 'bg-green' : 'bg-red'}`"
           style="border-radius: 50%; width: 1rem; height: 1rem"
         ></div>
       </div>
@@ -49,18 +43,15 @@
       <div class="info_item" style="grid-column: 1/2">
         <span>控制板状态:</span>
         <div
-          :class="`${
-            bus.result[station.active]?.control_plate_status ? 'bg-green' : 'bg-red'
-          }`"
+          :class="`${item?.control_plate_status ? 'bg-green' : 'bg-red'}`"
           style="border-radius: 50%; width: 1rem; height: 1rem"
         ></div>
       </div>
       <div class="info_item" style="grid-column: 1/2">
-        <span>CPU温度:</span
-        ><span>{{ bus.result[station.active]?.cpu_temperature }}</span>
+        <span>CPU温度:</span><span>{{ item?.cpu_temperature }}</span>
       </div>
       <div class="info_item">
-        <span>硬盘容量:</span><span>{{ bus.result[station.active]?.disk_capacity }}</span>
+        <span>硬盘容量:</span><span>{{ item?.disk_capacity }}</span>
       </div>
 
       <hr
@@ -70,23 +61,18 @@
       <div class="info_item" style="grid-column: 1/2">
         <span>舱内温湿度状态:</span>
         <div
-          :class="`${
-            bus.result[station.active]?.internal_status ? 'bg-green' : 'bg-red'
-          }`"
+          :class="`${item?.internal_status ? 'bg-green' : 'bg-red'}`"
           style="border-radius: 50%; width: 1rem; height: 1rem"
         ></div>
       </div>
       <div class="info_item" style="grid-column: 1/2">
-        <span>舱内温度:</span
-        ><span>{{ bus.result[station.active]?.internal_temperature }}</span>
+        <span>舱内温度:</span><span>{{ item?.internal_temperature }}</span>
       </div>
       <div class="info_item">
-        <span>舱内湿度:</span
-        ><span>{{ bus.result[station.active]?.internal_humidity }}</span>
+        <span>舱内湿度:</span><span>{{ item?.internal_humidity }}</span>
       </div>
       <div class="info_item">
-        <span>窗口片温度:</span
-        ><span>{{ bus.result[station.active]?.lens_temperature }}</span>
+        <span>窗口片温度:</span><span>{{ item?.lens_temperature }}</span>
       </div>
 
       <hr
@@ -96,19 +82,15 @@
       <div class="info_item" style="grid-column: 1/2">
         <span>舱外温湿度状态:</span>
         <div
-          :class="`${
-            bus.result[station.active]?.external_status ? 'bg-green' : 'bg-red'
-          }`"
+          :class="`${item?.external_status ? 'bg-green' : 'bg-red'}`"
           style="border-radius: 50%; width: 1rem; height: 1rem"
         ></div>
       </div>
       <div class="info_item" style="grid-column: 1/2">
-        <span>舱外温度:</span
-        ><span>{{ bus.result[station.active]?.external_temperature }}</span>
+        <span>舱外温度:</span><span>{{ item?.external_temperature }}</span>
       </div>
       <div class="info_item">
-        <span>舱外湿度:</span
-        ><span>{{ bus.result[station.active]?.external_humidity }}</span>
+        <span>舱外湿度:</span><span>{{ item?.external_humidity }}</span>
       </div>
 
       <hr
@@ -118,16 +100,15 @@
       <div class="info_item" style="grid-column: 1/2">
         <span>EDFA状态:</span>
         <div
-          :class="`${bus.result[station.active]?.edfa_status ? 'bg-green' : 'bg-red'}`"
+          :class="`${item?.edfa_status ? 'bg-green' : 'bg-red'}`"
           style="border-radius: 50%; width: 1rem; height: 1rem"
         ></div>
       </div>
       <div class="info_item" style="grid-column: 1/2">
-        <span>激光器温度:</span
-        ><span>{{ bus.result[station.active]?.laser_temperature }}</span>
+        <span>激光器温度:</span><span>{{ item?.laser_temperature }}</span>
       </div>
       <div class="info_item">
-        <span>激光器功率:</span><span>{{ bus.result[station.active]?.laser_power }}</span>
+        <span>激光器功率:</span><span>{{ item?.laser_power }}</span>
       </div>
 
       <hr
@@ -137,13 +118,12 @@
       <div class="info_item" style="grid-column: 1/2">
         <span>采集卡状态:</span>
         <div
-          :class="`${bus.result[station.active]?.grabber_status ? 'bg-green' : 'bg-red'}`"
+          :class="`${item?.grabber_status ? 'bg-green' : 'bg-red'}`"
           style="border-radius: 50%; width: 1rem; height: 1rem"
         ></div>
       </div>
       <div class="info_item" style="grid-column: 1/2">
-        <span>采集卡温度:</span
-        ><span>{{ bus.result[station.active]?.grabber_temperature }}</span>
+        <span>采集卡温度:</span><span>{{ item?.grabber_temperature }}</span>
       </div>
 
       <hr
@@ -153,18 +133,18 @@
       <div class="info_item" style="grid-column: 1/2">
         <span>电子罗盘状态:</span>
         <div
-          :class="`${bus.result[station.active]?.compass_status ? 'bg-green' : 'bg-red'}`"
+          :class="`${item?.compass_status ? 'bg-green' : 'bg-red'}`"
           style="border-radius: 50%; width: 1rem; height: 1rem"
         ></div>
       </div>
       <div class="info_item" style="grid-column: 1/2">
-        <span>北向角:</span><span>{{ bus.result[station.active]?.north_angle }}</span>
+        <span>北向角:</span><span>{{ item?.north_angle }}</span>
       </div>
       <div class="info_item">
-        <span>横倾角:</span><span>{{ bus.result[station.active]?.heel_angle }}</span>
+        <span>横倾角:</span><span>{{ item?.heel_angle }}</span>
       </div>
       <div class="info_item">
-        <span>纵倾角:</span><span>{{ bus.result[station.active]?.trim_angle }}</span>
+        <span>纵倾角:</span><span>{{ item?.trim_angle }}</span>
       </div>
 
       <hr
@@ -174,24 +154,39 @@
       <div class="info_item" style="grid-column: 1/2">
         <span>GPS状态:</span>
         <div
-          :class="`${bus.result[station.active]?.gps_status ? 'bg-green' : 'bg-red'}`"
+          :class="`${item?.gps_status ? 'bg-green' : 'bg-red'}`"
           style="border-radius: 50%; width: 1rem; height: 1rem"
         ></div>
       </div>
       <div class="info_item" style="grid-column: 1/2">
-        <span>位置经度:</span><span>{{ bus.result[station.active]?.longitude }}</span>
+        <span>位置经度:</span><span>{{ item?.longitude }}</span>
       </div>
       <div class="info_item">
-        <span>位置纬度:</span><span>{{ bus.result[station.active]?.latitude }}</span>
+        <span>位置纬度:</span><span>{{ item?.latitude }}</span>
       </div>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
+import { watch, ref } from "vue";
 import { useStationStore } from "~/stores/station";
 const station = useStationStore();
 import { useBus } from "~/myComponents/bus";
 const bus = useBus();
+const item = ref(undefined);
+const click = () => {
+  window.open(
+    `https://main.emgo-tech.com/admin/device/radar/${item.value.radar.id}/change/`,
+    "_self"
+  );
+};
+watch([() => bus.result, () => station.active], ([result, active]) => {
+  result.map((v) => {
+    if (v.radar.radar_id === active) {
+      item.value = v;
+    }
+  });
+});
 </script>
 <style lang="scss">
 .info_item {

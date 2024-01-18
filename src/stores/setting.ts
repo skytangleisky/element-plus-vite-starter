@@ -3,9 +3,9 @@ import zhCn from '../languages/zh-cn.mjs'
 import en from '../languages/en.mjs'
 export const state = {
   mapbox:{
-    showStation:false,
+    showStation:true,
     showStream:false,
-    satellite:false,
+    satellite:true,
   },
   openlayers:{
     zoom:5,
@@ -203,6 +203,13 @@ export const state = {
       name: 'e4961e04-e574-0e1f-ae23-94f157b14a41',
       component: '/src/tools/graph.vue',
       label: 'graph',
+      svg:'5e38a2e3aaf011eeb80bb025aa2c9ada'
+    },
+    {
+      path: 'zrender',
+      name: 'e4961e04-e574-0e1f-ae23-94f157b14a42',
+      component: '/src/myComponents/zrender/demo.vue',
+      label: 'zrender',
       svg:'5e38a2e3aaf011eeb80bb025aa2c9ada'
     },
     {

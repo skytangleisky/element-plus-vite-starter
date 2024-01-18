@@ -67,12 +67,12 @@ export function 查询近期新增雷达列表接口(query) {
     data: query
   })
 }
-export function 查询平均风数据接口(query,time) {
+export function 查询雷达最新的平均风数据接口(query) {
   if(!query.user_id){
     query.user_id = user_id
   }
   return request({
-    url: 'api/weather/wind/avg/'+time,
+    url: 'api/weather/wind/latest-avg',
     method: 'post',
     data: query
   })
@@ -87,12 +87,12 @@ export function 查询瞬时风数据接口(query) {
     data: query
   })
 }
-export function 查询径向风数据接口(query){
-  if(!query.user_id){
-    query.user_id = user_id
-  }
+export function 查询雷达最新的径向风数据接口(query){
+  // if(!query.user_id){
+  //   query.user_id = user_id
+  // }
   return request({
-    url: 'api/weather/wind/radial/'+time,
+    url: 'api/weather/wind/latest-radial',
     method: 'post',
     data:query
   })

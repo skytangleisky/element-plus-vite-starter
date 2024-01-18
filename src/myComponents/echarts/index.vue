@@ -52,7 +52,7 @@ import { isDark } from "~/composables";
 import { useBus } from "~/myComponents/bus";
 const bus = useBus();
 const chartDom = ref(null);
-const layerIndex = ref(null);
+const layerIndex = ref(0);
 const options = ref([]);
 onMounted(() => {
   setEcharts(isDark.value);
@@ -384,66 +384,49 @@ let setEcharts = (isDark) => {
   watch(
     [() => bus.avgWindData, layerIndex, () => bus.result, () => station.active],
     ([avgWindData, layerIdx, result, active]) => {
+      option.series[1].data = [];
+      option.series[2].data = [];
       myChart.setOption(option, false, true);
       if (avgWindData) {
         avgWindData.map((v, k) => {
           let data;
           for (let key in v) {
-            if (result[active] && key == result[active].radar.radar_id) {
+            if (key == active) {
               data = v[key];
             }
           }
-          if (data) {
+          if (data && data.length) {
             options.value = [];
-            for (let K in data[0]) {
-              for (let i = 0; i < data[0][K].length; i++) {
-                for (let key in data[0][K][i]) {
-                  options.value.push({
-                    value: i,
-                    label: `${key}米`,
-                  });
-                }
-              }
-              if (layerIndex.value == null) {
-                layerIndex.value = data[0][K].length - 1;
-              }
+            for (let i = 0; i < data[0].data_list.length; i++) {
+              options.value.push({
+                value: data[0].data_list.length - 1 - i,
+                label: `${data[0].data_list[i].distance}米`,
+              });
             }
             let Fdatas = [];
-            data.map((v, k) => {
-              for (let k in v) {
-                let fData = [];
-                fData[0] = k;
-                let tmp2 = v[k][layerIdx];
-                if (tmp2) {
-                  for (let key in tmp2) {
-                    fData[1] = tmp2[key].center_h_speed;
-                    fData[2] = tmp2[key].center_h_direction_abs;
-                    fData[3] = tmp2[key].distance;
-                  }
-                  if (fData[1] === -1000) {
-                  } else {
-                    Fdatas.unshift(fData);
-                  }
+            data.map((v) => {
+              let data_list = v.data_list;
+              let tmpData = data_list[data_list.length - 1 - layerIdx];
+              if (tmpData) {
+                if (tmpData.center_h_speed != -1000) {
+                  Fdatas.unshift([
+                    tmpData.timestamp,
+                    tmpData.center_h_speed,
+                    tmpData.center_h_direction_abs,
+                    tmpData.distance,
+                  ]);
                 }
               }
             });
-            // option.series[0].data = Fdatas;
             for (let i = 0; i < Fdatas.length; i++) {
               option.series[1].data.push(Fdatas[i]);
               option.series[2].data.push(Fdatas[i]);
-              if (option.series[1].data.length > 20) {
-                option.series[1].data.shift();
-              }
-              if (option.series[2].data.length > 20) {
-                option.series[2].data.shift();
-              }
             }
             myChart.setOption(option, false, true);
           }
         });
       }
-    },
-    { immediate: true }
+    }
   );
 
   option && myChart.setOption(option, false, true);

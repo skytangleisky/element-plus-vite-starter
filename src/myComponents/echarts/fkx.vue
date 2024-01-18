@@ -9,7 +9,10 @@
       flex-direction: column;
     "
   >
-    <div style="font-size: 20px; color: rgb(78, 129, 184)">水平风</div>
+    <div style="display: flex; flex-direction: row; justify-content: space-between">
+      <div style="font-size: 20px; color: rgb(78, 129, 184)">水平风</div>
+      <div style="color: grey">{{ currentTime }}</div>
+    </div>
     <div ref="fkxContainer" class="w-full flex-1"></div>
   </div>
 </template>
@@ -32,6 +35,8 @@ let dbs: DBS;
 onMounted(() => {
   setDBS(isDark.value);
 });
+const currentTime = ref("");
+let timer: number;
 const setDBS = (isDark: boolean) => {
   dbs = new DBS();
   dbs.init({
@@ -41,55 +46,54 @@ const setDBS = (isDark: boolean) => {
   });
   // Fdata.timestamp = new Date(Math.floor(new Date().getTime() / 5000) * 5000).Format();
   // dbs.process(Object.assign({}, Fdata));
-  // const timer = setInterval(() => {
+  // timer = setInterval(() => {
   //   Fdata.timestamp = new Date(Math.floor(new Date().getTime() / 5000) * 5000).Format();
   //   dbs.process(Object.assign({}, Fdata));
   //   // clearInterval(timer);
   // }, 5000);
-  watch(
-    [() => bus.avgWindData, () => bus.result, () => station.active],
-    ([avgWindData, result, active]) => {
-      dbs.clear();
-      if (avgWindData) {
-        avgWindData.map((v, k) => {
-          let data;
-          for (let key in v) {
-            if (result[active] && key == result[active].radar.radar_id) {
-              data = v[key];
+  watch([() => bus.avgWindData, () => station.active], ([avgWindData, active]) => {
+    dbs.clear();
+    if (avgWindData) {
+      avgWindData.map((v, k) => {
+        let data;
+        for (let key in v) {
+          if (key == active) {
+            data = v[key];
+          }
+        }
+        if (data) {
+          let Fdatas: any[] = [];
+          data.map((v, k) => {
+            if (k === 0) {
+              currentTime.value = v.data_time;
             }
-          }
-          if (data) {
-            let Fdatas: any[] = [];
-            data.map((v, k) => {
-              for (let k in v) {
-                let fData: { [key: string]: any } = {};
-                fData.timestamp = k;
-                fData.data = [];
-                v[k].map((item) => {
-                  for (let tmp in item) {
-                    fData.data.push({
-                      fHei: item[tmp].distance.toString(),
-                      fHAngle: item[tmp].center_h_direction_abs.toString(),
-                      fHSpeed: item[tmp].center_h_speed.toString(),
-                      fVSpeed: item[tmp].vert_airflow.toString(),
-                      // iBelieveable: v[k].reliability,
-                    });
-                  }
-                });
-                fData.data.reverse();
-                Fdatas.unshift(fData);
-                // console.log(fData);
-              }
+            let data_time = v.data_time;
+            let data_list = v.data_list;
+            let fData: { [key: string]: any } = {};
+            fData.timestamp = data_time;
+            fData.data = [];
+            data_list.map((item) => {
+              fData.data.push({
+                fHei: item.distance.toString(),
+                fHAngle: item.center_h_direction_abs.toString(),
+                fHSpeed: item.center_h_speed.toString(),
+                fVSpeed: item.vert_airflow.toString(),
+                // iBelieveable: v[k].reliability,
+              });
             });
-            dbs.process(Fdatas);
-          }
-        });
-      }
+            fData.data.reverse();
+            Fdatas.unshift(fData);
+            // console.log(fData);
+          });
+          dbs.process(Fdatas);
+        }
+      });
     }
-  );
+  });
 };
 onBeforeUnmount(() => {
-  // clearInterval(timer);
+  clearInterval(timer);
+  dbs.clear();
   dbs.destroy();
 });
 </script>
