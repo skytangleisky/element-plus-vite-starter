@@ -175,7 +175,7 @@ import { useBus } from "~/myComponents/bus";
 const bus = useBus();
 const item = ref(undefined);
 const click = () => {
-  window.open(
+  window.top?.open(
     `https://main.emgo-tech.com/admin/device/radar/${item.value.radar.id}/change/`,
     "_self"
   );
