@@ -17,7 +17,9 @@ const users = {
         "two_factor_secret": null,
         "two_factor_recovery_codes": null,
         "remember_token": "",
-        "avatar": "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif",
+        // "avatar": "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif",
+        // "avatar": "https://img2.baidu.com/it/u=483398814,2966849709&fm=253&fmt=auto&app=138&f=JPEG",
+        "avatar": "/favicon.svg",
         "user_path": "/",
         "debug_enable": "true",
         "roles": [

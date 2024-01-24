@@ -138,6 +138,13 @@ export const state = {
           label:'openlayers',
           svg:'4db7562c3aa011ee8077b025aa2c9ada',
         },
+        {
+          path: 'zrender',
+          name: 'c4961e04-e574-0e1f-ae23-94f157b14a42',
+          component: '/src/myComponents/zrender/demo.vue',
+          label: 'zrender',
+          svg:'5e38a2e3aaf011eeb80bb025aa2c9ada'
+        }
       ]
     },
     {
@@ -206,16 +213,23 @@ export const state = {
       svg:'5e38a2e3aaf011eeb80bb025aa2c9ada'
     },
     {
-      path: 'zrender',
-      name: 'e4961e04-e574-0e1f-ae23-94f157b14a42',
-      component: '/src/myComponents/zrender/demo.vue',
-      label: 'zrender',
+      path: 'test',
+      name: 'c4961e04-e574-0e1f-ae23-94f157b14a44',
+      component: '/src/myComponents/zrender/test.vue',
+      label: 'test',
+      svg:'5e38a2e3aaf011eeb80bb025aa2c9ada'
+    },
+    {
+      path: 'calibration',
+      name: 'c4961e04-e574-0e1f-ae23-94f157b14a43',
+      component: '/src/myComponents/calibration/index.vue',
+      label: 'calibration',
       svg:'5e38a2e3aaf011eeb80bb025aa2c9ada'
     },
     {
       path: '',
       redirect: '/contain/map',
-    },
+    }
   ]
 }
 export const useSettingStore = defineStore({

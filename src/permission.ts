@@ -4,7 +4,7 @@ import { useUserStore } from './stores/user'
 import { useSettingStore } from './stores/setting'
 import "nprogress/nprogress.css"
 NProgress.configure({ showSpinner: false })
-const whiteList=['/login','/qqlogin','/register','/404','/401', '/openlayers','/mapbox']
+const whiteList=['/login','/qqlogin','/register','/404','/401', '/openlayers','/mapbox','/calibration']
 router.beforeEach((to,from,next)=>{
   NProgress.start()
   // document.title = 'abcdef'
