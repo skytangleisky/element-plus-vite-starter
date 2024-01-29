@@ -22,6 +22,9 @@
                 >登陆</el-dropdown-item
               >
               <!-- <el-dropdown-item :icon="ColdDrink">捐赠</el-dropdown-item> -->
+              <el-dropdown-item :icon="isDark ? Moon : Sunny" @click="toggleDark()">{{
+                isDark ? "暗黑" : "明亮"
+              }}</el-dropdown-item>
               <el-dropdown-item :icon="Setting" @click="click">设置</el-dropdown-item>
               <el-dropdown-item :icon="Switch" @click="Reset">重置</el-dropdown-item>
               <el-dropdown-item
@@ -51,6 +54,8 @@ import {
   User,
   CloseBold,
   Switch,
+  Moon,
+  Sunny,
 } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
 const router = useRouter();
@@ -65,7 +70,7 @@ import { useUserStore } from "~/stores/user";
 const user = useUserStore();
 import { useDataStore } from "./stores/data";
 const data = useDataStore();
-
+import { toggleDark, isDark } from "~/composables";
 const click = () => {
   setting.$resetFields();
 };

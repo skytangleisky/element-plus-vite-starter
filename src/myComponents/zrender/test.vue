@@ -1,6 +1,6 @@
 <template>
   <canvas ref="canvasRef" class="canvasRef"></canvas>
-  <!--<graph v-if="DEV" class="absolute left-0 bottom-0" v-model:args="graphArgs"></graph>-->
+  <!-- <graph v-if="DEV" class="absolute left-0 bottom-0" v-model:args="graphArgs"></graph> -->
 </template>
 <script lang="ts" setup>
 interface ExtendedCanvasRenderingContext2D extends CanvasRenderingContext2D {
@@ -15,7 +15,7 @@ const graphArgs = reactive({
 });
 const options = reactive({
   viewport: [0, 0, 1, 1],
-  maxFps: 1,
+  maxFps: Infinity,
 });
 let aid: number = 0;
 const DEV = import.meta.env.DEV;
@@ -28,7 +28,7 @@ let cvs: HTMLCanvasElement;
 let ctx: ExtendedCanvasRenderingContext2D;
 let sleepController = new SleepController();
 let queue: Array<any> = [];
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 1000; i++) {
   queue.push({});
 }
 let rect = {

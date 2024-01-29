@@ -144,6 +144,13 @@ export const state = {
           component: '/src/myComponents/zrender/demo.vue',
           label: 'zrender',
           svg:'5e38a2e3aaf011eeb80bb025aa2c9ada'
+        },
+        {
+          path: 'datatable',
+          name: 'c4961e04-e574-0e1f-ae23-94f157b14a45',
+          component: '/src/myComponents/datatable/index.vue',
+          label: 'datatable',
+          svg:'284b8890b9ca11eeb80bb025aa2c9ada'
         }
       ]
     },
