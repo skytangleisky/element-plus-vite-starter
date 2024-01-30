@@ -10,7 +10,6 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     BaseHeader: typeof import('./components/layouts/BaseHeader.vue')['default']
-    ElAffix: typeof import('element-plus/es')['ElAffix']
     ElAutoResizer: typeof import('element-plus/es')['ElAutoResizer']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElButton: typeof import('element-plus/es')['ElButton']
@@ -22,7 +21,6 @@ declare module '@vue/runtime-core' {
     ElDropdown: typeof import('element-plus/es')['ElDropdown']
     ElDropdownItem: typeof import('element-plus/es')['ElDropdownItem']
     ElDropdownMenu: typeof import('element-plus/es')['ElDropdownMenu']
-    ElEmpty: typeof import('element-plus/es')['ElEmpty']
     ElForm: typeof import('element-plus/es')['ElForm']
     ElFormItem: typeof import('element-plus/es')['ElFormItem']
     ElIcon: typeof import('element-plus/es')['ElIcon']
@@ -32,7 +30,6 @@ declare module '@vue/runtime-core' {
     ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
     ElOption: typeof import('element-plus/es')['ElOption']
     ElPagination: typeof import('element-plus/es')['ElPagination']
-    ElPopover: typeof import('element-plus/es')['ElPopover']
     ElProgress: typeof import('element-plus/es')['ElProgress']
     ElRow: typeof import('element-plus/es')['ElRow']
     ElScrollbar: typeof import('element-plus/es')['ElScrollbar']
@@ -40,8 +37,6 @@ declare module '@vue/runtime-core' {
     ElSlider: typeof import('element-plus/es')['ElSlider']
     ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
     ElSwitch: typeof import('element-plus/es')['ElSwitch']
-    ElTable: typeof import('element-plus/es')['ElTable']
-    ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElTableV2: typeof import('element-plus/es')['ElTableV2']
     ElTabPane: typeof import('element-plus/es')['ElTabPane']
     ElTabs: typeof import('element-plus/es')['ElTabs']
