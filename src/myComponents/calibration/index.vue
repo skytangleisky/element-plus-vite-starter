@@ -4,14 +4,11 @@
       display: absolute;
       width: 100%;
       height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       background-color: aliceblue;
       overflow: auto;
     "
   >
-    <div>
+    <div style="/*border: 1px solid red;*/ height: fit-content; width: fit-content">
       <div style="display: flex; flex-direction: column; align-items: center">
         <span class="title" style="font-size: 20px; font-weight: bold; color: black"
           >机舱标定架布局</span
@@ -198,13 +195,13 @@ const click = (v: any) => {
   display: grid;
   grid-template-rows: repeat(7, 30px);
   &.jc {
-    grid-template-columns: repeat(12, 100px);
+    grid-template-columns: repeat(12, 80px);
   }
   &.ts {
-    grid-template-columns: repeat(7, 100px);
+    grid-template-columns: repeat(7, 80px);
   }
   .text {
-    width: 4rem;
+    width: 3rem;
     padding: 4px 0;
     border-radius: 8px;
     background-color: #bbe0e3;
