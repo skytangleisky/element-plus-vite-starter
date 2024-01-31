@@ -3,20 +3,22 @@
     <div
       style="
         display: flex;
-        border: 1px solid #444;
-        border-top: 0;
         height: fit-content;
         flex: 1;
         box-sizing: border-box;
         overflow: auto;
       "
     >
-      <div v-for="item of thData" class="col">
+      <div v-for="item of options.thData" class="col">
         <div class="th dark:bg-#2b2b2b bg-white">
           {{ item.Field }}
         </div>
-        <div v-for="(v, k) in tableData" class="cell">
-          <myInput :k="item.Field" v-model:item="tableData[k]" :change="change"></myInput>
+        <div v-for="(v, k) in options.tdData" class="cell">
+          <myInput
+            :k="item.Field"
+            v-model:item="options.tdData[k]"
+            :change="change"
+          ></myInput>
         </div>
       </div>
     </div>
@@ -41,21 +43,23 @@
 import { reactive, watch } from "vue";
 import myInput from "./input.vue";
 import { getColumns, getAll, saveData, fetchList } from "~/api/userinfo";
-const thData = reactive(new Array<any>());
-getColumns().then((res) => {
-  res.data[0].map((v: any) => {
-    thData.push(v);
-  });
+const options = reactive({
+  thData: new Array<any>(),
+  tdData: new Array<any>(),
 });
 
-const tableData = reactive(new Array<any>());
+getColumns().then((res) => {
+  res.data[0].map((v: any) => {
+    options.thData.push(v);
+  });
+});
 // getAll().then((res) => {
 //   res.data[0].map((value: any) => {
 //     let item: { [key: string]: any } = {};
 //     for (let key in value) {
 //       item[key] = value[key];
 //     }
-//     tableData.push(item);
+//     options.tdData.push(item);
 //   });
 // });
 const change = (item: any, k: string, oldVal: any) => {
@@ -63,7 +67,7 @@ const change = (item: any, k: string, oldVal: any) => {
     console.log("数据未改变");
   } else {
     let tmp: { [key: string]: any } = {}; //用来存储必要的字段，减少网络传输的数据
-    thData.map((v: any) => {
+    options.thData.map((v: any) => {
       // 找出必要的字段
       if (v.Key === "PRI" || v.Key == "UNI") {
         tmp[v.Field] = item[v.Field];
@@ -86,7 +90,7 @@ const change = (item: any, k: string, oldVal: any) => {
 };
 const paginationOptions = reactive({
   currentPage: 1,
-  pageSize: 10,
+  pageSize: 100,
   total: 0,
 });
 watch(
@@ -97,9 +101,9 @@ watch(
       offset: (currentPage - 1) * pageSize,
     }).then((res) => {
       paginationOptions.total = res.data.total;
-      tableData.length = 0;
+      options.tdData.length = 0;
       res.data.results.map((v: any) => {
-        tableData.push(v);
+        options.tdData.push(v);
       });
     });
   },
@@ -128,7 +132,7 @@ watch(
       font-weight: bolder;
     }
   }
-  .col:not(:last-child) {
+  .col {
     .th {
       border-right: 1px solid #444;
     }
@@ -136,8 +140,8 @@ watch(
       border-right: 1px solid #444;
     }
   }
-  .cell:not(:nth-child(1), :nth-child(2)) {
-    border-top: 1px solid #444;
+  .cell:not(:nth-child(1)) {
+    border-bottom: 1px solid #444;
   }
 }
 .dark .mainContainer {
