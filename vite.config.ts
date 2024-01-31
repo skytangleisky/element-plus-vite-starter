@@ -27,6 +27,7 @@ export default defineConfig({
     __TEST__: true,
     __BROWSER__: true,
     __USE_DEVTOOLS__: false,
+    __VUE_PROD_HYDRATION_MISMATCH_DETAILS__:true,
   },
   resolve: {
     alias: {
