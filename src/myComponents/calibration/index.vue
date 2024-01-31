@@ -17,11 +17,13 @@
           >机舱标定架布局</span
         >
         <span class="subTitle" style="font-size: 14px; color: grey"
-          >总位置：###&emsp;已占用：###&emsp;空余：###</span
+          >总位置：{{ options.jc.total }}&emsp;已占用：{{
+            options.jc.used_count
+          }}&emsp;空余：{{ options.jc.unused_count }}</span
         >
         <div class="engineRoom jc">
           <div
-            v-for="(v, k) in options.jc"
+            v-for="(v, k) in options.jc.data"
             :key="k"
             style="display: flex; align-items: center; justify-content: center"
           >
@@ -51,10 +53,12 @@
           >塔式标定架布局</span
         >
         <span class="subTitle" style="font-size: 14px; color: grey"
-          >总位置：###&emsp;已占用：###&emsp;空余：###</span
+          >总位置：{{ options.ts.total }}&emsp;已占用：{{
+            options.ts.used_count
+          }}&emsp;空余：{{ options.ts.unused_count }}</span
         >
         <div class="engineRoom ts">
-          <div v-for="(v, k) in options.ts" :key="k" style="display: flex">
+          <div v-for="(v, k) in options.ts.data" :key="k" style="display: flex">
             <div
               class="text"
               :style="`background:${v.color};height:min-content`"
@@ -83,12 +87,26 @@
 import { 查询标定场数据接口 } from "~/api/光恒/calibration";
 import { reactive, ref } from "vue";
 const options = reactive({
-  jc: new Array<any>(),
-  ts: new Array<any>(),
+  jc: {
+    total: 0,
+    used_count: 0,
+    unused_count: 0,
+    data: new Array<any>(),
+  },
+  ts: {
+    total: 0,
+    used_count: 0,
+    unused_count: 0,
+    data: new Array<any>(),
+  },
 });
 查询标定场数据接口({}).then((res) => {
+  console.log(res.data.data);
   let { jc, ts } = res.data.data;
-  jc.map((v: any) => {
+  options.jc.total = jc.total;
+  options.jc.used_count = jc.used_count;
+  options.jc.unused_count = jc.unused_count;
+  jc.data.map((v: any) => {
     v.map((item: any) => {
       let percentage = 0;
       if (item.start_time) {
@@ -100,15 +118,17 @@ const options = reactive({
               3600) *
               100
           );
+          if (percentage > 100) percentage = 100;
         } else {
           console.log(item.start_time);
           percentage = Math.round(
             ((Date.now() - Date.parse(item.start_time)) / item.test_time / 1000 / 3600) *
               100
           );
+          if (percentage > 100) percentage = 100;
         }
       }
-      options.jc.push({
+      options.jc.data.push({
         text: item.name,
         color:
           item.status == 0
@@ -124,7 +144,10 @@ const options = reactive({
       });
     });
   });
-  ts.map((v: any) => {
+  options.ts.total = ts.total;
+  options.ts.used_count = ts.used_count;
+  options.ts.unused_count = ts.unused_count;
+  ts.data.map((v: any) => {
     v.map((item: any) => {
       let percentage = 0;
       if (v.start_time) {
@@ -136,27 +159,29 @@ const options = reactive({
               3600) *
               100
           );
+          if (percentage > 100) percentage = 100;
         } else {
           percentage = Math.round(
             ((Date.now() - Date.parse(item.start_time)) / item.test_time / 1000 / 3600) *
               100
           );
+          if (percentage > 100) percentage = 100;
         }
       }
-      // options.ts.push({
-      //   text: item.name,
-      //   color:
-      //     item.status == 0
-      //       ? "#f00"
-      //       : item.status == 1
-      //       ? "#92d050"
-      //       : item.status == 2
-      //       ? "#808080"
-      //       : "#000",
-      //   id: item.id,
-      //   percentage,
-      //   opacity: item.status === 2 ? 0 : 1,
-      // });
+      options.ts.data.push({
+        text: item.name,
+        color:
+          item.status == 0
+            ? "#f00"
+            : item.status == 1
+            ? "#92d050"
+            : item.status == 2
+            ? "#808080"
+            : "#000",
+        id: item.id,
+        percentage,
+        opacity: item.status === 2 ? 0 : 1,
+      });
     });
   });
 });
