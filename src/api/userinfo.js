@@ -1,9 +1,10 @@
 import request from '../utils/request'
 const tableName='userinfo'
-const url = 'backend/db/'+tableName
+let options = '?host=127.0.0.1&port=3306&user=root&password=tanglei&database=union'
+const url = 'backend/db/'+tableName+options
 export function getColumns(){
   return request({
-    url: '/backend/transaction',
+    url: '/backend/transaction'+options,
     method: 'post',
     data:{
       "sqls":[
@@ -17,7 +18,7 @@ export function getColumns(){
 }
 export function getAll(){
   return request({
-    url: '/backend/transaction',
+    url: '/backend/transaction'+options,
     method: 'post',
     data:{
       "sqls":[
@@ -53,10 +54,10 @@ export function fetchList(query) {
       "groupby":[], // 分组，传参类似"select"
       "having":[], // 分组后的条件，传参类似"where"
       "orderby": [ // 根据字段排序
-        {
-          "field": "id", // 某个字段
-          "order": "ASC" // ASC|DESC
-        }
+        // {
+        //   "field": "id", // 某个字段
+        //   "order": "ASC" // ASC|DESC
+        // }
       ],
       "offset": query.offset, // 数据偏移量 
       "limit": query.limit // 数据数量

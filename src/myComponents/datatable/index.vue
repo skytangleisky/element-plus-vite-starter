@@ -1,5 +1,31 @@
 <template>
   <div class="mainContainer">
+    <div class="flex flex-row">
+      <div class="listContainer" tabindex="-1">
+        <el-icon v-html="listSvg" class="svg" @click="listSvgClick"></el-icon>
+        <draggable
+          class="draggable bg-white dark:bg-#2b2b2b"
+          v-model:list="options.thData"
+          style="
+            position: absolute;
+            left: 0;
+            top: 100%;
+            box-shadow: 0 0 0 1px #757575, 0 0 0 2px #010201;
+            border-radius: 8px;
+            overflow: hidden;
+            box-sizing: border-box;
+            width: fit-content;
+            overflow: auto;
+            position: absolute;
+            z-index: 1;
+            height: 100%;
+            margin-left: 2px;
+            top: 0;
+          "
+        ></draggable>
+      </div>
+      <el-icon v-html="refreshSvg" class="svg" @click="refreshSvgClick"></el-icon>
+    </div>
     <div
       style="
         display: flex;
@@ -9,18 +35,20 @@
         overflow: auto;
       "
     >
-      <div v-for="item of options.thData" class="col">
-        <div class="th dark:bg-#2b2b2b bg-white">
-          {{ item.Field }}
+      <template v-for="item of options.thData">
+        <div v-if="item.checked" class="col">
+          <div class="th dark:bg-#2b2b2b bg-white">
+            {{ item.Field }}
+          </div>
+          <div v-for="(v, k) in options.tdData" class="cell">
+            <myInput
+              :k="item.Field"
+              v-model:item="options.tdData[k]"
+              :change="change"
+            ></myInput>
+          </div>
         </div>
-        <div v-for="(v, k) in options.tdData" class="cell">
-          <myInput
-            :k="item.Field"
-            v-model:item="options.tdData[k]"
-            :change="change"
-          ></myInput>
-        </div>
-      </div>
+      </template>
     </div>
     <div style="width: 100%; display: flex; justify-content: flex-end">
       <el-pagination
@@ -40,6 +68,8 @@
 </template>
 
 <script lang="ts" setup>
+import { ElMessage } from "element-plus";
+import draggable from "./draggable.vue";
 import { reactive, watch } from "vue";
 import myInput from "./input.vue";
 import { getColumns, getAll, saveData, fetchList } from "~/api/userinfo";
@@ -48,11 +78,39 @@ const options = reactive({
   tdData: new Array<any>(),
 });
 
-getColumns().then((res) => {
-  res.data[0].map((v: any) => {
-    options.thData.push(v);
-  });
-});
+// getColumns()
+//   .then((res) => {
+//     options.thData.length = 0;
+//     res.data[0].map((v: any) => {
+//       options.thData.push({ ...v, checked: true });
+//     });
+//     let currentPage = paginationOptions.currentPage;
+//     let pageSize = paginationOptions.pageSize;
+//     fetchList({
+//       limit: pageSize,
+//       offset: (currentPage - 1) * pageSize,
+//     })
+//       .then((res) => {
+//         paginationOptions.total = res.data.total;
+//         options.tdData.length = 0;
+//         res.data.results.map((v: any) => {
+//           options.tdData.push(v);
+//         });
+//       })
+//       .catch((res) => {
+//         ElMessage({
+//           message: res.response.data.sqlMessage,
+//           type: "error",
+//         });
+//       });
+//   })
+//   .catch((res) => {
+//     ElMessage({
+//       message: res.response.data[0].reason.sqlMessage,
+//       type: "error",
+//     });
+//   });
+
 // getAll().then((res) => {
 //   res.data[0].map((value: any) => {
 //     let item: { [key: string]: any } = {};
@@ -100,17 +158,71 @@ watch(
       limit: pageSize,
       offset: (currentPage - 1) * pageSize,
     }).then((res) => {
-      paginationOptions.total = res.data.total;
-      options.tdData.length = 0;
-      res.data.results.map((v: any) => {
-        options.tdData.push(v);
-      });
+      if (res.status === 200) {
+        paginationOptions.total = res.data.total;
+        options.tdData.length = 0;
+        res.data.results.map((v: any) => {
+          options.tdData.push(v);
+        });
+      } else {
+        console.log(res.data);
+        ElMessage({
+          message: res.data.err.sqlMessage,
+          type: "error",
+        });
+      }
     });
-  },
-  {
-    immediate: true,
   }
 );
+
+import listSvg from "~/assets/list.svg?raw";
+import refreshSvg from "~/assets/refresh.svg?raw";
+import { ref, h } from "vue";
+const showSortList = ref(false);
+const listSvgClick = () => {
+  showSortList.value = true;
+};
+const refreshSvgClick = () => {
+  getColumns()
+    .then((res) => {
+      options.thData.length = 0;
+      res.data[0].map((v: any) => {
+        options.thData.push({ ...v, checked: true });
+      });
+      let currentPage = paginationOptions.currentPage;
+      let pageSize = paginationOptions.pageSize;
+      fetchList({
+        limit: pageSize,
+        offset: (currentPage - 1) * pageSize,
+      })
+        .then((res) => {
+          paginationOptions.total = res.data.total;
+          options.tdData.length = 0;
+          res.data.results.map((v: any) => {
+            options.tdData.push(v);
+          });
+          ElMessage({
+            dangerouslyUseHTMLString: true,
+            message: "数据刷新完成",
+            type: "success",
+            showClose: true,
+            center: true,
+          });
+        })
+        .catch((res) => {
+          ElMessage({
+            message: res.response.data.sqlMessage,
+            type: "error",
+          });
+        });
+    })
+    .catch((res) => {
+      ElMessage({
+        message: res.response.data[0].reason.sqlMessage,
+        type: "error",
+      });
+    });
+};
 </script>
 <style scoped lang="scss">
 .mainContainer {
@@ -121,7 +233,21 @@ watch(
   background-color: #fff;
   display: flex;
   flex-direction: column;
+  .svg {
+    padding: 4px;
+    font-size: 1.5rem;
+    color: ar(--ep-text-color-primary);
+  }
+  .listContainer {
+    .draggable {
+      display: none;
+    }
+    &:focus-within .draggable {
+      display: block;
+    }
+  }
   .col {
+    min-width: 160px;
     height: fit-content;
     .th {
       padding: 3px 4px;
@@ -129,13 +255,12 @@ watch(
       top: 0;
       border-top: 1px solid #444;
       border-bottom: 1px solid #444;
+      border-right: 1px solid #444;
       font-weight: bolder;
+      line-height: 1rem;
     }
   }
   .col {
-    .th {
-      border-right: 1px solid #444;
-    }
     .cell {
       border-right: 1px solid #444;
     }

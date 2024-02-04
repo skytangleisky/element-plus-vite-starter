@@ -31,7 +31,6 @@ const inputValue = (event: any) => {
 <style scoped lang="scss">
 .input {
   width: 100%;
-  min-width: 150px;
   box-sizing: border-box;
   border: 2px solid transparent;
   &:focus-visible {

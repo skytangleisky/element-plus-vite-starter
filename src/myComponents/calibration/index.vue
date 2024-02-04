@@ -29,6 +29,7 @@
               :style="`background:${v.color};height:min-content;`"
               @click="click(v)"
             >
+              <div style="font-size: 12px; line-height: 12px">{{ v.hour }}h</div>
               {{ v.text }}
             </div>
             <el-progress
@@ -39,7 +40,9 @@
               status="warning"
             >
               <template #default="{ percentage }">
-                <span style="margin-left: -40%; color: black">{{ percentage }}</span>
+                <span style="font-size: 10px; color: grey; margin-left: -2em"
+                  >{{ percentage }}%</span
+                >
               </template>
             </el-progress>
           </div>
@@ -58,9 +61,10 @@
           <div v-for="(v, k) in options.ts.data" :key="k" style="display: flex">
             <div
               class="text"
-              :style="`background:${v.color};height:min-content`"
+              :style="`background:${v.color};height:min-content;`"
               @click="click(v)"
             >
+              <div style="font-size: 12px; line-height: 12px">{{ v.hour }}h</div>
               {{ v.text }}
             </div>
             <el-progress
@@ -71,7 +75,9 @@
               status="warning"
             >
               <template #default="{ percentage }">
-                <span style="margin-left: -40%; color: black">{{ percentage }}</span>
+                <span style="font-size: 10px; color: grey; margin-left: -2em"
+                  >{{ percentage }}%</span
+                >
               </template>
             </el-progress>
           </div>
@@ -106,8 +112,13 @@ const options = reactive({
   jc.data.map((v: any) => {
     v.map((item: any) => {
       let percentage = 0;
+      let hour = 0;
       if (item.start_time) {
         if (item.end_time) {
+          hour =
+            Math.floor(
+              (Date.parse(item.end_time) - Date.parse(item.start_time)) / 1000 / 360
+            ) / 10;
           percentage = Math.round(
             ((Date.parse(item.end_time) - Date.parse(item.start_time)) /
               item.test_time /
@@ -118,6 +129,7 @@ const options = reactive({
           if (percentage > 100) percentage = 100;
         } else {
           console.log(item.start_time);
+          hour = Math.floor((Date.now() - Date.parse(item.start_time)) / 1000 / 360) / 10;
           percentage = Math.round(
             ((Date.now() - Date.parse(item.start_time)) / item.test_time / 1000 / 3600) *
               100
@@ -137,6 +149,7 @@ const options = reactive({
             : "#000",
         id: item.id,
         percentage,
+        hour,
         opacity: item.status === 2 ? 0 : 1,
       });
     });
@@ -147,8 +160,13 @@ const options = reactive({
   ts.data.map((v: any) => {
     v.map((item: any) => {
       let percentage = 0;
+      let hour = 0;
       if (v.start_time) {
         if (v.end_time) {
+          hour =
+            Math.floor(
+              (Date.parse(item.end_time) - Date.parse(item.start_time)) / 1000 / 360
+            ) / 10;
           percentage = Math.round(
             ((Date.parse(item.end_time) - Date.parse(item.start_time)) /
               item.test_time /
@@ -158,6 +176,7 @@ const options = reactive({
           );
           if (percentage > 100) percentage = 100;
         } else {
+          hour = Math.floor((Date.now() - Date.parse(item.start_time)) / 1000 / 360) / 10;
           percentage = Math.round(
             ((Date.now() - Date.parse(item.start_time)) / item.test_time / 1000 / 3600) *
               100
@@ -177,6 +196,7 @@ const options = reactive({
             : "#000",
         id: item.id,
         percentage,
+        hour,
         opacity: item.status === 2 ? 0 : 1,
       });
     });
@@ -193,7 +213,7 @@ const click = (v: any) => {
 <style lang="scss">
 .engineRoom {
   display: grid;
-  grid-template-rows: repeat(7, 30px);
+  grid-template-rows: repeat(7, 40px);
   &.jc {
     grid-template-columns: repeat(12, 80px);
   }

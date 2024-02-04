@@ -84,7 +84,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
         .Login(numberValidateForm)
         .then((res: any) => {
           loading.value = false;
-          if (res.data.code == 20000) {
+          if (res.status == 200) {
             router.push({ path: "/", replace: true });
           } else {
             openVn(res.data.message);
