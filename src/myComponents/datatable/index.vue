@@ -118,16 +118,7 @@ function getData() {
       });
   });
 }
-// getData();
-// getAll().then((res) => {
-//   res.data[0].map((value: any) => {
-//     let item: { [key: string]: any } = {};
-//     for (let key in value) {
-//       item[key] = value[key];
-//     }
-//     options.tdData.push(item);
-//   });
-// });
+getData();
 const change = (item: any, k: string, oldVal: any) => {
   if (item[k] === oldVal) {
     console.log("数据未改变");
