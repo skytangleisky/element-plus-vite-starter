@@ -58,6 +58,7 @@
       </div>
       <div ref="popup_closer" class="ol-popup-closer"></div>
     </div>
+    <Dialog class="absolute" style="left: 240px; top: 10px"></Dialog>
     <radar-statistic></radar-statistic>
     <Legend style="bottom: 40px"></Legend>
     <div
@@ -124,6 +125,8 @@ import { addFeatherImages, getFeather } from "~/tools";
 import { getLngLat } from "~/myComponents/map/js/core.js";
 import { watch, ref, onMounted, onBeforeUnmount, reactive } from "vue";
 import { useBus } from "~/myComponents/bus";
+import Dialog from "../dialog.vue";
+import { eventbus } from "~/eventbus";
 const bus = useBus();
 const DEV = import.meta.env.DEV;
 const graphArgs = reactive({
@@ -289,6 +292,7 @@ const clickFunc = (e) => {
             bus.radialWindData = res.data.data;
           });
         station.active = bus.result[i].radar.radar_id;
+        $(`#${station.active}`)[0].scrollIntoViewIfNeeded();
       }
     }
   }
@@ -503,6 +507,23 @@ const loadFunc = () => {
   if (setting.checks[3].select)
     station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
 };
+const flyTo = (item) => {
+  try {
+    map.flyTo({
+      center: [item.longitude, item.latitude], // 新的中心点 [经度, 纬度]
+      zoom: 10, // 目标缩放级别
+      speed: 1, // 飞行速度，1 为默认速度
+      // curve: 1, // 飞行路径的曲率, 1 是直线
+      // easing: function (t) {
+      //   return t;
+      // }, // 自定义缓动函数
+      essential: true, // 这个飞行动作对于用户交互是必要的
+    });
+  } catch (error) {
+    console.log({ longitude: item.longitude, latitude: item.latitude });
+    console.log(error);
+  }
+};
 onMounted(() => {
   map = new mapboxgl.Map({
     container: mapRef.value,
@@ -538,6 +559,7 @@ onMounted(() => {
   map.on("move", moveFunc);
   map.on("load", loadFunc);
   map.on("click", "stationLayer", clickFunc);
+  eventbus.on("将站点移动到屏幕中心", flyTo);
   const closer = popup_closer.value;
   closer.onclick = function () {
     selected = null;
@@ -547,6 +569,7 @@ onMounted(() => {
   };
 });
 onBeforeUnmount(() => {
+  eventbus.off("将站点移动到屏幕中心", flyTo);
   clearInterval(timer);
   clearInterval(mock);
   map.off("zoom", zoomFunc);

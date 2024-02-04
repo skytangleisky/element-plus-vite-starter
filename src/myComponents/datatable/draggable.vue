@@ -5,15 +5,14 @@
       :indeterminate="isIndeterminate"
       class="dark:bg-#2b2b2b bg-white"
       @change="allChange"
-      style="
+      :style="`
         position: sticky;
         top: 0;
         width: 100%;
-        border-bottom: 1px solid grey;
+        border-bottom: ${list.length > 0 ? '1px solid grey' : 'none'};
         box-sizing: border-box;
         padding: 0 10px;
-        z-index: 100;
-      "
+        z-index: 100;`"
       >Check all</el-checkbox
     >
     <div class="sort-target flex flex-col" style="padding: 0 10px">

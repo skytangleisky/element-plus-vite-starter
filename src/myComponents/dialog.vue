@@ -1,21 +1,18 @@
 <template>
-  <div
-    v-dialogDrag
-    class="collapse dragDialog absolute w-300px"
-    style="left: 20px; top: 20px"
-  >
+  <div class="collapse dragDialog absolute w-300px" style="left: 20px; top: 20px">
     <div class="flex flex-row" style="align-items: center">
       <input
         @mousedown.stop
         class="operation_filter flex-1"
         placeholder="请输入过滤条件"
+        v-model="options.value"
       />
       <el-icon
         class="dropdown"
         style="
-          width: 40px;
+          width: 30px;
           line-height: 40px;
-          font-size: 40px;
+          font-size: 20px;
           display: flex;
           align-items: center;
         "
@@ -40,34 +37,42 @@
       ></el-icon>
     </div>
     <div class="contain" @mousedown.stop>
-      <div class="flex flex-row justify-between mt-0.5rem mb-0.5rem">
-        <el-button @mousedown.stop type="default">北京延庆</el-button>
-        <el-button @mousedown.stop type="default">还原</el-button>
-      </div>
       <div
         @scroll="scrolling"
         class="b-solid dark:b-#444 b-#ccc b-1px"
-        style="overflow: auto; box-sizing: border-box; position: relative"
+        style="
+          overflow: auto;
+          box-sizing: border-box;
+          position: relative;
+          scroll-behavior: smooth;
+        "
       >
         <table>
-          <thead style="z-index: 1">
-            <tr class="bg-blue">
-              <th>代码</th>
+          <thead>
+            <tr
+              class="bg-blue z-1"
+              style="box-sizing: border-box; top: 0px; position: relative"
+            >
+              <th>序号</th>
               <th>名称</th>
               <th>状态</th>
             </tr>
           </thead>
           <tbody style="position: relative">
             <tr
-              v-for="(v, k) in bus.result"
+              :id="v.radar.radar_id"
+              :class="`${
+                v.radar.radar_id === station.active ? 'bg-gray-5' : 'bg-transparent'
+              }`"
+              v-for="(v, k) in options.list"
               :key="v.radar.radar_id"
-              @contextmenu.prevent="(event) => contextmenu(event, v)"
-              @click="flyTo(v)"
+              @contextmenu.prevent="contextmenu($event, v)"
+              @click="flyTo($event, v)"
             >
-              <td>{{ v.radar.radar_id.substring(0, 4) }}</td>
+              <td>{{ k + 1 }}</td>
               <td>{{ v.radar.name }}</td>
-              <td :class="v.is_online == true ? 'color-green' : 'color-red'">
-                {{ v.is_online ? "在线" : "离线" }}
+              <td :class="v.radar.is_online == true ? 'color-green' : 'color-red'">
+                {{ v.radar.is_online ? "在线" : "离线" }}
               </td>
             </tr>
           </tbody>
@@ -91,7 +96,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { reactive, onMounted } from "vue";
+import { reactive, onMounted, watch } from "vue";
 import { useStationStore } from "~/stores/station";
 import { eventbus } from "~/eventbus";
 const station = useStationStore();
@@ -113,17 +118,24 @@ onMounted(() => {
 const scrolling = () => {
   $(".menuUl").trigger("blur");
 };
+const options = reactive({
+  list: new Array<any>(),
+  value: "",
+});
+watch([() => bus.result, () => options.value], ([result, value]) => {
+  options.list = result.filter((item) => item.radar.name.indexOf(value) > -1);
+});
 let currentStation: any;
 const contextmenu = (event: MouseEvent, v: any) => {
   currentStation = v;
-  let offset = $(".menuUl").prev().offset() || { left: 0, top: 0 };
-  $(".menuUl")
-    .css({
-      display: "flex",
-      left: event.clientX - offset.left + "px",
-      top: event.clientY - offset.top + 46 + "px",
-    })
-    .trigger("focus");
+  // let offset = $(".menuUl").prev().offset() || { left: 0, top: 0 };
+  // $(".menuUl")
+  //   .css({
+  //     display: "flex",
+  //     left: event.clientX - offset.left + "px",
+  //     top: event.clientY - offset.top + "px",
+  //   })
+  //   .trigger("focus");
 };
 const click = (event: MouseEvent) => {
   eventbus.emit(
@@ -133,7 +145,8 @@ const click = (event: MouseEvent) => {
   );
   $(".menuUl").trigger("blur");
 };
-const flyTo = (v: any) => {
+const flyTo = (event: any, v: any) => {
+  station.active = v.radar.radar_id;
   eventbus.emit("将站点移动到屏幕中心", v);
 };
 const toggleCollapse = () => {
@@ -262,8 +275,6 @@ const toggleCollapse = () => {
     overflow: auto;
     min-width: 100%;
     thead {
-      top: 0;
-      // position: sticky;
       tr {
         th {
           border-top: none;
@@ -277,6 +288,9 @@ const toggleCollapse = () => {
       }
     }
     tbody {
+      tr {
+        cursor: pointer;
+      }
       td:first-child {
         border-left: none;
       }
@@ -289,14 +303,18 @@ const toggleCollapse = () => {
     }
     th,
     td {
+      text-align: left;
       border: 1px solid #ccc;
     }
   }
 }
 .dark .dragDialog {
-  background: #252948;
+  background: #304156;
   table {
-    th,
+    th {
+      border: 1px solid #2b2b2b;
+      border-top: 0;
+    }
     td {
       border: 1px solid #2b2b2b;
     }

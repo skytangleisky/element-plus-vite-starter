@@ -18,8 +18,9 @@
             overflow: auto;
             position: absolute;
             z-index: 1;
-            height: 100%;
-            margin-left: 2px;
+            height: fit-content;
+            max-height: calc(100% - 6px);
+            margin: 3px;
             top: 0;
           "
         ></draggable>
@@ -78,39 +79,46 @@ const options = reactive({
   tdData: new Array<any>(),
 });
 
-// getColumns()
-//   .then((res) => {
-//     options.thData.length = 0;
-//     res.data[0].map((v: any) => {
-//       options.thData.push({ ...v, checked: true });
-//     });
-//     let currentPage = paginationOptions.currentPage;
-//     let pageSize = paginationOptions.pageSize;
-//     fetchList({
-//       limit: pageSize,
-//       offset: (currentPage - 1) * pageSize,
-//     })
-//       .then((res) => {
-//         paginationOptions.total = res.data.total;
-//         options.tdData.length = 0;
-//         res.data.results.map((v: any) => {
-//           options.tdData.push(v);
-//         });
-//       })
-//       .catch((res) => {
-//         ElMessage({
-//           message: res.response.data.sqlMessage,
-//           type: "error",
-//         });
-//       });
-//   })
-//   .catch((res) => {
-//     ElMessage({
-//       message: res.response.data[0].reason.sqlMessage,
-//       type: "error",
-//     });
-//   });
-
+function getData() {
+  return new Promise((resolve, reject) => {
+    getColumns()
+      .then((res) => {
+        options.thData.length = 0;
+        res.data[0].map((v: any) => {
+          options.thData.push({ ...v, checked: true });
+        });
+        let currentPage = paginationOptions.currentPage;
+        let pageSize = paginationOptions.pageSize;
+        fetchList({
+          limit: pageSize,
+          offset: (currentPage - 1) * pageSize,
+        })
+          .then((res) => {
+            paginationOptions.total = res.data.total;
+            options.tdData.length = 0;
+            res.data.results.map((v: any) => {
+              options.tdData.push(v);
+            });
+            resolve("得到数据");
+          })
+          .catch((res) => {
+            ElMessage({
+              message: res.response.data.sqlMessage,
+              type: "error",
+            });
+            reject();
+          });
+      })
+      .catch((res) => {
+        ElMessage({
+          message: res.response.data[0].reason.sqlMessage,
+          type: "error",
+        });
+        reject();
+      });
+  });
+}
+// getData();
 // getAll().then((res) => {
 //   res.data[0].map((value: any) => {
 //     let item: { [key: string]: any } = {};
@@ -183,45 +191,15 @@ const listSvgClick = () => {
   showSortList.value = true;
 };
 const refreshSvgClick = () => {
-  getColumns()
-    .then((res) => {
-      options.thData.length = 0;
-      res.data[0].map((v: any) => {
-        options.thData.push({ ...v, checked: true });
-      });
-      let currentPage = paginationOptions.currentPage;
-      let pageSize = paginationOptions.pageSize;
-      fetchList({
-        limit: pageSize,
-        offset: (currentPage - 1) * pageSize,
-      })
-        .then((res) => {
-          paginationOptions.total = res.data.total;
-          options.tdData.length = 0;
-          res.data.results.map((v: any) => {
-            options.tdData.push(v);
-          });
-          ElMessage({
-            dangerouslyUseHTMLString: true,
-            message: "数据刷新完成",
-            type: "success",
-            showClose: true,
-            center: true,
-          });
-        })
-        .catch((res) => {
-          ElMessage({
-            message: res.response.data.sqlMessage,
-            type: "error",
-          });
-        });
-    })
-    .catch((res) => {
-      ElMessage({
-        message: res.response.data[0].reason.sqlMessage,
-        type: "error",
-      });
+  getData().then(() => {
+    ElMessage({
+      dangerouslyUseHTMLString: true,
+      message: "数据刷新完成",
+      type: "success",
+      showClose: true,
+      center: true,
     });
+  });
 };
 </script>
 <style scoped lang="scss">
