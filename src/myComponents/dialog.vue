@@ -11,7 +11,7 @@
         class="dropdown"
         style="
           width: 30px;
-          line-height: 40px;
+          line-height: 1rem;
           font-size: 20px;
           display: flex;
           align-items: center;
@@ -44,6 +44,7 @@
           overflow: auto;
           box-sizing: border-box;
           position: relative;
+          margin-top: 7px;
           scroll-padding-top: 1rem;
         "
       >
@@ -228,7 +229,7 @@ const toggleCollapse = () => {
 
 .operation_filter {
   display: block;
-  padding: 0.5rem 0.75rem;
+  padding: 0.1rem 0.2rem;
   font-size: 1rem;
   line-height: 1.5rem;
   color: grey;
