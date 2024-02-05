@@ -44,14 +44,14 @@
           overflow: auto;
           box-sizing: border-box;
           position: relative;
-          scroll-behavior: smooth;
+          scroll-padding-top: 1rem;
         "
       >
         <table>
           <thead>
             <tr
               class="bg-blue z-1"
-              style="box-sizing: border-box; top: 0px; position: relative"
+              style="box-sizing: border-box; top: 0px; position: sticky"
             >
               <th>序号</th>
               <th>名称</th>
@@ -122,9 +122,15 @@ const options = reactive({
   list: new Array<any>(),
   value: "",
 });
-watch([() => bus.result, () => options.value], ([result, value]) => {
-  options.list = result.filter((item) => item.radar.name.indexOf(value) > -1);
-});
+watch(
+  [() => bus.result, () => options.value],
+  ([result, value]) => {
+    options.list = result.filter((item) => item.radar.name.indexOf(value) > -1);
+  },
+  {
+    immediate: true,
+  }
+);
 let currentStation: any;
 const contextmenu = (event: MouseEvent, v: any) => {
   currentStation = v;
@@ -274,6 +280,9 @@ const toggleCollapse = () => {
     border-collapse: collapse;
     overflow: auto;
     min-width: 100%;
+    tr {
+      line-height: 1rem;
+    }
     thead {
       tr {
         th {

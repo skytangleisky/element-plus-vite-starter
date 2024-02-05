@@ -292,7 +292,11 @@ const clickFunc = (e) => {
             bus.radialWindData = res.data.data;
           });
         station.active = bus.result[i].radar.radar_id;
-        $(`#${station.active}`)[0].scrollIntoViewIfNeeded();
+        $(`#${station.active}`)[0].scrollIntoView({
+          block: "nearest",
+          behavior: "smooth",
+          inline: "center",
+        });
       }
     }
   }
