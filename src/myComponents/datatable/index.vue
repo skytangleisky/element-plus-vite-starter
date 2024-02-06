@@ -34,14 +34,18 @@
         flex: 1;
         box-sizing: border-box;
         overflow: auto;
+        scroll-padding-top: 1rem;
       "
     >
       <template v-for="item of options.thData">
         <div v-if="item.checked" class="col">
-          <div class="th dark:bg-#2b2b2b bg-white">
+          <div
+            class="th dark:bg-#2b2b2b bg-white"
+            style="line-height: 1rem; height: 1rem"
+          >
             {{ item.Field }}
           </div>
-          <div v-for="(v, k) in options.tdData" class="cell">
+          <div v-for="(_, k) in options.tdData" class="cell">
             <myInput
               :k="item.Field"
               v-model:item="options.tdData[k]"

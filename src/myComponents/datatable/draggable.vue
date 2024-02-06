@@ -3,16 +3,10 @@
     <el-checkbox
       v-model="checkAll"
       :indeterminate="isIndeterminate"
-      class="dark:bg-#2b2b2b bg-white"
+      class="checkAll dark:bg-#2b2b2b bg-white"
       @change="allChange"
       :style="`
-        position: sticky;
-        top: 0;
-        width: 100%;
-        border-bottom: ${list.length > 0 ? '1px solid grey' : 'none'};
-        box-sizing: border-box;
-        padding: 0 10px;
-        z-index: 100;`"
+        border-bottom: ${list.length > 0 ? '1px solid grey' : 'none'};`"
       >Check all</el-checkbox
     >
     <div class="sort-target flex flex-col" style="padding: 0 10px">
@@ -94,8 +88,20 @@ const allChange = (val: boolean) => {
   });
 };
 </script>
-<style>
+<style scoped lang="scss">
 .ep-checkbox__inner {
   transition: none;
+}
+.ep-checkbox {
+  margin-right: 0;
+}
+
+.checkAll {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 10px;
+  z-index: 2;
 }
 </style>
