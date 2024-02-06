@@ -24,14 +24,24 @@
             :key="k"
             style="display: flex; align-items: center; justify-content: center"
           >
-            <div
-              class="text"
-              :style="`background:${v.color};height:min-content;`"
-              @click="click(v)"
+            <el-popover
+              placement="top-start"
+              title="Title"
+              :width="200"
+              trigger="hover"
+              content="this is content, this is content, this is content"
             >
-              <div style="font-size: 12px; line-height: 12px">{{ v.hour }}h</div>
-              {{ v.text }}
-            </div>
+              <template #reference
+                ><div
+                  class="text"
+                  :style="`background:${v.color};height:min-content;`"
+                  @click="click(v)"
+                >
+                  <div style="font-size: 12px; line-height: 12px">{{ v.hour }}h</div>
+                  {{ v.text }}
+                </div>
+              </template>
+            </el-popover>
             <el-progress
               :style="`opacity: ${v.opacity};`"
               type="dashboard"
@@ -59,14 +69,24 @@
         >
         <div class="engineRoom ts">
           <div v-for="(v, k) in options.ts.data" :key="k" style="display: flex">
-            <div
-              class="text"
-              :style="`background:${v.color};height:min-content;`"
-              @click="click(v)"
+            <el-popover
+              placement="top-start"
+              title="Title"
+              :width="200"
+              trigger="hover"
+              content="this is content, this is content, this is content"
             >
-              <div style="font-size: 12px; line-height: 12px">{{ v.hour }}h</div>
-              {{ v.text }}
-            </div>
+              <template #reference
+                ><div
+                  class="text"
+                  :style="`background:${v.color};height:min-content;`"
+                  @click="click(v)"
+                >
+                  <div style="font-size: 12px; line-height: 12px">{{ v.hour }}h</div>
+                  {{ v.text }}
+                </div>
+              </template>
+            </el-popover>
             <el-progress
               :style="`opacity: ${v.opacity};`"
               type="dashboard"

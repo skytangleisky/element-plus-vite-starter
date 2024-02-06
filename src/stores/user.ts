@@ -20,16 +20,10 @@ export const useUserStore = defineStore({
     info(){
       return new Promise((resolve,reject)=>{
         getInfo().then((infoRes:any)=>{
-          if(infoRes.status===200){
-            this.$patch({
-              logined: true,
-              ...infoRes.data.data,
-            })
-          }else{
-            console.log(infoRes)
-            this.$reset()
-            // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired; 60204: Error;
-          }
+          this.$patch({
+            logined: true,
+            ...infoRes.data.data,
+          })
           resolve(infoRes)
         }).catch(e=>{
           this.$reset()
@@ -39,24 +33,16 @@ export const useUserStore = defineStore({
     },
     Login(data:any) {
       return new Promise((resolve,reject)=>{
-        // const res = await login({username:'admin',password:'admin'})
         login(data).then((loginRes:any)=>{
-          if(loginRes.status===200){
-            this.info().then(res=>{
-              resolve(res)
-            }).catch(e=>{
-              reject(e)
-            })
-          }else{
-            resolve(loginRes)
-            // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired; 60204: Error;
-            this.$reset()
-          }
+          this.info().then(res=>{
+            resolve(res)
+          }).catch(e=>{
+            reject(e)
+          })
         }).catch(e=>{
           this.$reset()
           reject(e)
         })
-        // const userData = await apiLogin(user, password)
       })
     },
     Logout(){

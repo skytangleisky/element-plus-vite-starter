@@ -9,7 +9,7 @@
     v-model="setting.projection"
     placeholder="projection"
     size="small"
-    style="position: absolute; left: 20px; top: 20px"
+    style="position: absolute; left: 20px; top: 20px; width: 150px"
   >
     <el-option
       v-for="item in options"

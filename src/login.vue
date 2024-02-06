@@ -84,14 +84,10 @@ const submitForm = (formEl: FormInstance | undefined) => {
         .Login(numberValidateForm)
         .then((res: any) => {
           loading.value = false;
-          if (res.status == 200) {
-            router.push({ path: "/", replace: true });
-          } else {
-            openVn(res.data.message);
-          }
+          router.push({ path: "/", replace: true });
         })
         .catch((e) => {
-          openVn(e.message);
+          openVn(e.response.data.message);
           loading.value = false;
         });
     } else {
