@@ -138,15 +138,15 @@ export function acceptHMRUpdate2<
     return () => {}
   }
   return (newModule: any) => {
-    const pinia: Pinia | undefined = hot.data.pinia || initialUseStore._pinia
-
+    const initialStore: StoreDefinition = hot.data.initialUseStore || initialUseStore
+    let pinia = initialStore._pinia
     if (!pinia) {
       // this store is still not used
       return
     }
 
     // preserve the pinia instance across loads
-    hot.data.pinia = pinia
+    hot.data.initialUseStore = initialStore
 
     // console.log('got data', newStore)
     for (const exportName in newModule) {
@@ -170,7 +170,6 @@ export function acceptHMRUpdate2<
           console.log(`[Pinia]: skipping hmr because store doesn't exist yet`)
           return
         }
-        console.log(pinia.state)
         useStore(pinia, existingStore)
       }
     }

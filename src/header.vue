@@ -72,8 +72,9 @@ import { useDataStore } from "./stores/data";
 const data = useDataStore();
 import { toggleDark, isDark } from "~/composables";
 const click = () => {
-  setting.$resetFields("loadmap"); //单独重置某项设置
-  console.log("loadmap", setting.loadmap);
+  let prev = setting.loadmap;
+  setting.$resetFields("loadmap"); //单独重置某项设置,store热更新后无效
+  console.log("loadmap", prev, "->", setting.loadmap);
 };
 const Reset = () => {
   setting.$reset();
