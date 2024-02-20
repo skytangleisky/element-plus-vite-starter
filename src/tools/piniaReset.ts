@@ -6,18 +6,16 @@ declare module "pinia" {
   export interface _StoreWithState<Id extends string, S extends StateTree, G, A>
     extends StoreProperties<Id> {
     //  选择自定义一个方法名，当然，你也可以覆盖$reset方法，这里只是不想破坏原有的东西，仅为示例
-    $resetFields<K extends keyof S>(fields?: K[]): void;
+    $resetFields(fields?: String): void;
   }
 }
 
 export default ({ options, store }: PiniaPluginContext): void => {
   store.$resetFields = (fields) => {
-    const { state } = options;
-    let originalState = state ? state() : {};
-    // if (fields) {
-    //   originalState = pick(originalState, fields);
-    // }
-    // originalState.$patch(originalState);
-    console.log(originalState,store)
+    const { state } = options
+    let originalState = state ? state() : {}
+    store.$patch(($state) => {
+      eval(`$state.${fields}=originalState.${fields}`)
+    })
   };
 };

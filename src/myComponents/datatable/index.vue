@@ -26,7 +26,46 @@
         ></draggable>
       </div>
       <el-icon v-html="refreshSvg" class="svg" @click="refreshSvgClick"></el-icon>
+      <el-icon v-html="addSvg" class="svg" @click="addSvgClick"></el-icon>
+      <el-icon v-html="subtractSvg" class="svg" @click="subtractSvgClick"></el-icon>
     </div>
+    <!-- <div
+      style="
+        display: flex;
+        height: fit-content;
+        flex: 1;
+        box-sizing: border-box;
+        overflow: auto;
+        scroll-padding-top: 1rem;
+      "
+    >
+      <table>
+        <thead class="sticky top-0 bg-#2b2b2b">
+          <tr>
+            <template v-for="item of options.thData">
+              <th v-if="item.checked">
+                {{ item.Field }}
+              </th>
+            </template>
+          </tr>
+        </thead>
+        <tbody>
+          <template v-for="(_, k) in options.tdData">
+            <tr>
+              <template v-for="item in options.thData">
+                <td v-if="item.checked">
+                  <myInput
+                    :k="item.Field"
+                    v-model:item="options.tdData[k]"
+                    :change="change"
+                  ></myInput>
+                </td>
+              </template>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div> -->
     <div
       style="
         display: flex;
@@ -37,13 +76,26 @@
         scroll-padding-top: 1rem;
       "
     >
-      <template v-for="item of options.thData">
-        <div v-if="item.checked" class="col">
+      <template v-for="(item, key) of options.thData">
+        <div
+          v-if="item.checked"
+          :class="`col ${
+            item.Key === 'PRI'
+              ? 'color-yellow-3'
+              : item.Key === 'UNI'
+              ? 'color-red-3'
+              : ''
+          }`"
+        >
+          <div class="cell" style="position: sticky; top: 0">
+            <myInput k="Value" v-model:item="options.thData[key]" :change="add"></myInput>
+          </div>
           <div
-            class="th dark:bg-#2b2b2b bg-white"
-            style="line-height: 1rem; height: 1rem"
+            class="th dark:bg-#2b2b2b bg-white flex flex-col"
+            style="line-height: 1rem"
           >
             {{ item.Field }}
+            <span style="font-size: 10px">{{ item.Comment }}</span>
           </div>
           <div v-for="(_, k) in options.tdData" class="cell">
             <myInput
@@ -87,6 +139,7 @@ function getData() {
   return new Promise((resolve, reject) => {
     getColumns()
       .then((res) => {
+        console.log(res.data);
         options.thData.length = 0;
         res.data[0].map((v: any) => {
           options.thData.push({ ...v, checked: true });
@@ -144,10 +197,17 @@ const change = (item: any, k: string, oldVal: any) => {
           console.log(res.data);
         }
       })
-      .catch(() => {
+      .catch((res) => {
         item[k] = oldVal; //还原数据
+        ElMessage({
+          message: res.response.data[0].reason.sqlMessage,
+          type: "error",
+        });
       });
   }
+};
+const add = () => {
+  console.log("新增数据");
 };
 const paginationOptions = reactive({
   currentPage: 1,
@@ -180,7 +240,7 @@ watch(
 
 import listSvg from "~/assets/list.svg?raw";
 import refreshSvg from "~/assets/refresh.svg?raw";
-import { ref, h } from "vue";
+import { ref } from "vue";
 const showSortList = ref(false);
 const listSvgClick = () => {
   showSortList.value = true;
@@ -196,6 +256,11 @@ const refreshSvgClick = () => {
     });
   });
 };
+
+import addSvg from "~/assets/add.svg?raw";
+import subtractSvg from "~/assets/subtract.svg?raw";
+const addSvgClick = () => {};
+const subtractSvgClick = () => {};
 </script>
 <style scoped lang="scss">
 .mainContainer {
@@ -206,6 +271,22 @@ const refreshSvgClick = () => {
   background-color: #fff;
   display: flex;
   flex-direction: column;
+  table {
+    table-layout: fixed;
+    border-left: 1px solid #444;
+    border-collapse: collapse;
+    th {
+      // padding: 0;
+      min-width: 160px;
+      text-align: left;
+      border-right: 1px solid #444;
+    }
+    td {
+      padding: 0;
+      border-right: 1px solid #444;
+      border-bottom: 1px solid #444;
+    }
+  }
   .svg {
     padding: 4px;
     font-size: 1.5rem;
@@ -219,6 +300,11 @@ const refreshSvgClick = () => {
       display: block;
     }
   }
+  .col:first-child {
+    position: sticky;
+    z-index: 1;
+    left: 0;
+  }
   .col {
     min-width: 160px;
     height: fit-content;
@@ -226,6 +312,7 @@ const refreshSvgClick = () => {
       padding: 3px 4px;
       position: sticky;
       top: 0;
+      bottom: 0;
       border-top: 1px solid #444;
       border-bottom: 1px solid #444;
       border-right: 1px solid #444;

@@ -125,3 +125,54 @@ export function acceptHMRUpdate<
     }
   }
 }
+
+
+export function acceptHMRUpdate2<
+  Id extends string = string,
+  S extends StateTree = StateTree,
+  G extends _GettersTree<S> = _GettersTree<S>,
+  A = _ActionsTree
+>(initialUseStore: StoreDefinition<Id, S, G, A>, hot: any) {
+  // strip as much as possible from iife.prod
+  if (!__DEV__) {
+    return () => {}
+  }
+  return (newModule: any) => {
+    const pinia: Pinia | undefined = hot.data.pinia || initialUseStore._pinia
+
+    if (!pinia) {
+      // this store is still not used
+      return
+    }
+
+    // preserve the pinia instance across loads
+    hot.data.pinia = pinia
+
+    // console.log('got data', newStore)
+    for (const exportName in newModule) {
+      const useStore = newModule[exportName]
+
+      // console.log('checking for', exportName)
+      if (isUseStore(useStore) && pinia._s.has(useStore.$id)) {
+        // console.log('Accepting update for', useStore.$id)
+        const id = useStore.$id
+
+        if (id !== initialUseStore.$id) {
+          console.warn(
+            `The id of the store changed from "${initialUseStore.$id}" to "${id}". Reloading.`
+          )
+          // return import.meta.hot.invalidate()
+          return hot.invalidate()
+        }
+
+        const existingStore: StoreGeneric = pinia._s.get(id)!
+        if (!existingStore) {
+          console.log(`[Pinia]: skipping hmr because store doesn't exist yet`)
+          return
+        }
+        console.log(pinia.state)
+        useStore(pinia, existingStore)
+      }
+    }
+  }
+}

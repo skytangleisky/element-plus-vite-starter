@@ -25,11 +25,10 @@
             style="display: flex; align-items: center; justify-content: center"
           >
             <el-popover
+              :disabled="!v.item.radar"
               placement="top-start"
-              title="Title"
-              :width="200"
+              :width="300"
               trigger="hover"
-              content="this is content, this is content, this is content"
             >
               <template #reference
                 ><div
@@ -41,6 +40,17 @@
                   {{ v.text }}
                 </div>
               </template>
+              <div v-if="v.item.radar">
+                <div style="font-size: 20px">{{ v.item.radar.sn_code }}</div>
+                开始时间：{{ v.item.start_time }}<br />
+                结束时间：{{ v.item.end_time }}<br />
+                持续时间：{{ v.hour }}h<br />
+                <div class="flex justify-start items-center">
+                  在线状态：
+                  <div v-if="v.item.status == 1" class="color-green">在线</div>
+                  <div v-else class="color-red">离线</div>
+                </div>
+              </div>
             </el-popover>
             <el-progress
               :style="`opacity: ${v.opacity};`"
@@ -70,11 +80,10 @@
         <div class="engineRoom ts">
           <div v-for="(v, k) in options.ts.data" :key="k" style="display: flex">
             <el-popover
+              :disabled="!v.item.radar"
               placement="top-start"
-              title="Title"
-              :width="200"
+              :width="300"
               trigger="hover"
-              content="this is content, this is content, this is content"
             >
               <template #reference
                 ><div
@@ -86,6 +95,17 @@
                   {{ v.text }}
                 </div>
               </template>
+              <div v-if="v.item.radar">
+                <div style="font-size: 20px">{{ v.item.radar.sn_code }}</div>
+                开始时间：{{ v.item.start_time }}<br />
+                结束时间：{{ v.item.end_time }}<br />
+                持续时间：{{ v.hour }}h<br />
+                <div class="flex justify-start items-center">
+                  在线状态：
+                  <div v-if="v.item.status == 1" class="color-green">在线</div>
+                  <div v-else class="color-red">离线</div>
+                </div>
+              </div>
             </el-popover>
             <el-progress
               :style="`opacity: ${v.opacity};`"
@@ -131,6 +151,7 @@ const options = reactive({
   options.jc.unused_count = jc.unused_count;
   jc.data.map((v: any) => {
     v.map((item: any) => {
+      console.log(item);
       let percentage = 0;
       let hour = 0;
       if (item.start_time) {
@@ -158,6 +179,7 @@ const options = reactive({
         }
       }
       options.jc.data.push({
+        item,
         text: item.name,
         color:
           item.status == 0
@@ -205,6 +227,7 @@ const options = reactive({
         }
       }
       options.ts.data.push({
+        item,
         text: item.name,
         color:
           item.status == 0

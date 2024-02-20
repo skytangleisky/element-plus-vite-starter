@@ -81,7 +81,7 @@ export type {
   _StoreObject,
 } from './mapHelpers'
 
-export { acceptHMRUpdate } from './hmr'
+export { acceptHMRUpdate,acceptHMRUpdate2 } from './hmr'
 
 export { PiniaVuePlugin } from './vue2-plugin'
 

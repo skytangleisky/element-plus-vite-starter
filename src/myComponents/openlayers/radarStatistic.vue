@@ -93,34 +93,40 @@
             size="small"
           />
         </div>
-        <!-- <div class="subitem">
-          <span>重新定位</span>
+        <div class="subitem">
+          <span>默认位置</span>
           <el-icon
             @click="resetLocation"
-            style="min-width: 40px; height: 32px; cursor: pointer"
+            style="min-width: 30px; height: 32px; cursor: pointer"
           >
-            <Location></Location>
+            <HomeFilled></HomeFilled>
           </el-icon>
-        </div> -->
+        </div>
       </collapse-card>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
 import { watch, ref, onMounted, onBeforeUnmount, h, toRef } from "vue";
-import { Check, Close, Location } from "@element-plus/icons-vue";
+import { Check, Close, HomeFilled } from "@element-plus/icons-vue";
 import { 雷达统计接口 } from "~/api/光恒/station";
 import collapseCard from "./collapseCard.vue";
 import { useSettingStore } from "~/stores/setting";
 import { ElMessage } from "element-plus";
 import { useRoute } from "vue-router";
+import { eventbus } from "~/eventbus";
 const route = useRoute();
 const setting = useSettingStore();
 const show2 = ref(true);
 const showMapSetting = ref(true);
 const resetLocation = () => {
-  console.log("resetLocation");
-  setting.$resetFields(["openlayers"]);
+  setting.$resetFields("openlayers.center");
+  setting.$resetFields("openlayers.zoom");
+  eventbus.emit("将站点移动到屏幕中心", {
+    longitude: setting.openlayers.center[0],
+    latitude: setting.openlayers.center[1],
+    zoom: setting.openlayers.zoom,
+  });
 };
 const beforeChange = () => {
   for (let k in setting.checks) {

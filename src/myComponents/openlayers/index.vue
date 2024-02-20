@@ -515,7 +515,7 @@ const flyTo = (item) => {
   try {
     map.flyTo({
       center: [item.longitude, item.latitude], // 新的中心点 [经度, 纬度]
-      zoom: 10, // 目标缩放级别
+      zoom: item.zoom || 10, // 目标缩放级别
       speed: 1, // 飞行速度，1 为默认速度
       // curve: 1, // 飞行路径的曲率, 1 是直线
       // easing: function (t) {

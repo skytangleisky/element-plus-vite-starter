@@ -621,16 +621,17 @@ function createSetupStore<
             isPlainObject(newStateTarget) &&
             isPlainObject(oldStateSource)
           ) {
-            patchObject(newStateTarget, oldStateSource)
+            // patchObject(newStateTarget, oldStateSource)
+            patchObject(oldStateSource, newStateTarget)// tanglei
           } else {
             // transfer the ref
-            // newStore.$state[stateKey] = oldStateSource // error
+            // newStore.$state[stateKey] = oldStateSource
             set(store.$state, stateKey, newStateTarget) // tanglei
           }
         }
         // patch direct access properties to allow store.stateProperty to work as
         // store.$state.stateProperty
-        // set(store, stateKey, toRef(newStore.$state,stateKey)) // error
+        // set(store, stateKey, toRef(newStore.$state,stateKey))
         set(store, stateKey, newStore.$state[stateKey]) // tanglei
       })
 

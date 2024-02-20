@@ -24,6 +24,7 @@ import type { WatchOptions } from 'vue-demi';
  * @param hot - `import.meta.hot`
  */
 export declare function acceptHMRUpdate<Id extends string = string, S extends StateTree = StateTree, G extends _GettersTree<S> = _GettersTree<S>, A = _ActionsTree>(initialUseStore: StoreDefinition<Id, S, G, A>, hot: any): (newModule: any) => any;
+export declare function acceptHMRUpdate2<Id extends string = string, S extends StateTree = StateTree, G extends _GettersTree<S> = _GettersTree<S>, A = _ActionsTree>(initialUseStore: StoreDefinition<Id, S, G, A>, hot: any): (newModule: any) => any;
 
 /**
  * Type of an object of Actions. For internal usage only.
