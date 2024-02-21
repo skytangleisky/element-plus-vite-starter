@@ -65,7 +65,7 @@ export function fetchList(query) {
   })
 }
 
-export function fetchData(uuid) {
+export function fetchData(key,value) {
   return request({
     url,
     method: 'post',
@@ -73,9 +73,9 @@ export function fetchData(uuid) {
       "where":[
         {
           "relation":"AND", // AND|OR|NOT
-          "field":"uuid", // 某个字段
+          "field":key, // 某个字段
           "relationship":"=", // <|<=|=|>=|>|!<|!>|!=|<>|LIKE|IS|IS NOT
-          "condition":uuid // 当值为null时，relationship的值为IS或者IS NOT
+          "condition":value // 当值为null时，relationship的值为IS或者IS NOT
         }
       ]
     }

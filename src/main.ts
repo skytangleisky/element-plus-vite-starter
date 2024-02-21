@@ -13,6 +13,7 @@ import "~/styles/index.scss";
 import 'uno.css'
 // If you want to use ElMessage, import it.
 import "element-plus/theme-chalk/src/message.scss"
+import "element-plus/theme-chalk/src/message-box.scss"
 import app from './app'
 // app.use(ElementPlus, { locale });
 import router from './router'

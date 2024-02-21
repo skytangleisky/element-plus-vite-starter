@@ -42,6 +42,7 @@
               </template>
               <div v-if="v.item.radar">
                 <div style="font-size: 20px">{{ v.item.radar.sn_code }}</div>
+                标定时间：{{ v.item.test_time }}h<br />
                 开始时间：{{ v.item.start_time }}<br />
                 结束时间：{{ v.item.end_time }}<br />
                 持续时间：{{ v.hour }}h<br />
@@ -97,6 +98,7 @@
               </template>
               <div v-if="v.item.radar">
                 <div style="font-size: 20px">{{ v.item.radar.sn_code }}</div>
+                标定时间：{{ v.item.test_time }}h<br />
                 开始时间：{{ v.item.start_time }}<br />
                 结束时间：{{ v.item.end_time }}<br />
                 持续时间：{{ v.hour }}h<br />
@@ -151,7 +153,6 @@ const options = reactive({
   options.jc.unused_count = jc.unused_count;
   jc.data.map((v: any) => {
     v.map((item: any) => {
-      console.log(item);
       let percentage = 0;
       let hour = 0;
       if (item.start_time) {
@@ -201,10 +202,11 @@ const options = reactive({
   options.ts.unused_count = ts.unused_count;
   ts.data.map((v: any) => {
     v.map((item: any) => {
+      console.log(item);
       let percentage = 0;
       let hour = 0;
-      if (v.start_time) {
-        if (v.end_time) {
+      if (item.start_time) {
+        if (item.end_time) {
           hour =
             Math.floor(
               (Date.parse(item.end_time) - Date.parse(item.start_time)) / 1000 / 360
@@ -218,6 +220,7 @@ const options = reactive({
           );
           if (percentage > 100) percentage = 100;
         } else {
+          console.log(item.start_time);
           hour = Math.floor((Date.now() - Date.parse(item.start_time)) / 1000 / 360) / 10;
           percentage = Math.round(
             ((Date.now() - Date.parse(item.start_time)) / item.test_time / 1000 / 3600) *

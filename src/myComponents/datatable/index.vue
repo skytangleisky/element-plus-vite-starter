@@ -1,6 +1,6 @@
 <template>
   <div class="mainContainer">
-    <div class="flex flex-row">
+    <div class="flex flex-row z-4">
       <div class="listContainer" tabindex="-1">
         <el-icon v-html="listSvg" class="svg" @click="listSvgClick"></el-icon>
         <draggable
@@ -17,7 +17,6 @@
             width: fit-content;
             overflow: auto;
             position: absolute;
-            z-index: 1;
             height: fit-content;
             max-height: calc(100% - 6px);
             margin: 3px;
@@ -25,9 +24,36 @@
           "
         ></draggable>
       </div>
-      <el-icon v-html="refreshSvg" class="svg" @click="refreshSvgClick"></el-icon>
-      <el-icon v-html="addSvg" class="svg" @click="addSvgClick"></el-icon>
-      <el-icon v-html="subtractSvg" class="svg" @click="subtractSvgClick"></el-icon>
+      <el-icon
+        v-html="addSvg"
+        class="svg"
+        :style="`opacity: ${addRow ? 0.5 : 1.0}`"
+        @click="addSvgClick"
+      ></el-icon>
+      <el-icon
+        v-html="subtractSvg"
+        :style="`opacity: ${addRow ? 0.5 : 1.0}`"
+        class="svg"
+        @click="subtractSvgClick"
+      ></el-icon>
+      <el-icon
+        v-html="tickSvg"
+        :style="`opacity: ${!addRow ? 0.5 : 1.0}`"
+        class="svg"
+        @click="tickSvgClick"
+      ></el-icon>
+      <el-icon
+        v-html="forkSvg"
+        :style="`opacity: ${!addRow ? 0.5 : 1.0}`"
+        class="svg"
+        @click="forkSvgClick"
+      ></el-icon>
+      <el-icon
+        v-html="refreshSvg"
+        :style="`opacity: ${addRow ? 0.5 : 1.0}`"
+        class="svg"
+        @click="refreshSvgClick"
+      ></el-icon>
     </div>
     <!-- <div
       style="
@@ -87,17 +113,54 @@
               : ''
           }`"
         >
-          <div class="cell" style="position: sticky; top: 0">
-            <myInput k="Value" v-model:item="options.thData[key]" :change="add"></myInput>
-          </div>
           <div
             class="th dark:bg-#2b2b2b bg-white flex flex-col"
             style="line-height: 1rem"
           >
-            {{ item.Field }}
-            <span style="font-size: 10px">{{ item.Comment }}</span>
+            <div
+              v-if="addRow"
+              class="dark:bg-#3b3b3b bg-#fff"
+              style="
+                border-right: 0;
+                border-bottom: 1px solid #444;
+                display: flex;
+                align-items: center;
+              "
+            >
+              <el-checkbox
+                v-if="key == 0"
+                style="width: min-content; height: min-content; visibility: hidden"
+              ></el-checkbox>
+              <myInput
+                k="Value"
+                v-model:item="options.thData[key]"
+                :change="addDataChange"
+              ></myInput>
+            </div>
+            <div style="display: flex; flex-direction: row; align-items: center">
+              <el-checkbox
+                v-if="key == 0"
+                style="width: min-content; height: min-content"
+                v-model="checkAll"
+                :indeterminate="isIndeterminate"
+                @change="allChange"
+              ></el-checkbox>
+              <div style="display: flex; flex-direction: column; padding: 3px 4px">
+                {{ item.Field }}
+                <span style="font-size: 10px">{{ item.Comment }}</span>
+              </div>
+            </div>
           </div>
-          <div v-for="(_, k) in options.tdData" class="cell">
+          <div
+            v-for="(_, k) in options.tdData"
+            class="cell dark:bg-#3b3b3b bg-#fff"
+            style="display: flex; flex-direction: row; align-items: center"
+          >
+            <el-checkbox
+              v-if="key == 0"
+              v-model="options.tdData[k].checked"
+              style="width: min-content; height: min-content"
+            ></el-checkbox>
             <myInput
               :k="item.Field"
               v-model:item="options.tdData[k]"
@@ -125,16 +188,23 @@
 </template>
 
 <script lang="ts" setup>
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 import draggable from "./draggable.vue";
-import { reactive, watch } from "vue";
+import { reactive, watch, h, ref } from "vue";
 import myInput from "./input.vue";
-import { getColumns, getAll, saveData, fetchList } from "~/api/userinfo";
+import {
+  getColumns,
+  getAll,
+  saveData,
+  fetchList,
+  fetchData,
+  deleteData,
+} from "~/api/userinfo";
 const options = reactive({
   thData: new Array<any>(),
   tdData: new Array<any>(),
 });
-
+const addRow = ref(false);
 function getData() {
   return new Promise((resolve, reject) => {
     getColumns()
@@ -142,7 +212,7 @@ function getData() {
         console.log(res.data);
         options.thData.length = 0;
         res.data[0].map((v: any) => {
-          options.thData.push({ ...v, checked: true });
+          options.thData.push({ ...v, checked: true, Value: v.Type });
         });
         let currentPage = paginationOptions.currentPage;
         let pageSize = paginationOptions.pageSize;
@@ -154,7 +224,14 @@ function getData() {
             paginationOptions.total = res.data.total;
             options.tdData.length = 0;
             res.data.results.map((v: any) => {
-              options.tdData.push(v);
+              options.tdData.push({ ...v, checked: false });
+              for (let k in v) {
+                options.thData.map((item) => {
+                  if (k == item.Field) {
+                    item.Value = v[k];
+                  }
+                });
+              }
             });
             resolve("得到数据");
           })
@@ -190,12 +267,7 @@ const change = (item: any, k: string, oldVal: any) => {
     tmp[k] = item[k]; //改变数据
     saveData([tmp])
       .then((res) => {
-        if (res.data.code == 50014) {
-          console.log(res.data.err[0].reason.sqlMessage);
-          item[k] = oldVal; //还原数据
-        } else {
-          console.log(res.data);
-        }
+        console.log(res.data);
       })
       .catch((res) => {
         item[k] = oldVal; //还原数据
@@ -206,8 +278,8 @@ const change = (item: any, k: string, oldVal: any) => {
       });
   }
 };
-const add = () => {
-  console.log("新增数据");
+const addDataChange = () => {
+  console.log("新增数据改变");
 };
 const paginationOptions = reactive({
   currentPage: 1,
@@ -220,27 +292,27 @@ watch(
     fetchList({
       limit: pageSize,
       offset: (currentPage - 1) * pageSize,
-    }).then((res) => {
-      if (res.status === 200) {
+    })
+      .then((res) => {
         paginationOptions.total = res.data.total;
         options.tdData.length = 0;
         res.data.results.map((v: any) => {
           options.tdData.push(v);
         });
-      } else {
-        console.log(res.data);
+      })
+      .catch((e) => {
         ElMessage({
-          message: res.data.err.sqlMessage,
+          message: e,
           type: "error",
         });
-      }
-    });
+      });
   }
 );
 
 import listSvg from "~/assets/list.svg?raw";
 import refreshSvg from "~/assets/refresh.svg?raw";
-import { ref } from "vue";
+import tickSvg from "~/assets/tick.svg?raw";
+import forkSvg from "~/assets/fork.svg?raw";
 const showSortList = ref(false);
 const listSvgClick = () => {
   showSortList.value = true;
@@ -259,8 +331,154 @@ const refreshSvgClick = () => {
 
 import addSvg from "~/assets/add.svg?raw";
 import subtractSvg from "~/assets/subtract.svg?raw";
-const addSvgClick = () => {};
-const subtractSvgClick = () => {};
+//显示添加组件
+const addSvgClick = async () => {
+  if (!addRow.value) {
+    addRow.value = true;
+  }
+};
+//删除数据
+const subtractSvgClick = () => {
+  if (!addRow.value) {
+    for (let v of options.thData) {
+      if (v.Key === "PRI" || v.Key == "UNI") {
+        let list = new Array<{ [key: string]: any }>();
+        options.tdData.map((item) => {
+          if (item.checked) {
+            list.push({ [v.Field]: item[v.Field] });
+          }
+        });
+        if (list.length > 0) {
+          ElMessageBox({
+            title: "Message",
+            type: "warning",
+            message: h("p", null, [
+              h("span", null, "将永久删除"),
+              h("i", { style: "color: red" }, list.length),
+              h("span", null, "条记录！"),
+            ]),
+            closeOnClickModal: false,
+            showCancelButton: true,
+            confirmButtonText: "OK",
+            cancelButtonText: "Cancel",
+            beforeClose: (action, instance, done) => {
+              if (action === "confirm") {
+                instance.confirmButtonLoading = true;
+                instance.confirmButtonText = "Deleting...";
+                setTimeout(() => {
+                  deleteData(list).then((res) => {
+                    console.log(res);
+                    instance.confirmButtonLoading = false;
+                    done();
+                    ElMessage({
+                      type: "info",
+                      message: `删除完成`,
+                    });
+                    getData();
+                  });
+                }, 0);
+              } else {
+                if (instance.confirmButtonLoading == false) {
+                  done();
+                }
+              }
+            },
+          })
+            .then((action) => {})
+            .catch((e) => {});
+        } else {
+          ElMessage({
+            type: "info",
+            message: `请先选中要删除的数据`,
+          });
+        }
+        break;
+      }
+    }
+  }
+};
+//隐藏添加组件
+const forkSvgClick = () => {
+  if (addRow.value) {
+    addRow.value = false;
+  }
+};
+//新增数据提交
+const tickSvgClick = async () => {
+  if (addRow.value) {
+    let keys = [];
+    for (let v of options.thData) {
+      //判断是否已经存在
+      if (v.Key === "PRI" || v.Key == "UNI") {
+        keys.push(v.Field);
+        let { data } = await fetchData(v.Field, v.Value);
+        if (data.total > 0) {
+          ElMessage({
+            message: `add failed, ${v.Field}=${v.Value} already exist!`,
+            type: "error",
+          });
+          return;
+        }
+      }
+    }
+    let tmp: { [key: string]: any } = {};
+    for (let item of options.thData) {
+      if (keys.includes(item.Field) && item.Value == "") {
+        item.Value = null;
+      }
+      Object.assign(tmp, { [item.Field]: item.Value });
+    }
+    saveData([tmp])
+      .then((res) => {
+        ElMessage({
+          message: "添加数据完成",
+          type: "success",
+        });
+        getData();
+        addRow.value = false;
+      })
+      .catch((res) => {
+        ElMessage({
+          message: res.response.data[0].reason.sqlMessage,
+          type: "error",
+        });
+      });
+  }
+};
+
+import { computed } from "vue";
+
+let allChecked = ref(false);
+const checkAll = computed({
+  set: (val) => {
+    if (options.tdData.length === 0) {
+      allChecked.value = val;
+    }
+  },
+  get: () => {
+    if (options.tdData.length === 0) {
+      return allChecked.value;
+    } else {
+      return options.tdData.every((item) => {
+        return item.checked;
+      });
+    }
+  },
+});
+const isIndeterminate = computed(() => {
+  let checked = options.tdData.some((item) => {
+    return item.checked;
+  });
+  let unchecked = options.tdData.some((item) => {
+    return !item.checked;
+  });
+  return checked && unchecked;
+});
+const allChange = (val: boolean) => {
+  options.tdData.map((item) => {
+    item.checked = val;
+  });
+};
 </script>
 <style scoped lang="scss">
 .mainContainer {
@@ -302,14 +520,14 @@ const subtractSvgClick = () => {};
   }
   .col:first-child {
     position: sticky;
-    z-index: 1;
+    z-index: 3;
     left: 0;
   }
   .col {
     min-width: 160px;
     height: fit-content;
     .th {
-      padding: 3px 4px;
+      z-index: 2;
       position: sticky;
       top: 0;
       bottom: 0;
@@ -331,5 +549,10 @@ const subtractSvgClick = () => {};
 }
 .dark .mainContainer {
   background-color: #282828;
+}
+</style>
+<style>
+.ep-overlay-message-box {
+  z-index: 5;
 }
 </style>
