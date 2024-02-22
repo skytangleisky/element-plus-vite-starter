@@ -212,7 +212,7 @@ function getData() {
         console.log(res.data);
         options.thData.length = 0;
         res.data[0].map((v: any) => {
-          options.thData.push({ ...v, checked: true, Value: v.Type });
+          options.thData.push({ ...v, checked: true, placeholder: v.Type });
         });
         let currentPage = paginationOptions.currentPage;
         let pageSize = paginationOptions.pageSize;
@@ -225,13 +225,6 @@ function getData() {
             options.tdData.length = 0;
             res.data.results.map((v: any) => {
               options.tdData.push({ ...v, checked: false });
-              for (let k in v) {
-                options.thData.map((item) => {
-                  if (k == item.Field) {
-                    item.Value = v[k];
-                  }
-                });
-              }
             });
             resolve("得到数据");
           })
@@ -318,15 +311,17 @@ const listSvgClick = () => {
   showSortList.value = true;
 };
 const refreshSvgClick = () => {
-  getData().then(() => {
-    ElMessage({
-      dangerouslyUseHTMLString: true,
-      message: "数据刷新完成",
-      type: "success",
-      showClose: true,
-      center: true,
+  if (!addRow.value) {
+    getData().then(() => {
+      ElMessage({
+        dangerouslyUseHTMLString: true,
+        message: "数据刷新完成",
+        type: "success",
+        showClose: true,
+        center: true,
+      });
     });
-  });
+  }
 };
 
 import addSvg from "~/assets/add.svg?raw";
@@ -335,6 +330,17 @@ import subtractSvg from "~/assets/subtract.svg?raw";
 const addSvgClick = async () => {
   if (!addRow.value) {
     addRow.value = true;
+    options.tdData.map((v, index) => {
+      if (v.checked) {
+        for (let k in v) {
+          options.thData.map((item) => {
+            if (k == item.Field) {
+              item.Value = v[k];
+            }
+          });
+        }
+      }
+    });
   }
 };
 //删除数据
@@ -401,6 +407,9 @@ const subtractSvgClick = () => {
 const forkSvgClick = () => {
   if (addRow.value) {
     addRow.value = false;
+    options.thData.map((v) => {
+      v.Value = null;
+    });
   }
 };
 //新增数据提交

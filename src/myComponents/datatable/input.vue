@@ -6,7 +6,7 @@
     @input="inputValue"
     @focusin="focusin"
     @focusout="focusout"
-    placeholder="请输入数据"
+    :placeholder="props.item['placeholder'] || '请输入数据'"
   />
 </template>
 <script lang="ts" setup>
