@@ -22,9 +22,9 @@
                 >登陆</el-dropdown-item
               >
               <!-- <el-dropdown-item :icon="ColdDrink">捐赠</el-dropdown-item> -->
-              <el-dropdown-item :icon="isDark ? Moon : Sunny" @click="toggleDark()">{{
-                isDark ? "暗黑" : "明亮"
-              }}</el-dropdown-item>
+              <el-dropdown-item :icon="isDark ? Moon : Sunny" @click="toggleDark()"
+                >皮肤</el-dropdown-item
+              >
               <el-dropdown-item :icon="Setting" @click="click">设置</el-dropdown-item>
               <el-dropdown-item :icon="Switch" @click="Reset">重置</el-dropdown-item>
               <el-dropdown-item

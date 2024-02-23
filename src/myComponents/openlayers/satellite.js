@@ -1,4 +1,4 @@
-{
+export default {
   "attribution":null,
   "attribution2": "<a href=\"https://www.mapbox.com/about/maps/\" target=\"_blank\" title=\"Mapbox\" aria-label=\"Mapbox\">&copy; Mapbox</a> <a href=\"https://www.openstreetmap.org/about/\" target=\"_blank\" title=\"OpenStreetMap\" aria-label=\"OpenStreetMap\">&copy; OpenStreetMap</a> <a class=\"mapbox-improve-map\" href=\"https://www.mapbox.com/contribute/\" target=\"_blank\" title=\"Improve this map\" aria-label=\"Improve this map\">Improve this map</a> <a href=\"https://www.maxar.com/\" target=\"_blank\" title=\"Maxar\" aria-label=\"Maxar\">&copy; Maxar</a>",
   "autoscale": true,

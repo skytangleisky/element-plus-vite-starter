@@ -82,15 +82,19 @@ export default defineConfig({
     }),
     lifecycle === 'report'? visualizer({ open: true, brotliSize: true, filename: 'report.html' }): null
   ],
+  preview:{
+    port:5173
+  },
   server:{
     https:{
       cert: fs.readFileSync('dev.tanglei.top.pem'),
       key: fs.readFileSync('dev.tanglei.top.key')
     },
-    host:'::',
+    host:true,
     // open:'http://localhost:5173',
     open:'https://dev.tanglei.top',
     port:5173,
+    strictPort:true,
     proxy:{
       // '/guangheng':{
       //   target:'http://tanglei.top:8000',//替换的服务端地址

@@ -141,6 +141,16 @@ export const useSettingStore = defineStore({
             svg:'4db7562c3aa011ee8077b025aa2c9ada',
           },
           {
+            path: 'uav',
+            name: '961a22a1-f5da-9845-fc89-3519ed950510',
+            // component:'/src/myComponents/openlayers/radarStatistic.vue'
+            // component:'/src/myComponents/menu/index.vue'
+            component:'/src/myComponents/无人机/index.vue',
+            replace:true,
+            label:'无人机',
+            svg:'d268cb92d14211ee9c31b025aa2c9ada',
+          },
+          {
             path: 'zrender',
             name: 'c4961e04-e574-0e1f-ae23-94f157b14a42',
             component: '/src/myComponents/zrender/demo.vue',
