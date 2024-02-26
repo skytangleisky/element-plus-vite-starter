@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@mapbox/mapbox-gl-draw": "^1.4.3",
-    "@mapbox/mapbox-gl-draw-static-mode": "^1.0.1",
     "@orillusion/core": "^0.6.9",
     "@pixi/utils": "7.2.4",
     "@rollup/plugin-inject": "^5.0.3",
@@ -33,8 +32,6 @@
     "gsap": "^3.11.5",
     "jquery": "^3.7.0",
     "jsonwebtoken": "^9.0.2",
-    "mapbox-gl-draw-circle": "^1.1.2",
-    "mapbox-gl-draw-rectangle-mode": "^1.0.4",
     "mockjs": "^1.1.0",
     "multer": "^1.4.5-lts.1",
     "nprogress": "^0.2.0",

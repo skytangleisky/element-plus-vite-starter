@@ -33,6 +33,7 @@ export default defineConfig({
     alias: {
       '~/': `${__dirname}/src/`,
       pinia: `${__dirname}/packages/pinia/src/index.ts`,
+      '@mapbox/mapbox-gl-draw':`${__dirname}/packages/mapbox-gl-draw`
     }
   },
   css: {

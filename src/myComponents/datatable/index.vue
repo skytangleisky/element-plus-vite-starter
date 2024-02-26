@@ -147,7 +147,9 @@
               ></el-checkbox>
               <div style="display: flex; flex-direction: column; padding: 3px 4px">
                 {{ item.Field }}
-                <span style="font-size: 10px">{{ item.Comment }}</span>
+                <span style="font-size: 10px; white-space: nowrap">{{
+                  item.Comment
+                }}</span>
               </div>
             </div>
           </div>
@@ -199,7 +201,7 @@ import {
   fetchList,
   fetchData,
   deleteData,
-} from "~/api/userinfo";
+} from "~/api/无人机/enclosure";
 const options = reactive({
   thData: new Array<any>(),
   tdData: new Array<any>(),

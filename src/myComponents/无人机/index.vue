@@ -131,15 +131,8 @@ import { eventbus } from "~/eventbus";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 // var a = turf.sector(turf.point([-75, 40]), 100, 0, 360);
 // console.log(a);
-import {
-  CircleMode,
-  DragCircleMode,
-  DirectMode,
-  SimpleSelectMode,
-} from "mapbox-gl-draw-circle"; // 打包可能会遇到问题
-import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
-import StaticMode from "@mapbox/mapbox-gl-draw-static-mode";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
+import { 获取净空区 } from "~/api/无人机/enclosure";
 const bus = useBus();
 const DEV = import.meta.env.DEV;
 const graphArgs = reactive({
@@ -348,7 +341,7 @@ const task = () => {
   //     });
   // }
 };
-task();
+// task();
 const loadFunc = () => {
   map.addSource("point", points);
   map.addLayer({
@@ -576,16 +569,7 @@ onMounted(() => {
   map.addControl(new mapboxgl.FullscreenControl());
   var Draw = new MapboxDraw({
     userProperties: true,
-    displayControlsDefault: true, // 不显示默认绘制工具条
-    modes: {
-      ...MapboxDraw.modes,
-      draw_circle: CircleMode, // 打包可能会遇到问题
-      drag_circle: DragCircleMode, // 打包可能会遇到问题
-      direct_select: DirectMode, // 打包可能会遇到问题
-      simple_select: SimpleSelectMode, // 打包可能会遇到问题
-      draw_rectangle: DrawRectangle,
-      static: StaticMode,
-    },
+    displayControlsDefault: true,
     controls: {
       point: true,
       line_string: true,
@@ -596,7 +580,60 @@ onMounted(() => {
     },
   });
   map.addControl(Draw, "top-right");
-  Draw.changeMode("static");
+  获取净空区().then((res) => {
+    let a = {
+      type: "FeatureCollection",
+      features: [],
+    };
+    console.log(res.data.results);
+    for (let i = 0; i < res.data.results.length; i++) {
+      let v = res.data.results[i];
+      let strLngLatList = v.points.match(
+        RegExp(/(\-|\+)?\d+(\.\d+)?,(\-|\+)?\d+(\.\d+)?/g)
+      );
+      let list = strLngLatList.map((item) => [
+        Number(item.match(RegExp(/(\-|\+)?\d+(\.\d+)?(?=,)/))[0]),
+        Number(item.match(RegExp(/(?<=,)(\-|\+)?\d+(\.\d+)?/))[0]),
+      ]);
+      if (list.length > 3) {
+        a.features.push({
+          id: v.id,
+          type: "Feature",
+          geometry: {
+            type: "Polygon",
+            coordinates: [list],
+          },
+        });
+      }
+    }
+    console.log(a);
+    Draw.add(a);
+    // {
+    //   type: "FeatureCollection",
+    //   features: [
+    //     {
+    //       type: "Feature",
+    //       //"id": "the most unique id in the world",
+    //       properties: {
+    //         class_id: 1,
+    //       },
+    //       geometry: {
+    //         type: "Polygon",
+    //         coordinates: [
+    //           [
+    //             [0, 0],
+    //             [100, 0],
+    //             [100, 60],
+    //             [0, 60],
+    //             [0, 0],
+    //           ],
+    //         ],
+    //       },
+    //     },
+    //   ],
+    // }
+  });
+
   map.repaint = false;
   addFeatherImages(map);
   map.on("zoom", zoomFunc);
