@@ -75,16 +75,28 @@ export function 获取净空区() {
       "where":[
         {
           "relation":"AND",
-          "field":"standby1",
+          "field":"enclosure_type",
           "relationship":"=",
-          "condition":"R"//S净空区(糖果图) P禁飞区  D危险区 M可飞区   R限飞区  O计划空域  L	航线  F	航路 A	走廊
+          "condition":"02"//S净空区(糖果图) P禁飞区  D危险区 M可飞区   R限飞区  O计划空域  L	航线  F	航路 A	走廊
         },
-        // {
-        //   "relation":"AND",
-        //   "field":"username",
-        //   "relationship":"IS NOT",
-        //   "condition":null
-        // }
+        {
+          "relation":"OR",
+          "field":"enclosure_type",
+          "relationship":"=",
+          "condition":"03"
+        },
+        {
+          "relation":"OR",
+          "field":"enclosure_type",
+          "relationship":"=",
+          "condition":"00"
+        },
+        {
+          "relation":"OR",
+          "field":"enclosure_type",
+          "relationship":"=",
+          "condition":"06"
+        }
       ],
       "groupby":[], // 分组，传参类似"select"
       "having":[], // 分组后的条件，传参类似"where"

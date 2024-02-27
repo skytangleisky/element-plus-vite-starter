@@ -1,3 +1,6 @@
+function metersToPixelsAtMaxZoom(meters,latitude){
+  return meters/0.075/Math.cos(latitude * Math.PI/180)
+}
 export default [
   {
     'id': 'gl-draw-polygon-fill-inactive',

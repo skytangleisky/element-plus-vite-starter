@@ -4,6 +4,7 @@ export const classes = {
   CONTROL_BUTTON: 'mapbox-gl-draw_ctrl-draw-btn',
   CONTROL_BUTTON_LINE: 'mapbox-gl-draw_line',
   CONTROL_BUTTON_POLYGON: 'mapbox-gl-draw_polygon',
+  CONTROL_BUTTON_CIRCLE: 'mapbox-gl-draw_circle',
   CONTROL_BUTTON_POINT: 'mapbox-gl-draw_point',
   CONTROL_BUTTON_TRASH: 'mapbox-gl-draw_trash',
   CONTROL_BUTTON_COMBINE_FEATURES: 'mapbox-gl-draw_combine',
@@ -30,7 +31,8 @@ export const cursors = {
 export const types = {
   POLYGON: 'polygon',
   LINE: 'line_string',
-  POINT: 'point'
+  POINT: 'point',
+  CIRCLE: 'circle'
 };
 
 export const geojsonTypes = {
@@ -48,6 +50,7 @@ export const geojsonTypes = {
 export const modes = {
   DRAW_LINE_STRING: 'draw_line_string',
   DRAW_POLYGON: 'draw_polygon',
+  DRAW_CIRCLE: 'draw_circle',
   DRAW_POINT: 'draw_point',
   SIMPLE_SELECT: 'simple_select',
   DIRECT_SELECT: 'direct_select',

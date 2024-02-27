@@ -145,7 +145,14 @@
                 :indeterminate="isIndeterminate"
                 @change="allChange"
               ></el-checkbox>
-              <div style="display: flex; flex-direction: column; padding: 3px 4px">
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  padding: 3px 4px;
+                  overflow: hidden;
+                "
+              >
                 {{ item.Field }}
                 <span style="font-size: 10px; white-space: nowrap">{{
                   item.Comment

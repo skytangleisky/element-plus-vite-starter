@@ -103,7 +103,7 @@
         </svg>
       </el-icon>
     </div>
-    <time-line
+    <!-- <time-line
       :data="data"
       :toLeft="change"
       :toRight="change"
@@ -112,7 +112,7 @@
       v-model:status="setting.status"
       v-model:level="setting.level"
       class="absolute bottom-0"
-    ></time-line>
+    ></time-line> -->
     <graph
       v-if="DEV"
       class="absolute left-0 bottom-30px"
@@ -132,7 +132,7 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 // var a = turf.sector(turf.point([-75, 40]), 100, 0, 360);
 // console.log(a);
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
-import { 获取净空区 } from "~/api/无人机/enclosure";
+import { 获取净空区, saveData, deleteData } from "~/api/无人机/enclosure";
 const bus = useBus();
 const DEV = import.meta.env.DEV;
 const graphArgs = reactive({
@@ -229,7 +229,7 @@ import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
 import Legend from "./legend.vue";
 import style from "./streets-v11.js";
-
+let enclosureList = [];
 let prevDate;
 watch(
   () => setting.now,
@@ -564,7 +564,12 @@ onMounted(() => {
     center: setting.openlayers.center,
     pitch: 0,
   });
-  map.addControl(new mapboxgl.NavigationControl());
+  map.addControl(
+    new mapboxgl.NavigationControl({
+      showCompass: false,
+      showZoom: true,
+    })
+  );
   // map.addControl(new mapboxgl.ScaleControl());
   map.addControl(new mapboxgl.FullscreenControl());
   var Draw = new MapboxDraw({
@@ -572,20 +577,159 @@ onMounted(() => {
     displayControlsDefault: true,
     controls: {
       point: true,
+      circle: true,
       line_string: true,
       polygon: true,
       trash: true,
-      combine_features: true,
-      uncombine_features: true,
+      combine_features: false,
+      uncombine_features: false,
     },
   });
   map.addControl(Draw, "top-right");
+  //添加空域
+  map.on("draw.create", function (e) {
+    let data = [];
+    e.features.map((item) => {
+      if (item.geometry.type === "Point") {
+        data.push({
+          id: item.id,
+          enclosure_type: "06",
+          line_width: 0,
+          points: item.geometry.coordinates.join(",") + ";",
+        });
+      } else if (item.geometry.type === "LineString") {
+        console.log(item);
+        data.push({
+          id: item.id,
+          enclosure_type: "00",
+          line_width: 0,
+          points: item.geometry.coordinates.map((v) => v.join(",")).join(";") + ";",
+        });
+      } else if (item.geometry.type === "Polygon") {
+        if (item.properties.isCircle) {
+          data.push({
+            id: item.id,
+            enclosure_type: "03",
+            line_width: 0,
+            circle_center: item.properties.center.join(",") + ";",
+            radius: item.properties.radiusInKm * 1000,
+            points: item.geometry.coordinates[0].map((v) => v.join(",")).join(";") + ";",
+          });
+        } else {
+          data.push({
+            id: item.id,
+            enclosure_type: "02",
+            line_width: 0,
+            points: item.geometry.coordinates[0].map((v) => v.join(",")).join(";") + ";",
+          });
+        }
+      }
+    });
+    saveData(data)
+      .then((res) => {
+        console.log(res);
+        data.map((item) => {
+          enclosureList.push(item);
+        });
+      })
+      .catch((e) => {
+        console.log("添加空域失败");
+      });
+  });
+  //删除空域
+  map.on("draw.delete", function (e) {
+    let data = [];
+    e.features.map((v) => {
+      data.push({ id: v.id });
+    });
+    if (data.length > 0) {
+      deleteData(data)
+        .then((res) => {
+          data.map((item) => {
+            for (let i = 0; i < enclosureList.length; i++) {
+              if (enclosureList[i].id == item.id) {
+                enclosureList.splice(i--, 1);
+              }
+            }
+          });
+          console.log("删除空域完成");
+        })
+        .catch((e) => {
+          throw Error("删除空域失败");
+        });
+    }
+  });
+  //修改空域
+  map.on("draw.update", function (e) {
+    let data = [];
+    e.features.map((item) => {
+      let tmp = enclosureList.filter((v) => v.id === item.id);
+      if (tmp.length === 1) {
+        console.log(tmp[0]);
+        let enclosure_type = tmp[0].enclosure_type;
+        if (enclosure_type == "06") {
+          data.push(
+            Object.assign(tmp[0], {
+              id: item.id,
+              points: item.geometry.coordinates.join(",") + ";",
+            })
+          );
+        } else if (enclosure_type == "00") {
+          data.push(
+            Object.assign(tmp[0], {
+              id: item.id,
+              points: item.geometry.coordinates.map((v) => v.join(",")).join(";") + ";",
+            })
+          );
+        } else {
+          if (item.properties.isCircle) {
+            data.push(
+              Object.assign(tmp[0], {
+                id: item.id,
+                circle_center: item.properties.center.join(",") + ";",
+                radius: item.properties.radiusInKm,
+                points:
+                  item.geometry.coordinates[0].map((v) => v.join(",")).join(";") + ";",
+              })
+            );
+          } else {
+            data.push(
+              Object.assign(tmp[0], {
+                id: item.id,
+                points:
+                  item.geometry.coordinates[0].map((v) => v.join(",")).join(";") + ";",
+              })
+            );
+          }
+        }
+      } else {
+        throw Error("符合条件的数据应该仅有一条！");
+      }
+    });
+    saveData(data)
+      .then((res) => {
+        console.log("空域修改完成");
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  });
+  map.on("draw.selectionchange", function (e) {
+    console.log(e);
+  });
+  map.on("draw.combine", function (e) {
+    console.log(e);
+  });
+  map.on("draw.uncombine", function (e) {
+    console.log(e);
+  });
   获取净空区().then((res) => {
     let a = {
       type: "FeatureCollection",
       features: [],
     };
     console.log(res.data.results);
+    enclosureList = res.data.results;
     for (let i = 0; i < res.data.results.length; i++) {
       let v = res.data.results[i];
       let strLngLatList = v.points.match(
@@ -595,7 +739,25 @@ onMounted(() => {
         Number(item.match(RegExp(/(\-|\+)?\d+(\.\d+)?(?=,)/))[0]),
         Number(item.match(RegExp(/(?<=,)(\-|\+)?\d+(\.\d+)?/))[0]),
       ]);
-      if (list.length > 3) {
+      if (v.enclosure_type == "06") {
+        a.features.push({
+          id: v.id,
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: list[0],
+          },
+        });
+      } else if (v.enclosure_type == "00") {
+        a.features.push({
+          id: v.id,
+          type: "Feature",
+          geometry: {
+            type: "LineString",
+            coordinates: list,
+          },
+        });
+      } else if (v.enclosure_type == "02") {
         a.features.push({
           id: v.id,
           type: "Feature",
@@ -604,9 +766,26 @@ onMounted(() => {
             coordinates: [list],
           },
         });
+      } else if (v.enclosure_type == "03") {
+        let center = v.circle_center
+          .match(RegExp(/(\-|\+)?\d+(\.\d+)?,(\-|\+)?\d+(\.\d+)?/g))[0]
+          .split(",")
+          .map((v) => Number(v));
+        a.features.push({
+          id: v.id,
+          type: "Feature",
+          properties: {
+            isCircle: true,
+            center,
+            radiusInKm: v.radius / 1000,
+          },
+          geometry: {
+            type: "Polygon",
+            coordinates: [list],
+          },
+        });
       }
     }
-    console.log(a);
     Draw.add(a);
     // {
     //   type: "FeatureCollection",

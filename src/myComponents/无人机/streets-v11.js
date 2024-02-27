@@ -1,3 +1,4 @@
+import city from './鹰潭市.json?url'
 // import url from "./satellite.json?url"
 import data from "./satellite.js"
 let url = URL.createObjectURL(new File([JSON.stringify(data)],"satellite.json",{type:"application/json"}))
@@ -273,7 +274,7 @@ export default {
 	"sources": {
 		"district":{
 			"type":"geojson",
-			"data": window.location.origin+"/resources/100000_full.json"
+			"data": city
 		},
 		"composite": {
 				"url_origin": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2",

@@ -1,5 +1,6 @@
 import xtend from 'xtend';
 import * as Constants from './constants';
+import { Circle } from 'ol/style.js';
 
 const classTypes = ['mode', 'feature', 'mouse'];
 
@@ -105,6 +106,16 @@ export default function(ctx) {
 
     if (!controls) return controlGroup;
 
+    if (controls[Constants.types.POINT]) {
+      buttonElements[Constants.types.POINT] = createControlButton(Constants.types.POINT, {
+        container: controlGroup,
+        className: Constants.classes.CONTROL_BUTTON_POINT,
+        title: `Marker tool ${ctx.options.keybindings ? '(m)' : ''}`,
+        onActivate: () => ctx.events.changeMode(Constants.modes.DRAW_POINT),
+        onDeactivate: () => ctx.events.trash()
+      });
+    }
+
     if (controls[Constants.types.LINE]) {
       buttonElements[Constants.types.LINE] = createControlButton(Constants.types.LINE, {
         container: controlGroup,
@@ -125,12 +136,12 @@ export default function(ctx) {
       });
     }
 
-    if (controls[Constants.types.POINT]) {
-      buttonElements[Constants.types.POINT] = createControlButton(Constants.types.POINT, {
+    if (controls[Constants.types.CIRCLE]) {
+      buttonElements[Constants.types.CIRCLE] = createControlButton(Constants.types.CIRCLE, {
         container: controlGroup,
-        className: Constants.classes.CONTROL_BUTTON_POINT,
-        title: `Marker tool ${ctx.options.keybindings ? '(m)' : ''}`,
-        onActivate: () => ctx.events.changeMode(Constants.modes.DRAW_POINT),
+        className: Constants.classes.CONTROL_BUTTON_CIRCLE,
+        title: `Circle tool ${ctx.options.keybindings ? '(c)' : ''}`,
+        onActivate: () => ctx.events.changeMode(Constants.modes.DRAW_CIRCLE),
         onDeactivate: () => ctx.events.trash()
       });
     }
