@@ -758,32 +758,40 @@ onMounted(() => {
           },
         });
       } else if (v.enclosure_type == "02") {
-        a.features.push({
-          id: v.id,
-          type: "Feature",
-          geometry: {
-            type: "Polygon",
-            coordinates: [list],
-          },
-        });
+        if (list.length > 2) {
+          a.features.push({
+            id: v.id,
+            type: "Feature",
+            geometry: {
+              type: "Polygon",
+              coordinates: [list],
+            },
+          });
+        } else {
+          console.error("v.enclosure_type == 02," + "list.length=" + list.length);
+        }
       } else if (v.enclosure_type == "03") {
-        let center = v.circle_center
-          .match(RegExp(/(\-|\+)?\d+(\.\d+)?,(\-|\+)?\d+(\.\d+)?/g))[0]
-          .split(",")
-          .map((v) => Number(v));
-        a.features.push({
-          id: v.id,
-          type: "Feature",
-          properties: {
-            isCircle: true,
-            center,
-            radiusInKm: v.radius / 1000,
-          },
-          geometry: {
-            type: "Polygon",
-            coordinates: [list],
-          },
-        });
+        if (v.circle_center) {
+          let center = v.circle_center
+            .match(RegExp(/(\-|\+)?\d+(\.\d+)?,(\-|\+)?\d+(\.\d+)?/g))[0]
+            .split(",")
+            .map((v) => Number(v));
+          a.features.push({
+            id: v.id,
+            type: "Feature",
+            properties: {
+              isCircle: true,
+              center,
+              radiusInKm: v.radius / 1000,
+            },
+            geometry: {
+              type: "Polygon",
+              coordinates: [list],
+            },
+          });
+        } else {
+          console.error("v.circle_center=" + v.circle_center);
+        }
       }
     }
     Draw.add(a);
