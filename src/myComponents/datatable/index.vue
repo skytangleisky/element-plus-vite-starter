@@ -120,7 +120,6 @@
             :class="`th dark:bg-#2b2b2b bg-white flex flex-col ${
               addRow ? 'justify-between' : 'justify-end'
             }`"
-            style="line-height: 1rem"
           >
             <div
               v-if="addRow"
@@ -150,18 +149,17 @@
                 :indeterminate="isIndeterminate"
                 @change="allChange"
               ></el-checkbox>
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  padding: 3px 4px;
-                  overflow: hidden;
-                "
-              >
+              <div style="display: flex; flex-direction: column; padding: 3px 4px">
                 {{ item.Field }}
-                <span style="font-size: 10px; min-height: 1rem; opacity: 0.5">{{
-                  item.Comment
-                }}</span>
+                <span
+                  style="
+                    font-size: 10px;
+                    min-height: 1rem;
+                    opacity: 0.5;
+                    white-space: nowrap;
+                  "
+                  >{{ item.Comment }}</span
+                >
               </div>
             </div>
           </div>
@@ -184,7 +182,15 @@
         </div>
       </template>
     </div>
-    <div style="width: 100%; display: flex; justify-content: flex-end">
+    <div
+      style="
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      "
+    >
+      <div>{{ sqlStr }}</div>
       <el-pagination
         style="padding: 10px"
         :hide-on-single-page="false"
@@ -218,7 +224,33 @@ const options = reactive({
   thData: new Array<any>(),
   tdData: new Array<any>(),
 });
+const sqlStr = ref("");
 const addRow = ref(false);
+watch(
+  () => options.thData,
+  (e) => {
+    var doms = document.querySelectorAll(".col .th");
+    doms.forEach((el: Element) => {
+      let div = el as HTMLDivElement;
+      div.style.height = "auto";
+    });
+    nextTick(() => {
+      var maxHeight = 0;
+      var doms = document.querySelectorAll(".col .th");
+      doms.forEach((el: Element) => {
+        let div = el as HTMLDivElement;
+        if (div.scrollHeight > maxHeight) {
+          maxHeight = div.scrollHeight;
+        }
+      });
+      doms.forEach((el: Element) => {
+        let div = el as HTMLDivElement;
+        div.style.height = maxHeight + "px";
+      });
+    });
+  },
+  { deep: true }
+);
 watch(addRow, () => {
   var doms = document.querySelectorAll(".col .th");
   doms.forEach((el: Element) => {
@@ -249,6 +281,11 @@ function getData() {
         res.data[0].map((v: any) => {
           options.thData.push({ ...v, checked: true, placeholder: v.Type });
         });
+        var doms = document.querySelectorAll(".col .th");
+        doms.forEach((el: Element) => {
+          let div = el as HTMLDivElement;
+          div.style.height = "auto";
+        });
         nextTick(() => {
           var maxHeight = 0;
           var doms = document.querySelectorAll(".col .th");
@@ -270,6 +307,7 @@ function getData() {
           offset: (currentPage - 1) * pageSize,
         })
           .then((res) => {
+            sqlStr.value = res.data.$pagingSql;
             paginationOptions.total = res.data.total;
             options.tdData.length = 0;
             res.data.results.map((v: any) => {
@@ -338,6 +376,7 @@ watch(
       offset: (currentPage - 1) * pageSize,
     })
       .then((res) => {
+        sqlStr.value = res.data.$pagingSql;
         paginationOptions.total = res.data.total;
         options.tdData.length = 0;
         res.data.results.map((v: any) => {
@@ -585,9 +624,9 @@ const allChange = (val: boolean) => {
     left: 0;
   }
   .col {
-    min-width: 160px;
     height: fit-content;
     .th {
+      min-width: 160px;
       z-index: 2;
       position: sticky;
       top: 0;
@@ -598,8 +637,6 @@ const allChange = (val: boolean) => {
       font-weight: bolder;
       line-height: 1rem;
     }
-  }
-  .col {
     .cell {
       border-right: 1px solid #444;
     }
