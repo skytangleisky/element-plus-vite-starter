@@ -1,6 +1,6 @@
 <template>
   <div class="login_dialog">
-    <div class="leftImage">低空飞行安全监控系统</div>
+    <div class="leftImage">雷达设备组网数据采集管理系统</div>
     <div class="rightPlane">
       <el-form
         ref="formEl"
@@ -127,7 +127,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
   .leftImage {
     width: 800px;
     height: 600px;
-    background-image: url(assets/uavBg.jpg);
+    background-image: url(assets/10.jpg);
     background-size: cover;
     font-family: "SourceHanSansSC-Bold";
     font-weight: 600;

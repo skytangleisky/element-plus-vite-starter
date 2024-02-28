@@ -113,18 +113,18 @@
       v-model:level="setting.level"
       class="absolute bottom-0"
     ></time-line>
-    <graph
+    <!-- <graph
       v-if="DEV"
       class="absolute left-0 bottom-30px"
       v-model:args="graphArgs"
-    ></graph>
+    ></graph> -->
   </div>
 </template>
 <script setup>
 import * as turf from "@turf/turf";
 import { addFeatherImages, getFeather } from "~/tools";
 import { getLngLat } from "~/myComponents/map/js/core.js";
-import { watch, ref, onMounted, onBeforeUnmount, reactive } from "vue";
+import { watch, ref, onMounted, onBeforeUnmount, reactive, onActivated } from "vue";
 import { useBus } from "~/myComponents/bus";
 import Dialog from "../dialog.vue";
 import { eventbus } from "~/eventbus";
@@ -534,6 +534,9 @@ const flyTo = (item) => {
     console.log(error);
   }
 };
+onActivated(() => {
+  map.resize();
+});
 onMounted(() => {
   map = new mapboxgl.Map({
     container: mapRef.value,

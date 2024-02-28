@@ -56,11 +56,11 @@
       v-dompurify-html="status == 'play' ? pauseSvg : playSvg"
     />
     <span @click="speed" style="color: white">x{{ Math.pow(2, options.times) }}</span>
-    <graph
+    <!-- <graph
       v-if="DEV"
       :args="graphArgs"
       style="position: absolute; right: 30px; bottom: 100%"
-    ></graph>
+    ></graph> -->
   </div>
 </template>
 <script lang="ts" setup>

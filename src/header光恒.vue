@@ -4,7 +4,7 @@
     <span
       class="color-black p-0 m-0 dark:color-white"
       style="height: 40px; line-height: 40px; font-size: 2rem"
-      >低空飞行安全监控系统</span
+      >雷达设备组网数据采集管理系统</span
     >
     <div class="absolute right-0 items-center hidden lg:flex">
       <div
