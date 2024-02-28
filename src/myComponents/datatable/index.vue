@@ -70,7 +70,10 @@
           <tr>
             <template v-for="item of options.thData">
               <th v-if="item.checked">
-                {{ item.Field }}
+                <div style="display: flex; flex-direction: column">
+                  <span>{{ item.Field }}</span>
+                  <span style="font-size: 10px">{{ item.Comment }} </span>
+                </div>
               </th>
             </template>
           </tr>
@@ -114,7 +117,9 @@
           }`"
         >
           <div
-            class="th dark:bg-#2b2b2b bg-white flex flex-col"
+            :class="`th dark:bg-#2b2b2b bg-white flex flex-col ${
+              addRow ? 'justify-between' : 'justify-end'
+            }`"
             style="line-height: 1rem"
           >
             <div
@@ -154,7 +159,7 @@
                 "
               >
                 {{ item.Field }}
-                <span style="font-size: 10px; white-space: nowrap">{{
+                <span style="font-size: 10px; min-height: 1rem; opacity: 0.5">{{
                   item.Comment
                 }}</span>
               </div>
@@ -199,7 +204,7 @@
 <script lang="ts" setup>
 import { ElMessage, ElMessageBox } from "element-plus";
 import draggable from "./draggable.vue";
-import { reactive, watch, h, ref } from "vue";
+import { reactive, watch, h, ref, onMounted, nextTick } from "vue";
 import myInput from "./input.vue";
 import {
   getColumns,
@@ -214,6 +219,27 @@ const options = reactive({
   tdData: new Array<any>(),
 });
 const addRow = ref(false);
+watch(addRow, () => {
+  var doms = document.querySelectorAll(".col .th");
+  doms.forEach((el: Element) => {
+    let div = el as HTMLDivElement;
+    div.style.height = "auto";
+  });
+  nextTick(() => {
+    var maxHeight = 0;
+    var doms = document.querySelectorAll(".col .th");
+    doms.forEach((el: Element) => {
+      let div = el as HTMLDivElement;
+      if (div.scrollHeight > maxHeight) {
+        maxHeight = div.scrollHeight;
+      }
+    });
+    doms.forEach((el: Element) => {
+      let div = el as HTMLDivElement;
+      div.style.height = maxHeight + "px";
+    });
+  });
+});
 function getData() {
   return new Promise((resolve, reject) => {
     getColumns()
@@ -222,6 +248,20 @@ function getData() {
         options.thData.length = 0;
         res.data[0].map((v: any) => {
           options.thData.push({ ...v, checked: true, placeholder: v.Type });
+        });
+        nextTick(() => {
+          var maxHeight = 0;
+          var doms = document.querySelectorAll(".col .th");
+          doms.forEach((el: Element) => {
+            let div = el as HTMLDivElement;
+            if (div.scrollHeight > maxHeight) {
+              maxHeight = div.scrollHeight;
+            }
+          });
+          doms.forEach((el: Element) => {
+            let div = el as HTMLDivElement;
+            div.style.height = maxHeight + "px";
+          });
         });
         let currentPage = paginationOptions.currentPage;
         let pageSize = paginationOptions.pageSize;
@@ -254,7 +294,9 @@ function getData() {
       });
   });
 }
-getData();
+onMounted(() => {
+  getData();
+});
 const change = (item: any, k: string, oldVal: any) => {
   if (item[k] === oldVal) {
     console.log("数据未改变");
@@ -511,6 +553,7 @@ const allChange = (val: boolean) => {
     table-layout: fixed;
     border-left: 1px solid #444;
     border-collapse: collapse;
+    height: fit-content;
     th {
       // padding: 0;
       min-width: 160px;

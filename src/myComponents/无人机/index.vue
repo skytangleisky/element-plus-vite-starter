@@ -103,7 +103,7 @@
         </svg>
       </el-icon>
     </div>
-    <!-- <time-line
+    <time-line
       :data="data"
       :toLeft="change"
       :toRight="change"
@@ -112,7 +112,7 @@
       v-model:status="setting.status"
       v-model:level="setting.level"
       class="absolute bottom-0"
-    ></time-line> -->
+    ></time-line>
     <graph
       v-if="DEV"
       class="absolute left-0 bottom-30px"
@@ -687,7 +687,7 @@ onMounted(() => {
               Object.assign(tmp[0], {
                 id: item.id,
                 circle_center: item.properties.center.join(",") + ";",
-                radius: item.properties.radiusInKm,
+                radius: item.properties.radiusInKm * 1000,
                 points:
                   item.geometry.coordinates[0].map((v) => v.join(",")).join(";") + ";",
               })
