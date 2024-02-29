@@ -3,7 +3,7 @@
     <el-scrollbar
       class="flex-1"
       :style="`height: 100%; background-color: #304156;${
-        isCollapse ? '' : 'width:210px'
+        isCollapse ? '' : 'min-width:210px'
       }`"
     >
       <el-menu
@@ -19,7 +19,16 @@
         @select="select"
         style="border-right: 0"
       >
+        <template v-if="!DEV">
+          <SubMenu
+            v-for="route in setting.routes[0].children"
+            :key="route.name"
+            :item="route"
+            absoluteRootPath="/contain"
+          ></SubMenu>
+        </template>
         <SubMenu
+          v-else
           v-for="route in setting.routes"
           :key="route.name"
           :item="route"
@@ -75,7 +84,7 @@ const change = (v: any) => {
   router.getRoutes().forEach((v) => {
     v.name && router.removeRoute(v.name);
   });
-  array2components(setting.routes).map((v: any) => {
+  (array2components(setting.routes) as Array<any>).map((v: any) => {
     router.addRoute(v);
   });
   router.push({ path: "/contain/map", replace: false });
