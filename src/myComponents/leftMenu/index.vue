@@ -26,14 +26,14 @@
         ></SubMenu>
       </el-menu>
     </el-scrollbar>
-    <el-select
+    <!-- <el-select
       v-model="setting.component"
       filterable
       style="width: 100%"
       @change="change"
     >
       <el-option v-for="(k, v) in languages" :key="v" :label="v" :value="v" />
-    </el-select>
+    </el-select> -->
   </div>
 </template>
 <script lang="ts" setup>
@@ -48,6 +48,7 @@ const setting = useSettingStore();
 const router = useRouter();
 import SubMenu from "./SubMenu.vue";
 import { array2components } from "~/tools";
+let DEV = import.meta.env.DEV;
 onMounted(() => {
   icon.FetchList();
 });

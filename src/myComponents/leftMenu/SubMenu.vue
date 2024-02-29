@@ -7,14 +7,14 @@
       </template>
       <SubMenu
         v-for="route in item.children"
-        :absoluteRootPath="absoluteRootPath + '/' + item.path"
+        :absoluteRootPath="`${absoluteRootPath}/${item.path}`"
         :key="route.name"
         :item="route"
       ></SubMenu>
     </el-sub-menu>
     <router-link
       v-else
-      :to="absoluteRootPath + '/' + item.path"
+      :to="`${absoluteRootPath}/${item.path}`"
       :replace="item.replace"
       style="text-decoration: none"
     >
@@ -54,6 +54,7 @@
 <script lang="ts" setup>
 import { useIconStore } from "~/stores/icon";
 const icon = useIconStore();
+let DEV = import.meta.env.DEV;
 const { item } = defineProps({
   item: {
     type: Object,
