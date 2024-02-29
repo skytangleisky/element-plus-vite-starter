@@ -208,7 +208,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ElMessage, ElMessageBox } from "element-plus";
+import { CheckboxValueType, ElMessage, ElMessageBox } from "element-plus";
 import draggable from "./draggable.vue";
 import { reactive, watch, h, ref, onMounted, nextTick } from "vue";
 import myInput from "./input.vue";
@@ -577,7 +577,7 @@ const isIndeterminate = computed(() => {
   });
   return checked && unchecked;
 });
-const allChange = (val: boolean) => {
+const allChange = (val: CheckboxValueType) => {
   options.tdData.map((item) => {
     item.checked = val;
   });
