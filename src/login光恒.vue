@@ -87,8 +87,12 @@ const submitForm = (formEl: FormInstance | undefined) => {
           router.push({ path: "/", replace: true });
         })
         .catch((e) => {
-          openVn(e.response.data.message);
           loading.value = false;
+          if (e.response) {
+            openVn(e.response.data.message);
+          } else {
+            openVn(e.message);
+          }
         });
     } else {
       loading.value = false;
