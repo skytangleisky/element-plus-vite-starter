@@ -7,6 +7,7 @@
       }`"
     >
       <el-menu
+        v-permission="['admin']"
         background-color="#304156"
         :collapse="isCollapse"
         text-color="#bfcbd9"

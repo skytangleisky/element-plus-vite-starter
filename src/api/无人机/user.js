@@ -1,6 +1,6 @@
 import request from '../../utils/request'
-const tableName='user'
-let options = '?host=tanglei.top&port=3306&user=root&password=tanglei&database=jiangxi'
+const tableName='userinfo'
+let options = '?host=tanglei.top&port=3306&user=root&password=tanglei&database=union'
 const url = 'backend/db/'+tableName+options
 export function getColumns(){
   return request({

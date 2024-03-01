@@ -10,6 +10,7 @@ export const useUserStore = defineStore({
     token: '',
     avatar: '',
     logined: false,
+    roles:[]
   }),
 
   actions: {
