@@ -535,7 +535,7 @@ const flyTo = (item) => {
   }
 };
 onActivated(() => {
-  map.resize();
+  map && map.resize();
 });
 onMounted(() => {
   map = new mapboxgl.Map({
