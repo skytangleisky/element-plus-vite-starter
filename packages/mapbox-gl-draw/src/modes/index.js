@@ -7,6 +7,7 @@ import draw_line_string from './draw_line_string';
 import draw_circle from './DragCircleMode';
 import direct_select_override from './DirectModeOverride';
 import simple_select_override from './SimpleSelectModeOverride'
+import static_select from './StaticMode'
 
 export default {
   simple_select,//选择绘制目标
@@ -16,5 +17,6 @@ export default {
   draw_line_string,
   draw_circle,
   direct_select_override,
-  simple_select_override
+  simple_select_override,
+  static_select
 };

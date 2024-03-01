@@ -13,10 +13,30 @@ export const useSettingStore = defineStore({
       zoom:5,
       center:[100.41462758184835, 36.57697037305711],
     },
+    无人机:{
+      回放:{
+        zoom:5,
+        center:[100.41462758184835, 36.57697037305711],
+        district:true,
+        loadmap:true,
+      },
+      编辑:{
+        zoom:5,
+        center:[100.41462758184835, 36.57697037305711],
+        district:true,
+        loadmap:true,
+      },
+      模拟:{
+        zoom:5,
+        center:[100.41462758184835, 36.57697037305711],
+        district:true,
+        loadmap:true,
+      }
+    },
     projection: 'globe',// mercator|globe
     lang: 'zh-cn',
     webgpu:false,
-    loadmap:true,
+    loadmap:false,
     district:true,
     airline:true,
     navigation:true,
@@ -31,6 +51,11 @@ export const useSettingStore = defineStore({
     status: 'play',//记录时间轴的播放状态
     now: undefined,//时间轴的当前时间
     level:undefined,//时间轴的缩放等级
+    playback:{
+    status: 'pause',//记录时间轴的播放状态
+    now: undefined,//时间轴的当前时间
+    level:undefined,//时间轴的缩放等级
+    },
     component:'/src/myComponents/menu/index.vue',
     factor:[
       {toolTips:'站号',name:'ZH',val:false,visible:false},
@@ -158,7 +183,7 @@ export const useSettingStore = defineStore({
             name: '961a22a1-f5da-9845-fc89-3519ed950610',
             // component:'/src/myComponents/openlayers/radarStatistic.vue'
             // component:'/src/myComponents/menu/index.vue'
-            component:'/src/myComponents/无人机/index.vue',
+            component:'/src/myComponents/无人机/playback.vue',
             replace:true,
             label:'历史回放',
             svg:'42a4578ed6cd11ee9aafb025aa2c9ada',
@@ -204,14 +229,14 @@ export const useSettingStore = defineStore({
               {
                 path: 'simulate',
                 name: 'c4961e04-e574-0e1f-ae23-94f157b15b45',
-                component:'/src/myComponents/无人机/index.vue',
+                component:'/src/myComponents/无人机/simulate.vue',
                 label: '设备布防模拟',
                 svg:'8bdc8331d6c911ee9aafb025aa2c9ada'
               },
               {
                 path: 'airspace',
                 name: 'c4961e04-e574-0e1f-ae23-94f157b15c45',
-                component: '/src/myComponents/datatable/index.vue',
+                component: '/src/myComponents/无人机/edit.vue',
                 label: '禁飞区管理',
                 svg:'fb9ca5f8d6c811ee9aafb025aa2c9ada'
               },

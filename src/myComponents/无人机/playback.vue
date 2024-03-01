@@ -21,16 +21,17 @@
         outline: none;
       "
     ></div>
-    <!-- <time-line
+    <Dialog class="absolute" style="left: 10px; top: 10px"></Dialog>
+    <time-line
       :data="data"
       :toLeft="change"
       :toRight="change"
       :toMiddle="change"
-      v-model:now="setting.now"
-      v-model:status="setting.status"
-      v-model:level="setting.level"
+      v-model:now="setting.playback.now"
+      v-model:status="setting.playback.status"
+      v-model:level="setting.playback.level"
       class="absolute bottom-0"
-    ></time-line> -->
+    ></time-line>
     <!-- <graph
       v-if="DEV"
       class="absolute left-0 bottom-30px"
@@ -43,8 +44,10 @@ import { addFeatherImages, getFeather } from "~/tools";
 import { getLngLat } from "~/myComponents/map/js/core.js";
 import { watch, ref, onMounted, onBeforeUnmount, reactive, onActivated } from "vue";
 import { useBus } from "~/myComponents/bus";
+import Dialog from "../dialog.vue";
 import { eventbus } from "~/eventbus";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import StaticMode from "@mapbox/mapbox-gl-draw-static-mode";
 // var a = turf.sector(turf.point([-75, 40]), 100, 0, 360);
 // console.log(a);
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
@@ -110,6 +113,15 @@ const toMiddle = () => {
 const toRight = () => {
   console.log("toRight");
 };
+
+watch(
+  () => bus.test,
+  (val) => {
+    console.log(val);
+  }
+);
+import timeLine from "~/tools/timeLine.vue";
+import graph from "~/tools/graph.vue";
 const info = ref({
   title: "南昌昌北国际机场(ZSCN)",
   time: "2020-09-24 16:00",
@@ -124,15 +136,41 @@ const info = ref({
 import { useStationStore } from "~/stores/station";
 import { useRoute } from "vue-router";
 const route = useRoute();
+import radarStatistic from "./radarStatistic.vue";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
-import style from "./streets-v11.js";
+import style from "./playback.js";
 let enclosureList = [];
+let prevDate;
+watch(
+  () => setting.playback.now,
+  (newVal) => {
+    if (newVal == undefined) {
+      newVal = Date.now();
+    }
+    let strDate = new Date(newVal).Format("yyyyMMdd");
+    if (strDate !== prevDate) {
+      console.log(strDate);
+      station
+        .查询雷达最新的平均风数据接口({
+          user_id: route.query.user_id,
+        })
+        .then((res) => {
+          bus.avgWindData = res.data.data;
+        });
+      prevDate = strDate;
+    }
+  }
+);
+
 console.log("route.query", route.query);
 const station = useStationStore();
 /** @type {import('ol/style/literal.js').LiteralStyle} */
 
 const mapRef = ref(null);
+const disappear = (e) => {
+  setting.disappear = !setting.disappear;
+};
 let timer, map;
 let mock;
 let speed = 20;
@@ -186,7 +224,7 @@ const moveFunc = () => {
   setting.openlayers.center = [center.lng, center.lat];
 };
 const task = () => {
-  // if (prevDate === new Date(setting.now).Format("yyyyMMdd")) {
+  // if (prevDate === new Date(setting.playback.now).Format("yyyyMMdd")) {
   station
     .查询雷达最新的平均风数据接口({
       user_id: route.query.user_id,
@@ -446,19 +484,36 @@ onMounted(() => {
   );
   // map.addControl(new mapboxgl.ScaleControl());
   map.addControl(new mapboxgl.FullscreenControl());
+  const {
+    direct_select,
+    draw_circle,
+    draw_line_string,
+    draw_point,
+    draw_polygon,
+    static_select,
+  } = MapboxDraw.modes;
   var Draw = new MapboxDraw({
     userProperties: true,
-    displayControlsDefault: true,
+    displayControlsDefault: false,
+    defaultMode: "static_select",
     controls: {
-      point: true,
-      circle: true,
-      line_string: true,
-      polygon: true,
-      trash: true,
+      point: false,
+      circle: false,
+      line_string: false,
+      polygon: false,
+      trash: false,
       combine_features: false,
       uncombine_features: false,
     },
+    modes: {
+      draw_circle,
+      draw_line_string,
+      draw_point,
+      draw_polygon,
+      static_select,
+    },
   });
+  console.log(MapboxDraw.modes);
   map.addControl(Draw, "top-right");
   //添加空域
   map.on("draw.create", function (e) {
@@ -714,6 +769,212 @@ onBeforeUnmount(() => {
   map.remove();
 });
 watch(
+  () => bus.result,
+  (newVal) => {
+    const data = newVal;
+    points.data = {
+      type: "FeatureCollection",
+      features: [],
+    };
+    for (let i = 0; i < data.length; i++) {
+      let color = "blue";
+      if (data[i].radar.data_status == false || data[i].radar.is_online == false) {
+        color = "red";
+      } else if (
+        data[i].compass_status == false ||
+        data[i].control_plate_status == false ||
+        data[i].edfa_status == false ||
+        data[i].external_status == false ||
+        data[i].gps_status == false ||
+        data[i].grabber_status == false
+      ) {
+        color = "orange";
+      } else {
+        color = "#0f0";
+      }
+      // console.log(data[i]);
+      points.data.features.push({
+        type: "Feature",
+        properties: {
+          type: "站点",
+          radar_id: data[i].radar.radar_id,
+          风速: speed,
+          time: data[i].data_time,
+          name: data[i].radar.name,
+          is_online: data[i].is_online,
+          external_temperature: data[i].external_temperature,
+          external_humidity: data[i].external_humidity,
+          image: "feather" + getFeather(speed),
+          color,
+        },
+        geometry: {
+          type: "Point",
+          coordinates: [data[i].longitude, data[i].latitude],
+        },
+      });
+    }
+    map.getSource("point").setData(points.data);
+  }
+);
+watch(
+  () => bus.avgWindData,
+  (avgWindData) => {
+    if (avgWindData) {
+      data.length = 0;
+      avgWindData.map((v) => {
+        for (let k in v) {
+          let radar_id = k;
+          let list = v[k];
+          //删除相关站点的风羽
+          for (let i = 0; i < points.data.features.length; i++) {
+            if (
+              radar_id == points.data.features[i].properties.radar_id &&
+              points.data.features[i].properties.type == "风羽"
+            ) {
+              points.data.features.splice(i--, 1);
+            }
+          }
+          for (let i = 0; i < list.length; i++) {
+            let data_time = list[i].data_time;
+            let data_list = list[i].data_list;
+            if (i == 0) {
+              //计算风羽的位置并添加
+              for (let i = 0; i < points.data.features.length; i++) {
+                if (
+                  radar_id == points.data.features[i].properties.radar_id &&
+                  points.data.features[i].properties.type == "站点"
+                ) {
+                  const lngLat = points.data.features[i].geometry.coordinates;
+
+                  data_list.map((item) => {
+                    let ll = getLngLat(
+                      lngLat[0],
+                      lngLat[1],
+                      item.north_a,
+                      Number(item.distance)
+                    );
+                    // item.center_h_direction_abs = Math.random() * 360;
+                    // item.center_h_speed = Math.random() * 60;
+                    if (
+                      item.center_h_direction_abs != -1000 &&
+                      item.center_h_speed != -1000
+                    ) {
+                      points.data.features.push({
+                        type: "Feature",
+                        properties: {
+                          type: "风羽",
+                          radar_id: radar_id,
+                          风速: item.center_h_speed,
+                          image: "feather" + getFeather(item.center_h_speed),
+                          风向: item.center_h_direction_abs,
+                        },
+                        geometry: {
+                          type: "Point",
+                          coordinates: [ll.lng, ll.lat],
+                        },
+                      });
+                    }
+                  });
+                  let source = map.getSource("point");
+                  source && source.setData(points.data);
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+  }
+);
+watch(
+  () => setting.station,
+  (newVal) => {
+    if (newVal) {
+      map.setLayoutProperty("stationLayer", "visibility", "visible");
+      map.setLayoutProperty("featherLayer", "visibility", "visible");
+      map.setLayoutProperty("textLayer", "visibility", "visible");
+      map.setLayoutProperty("temperatureLayer", "visibility", "visible");
+      map.setLayoutProperty("humidityLayer", "visibility", "visible");
+    } else {
+      map.setLayoutProperty("stationLayer", "visibility", "none");
+      map.setLayoutProperty("featherLayer", "visibility", "none");
+      map.setLayoutProperty("textLayer", "visibility", "none");
+      map.setLayoutProperty("humidityLayer", "visibility", "none");
+      map.setLayoutProperty("temperatureLayer", "visibility", "none");
+    }
+  }
+);
+watch(
+  () => setting.factor[1].val,
+  (newVal) => {
+    if (newVal) {
+      map.setPaintProperty("textLayer", "text-opacity", 1);
+    } else {
+      map.setPaintProperty("textLayer", "text-opacity", 0);
+    }
+  }
+);
+watch(
+  () => setting.factor[7].val,
+  (newVal) => {
+    if (newVal) {
+      map.setPaintProperty("temperatureLayer", "text-opacity", 1);
+    } else {
+      map.setPaintProperty("temperatureLayer", "text-opacity", 0);
+    }
+  }
+);
+watch(
+  () => setting.factor[9].val,
+  (newVal) => {
+    if (newVal) {
+      map.setPaintProperty("humidityLayer", "text-opacity", 1);
+    } else {
+      map.setPaintProperty("humidityLayer", "text-opacity", 0);
+    }
+  }
+);
+watch(
+  () => setting.checks[0].select,
+  (newVal) => {
+    if (newVal) {
+      station.查询雷达列表接口({ user_id: route.query.user_id });
+    } else {
+      bus.result = [];
+    }
+  }
+);
+watch(
+  () => setting.checks[1].select,
+  (newVal) => {
+    if (newVal) {
+      station.查询雷达在线列表接口({ user_id: route.query.user_id });
+    } else {
+      bus.result = [];
+    }
+  }
+);
+watch(
+  () => setting.checks[2].select,
+  (newVal) => {
+    if (newVal) {
+      station.查询雷达离线列表接口({ user_id: route.query.user_id });
+    } else {
+      bus.result = [];
+    }
+  }
+);
+watch(
+  () => setting.checks[3].select,
+  (newVal) => {
+    if (newVal) {
+      station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
+    } else {
+      bus.result = [];
+    }
+  }
+);
+watch(
   () => setting.district,
   (newVal) => {
     if (newVal) {
@@ -726,12 +987,22 @@ watch(
   }
 );
 watch(
-  () => setting.loadmap,
+  () => setting.无人机.回放.loadmap,
   (newVal) => {
     if (newVal) {
       map.setLayoutProperty("simple-tiles", "visibility", "visible");
     } else {
       map.setLayoutProperty("simple-tiles", "visibility", "none");
+    }
+  }
+);
+watch(
+  () => setting.feather,
+  (newVal) => {
+    if (newVal) {
+      map.setPaintProperty("featherLayer", "icon-opacity", 1);
+    } else {
+      map.setPaintProperty("featherLayer", "icon-opacity", 0);
     }
   }
 );

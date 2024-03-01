@@ -21,16 +21,86 @@
         outline: none;
       "
     ></div>
-    <!-- <time-line
-      :data="data"
-      :toLeft="change"
-      :toRight="change"
-      :toMiddle="change"
-      v-model:now="setting.now"
-      v-model:status="setting.status"
-      v-model:level="setting.level"
-      class="absolute bottom-0"
-    ></time-line> -->
+    <div ref="popup" class="ol-popup" style="display: none">
+      <div
+        style="
+          position: absolute;
+          background-color: rgb(73, 208, 37);
+          left: 0;
+          right: 0;
+          top: 0;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          padding-left: 10px;
+          padding-right: 25px;
+          align-items: center;
+        "
+      >
+        <div class="title">{{ info.title }}</div>
+        <div class="latestTime">{{ info.time }} 更新</div>
+      </div>
+      <div
+        ref="popup_content"
+        style="
+          position: absolute;
+          display: flex;
+          flex-direction: column;
+          top: 30px;
+          justify-content: start;
+        "
+      >
+        <div style="color: #e83e8c">状&emsp;态：{{ info.status }}</div>
+        <div style="color: #e83e8c">速&emsp;度：{{ info.speed }}</div>
+        <div style="color: #e83e8c">经&emsp;度：{{ info.longitude }}</div>
+        <div style="color: #e83e8c">纬&emsp;度：{{ info.latitude }}</div>
+        <div style="color: #e83e8c">方位角：{{ info.deg }}</div>
+      </div>
+      <div ref="popup_closer" class="ol-popup-closer"></div>
+    </div>
+    <Dialog class="absolute" style="left: 10px; top: 10px"></Dialog>
+    <div
+      :class="`right-drawer ${
+        setting.disappear ? 'disappear' : ''
+      } b-solid b-0 b-l-1px dark:b-color-#888`"
+    >
+      <div style="overflow: auto; scroll-snap-type: none">
+        <chart-info></chart-info>
+        <chart-fkx></chart-fkx>
+        <chart-dom></chart-dom>
+        <chartDirection></chartDirection>
+        <chartSpeed></chartSpeed>
+        <chartSNR></chartSNR>
+        <chart-th></chart-th>
+      </div>
+      <el-icon
+        class="left--29px z-999 bg-#eee dark:bg-#304156 dark:color-#888"
+        style="
+          font-size: 28px;
+          position: absolute;
+          border-bottom-left-radius: 50%;
+          border-left: 1px solid grey;
+          border-bottom: 1px solid grey;
+        "
+        @click="disappear"
+      >
+        <svg
+          t="1695093760888"
+          class="icon"
+          viewBox="0 0 1024 1024"
+          version="1.1"
+          xmlns="http://www.w3.org/2000/svg"
+          p-id="5105"
+          width="200"
+          height="200"
+        >
+          <path
+            d="M557.397333 167.204571l293.059048 293.059048L902.192762 512l-51.712 51.712-293.059048 293.083429-51.736381-51.712L762.148571 548.571429H121.904762v-73.142858h640.243809L505.660952 218.940952l51.736381-51.736381z"
+            p-id="5106"
+          ></path>
+        </svg>
+      </el-icon>
+    </div>
     <!-- <graph
       v-if="DEV"
       class="absolute left-0 bottom-30px"
@@ -39,10 +109,12 @@
   </div>
 </template>
 <script setup>
+import * as turf from "@turf/turf";
 import { addFeatherImages, getFeather } from "~/tools";
 import { getLngLat } from "~/myComponents/map/js/core.js";
 import { watch, ref, onMounted, onBeforeUnmount, reactive, onActivated } from "vue";
 import { useBus } from "~/myComponents/bus";
+import Dialog from "../空域列表.vue";
 import { eventbus } from "~/eventbus";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 // var a = turf.sector(turf.point([-75, 40]), 100, 0, 360);
@@ -122,17 +194,29 @@ const info = ref({
 });
 
 import { useStationStore } from "~/stores/station";
+import chartTh from "~/myComponents/echarts/T_H.vue";
+import chartDom from "~/myComponents/echarts/index.vue";
+import chartFkx from "~/myComponents/echarts/fkx.vue";
+import chartInfo from "~/myComponents/echarts/info.vue";
+import chartSNR from "~/myComponents/echarts/SNR.vue";
+import chartSpeed from "~/myComponents/echarts/Speed.vue";
+import chartDirection from "~/myComponents/echarts/Direction.vue";
 import { useRoute } from "vue-router";
 const route = useRoute();
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
-import style from "./streets-v11.js";
+import style from "./simulate.js";
 let enclosureList = [];
 console.log("route.query", route.query);
 const station = useStationStore();
 /** @type {import('ol/style/literal.js').LiteralStyle} */
 
 const mapRef = ref(null);
+const popup = ref(null);
+const popup_closer = ref(null);
+const disappear = (e) => {
+  setting.disappear = !setting.disappear;
+};
 let timer, map;
 let mock;
 let speed = 20;
@@ -179,11 +263,11 @@ const clickFunc = (e) => {
   }
 };
 const zoomFunc = () => {
-  setting.openlayers.zoom = map.getZoom();
+  setting.无人机.模拟.zoom = map.getZoom();
 };
 const moveFunc = () => {
   let center = map.getCenter();
-  setting.openlayers.center = [center.lng, center.lat];
+  setting.无人机.模拟.center = [center.lng, center.lat];
 };
 const task = () => {
   // if (prevDate === new Date(setting.now).Format("yyyyMMdd")) {
@@ -434,8 +518,8 @@ onMounted(() => {
     // zoom: 18,
     // center: [148.9819, -35.3981],
     // pitch: 60,
-    zoom: setting.openlayers.zoom,
-    center: setting.openlayers.center,
+    zoom: setting.无人机.模拟.zoom,
+    center: setting.无人机.模拟.center,
     pitch: 0,
   });
   map.addControl(
@@ -450,10 +534,10 @@ onMounted(() => {
     userProperties: true,
     displayControlsDefault: true,
     controls: {
-      point: true,
+      point: false,
       circle: true,
-      line_string: true,
-      polygon: true,
+      line_string: false,
+      polygon: false,
       trash: true,
       combine_features: false,
       uncombine_features: false,
@@ -702,6 +786,13 @@ onMounted(() => {
   map.on("load", loadFunc);
   map.on("click", "stationLayer", clickFunc);
   eventbus.on("将站点移动到屏幕中心", flyTo);
+  const closer = popup_closer.value;
+  closer.onclick = function () {
+    selected = null;
+    overlay.setPosition(undefined);
+    closer.blur();
+    return false;
+  };
 });
 onBeforeUnmount(() => {
   eventbus.off("将站点移动到屏幕中心", flyTo);
@@ -714,7 +805,7 @@ onBeforeUnmount(() => {
   map.remove();
 });
 watch(
-  () => setting.district,
+  () => setting.无人机.模拟.district,
   (newVal) => {
     if (newVal) {
       map.setLayoutProperty("districtLayer", "visibility", "visible");
@@ -726,7 +817,7 @@ watch(
   }
 );
 watch(
-  () => setting.loadmap,
+  () => setting.无人机.模拟.loadmap,
   (newVal) => {
     if (newVal) {
       map.setLayoutProperty("simple-tiles", "visibility", "visible");
