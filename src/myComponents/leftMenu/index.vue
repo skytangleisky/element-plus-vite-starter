@@ -46,7 +46,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch, nextTick } from "vue";
 import { useIconStore } from "~/stores/icon";
 const icon = useIconStore();
 const modules = import.meta.glob("~/**/*.vue");
@@ -80,7 +80,6 @@ const change = (v: any) => {
     }
   }
   fn(setting.routes);
-
   router.getRoutes().forEach((v) => {
     v.name && router.removeRoute(v.name);
   });
@@ -89,6 +88,26 @@ const change = (v: any) => {
   });
   router.push({ path: "/contain/map", replace: false });
 };
+watch(
+  () => setting.routes,
+  (routes) => {
+    console.log(routes);
+    router.getRoutes().forEach((v) => {
+      v.name && router.removeRoute(v.name);
+    });
+    (array2components(routes) as Array<any>).map((v: any) => {
+      router.addRoute(v);
+    });
+    try {
+      router.replace(router.currentRoute.value.fullPath);
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  {
+    deep: true,
+  }
+);
 const open = (id: string) => {
   setting.defaultOpends.push(id);
 };

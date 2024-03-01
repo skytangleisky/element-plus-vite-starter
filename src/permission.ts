@@ -30,3 +30,9 @@ router.afterEach((to,from)=>{
   }
   NProgress.done()
 })
+router.onError(e=>{
+  const setting = useSettingStore()
+  if(router.currentRoute.value.name){
+    setting.defaultActive = router.currentRoute.value.name.toString()
+  }
+})

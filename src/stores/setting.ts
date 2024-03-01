@@ -274,7 +274,12 @@ export const useSettingStore = defineStore({
                 svg:'2e727627d6c711ee9aafb025aa2c9ada'
               },
             ]
-          }
+          },
+          {
+            path: ':catchAll(.*)*',
+            component: '/src/myComponents/404/index.vue',
+            hide:true
+          },
         ]
       },
       {
@@ -369,9 +374,15 @@ export const useSettingStore = defineStore({
       },
       {
         path: '',
+        name: '99961e04-e574-0e1f-ae23-94f157b14a43',
         redirect: '/contain/synthesis',
         hide:true
-      }
+      },
+      {
+        path: ':catchAll(.*)*',
+        component: '/src/myComponents/404/index.vue',
+        hide:true
+      },
     ]
   }),
   getters:{
