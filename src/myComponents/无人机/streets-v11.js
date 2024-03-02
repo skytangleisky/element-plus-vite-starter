@@ -239,38 +239,38 @@ export default {
 	"zoom": 12.711177223232953,
 	"bearing": 0,
 	"pitch": 0,
-	"fog": {
-			"range": [2, 20],
-			"color": "hsl(0, 0%, 100%)",
-			"high-color": "hsl(210, 100%, 80%)",
-			"space-color": [
-					"interpolate",
-					["exponential", 1.2],
-					["zoom"],
-					5,
-					"hsl(210, 40%, 30%)",
-					7,
-					"hsl(210, 100%, 80%)"
-			],
-			"horizon-blend": [
-					"interpolate",
-					["exponential", 1.2],
-					["zoom"],
-					5,
-					0.02,
-					7,
-					0.08
-			],
-			"star-intensity": [
-					"interpolate",
-					["exponential", 1.2],
-					["zoom"],
-					5,
-					0.1,
-					7,
-					0
-			]
-	},
+	// "fog": {
+	// 		"range": [2, 20],
+	// 		"color": "hsl(0, 0%, 100%)",
+	// 		"high-color": "hsl(210, 100%, 80%)",
+	// 		"space-color": [
+	// 				"interpolate",
+	// 				["exponential", 1.2],
+	// 				["zoom"],
+	// 				5,
+	// 				"hsl(210, 40%, 30%)",
+	// 				7,
+	// 				"hsl(210, 100%, 80%)"
+	// 		],
+	// 		"horizon-blend": [
+	// 				"interpolate",
+	// 				["exponential", 1.2],
+	// 				["zoom"],
+	// 				5,
+	// 				0.02,
+	// 				7,
+	// 				0.08
+	// 		],
+	// 		"star-intensity": [
+	// 				"interpolate",
+	// 				["exponential", 1.2],
+	// 				["zoom"],
+	// 				5,
+	// 				0.1,
+	// 				7,
+	// 				0
+	// 		]
+	// },
 	"sources": {
 		"district":{
 			"type":"geojson",
@@ -296,26 +296,26 @@ export default {
 	"glyphs": window.location.origin+"/resources/glyphs/{fontstack}/{range}.pbf",
 	"projection": {"name": "mercator"},//albers, equalEarth, equirectangular, lambertConformalConic, mercator, naturalEarth, winkelTripel, globe
 	"layers": [
-			{
-					"id": "land",
-					"type": "background",
-					"metadata": {
-							"mapbox:featureComponent": "land-and-water",
-							"mapbox:group": "Land & water, land"
-					},
-					"layout": {},
-					"paint": {
-							"background-color": [
-									"interpolate",
-									["linear"],
-									["zoom"],
-									9,
-									"#2b2b2b",
-									11,
-									"#2b2b2b"
-							]
-					}
-			},
+			// {
+			// 		"id": "land",
+			// 		"type": "background",
+			// 		"metadata": {
+			// 				"mapbox:featureComponent": "land-and-water",
+			// 				"mapbox:group": "Land & water, land"
+			// 		},
+			// 		"layout": {},
+			// 		"paint": {
+			// 				"background-color": [
+			// 						"interpolate",
+			// 						["linear"],
+			// 						["zoom"],
+			// 						9,
+			// 						"#2b2b2b",
+			// 						11,
+			// 						"#2b2b2b"
+			// 				]
+			// 		}
+			// },
 			{
 				"id": "simple-tiles",
 				"type": "raster",

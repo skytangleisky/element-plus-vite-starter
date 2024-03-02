@@ -1,13 +1,5 @@
 <template>
-  <div
-    style="
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      position: absolute;
-      background: grey;
-    "
-  >
+  <div style="width: 100%; height: 100%; overflow: hidden; position: absolute">
     <div
       ref="mapRef"
       class="map"

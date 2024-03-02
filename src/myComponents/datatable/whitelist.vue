@@ -132,8 +132,13 @@
               "
             >
               <el-checkbox
-                v-if="key == 0"
-                style="width: min-content; height: min-content; visibility: hidden"
+                v-if="key == checkBoxIndex"
+                style="
+                  margin: 0 4px;
+                  padding: 0 2px;
+                  height: min-content;
+                  visibility: hidden;
+                "
               ></el-checkbox>
               <myInput
                 k="Value"
@@ -143,8 +148,8 @@
             </div>
             <div style="display: flex; flex-direction: row; align-items: center">
               <el-checkbox
-                v-if="key == 0"
-                style="width: min-content; height: min-content"
+                v-if="key == checkBoxIndex"
+                style="margin: 0 4px; height: min-content"
                 v-model="checkAll"
                 :indeterminate="isIndeterminate"
                 @change="allChange"
@@ -169,9 +174,9 @@
             style="display: flex; flex-direction: row; align-items: center"
           >
             <el-checkbox
-              v-if="key == 0"
+              v-if="key == checkBoxIndex"
               v-model="options.tdData[k].checked"
-              style="width: min-content; height: min-content"
+              style="margin: 0 4px; height: min-content"
             ></el-checkbox>
             <myInput
               :k="item.Field"
@@ -212,6 +217,14 @@ import { CheckboxValueType, ElMessage, ElMessageBox } from "element-plus";
 import draggable from "./draggable.vue";
 import { reactive, watch, h, ref, onMounted, nextTick } from "vue";
 import myInput from "./input.vue";
+let checkBoxIndex = computed(() => {
+  for (let i = 0; i < options.thData.length; i++) {
+    if (options.thData[i].checked == true) {
+      return i;
+    }
+  }
+  return 0;
+});
 import {
   getColumns,
   getAll,
@@ -623,6 +636,7 @@ const allChange = (val: CheckboxValueType) => {
     }
   }
   .col:first-child {
+    border-left: 1px solid #444;
     position: sticky;
     z-index: 3;
     left: 0;

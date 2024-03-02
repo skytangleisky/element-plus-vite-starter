@@ -2,16 +2,15 @@
   <div class="flex flex-col">
     <el-scrollbar
       class="flex-1"
-      :style="`height: 100%; background-color: #304156;${
+      :style="`height: 100%; background-color: ${isDark ? '#304156' : '#fff'};${
         isCollapse ? '' : 'min-width:210px'
       }`"
     >
       <el-menu
-        v-permission="['admin']"
-        background-color="#304156"
+        :background-color="isDark ? '#304156' : '#fff'"
+        :text-color="isDark ? '#bfcbd9' : '#000'"
+        :active-text-color="isDark ? '#409eff' : '#ffd04b'"
         :collapse="isCollapse"
-        text-color="#bfcbd9"
-        active-text-color="#409eff"
         class="el-menu-vertical-demo"
         :default-openeds="setting.defaultOpends"
         :default-active="setting.defaultActive"
@@ -19,20 +18,40 @@
         @close="close"
         @select="select"
         style="border-right: 0"
+        v-permission="['admin']"
       >
-        <template v-if="!DEV">
-          <SubMenu
-            v-for="route in setting.routes[0].children"
-            :key="route.name"
-            :item="route"
-            absoluteRootPath="/contain"
-          ></SubMenu>
-        </template>
+        <!-- <SubMenu
+          v-permission="['prod']"
+          v-for="route in setting.routes[0].children"
+          :key="route.name"
+          :item="route"
+          absoluteRootPath="/contain"
+        ></SubMenu> -->
         <SubMenu
-          v-else
           v-for="route in setting.routes"
           :key="route.name"
           :item="route"
+        ></SubMenu>
+      </el-menu>
+      <el-menu
+        :background-color="isDark ? '#304156' : '#fff'"
+        :text-color="isDark ? '#bfcbd9' : '#000'"
+        :active-text-color="isDark ? '#409eff' : '#ffd04b'"
+        :collapse="isCollapse"
+        class="el-menu-vertical-demo"
+        :default-openeds="setting.defaultOpends"
+        :default-active="setting.defaultActive"
+        @open="open"
+        @close="close"
+        @select="select"
+        style="border-right: 0"
+        v-permission="['prod']"
+      >
+        <SubMenu
+          v-for="route in setting.routes[0].children"
+          :key="route.name"
+          :item="route"
+          absoluteRootPath="/contain"
         ></SubMenu>
       </el-menu>
     </el-scrollbar>
@@ -47,6 +66,7 @@
   </div>
 </template>
 <script lang="ts" setup>
+import { isDark } from "~/composables";
 import { ref, onMounted, watch, nextTick } from "vue";
 import { useIconStore } from "~/stores/icon";
 const icon = useIconStore();
@@ -120,21 +140,23 @@ const select = (id: string) => {
 };
 </script>
 <style lang="scss">
-.submenu-title-noDropdown,
-.ep-sub-menu__title {
-  &:hover {
-    background-color: #263445 !important;
+.dark {
+  .submenu-title-noDropdown,
+  .ep-sub-menu__title {
+    &:hover {
+      background-color: #263445 !important;
+    }
   }
-}
 
-.is-active > .ep-submenu__title {
-  color: #f4f4f5 !important;
-}
-.ep-sub-menu {
-  .ep-menu {
-    background-color: #1f2d3d !important;
-    .ep-menu-item:hover {
-      background-color: #001528 !important;
+  .is-active > .ep-submenu__title {
+    color: #f4f4f5 !important;
+  }
+  .ep-sub-menu {
+    .ep-menu {
+      background-color: #1f2d3d !important;
+      .ep-menu-item:hover {
+        background-color: #001528 !important;
+      }
     }
   }
 }

@@ -133,7 +133,7 @@
             >
               <el-checkbox
                 v-if="key == 0"
-                style="width: min-content; height: min-content; visibility: hidden"
+                style="margin: 0 4px; height: min-content; visibility: hidden"
               ></el-checkbox>
               <myInput
                 k="Value"
@@ -144,7 +144,7 @@
             <div style="display: flex; flex-direction: row; align-items: center">
               <el-checkbox
                 v-if="key == 0"
-                style="width: min-content; height: min-content"
+                style="margin: 0 4px; height: min-content"
                 v-model="checkAll"
                 :indeterminate="isIndeterminate"
                 @change="allChange"
@@ -171,7 +171,7 @@
             <el-checkbox
               v-if="key == 0"
               v-model="options.tdData[k].checked"
-              style="width: min-content; height: min-content"
+              style="margin: 0 4px; height: min-content"
             ></el-checkbox>
             <myInput
               :k="item.Field"
@@ -623,6 +623,7 @@ const allChange = (val: CheckboxValueType) => {
     }
   }
   .col:first-child {
+    border-left: 1px solid #444;
     position: sticky;
     z-index: 3;
     left: 0;

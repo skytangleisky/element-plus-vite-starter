@@ -1,13 +1,5 @@
 <template>
-  <div
-    style="
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      position: absolute;
-      background: grey;
-    "
-  >
+  <div style="width: 100%; height: 100%; overflow: hidden; position: absolute">
     <div
       ref="mapRef"
       class="map"
@@ -21,7 +13,15 @@
         outline: none;
       "
     ></div>
-    <Dialog class="absolute" style="left: 10px; top: 10px"></Dialog>
+    <el-date-picker
+      style="left: 20px; top: 10px"
+      v-model="value2"
+      type="datetimerange"
+      start-placeholder="Start Date"
+      end-placeholder="End Date"
+      :default-time="defaultTime2"
+    />
+    <Dialog style="top: 50px; border-radius: 3px"></Dialog>
     <time-line
       :data="data"
       :toLeft="change"
@@ -47,7 +47,6 @@ import { useBus } from "~/myComponents/bus";
 import Dialog from "../dialog.vue";
 import { eventbus } from "~/eventbus";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
-import StaticMode from "@mapbox/mapbox-gl-draw-static-mode";
 // var a = turf.sector(turf.point([-75, 40]), 100, 0, 360);
 // console.log(a);
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
@@ -59,7 +58,8 @@ const graphArgs = reactive({
   // memory: { value: 0, min: 0, max: 120, strokeStyle: "#0f0" },
 });
 const data = reactive([]);
-let preTime = 0;
+const value2 = ref("");
+const defaultTime2 = [new Date(2000, 1, 1, 12, 0, 0), new Date(2000, 2, 1, 8, 0, 0)];
 const change = (it) => {
   // if (it.time !== preTime) {
   //   console.log("change");
@@ -217,11 +217,11 @@ const clickFunc = (e) => {
   }
 };
 const zoomFunc = () => {
-  setting.openlayers.zoom = map.getZoom();
+  setting.无人机.回放.zoom = map.getZoom();
 };
 const moveFunc = () => {
   let center = map.getCenter();
-  setting.openlayers.center = [center.lng, center.lat];
+  setting.无人机.回放.center = [center.lng, center.lat];
 };
 const task = () => {
   // if (prevDate === new Date(setting.playback.now).Format("yyyyMMdd")) {
@@ -472,8 +472,8 @@ onMounted(() => {
     // zoom: 18,
     // center: [148.9819, -35.3981],
     // pitch: 60,
-    zoom: setting.openlayers.zoom,
-    center: setting.openlayers.center,
+    zoom: setting.无人机.回放.zoom,
+    center: setting.无人机.回放.center,
     pitch: 0,
   });
   map.addControl(

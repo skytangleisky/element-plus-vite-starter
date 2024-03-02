@@ -1,18 +1,11 @@
 <template>
-  <div
-    style="
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      position: absolute;
-      background: grey;
-    "
-  >
+  <div style="width: 100%; height: 100%; overflow: hidden; position: absolute">
     <div
       ref="mapRef"
       class="map"
       style="
         position: absolute;
+        backdrop-filter: blur(25px);
         left: 0;
         top: 0;
         width: 100%;
@@ -21,16 +14,6 @@
         outline: none;
       "
     ></div>
-    <!-- <time-line
-      :data="data"
-      :toLeft="change"
-      :toRight="change"
-      :toMiddle="change"
-      v-model:now="setting.now"
-      v-model:status="setting.status"
-      v-model:level="setting.level"
-      class="absolute bottom-0"
-    ></time-line> -->
     <!-- <graph
       v-if="DEV"
       class="absolute left-0 bottom-30px"
@@ -449,12 +432,13 @@ onMounted(() => {
   var Draw = new MapboxDraw({
     userProperties: true,
     displayControlsDefault: true,
+    defaultMode: "static_select",
     controls: {
-      point: true,
-      circle: true,
-      line_string: true,
-      polygon: true,
-      trash: true,
+      point: false,
+      circle: false,
+      line_string: false,
+      polygon: false,
+      trash: false,
       combine_features: false,
       uncombine_features: false,
     },
