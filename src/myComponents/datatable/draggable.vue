@@ -21,6 +21,7 @@
   </VueDraggable>
 </template>
 <script setup lang="ts">
+import { CheckboxValueType } from "element-plus";
 import { computed, ref, watch } from "vue";
 import { VueDraggable } from "vue-draggable-plus";
 let props = withDefaults(
@@ -82,7 +83,7 @@ const isIndeterminate = computed(() => {
   });
   return checked && unchecked;
 });
-const allChange = (val: boolean) => {
+const allChange = (val: CheckboxValueType) => {
   props.list.map((item) => {
     item.checked = val;
   });
