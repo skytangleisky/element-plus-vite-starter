@@ -8,7 +8,7 @@ function setConfig(){
     tableName='whitelist'
     options = '?host=tanglei.top&port=3306&user=root&password=tanglei&database=jiangxi'
     url = 'backend/db/'+tableName+options
-  }else if(filename=='user'||filename=='personal'||filename=='enterprise'||filename=='administrator'||filename=='group'||filename=='institution'){
+  }else if(filename=='personal'||filename=='enterprise'||filename=='administrator'||filename=='group'||filename=='institution'){
     tableName='userinfo'
     options = '?host=tanglei.top&port=3306&user=root&password=tanglei&database=union'
     url = 'backend/db/'+tableName+options

@@ -5,7 +5,7 @@
     <div class="relative w-full h-full" style="overflow: auto">
       <router-view v-slot="{ Component }">
         <keep-alive>
-          <component :is="Component" />
+          <component :key="$route.fullPath" :is="Component" />
         </keep-alive>
       </router-view>
     </div>

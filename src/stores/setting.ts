@@ -214,7 +214,7 @@ export const useSettingStore = defineStore({
           {
             path: 'record',
             name: 'c4961e04-e574-0e1f-ae23-94f157b14a45',
-            component: '/src/myComponents/datatable/record.vue',
+            component: '/src/myComponents/datatable/index.vue',
             label: '备案查询',
             svg:'18821b0ad6cb11ee9aafb025aa2c9ada'
           },
@@ -223,7 +223,7 @@ export const useSettingStore = defineStore({
             name: '961a22a1-f5da-9845-fc89-3519ed950710',
             // component:'/src/myComponents/openlayers/radarStatistic.vue'
             // component:'/src/myComponents/menu/index.vue'
-            component:'/src/myComponents/datatable/whitelist.vue',
+                component: '/src/myComponents/datatable/index.vue',
             replace:true,
             label:'数据统计',
             svg:'a2a749dfd6ca11ee9aafb025aa2c9ada',
@@ -237,7 +237,7 @@ export const useSettingStore = defineStore({
               {
                 path: 'device',
                 name: 'c4961e04-e574-0e1f-ae23-94f157b15a45',
-                component: '/src/myComponents/datatable/device.vue',
+                component: '/src/myComponents/datatable/index.vue',
                 label: '反无设备详情',
                 svg:'2133405ad6ca11ee9aafb025aa2c9ada'
               },
@@ -258,7 +258,7 @@ export const useSettingStore = defineStore({
               {
                 path: 'whitelist',
                 name: 'c4961e04-e574-0e1f-ae23-94f157b15d45',
-                component: '/src/myComponents/datatable/whitelist.vue',
+                component: '/src/myComponents/datatable/index.vue',
                 label: '白名单管理',
                 svg:'41416b3ed6c911ee9aafb025aa2c9ada'
               },
@@ -273,14 +273,14 @@ export const useSettingStore = defineStore({
               {
                 path: 'personal',
                 name: 'c4961e01-e571-0e1f-ae23-94f157b15a45',
-                component: '/src/myComponents/datatable/user.vue',
+                component: '/src/myComponents/datatable/index.vue',
                 label: '个人用户',
                 svg:'f11a18a8d6c711ee9aafb025aa2c9ada'
               },
               {
                 path: 'enterprise',
                 name: 'c4961e02-e572-0e1f-ae23-94f157b15b45',
-                component: '/src/myComponents/datatable/enterprise.vue',
+                component: '/src/myComponents/datatable/index.vue',
                 label: '企业用户',
                 svg:'20a7ae2bd6c811ee9aafb025aa2c9ada'
               },
@@ -295,21 +295,21 @@ export const useSettingStore = defineStore({
               {
                 path: 'administrator',
                 name: 'c4961e04-e571-0e1f-ae23-94f157b15a45',
-                component: '/src/myComponents/datatable/whitelist1.vue',
+                component: '/src/myComponents/datatable/index.vue',
                 label: '系统用户管理',
                 svg:'6a190295d6c711ee9aafb025aa2c9ada'
               },
               {
                 path: 'group',
                 name: 'c4961e04-e572-0e1f-ae23-94f157b15b45',
-                component: '/src/myComponents/datatable/whitelist2.vue',
+                component: '/src/myComponents/datatable/index.vue',
                 label: '用户组管理',
                 svg:'e5fc96bfd6c611ee9aafb025aa2c9ada'
               },
               {
                 path: 'institution',
                 name: 'c4961e04-e573-0e1f-ae23-94f157b15b45',
-                component: '/src/myComponents/datatable/whitelist3.vue',
+                component: '/src/myComponents/datatable/index.vue',
                 label: '机构管理',
                 svg:'2e727627d6c711ee9aafb025aa2c9ada'
               },
