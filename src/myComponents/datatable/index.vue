@@ -219,7 +219,7 @@ import {
   fetchList,
   fetchData,
   deleteData,
-} from "~/api/无人机/enclosure";
+} from "~/api/无人机/api";
 const options = reactive({
   thData: new Array<any>(),
   tdData: new Array<any>(),

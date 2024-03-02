@@ -232,7 +232,7 @@ import {
   fetchList,
   fetchData,
   deleteData,
-} from "~/api/无人机/whitelist";
+} from "~/api/无人机/api";
 const options = reactive({
   thData: new Array<any>(),
   tdData: new Array<any>(),

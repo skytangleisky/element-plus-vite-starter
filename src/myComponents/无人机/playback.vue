@@ -50,7 +50,7 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 // var a = turf.sector(turf.point([-75, 40]), 100, 0, 360);
 // console.log(a);
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
-import { 获取净空区, saveData, deleteData } from "~/api/无人机/enclosure";
+import { 获取净空区, saveData, deleteData } from "~/api/无人机/api";
 const bus = useBus();
 const DEV = import.meta.env.DEV;
 const graphArgs = reactive({

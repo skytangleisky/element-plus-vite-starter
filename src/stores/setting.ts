@@ -295,21 +295,21 @@ export const useSettingStore = defineStore({
               {
                 path: 'administrator',
                 name: 'c4961e04-e571-0e1f-ae23-94f157b15a45',
-                component: '/src/myComponents/datatable/whitelist.vue',
+                component: '/src/myComponents/datatable/whitelist1.vue',
                 label: '系统用户管理',
                 svg:'6a190295d6c711ee9aafb025aa2c9ada'
               },
               {
                 path: 'group',
                 name: 'c4961e04-e572-0e1f-ae23-94f157b15b45',
-                component: '/src/myComponents/datatable/whitelist.vue',
+                component: '/src/myComponents/datatable/whitelist2.vue',
                 label: '用户组管理',
                 svg:'e5fc96bfd6c611ee9aafb025aa2c9ada'
               },
               {
                 path: 'institution',
                 name: 'c4961e04-e573-0e1f-ae23-94f157b15b45',
-                component: '/src/myComponents/datatable/whitelist.vue',
+                component: '/src/myComponents/datatable/whitelist3.vue',
                 label: '机构管理',
                 svg:'2e727627d6c711ee9aafb025aa2c9ada'
               },

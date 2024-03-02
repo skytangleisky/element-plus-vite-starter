@@ -1,8 +1,41 @@
 import request from '../../utils/request'
-const tableName='enclosure'
-let options = '?host=tanglei.top&port=3390&user=root&password=mysql&database=gis'
-const url = 'backend/db/'+tableName+options
+let tableName=''
+let options = ''
+let url = ''
+function setConfig(){
+  let filename = location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
+  if(filename=='whitelist'||filename=='statistics'){
+    tableName='whitelist'
+    options = '?host=tanglei.top&port=3306&user=root&password=tanglei&database=jiangxi'
+    url = 'backend/db/'+tableName+options
+  }else if(filename=='user'||filename=='personal'||filename=='enterprise'||filename=='administrator'||filename=='group'||filename=='institution'){
+    tableName='userinfo'
+    options = '?host=tanglei.top&port=3306&user=root&password=tanglei&database=union'
+    url = 'backend/db/'+tableName+options
+  }else if(filename=='record'){
+    tableName='record'
+    options = '?host=tanglei.top&port=3306&user=root&password=tanglei&database=jiangxi'
+    url = 'backend/db/'+tableName+options
+  }else if(filename=='enterprise'){
+    tableName='enterprise'
+    options = '?host=tanglei.top&port=3306&user=root&password=tanglei&database=jiangxi'
+    url = 'backend/db/'+tableName+options
+  }else if(filename=='enclosure'){
+    tableName='enclosure'
+    options = '?host=tanglei.top&port=3390&user=root&password=mysql&database=gis'
+    url = 'backend/db/'+tableName+options
+  }else if(filename=='device'){
+    tableName='device'
+    options = '?host=tanglei.top&port=3306&user=root&password=tanglei&database=jiangxi'
+    url = 'backend/db/'+tableName+options
+  }else if(filename=='synthesis'||filename=='history'||filename=='simulate'||filename=='airspace'){
+    tableName='enclosure'
+    options = '?host=tanglei.top&port=3390&user=root&password=mysql&database=gis'
+    url = 'backend/db/'+tableName+options
+  }
+}
 export function getColumns(){
+  setConfig()
   return request({
     url: '/backend/transaction'+options,
     method: 'post',
@@ -17,6 +50,7 @@ export function getColumns(){
   })
 }
 export function getAll(){
+  setConfig()
   return request({
     url: '/backend/transaction'+options,
     method: 'post',
@@ -31,6 +65,7 @@ export function getAll(){
   })
 }
 export function fetchList(query) {
+  setConfig()
   return request({
     url,
     method: 'post',
@@ -66,6 +101,7 @@ export function fetchList(query) {
 }
 
 export function 获取净空区() {
+  setConfig()
   return request({
     url,
     method: 'post',
@@ -113,6 +149,7 @@ export function 获取净空区() {
 }
 
 export function fetchData(key,value) {
+  setConfig()
   return request({
     url,
     method: 'post',
@@ -130,6 +167,7 @@ export function fetchData(key,value) {
 }
 
 export function saveData(data) {
+  setConfig()
   return request({
     url,
     method: 'put',
@@ -138,6 +176,7 @@ export function saveData(data) {
 }
 
 export function deleteData(data) {
+  setConfig()
   return request({
     url,
     method: 'delete',

@@ -88,8 +88,12 @@ const submitForm = (formEl: FormInstance | undefined) => {
         })
         .catch((e) => {
           loading.value = false;
-          if (e.response) {
-            openVn(e.response.data.message);
+          if (e.response.status == 400) {
+            if (e.response.data.message) {
+              openVn(e.response.data.message);
+            } else {
+              openVn(e.response.data.sqlMessage);
+            }
           } else {
             openVn(e.message);
           }

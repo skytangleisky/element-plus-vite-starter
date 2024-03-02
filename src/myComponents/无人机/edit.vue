@@ -51,48 +51,6 @@
       <div ref="popup_closer" class="ol-popup-closer"></div>
     </div>
     <Dialog class="absolute" style="left: 10px; top: 10px"></Dialog>
-    <div
-      :class="`right-drawer ${
-        setting.disappear ? 'disappear' : ''
-      } b-solid b-0 b-l-1px dark:b-color-#888`"
-    >
-      <div style="overflow: auto; scroll-snap-type: none">
-        <chart-info></chart-info>
-        <chart-fkx></chart-fkx>
-        <chart-dom></chart-dom>
-        <chartDirection></chartDirection>
-        <chartSpeed></chartSpeed>
-        <chartSNR></chartSNR>
-        <chart-th></chart-th>
-      </div>
-      <el-icon
-        class="left--29px z-999 bg-#eee dark:bg-#304156 dark:color-#888"
-        style="
-          font-size: 28px;
-          position: absolute;
-          border-bottom-left-radius: 50%;
-          border-left: 1px solid grey;
-          border-bottom: 1px solid grey;
-        "
-        @click="disappear"
-      >
-        <svg
-          t="1695093760888"
-          class="icon"
-          viewBox="0 0 1024 1024"
-          version="1.1"
-          xmlns="http://www.w3.org/2000/svg"
-          p-id="5105"
-          width="200"
-          height="200"
-        >
-          <path
-            d="M557.397333 167.204571l293.059048 293.059048L902.192762 512l-51.712 51.712-293.059048 293.083429-51.736381-51.712L762.148571 548.571429H121.904762v-73.142858h640.243809L505.660952 218.940952l51.736381-51.736381z"
-            p-id="5106"
-          ></path>
-        </svg>
-      </el-icon>
-    </div>
     <!-- <graph
       v-if="DEV"
       class="absolute left-0 bottom-30px"
@@ -112,7 +70,7 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 // var a = turf.sector(turf.point([-75, 40]), 100, 0, 360);
 // console.log(a);
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
-import { 获取净空区, saveData, deleteData } from "~/api/无人机/enclosure";
+import { 获取净空区, saveData, deleteData } from "~/api/无人机/api";
 const bus = useBus();
 const DEV = import.meta.env.DEV;
 const graphArgs = reactive({
@@ -186,13 +144,6 @@ const info = ref({
 });
 
 import { useStationStore } from "~/stores/station";
-import chartTh from "~/myComponents/echarts/T_H.vue";
-import chartDom from "~/myComponents/echarts/index.vue";
-import chartFkx from "~/myComponents/echarts/fkx.vue";
-import chartInfo from "~/myComponents/echarts/info.vue";
-import chartSNR from "~/myComponents/echarts/SNR.vue";
-import chartSpeed from "~/myComponents/echarts/Speed.vue";
-import chartDirection from "~/myComponents/echarts/Direction.vue";
 import { useRoute } from "vue-router";
 const route = useRoute();
 import { useSettingStore } from "~/stores/setting";

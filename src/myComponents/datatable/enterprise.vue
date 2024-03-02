@@ -133,7 +133,12 @@
             >
               <el-checkbox
                 v-if="key == checkBoxIndex"
-                style="margin: 0 4px; height: min-content; visibility: hidden"
+                style="
+                  margin: 0 4px;
+                  padding: 0 2px;
+                  height: min-content;
+                  visibility: hidden;
+                "
               ></el-checkbox>
               <myInput
                 k="Value"
@@ -227,7 +232,7 @@ import {
   fetchList,
   fetchData,
   deleteData,
-} from "~/api/无人机/enterprise";
+} from "~/api/无人机/api";
 const options = reactive({
   thData: new Array<any>(),
   tdData: new Array<any>(),
