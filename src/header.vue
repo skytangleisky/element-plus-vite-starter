@@ -1,18 +1,12 @@
 <template>
   <div class="nav">
-    <img src="/src/assets/wstdlogo.ico" class="w-40px h-40px hidden" />
-    <span
-      class="color-black p-0 m-0 dark:color-white"
-      style="height: 40px; line-height: 40px; font-size: 2rem"
-      >低空飞行安全监控系统</span
-    >
-    <div class="absolute right-0 items-center hidden lg:flex">
+    <div class="items-center flex">
       <div
         class="color-black dark:color-white"
         style="display: flex; align-items: center"
       >
         <el-dropdown v-if="user.logined" trigger="click" size="small">
-          <el-avatar :size="32" :src="user.avatar">
+          <el-avatar :size="32" :src="user.avatar" style="margin: 0 8px">
             <!-- <span class="el-dropdown-link"><User style="width:24px;height:24px;"></User></span> -->
           </el-avatar>
           <img :src="user.avatar" style="width: 24px; height: 24px; border-radius: 50%" />
@@ -22,10 +16,6 @@
                 >登陆</el-dropdown-item
               >
               <!-- <el-dropdown-item :icon="ColdDrink">捐赠</el-dropdown-item> -->
-              <el-dropdown-item :icon="isDark ? Moon : Sunny" @click="toggleDark()"
-                >皮肤</el-dropdown-item
-              >
-              <el-dropdown-item :icon="Setting" @click="click">设置</el-dropdown-item>
               <el-dropdown-item :icon="Switch" @click="Reset">重置</el-dropdown-item>
               <el-dropdown-item
                 v-if="user.logined"
@@ -38,13 +28,28 @@
           </template>
         </el-dropdown>
         <!-- <div v-else @click="login" class="QQ_Login_Button"></div> -->
-        {{ user.username }}
+        {{ user.username }}，欢迎您！
       </div>
+    </div>
+    <span class="title color-black p-0 m-0 dark:color-white md:block hidden"
+      >低空飞行安全监控系统</span
+    >
+    <div style="line-height: 40px" class="flex items-center">
+      <el-icon style="font-size: 1.5rem; width: 2rem" @click="toggleDark()"
+        ><Moon v-if="isDark" /><Sunny v-else
+      /></el-icon>
+      <el-icon style="font-size: 1.5rem; width: 2rem" @click="click"><Setting /></el-icon>
+      <el-icon
+        style="font-size: 1.5rem; width: 2rem"
+        @click="logout"
+        v-html="logoutRaw"
+      ></el-icon>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
 import { h } from "vue";
+import logoutRaw from "~/assets/logout.svg?raw";
 import {
   Select,
   Setting,
@@ -77,18 +82,18 @@ const click = () => {
   console.log("loadmap", prev, "->", setting.loadmap);
 };
 const Reset = () => {
-  setting.$reset();
-  setting.$dispose();
+  console.log("Reset!");
+  // setting.$reset();
   icon.$reset();
-  station.$reset();
-  data.$reset();
-  user.$reset();
-  user.Logout().catch((e) => {
-    throw e;
-  });
-  sessionStorage.clear();
-  localStorage.clear();
-  router.replace({ ...router.currentRoute.value, force: true });
+  // station.$reset();
+  // data.$reset();
+  // user.$reset();
+  // user.Logout().catch((e) => {
+  //   throw e;
+  // });
+  // sessionStorage.clear();
+  // localStorage.clear();
+  // router.replace({ ...router.currentRoute.value, force: true });
 };
 const login = () => {};
 const logout = () => {
@@ -112,13 +117,27 @@ const logout = () => {
   // })
 };
 </script>
-<style lang="scss">
+<style scoped lang="scss">
 .nav {
+  position: relative;
+  z-index: 1;
   width: 100%;
   height: 40px;
+  line-height: 40px;
   background-color: aliceblue;
   display: flex;
-  align-items: center;
+  justify-content: space-between;
+  .title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 40px;
+    line-height: 40px;
+    font-size: 2rem;
+    padding: 2px 20px;
+    background: #0d7c9d;
+    clip-path: polygon(10px 100%, calc(100% - 10px) 100%, 100% 0, 0 0);
+  }
 }
 .dark .nav {
   background-color: #292a2d;
