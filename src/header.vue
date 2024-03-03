@@ -82,18 +82,17 @@ const click = () => {
   console.log("loadmap", prev, "->", setting.loadmap);
 };
 const Reset = () => {
-  console.log("Reset!");
-  // setting.$reset();
-  icon.$reset();
-  // station.$reset();
-  // data.$reset();
-  // user.$reset();
-  // user.Logout().catch((e) => {
-  //   throw e;
-  // });
-  // sessionStorage.clear();
-  // localStorage.clear();
-  // router.replace({ ...router.currentRoute.value, force: true });
+  setting.$resetFields();
+  icon.$resetFields();
+  station.$reset();
+  data.$reset();
+  user.$reset();
+  user.Logout().catch((e) => {
+    throw e;
+  });
+  sessionStorage.clear();
+  localStorage.clear();
+  router.replace({ ...router.currentRoute.value, force: true });
 };
 const login = () => {};
 const logout = () => {

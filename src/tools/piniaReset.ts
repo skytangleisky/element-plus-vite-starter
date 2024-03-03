@@ -10,12 +10,16 @@ declare module "pinia" {
   }
 }
 
-export default ({ options, store }: PiniaPluginContext): void => {
+export default ({ options, store }: PiniaPluginContext): void => {//热更新后，因为pinia中store初始值未更新，所以恢复默认值只能恢复成第一次加载页面时的默认值而非是热更新后的默认值！！！
   store.$resetFields = (fields) => {
     const { state } = options
-    let originalState = state ? state() : {}
+    const originalState = state ? state() : {}
     store.$patch(($state) => {
-      eval(`$state.${fields}=originalState.${fields}`)
+      if(!fields){
+        Object.assign($state, originalState)
+      }else{
+        eval(`$state.${fields}=originalState.${fields}`)
+      }
     })
-  };
+  }
 };

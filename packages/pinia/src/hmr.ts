@@ -144,7 +144,6 @@ export function acceptHMRUpdate2<
       // this store is still not used
       return
     }
-
     // preserve the pinia instance across loads
     hot.data.initialUseStore = initialStore
 
