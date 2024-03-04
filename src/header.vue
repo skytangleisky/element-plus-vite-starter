@@ -92,7 +92,7 @@ const Reset = () => {
   });
   sessionStorage.clear();
   localStorage.clear();
-  router.replace({ ...router.currentRoute.value, force: true });
+  router.replace({ ...router.currentRoute.value, force: true }); //需要销毁的已缓存的组件无法被销毁，所以目前只能用下面的方式
 };
 const login = () => {};
 const logout = () => {
