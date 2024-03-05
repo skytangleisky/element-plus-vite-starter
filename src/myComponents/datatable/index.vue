@@ -1,61 +1,69 @@
 <template>
   <div class="mainContainer">
-    <div class="flex flex-row z-4">
-      <div class="listContainer" tabindex="-1">
-        <el-icon v-html="listSvg" class="svg" @click="listSvgClick"></el-icon>
-        <draggable
-          class="draggable bg-white dark:bg-#2b2b2b"
-          v-model:list="options.thData"
-          style="
-            position: absolute;
-            left: 0;
-            top: 100%;
-            box-shadow: 0 0 0 1px #757575, 0 0 0 2px #010201;
-            border-radius: 8px;
-            overflow: hidden;
-            box-sizing: border-box;
-            width: fit-content;
-            overflow: auto;
-            position: absolute;
-            height: fit-content;
-            max-height: calc(100% - 6px);
-            margin: 3px;
-            top: 0;
-          "
-        ></draggable>
-      </div>
-      <el-icon
-        v-html="addSvg"
-        class="svg"
-        :style="`opacity: ${addRow ? 0.5 : 1.0}`"
-        @click="addSvgClick"
-      ></el-icon>
-      <el-icon
-        v-html="subtractSvg"
-        :style="`opacity: ${addRow ? 0.5 : 1.0}`"
-        class="svg"
-        @click="subtractSvgClick"
-      ></el-icon>
-      <el-icon
-        v-html="tickSvg"
-        :style="`opacity: ${!addRow ? 0.5 : 1.0}`"
-        class="svg"
-        @click="tickSvgClick"
-      ></el-icon>
-      <el-icon
-        v-html="forkSvg"
-        :style="`opacity: ${!addRow ? 0.5 : 1.0}`"
-        class="svg"
-        @click="forkSvgClick"
-      ></el-icon>
-      <el-icon
-        v-html="refreshSvg"
-        :style="`opacity: ${addRow ? 0.5 : 1.0}`"
-        class="svg"
-        @click="refreshSvgClick"
-      ></el-icon>
+    <div>
+      <el-input v-model="condition" style="width: 240px" placeholder="请输入过滤条件"
+        ><template #prefix>
+          <el-icon><Search /></el-icon> </template
+        ><template #append>
+          <el-button type="primary" size="small" @click="getData()"
+            >搜索</el-button
+          ></template
+        ></el-input
+      >
     </div>
-    <!-- <div
+    <div class="flex flex-col relative" style="flex-grow: 1; overflow: auto">
+      <div class="flex flex-row z-4">
+        <div class="listContainer z-1" tabindex="-1">
+          <el-icon v-html="listSvg" class="svg" @click="listSvgClick"></el-icon>
+          <draggable
+            class="draggable bg-white dark:bg-#2b2b2b"
+            v-model:list="options.thData"
+            style="
+              position: absolute;
+              left: 0;
+              top: 100%;
+              width: fit-content;
+              overflow: auto;
+              position: absolute;
+              max-height: 100%;
+              border: 1px solid grey;
+              box-sizing: border-box;
+              top: 0;
+            "
+          ></draggable>
+        </div>
+        <el-icon
+          v-html="addSvg"
+          class="svg"
+          :style="`opacity: ${addRow ? 0.5 : 1.0}`"
+          @click="addSvgClick"
+        ></el-icon>
+        <el-icon
+          v-html="subtractSvg"
+          :style="`opacity: ${addRow ? 0.5 : 1.0}`"
+          class="svg"
+          @click="subtractSvgClick"
+        ></el-icon>
+        <el-icon
+          v-html="tickSvg"
+          :style="`opacity: ${!addRow ? 0.5 : 1.0}`"
+          class="svg"
+          @click="tickSvgClick"
+        ></el-icon>
+        <el-icon
+          v-html="forkSvg"
+          :style="`opacity: ${!addRow ? 0.5 : 1.0}`"
+          class="svg"
+          @click="forkSvgClick"
+        ></el-icon>
+        <el-icon
+          v-html="refreshSvg"
+          :style="`opacity: ${addRow ? 0.5 : 1.0}`"
+          class="svg"
+          @click="refreshSvgClick"
+        ></el-icon>
+      </div>
+      <!-- <div
       style="
         display: flex;
         height: fit-content;
@@ -95,92 +103,96 @@
         </tbody>
       </table>
     </div> -->
-    <div
-      style="
-        display: flex;
-        height: fit-content;
-        flex: 1;
-        box-sizing: border-box;
-        overflow: auto;
-        scroll-padding-top: 1rem;
-      "
-    >
-      <template v-for="(item, key) of options.thData">
-        <div
-          v-if="item.checked"
-          :class="`col ${
-            item.Key === 'PRI'
-              ? 'color-yellow-3'
-              : item.Key === 'UNI'
-              ? 'color-red-3'
-              : ''
-          }`"
-        >
+      <div
+        class="b-solid b-1px dark:b-black b-grey"
+        style="
+          box-sizing: border-box;
+          display: flex;
+          height: fit-content;
+          flex: 1;
+          box-sizing: border-box;
+          overflow: auto;
+          scroll-padding-top: 1rem;
+        "
+      >
+        <template v-for="(item, key) of options.thData">
           <div
-            :class="`th dark:bg-#2b2b2b bg-white flex flex-col ${
-              addRow ? 'justify-between' : 'justify-end'
+            v-if="item.checked"
+            :class="`col ${
+              item.Key === 'PRI'
+                ? 'color-yellow-3'
+                : item.Key === 'UNI'
+                ? 'color-red-3'
+                : ''
             }`"
           >
             <div
-              v-if="addRow"
-              class="dark:bg-#3b3b3b bg-#fff"
-              style="
-                border-right: 0;
-                border-bottom: 1px solid #444;
-                display: flex;
-                align-items: center;
-              "
+              :class="`th dark:bg-#2b2b2b bg-white flex flex-col ${
+                addRow ? 'justify-between' : 'justify-end'
+              }`"
             >
-              <el-checkbox
-                v-if="key == 0"
-                style="margin: 0 4px; height: min-content; visibility: hidden"
-              ></el-checkbox>
-              <myInput
-                k="Value"
-                v-model:item="options.thData[key]"
-                :change="addDataChange"
-              ></myInput>
-            </div>
-            <div style="display: flex; flex-direction: row; align-items: center">
-              <el-checkbox
-                v-if="key == 0"
-                style="margin: 0 4px; height: min-content"
-                v-model="checkAll"
-                :indeterminate="isIndeterminate"
-                @change="allChange"
-              ></el-checkbox>
-              <div style="display: flex; flex-direction: column; padding: 3px 4px">
-                {{ item.Field }}
-                <span
-                  style="
-                    font-size: 10px;
-                    min-height: 1rem;
-                    opacity: 0.5;
-                    white-space: nowrap;
-                  "
-                  >{{ item.Comment }}</span
-                >
+              <div
+                v-if="addRow"
+                class="dark:bg-#3b3b3b bg-#fff"
+                style="
+                  border-right: 0;
+                  border-bottom: 1px solid #444;
+                  display: flex;
+                  align-items: center;
+                "
+              >
+                <el-checkbox
+                  v-if="key == checkBoxIndex"
+                  style="margin: 0 4px; height: min-content; visibility: hidden"
+                ></el-checkbox>
+                <myInput
+                  k="Value"
+                  v-model:item="options.thData[key]"
+                  :change="addDataChange"
+                ></myInput>
+              </div>
+              <div style="display: flex; flex-direction: row; align-items: center">
+                <el-checkbox
+                  v-if="key == checkBoxIndex"
+                  style="margin: 0 4px; height: min-content"
+                  v-model="checkAll"
+                  :indeterminate="isIndeterminate"
+                  @change="allChange"
+                ></el-checkbox>
+                <div style="display: flex; flex-direction: column; padding: 3px 4px">
+                  {{ item.Field }}
+                  <span
+                    style="
+                      font-size: 10px;
+                      min-height: 1rem;
+                      opacity: 0.5;
+                      white-space: nowrap;
+                      display: none;
+                    "
+                    >{{ item.Comment }}</span
+                  >
+                </div>
               </div>
             </div>
+            <div
+              v-for="(_, k) in options.tdData"
+              class="cell dark:bg-#3b3b3b bg-#fff"
+              style="display: flex; flex-direction: row; align-items: center"
+            >
+              <el-checkbox
+                v-if="key == checkBoxIndex"
+                v-model="options.tdData[k].checked"
+                style="margin: 0 4px; height: min-content"
+              ></el-checkbox>
+              <myInput
+                :k="item.Field"
+                v-model:item="options.tdData[k]"
+                :change="change"
+              ></myInput>
+            </div>
           </div>
-          <div
-            v-for="(_, k) in options.tdData"
-            class="cell dark:bg-#3b3b3b bg-#fff"
-            style="display: flex; flex-direction: row; align-items: center"
-          >
-            <el-checkbox
-              v-if="key == 0"
-              v-model="options.tdData[k].checked"
-              style="margin: 0 4px; height: min-content"
-            ></el-checkbox>
-            <myInput
-              :k="item.Field"
-              v-model:item="options.tdData[k]"
-              :change="change"
-            ></myInput>
-          </div>
-        </div>
-      </template>
+        </template>
+      </div>
     </div>
     <div
       style="
@@ -208,9 +220,10 @@
 </template>
 
 <script lang="ts" setup>
+import { Search } from "@element-plus/icons-vue";
 import { CheckboxValueType, ElMessage, ElMessageBox } from "element-plus";
 import draggable from "./draggable.vue";
-import { reactive, watch, h, ref, onMounted, nextTick } from "vue";
+import { reactive, watch, h, ref, onMounted, nextTick, computed } from "vue";
 import myInput from "./input.vue";
 import {
   getColumns,
@@ -226,6 +239,15 @@ const options = reactive({
 });
 const sqlStr = ref("");
 const addRow = ref(false);
+const condition = ref("");
+let checkBoxIndex = computed(() => {
+  for (let i = 0; i < options.thData.length; i++) {
+    if (options.thData[i].checked == true) {
+      return i;
+    }
+  }
+  return 0;
+});
 watch(
   () => options.thData,
   (e) => {
@@ -276,13 +298,24 @@ function getData() {
   return new Promise((resolve, reject) => {
     getColumns()
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         options.thData.length = 0;
+        let where = [];
         res.data[0].map((v: any) => {
+          let item = { ...v, checked: false, placeholder: v.Type };
           if (["id", "uuid", "createtime", "updatetime"].indexOf(v.Field) > -1) {
-            options.thData.push({ ...v, checked: false, placeholder: v.Type });
+            item.checked = false;
           } else {
-            options.thData.push({ ...v, checked: true, placeholder: v.Type });
+            item.checked = true;
+          }
+          options.thData.push(item);
+          if (condition.value != "" && item.checked) {
+            where.push({
+              relation: "OR",
+              field: v.Field,
+              relationship: "LIKE",
+              condition: `%${condition.value}%`,
+            });
           }
         });
         var doms = document.querySelectorAll(".col .th");
@@ -306,9 +339,11 @@ function getData() {
         });
         let currentPage = paginationOptions.currentPage;
         let pageSize = paginationOptions.pageSize;
+
         fetchList({
           limit: pageSize,
           offset: (currentPage - 1) * pageSize,
+          where,
         })
           .then((res) => {
             sqlStr.value = res.data.$pagingSql;
@@ -549,8 +584,6 @@ const tickSvgClick = async () => {
   }
 };
 
-import { computed } from "vue";
-
 let allChecked = ref(false);
 const checkAll = computed({
   set: (val) => {
@@ -585,6 +618,8 @@ const allChange = (val: CheckboxValueType) => {
 </script>
 <style scoped lang="scss">
 .mainContainer {
+  padding: 20px;
+  box-sizing: border-box;
   position: absolute;
   overflow: auto;
   width: 100%;
@@ -623,7 +658,6 @@ const allChange = (val: CheckboxValueType) => {
     }
   }
   .col:first-child {
-    border-left: 1px solid #444;
     position: sticky;
     z-index: 3;
     left: 0;
@@ -636,17 +670,20 @@ const allChange = (val: CheckboxValueType) => {
       position: sticky;
       top: 0;
       bottom: 0;
-      border-top: 1px solid #444;
       border-bottom: 1px solid #444;
-      border-right: 1px solid #444;
       font-weight: bolder;
       line-height: 1rem;
     }
-    .cell {
-      border-right: 1px solid #444;
+    &:not(:last-child) {
+      .th {
+        border-right: 1px solid #444;
+      }
+      .cell {
+        border-right: 1px solid #444;
+      }
     }
   }
-  .cell:not(:nth-child(1)) {
+  .cell:not(:last-child) {
     border-bottom: 1px solid #444;
   }
 }

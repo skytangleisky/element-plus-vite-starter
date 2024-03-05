@@ -87,12 +87,11 @@ export default defineConfig({
     port:5173
   },
   server:{
+    host:true,
     https:{
       cert: fs.readFileSync('dev.tanglei.top.pem'),
       key: fs.readFileSync('dev.tanglei.top.key')
     },
-    host:true,
-    // open:'http://localhost:5173',
     open:'https://dev.tanglei.top',
     port:5173,
     strictPort:true,

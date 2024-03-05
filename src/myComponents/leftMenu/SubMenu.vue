@@ -12,10 +12,9 @@
         :item="route"
       ></SubMenu>
     </el-sub-menu>
-    <router-link
+    <div
       v-else
-      :to="`${absoluteRootPath}/${item.path}`"
-      :replace="item.replace"
+      @click="click($router, absoluteRootPath, item)"
       style="text-decoration: none"
     >
       <el-menu-item :index="item.name">
@@ -23,7 +22,7 @@
         <template #title>{{ item.label }}</template>
         <!-- <template #title>{{ `${absoluteRootPath}/${item.path}` }}</template> -->
       </el-menu-item>
-    </router-link>
+    </div>
 
     <!-- <el-sub-menu index="1">
       <template #title>
@@ -55,7 +54,6 @@
 <script lang="ts" setup>
 import { useIconStore } from "~/stores/icon";
 const icon = useIconStore();
-let DEV = import.meta.env.DEV;
 const { item } = defineProps({
   item: {
     type: Object,
@@ -66,6 +64,13 @@ const { item } = defineProps({
     default: "",
   },
 });
+const click = ($router: any, absoluteRootPath: any, item: any) => {
+  if (item.replace) {
+    $router.replace(`${absoluteRootPath}/${item.path}`);
+  } else {
+    $router.push(`${absoluteRootPath}/${item.path}`);
+  }
+};
 const format = (svg: string) => {
   let res = icon.results.filter((it) => it.uuid == svg);
   if (res.length <= 0) {

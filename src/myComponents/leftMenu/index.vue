@@ -2,12 +2,12 @@
   <div class="flex flex-col">
     <el-scrollbar
       class="flex-1"
-      :style="`height: 100%; background-color: ${isDark ? '#304156' : '#fff'};${
+      :style="`height: 100%; background-color: ${isDark ? '#304156' : '#eee'};${
         isCollapse ? '' : 'min-width:210px'
       }`"
     >
       <el-menu
-        :background-color="isDark ? '#304156' : '#fff'"
+        :background-color="isDark ? '#304156' : '#eee'"
         :text-color="isDark ? '#bfcbd9' : '#000'"
         :active-text-color="isDark ? '#409eff' : '#ffd04b'"
         :collapse="isCollapse"
@@ -34,7 +34,7 @@
         ></SubMenu>
       </el-menu>
       <el-menu
-        :background-color="isDark ? '#304156' : '#fff'"
+        :background-color="isDark ? '#304156' : '#eee'"
         :text-color="isDark ? '#bfcbd9' : '#000'"
         :active-text-color="isDark ? '#409eff' : '#ffd04b'"
         :collapse="isCollapse"

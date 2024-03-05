@@ -139,6 +139,6 @@ const logout = () => {
   }
 }
 .dark .nav {
-  background-color: #292a2d;
+  background-color: #111;
 }
 </style>

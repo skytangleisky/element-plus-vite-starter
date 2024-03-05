@@ -151,7 +151,7 @@ export const useSettingStore = defineStore({
         component: '/src/container.vue',
         redirect: { path: '/contain/synthesis' },
         name:'65e99b66-e340-4d4b-6b26-629f41dc63d9',
-        label:'contain',
+        label:'江西无人机',
         svg:'2071b6c53b4211ee8077b025aa2c9ada',
         children:[
           {
@@ -219,7 +219,7 @@ export const useSettingStore = defineStore({
             svg:'18821b0ad6cb11ee9aafb025aa2c9ada'
           },
           {
-            path: 'statistics',
+            path: 'statistic',
             name: '961a22a1-f5da-9845-fc89-3519ed950710',
             // component:'/src/myComponents/openlayers/radarStatistic.vue'
             // component:'/src/myComponents/menu/index.vue'
@@ -271,7 +271,7 @@ export const useSettingStore = defineStore({
             svg:'b9cef812d6c711ee9aafb025aa2c9ada',
             children:[
               {
-                path: 'personal',
+                path: 'person',
                 name: 'c4961e01-e571-0e1f-ae23-94f157b15a45',
                 component: '/src/myComponents/datatable/index.vue',
                 label: '个人用户',

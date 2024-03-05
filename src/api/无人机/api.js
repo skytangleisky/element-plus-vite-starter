@@ -4,33 +4,13 @@ let options = ''
 let url = ''
 function setConfig(){
   let filename = location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
-  if(filename=='whitelist'||filename=='statistics'){
-    tableName='whitelist'
-    options = '?host=tanglei.top&port=3306&user=root&password=tanglei&database=jiangxi'
-    url = 'backend/db/'+tableName+options
-  }else if(filename=='personal'||filename=='enterprise'||filename=='administrator'||filename=='group'||filename=='institution'){
-    tableName='userinfo'
-    options = '?host=tanglei.top&port=3306&user=root&password=tanglei&database=union'
-    url = 'backend/db/'+tableName+options
-  }else if(filename=='record'){
-    tableName='record'
-    options = '?host=tanglei.top&port=3306&user=root&password=tanglei&database=jiangxi'
-    url = 'backend/db/'+tableName+options
-  }else if(filename=='enterprise'){
-    tableName='enterprise'
-    options = '?host=tanglei.top&port=3306&user=root&password=tanglei&database=jiangxi'
-    url = 'backend/db/'+tableName+options
-  }else if(filename=='enclosure'){
+  if(filename=='synthesis'||filename=='history'||filename=='simulate'||filename=='airspace'){
     tableName='enclosure'
     options = '?host=tanglei.top&port=3390&user=root&password=mysql&database=gis'
     url = 'backend/db/'+tableName+options
-  }else if(filename=='device'){
-    tableName='device'
-    options = '?host=tanglei.top&port=3306&user=root&password=tanglei&database=jiangxi'
-    url = 'backend/db/'+tableName+options
-  }else if(filename=='synthesis'||filename=='history'||filename=='simulate'||filename=='airspace'){
-    tableName='enclosure'
-    options = '?host=tanglei.top&port=3390&user=root&password=mysql&database=gis'
+  }else{
+    tableName = filename
+    options =  '?host=tanglei.top&port=3306&user=root&password=tanglei&database=jiangxi';
     url = 'backend/db/'+tableName+options
   }
 }
@@ -72,20 +52,21 @@ export function fetchList(query) {
     data: {
       "select":["*"], // 需要获取的字段，"*"代表所有字段
       "distinct":false, // 是否对筛选后的数据去重
-      "where":[
-        // {
-        //   "relation":"AND", // AND|OR|NOT
-        //   "field":"id", // 某个字段
-        //   "relationship":"=", // <|<=|=|>=|>|!<|!>|!=|<>|LIKE|IS|IS NOT
-        //   "condition":"50" // 当值为null时，relationship的值为IS或者IS NOT
-        // },
-        // {
-        //   "relation":"AND",
-        //   "field":"username",
-        //   "relationship":"IS NOT",
-        //   "condition":null
-        // }
-      ],
+      "where": query.where,
+      // [
+      //   {
+      //     "relation":"AND", // AND|OR|NOT
+      //     "field":"id", // 某个字段
+      //     "relationship":"=", // <|<=|=|>=|>|!<|!>|!=|<>|LIKE|IS|IS NOT
+      //     "condition":"50" // 当值为null时，relationship的值为IS或者IS NOT
+      //   },
+      //   {
+      //     "relation":"AND",
+      //     "field":"username",
+      //     "relationship":"IS NOT",
+      //     "condition":null
+      //   }
+      // ],
       "groupby":[], // 分组，传参类似"select"
       "having":[], // 分组后的条件，传参类似"where"
       "orderby": [ // 根据字段排序
