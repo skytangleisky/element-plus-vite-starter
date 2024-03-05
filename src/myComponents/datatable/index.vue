@@ -119,11 +119,7 @@
           <div
             v-if="item.checked"
             :class="`col ${
-              item.Key === 'PRI'
-                ? 'color-yellow-3'
-                : item.Key === 'UNI'
-                ? 'color-red-3'
-                : ''
+              item.Key === 'PRI' ? 'color-#fa0' : item.Key === 'UNI' ? 'color-red-3' : ''
             }`"
           >
             <div
@@ -668,21 +664,21 @@ const allChange = (val: CheckboxValueType) => {
       position: sticky;
       top: 0;
       bottom: 0;
-      border-bottom: 1px solid #ddd;
+      border-bottom: 1px solid #fff;
       font-weight: bolder;
       line-height: 1rem;
     }
     &:not(:last-child) {
       .th {
-        border-right: 1px solid #ddd;
+        border-right: 1px solid #fff;
       }
       .cell {
-        border-right: 1px solid #ddd;
+        border-right: 1px solid #fff;
       }
     }
   }
   .cell:not(:last-child) {
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #fff;
   }
 }
 .dark .mainContainer {

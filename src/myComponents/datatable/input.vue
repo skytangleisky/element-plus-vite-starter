@@ -42,6 +42,7 @@ const focusout = (event: any) => {
 </script>
 <style scoped lang="scss">
 .input {
+  background: transparent;
   width: 100%;
   box-sizing: border-box;
   border: 2px solid transparent;

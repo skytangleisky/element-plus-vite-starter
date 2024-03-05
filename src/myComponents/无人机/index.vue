@@ -26,12 +26,6 @@
       :class="`bottom-drawer ${setting.无人机.监控.bottom_disappear ? 'disappear' : ''}`"
     >
       <div class="handle z-1" @click="setting.无人机.监控.bottom_disappear = false">
-        <el-icon
-          class="cursor-pointer"
-          style="position: absolute; top: 100%; font-size: 1.5rem"
-          v-html="forkSvg"
-          @click.stop="setting.无人机.监控.bottom_disappear = true"
-        ></el-icon>
         <el-badge :value="12" type="primary"
           ><el-icon v-html="warnSvg"></el-icon
         ></el-badge>
@@ -51,6 +45,12 @@
           ><el-icon v-html="statisticSvg"></el-icon
         ></el-badge>
       </div>
+      <el-icon
+        class="cursor-pointer z-1"
+        style="position: absolute; top: 0; right: 0; font-size: 1.5rem"
+        v-html="forkSvg"
+        @click.stop="setting.无人机.监控.bottom_disappear = true"
+      ></el-icon>
       <datatable></datatable>
     </div>
     <div :class="`right-drawer ${setting.无人机.监控.disappear ? 'disappear' : ''}`">
@@ -512,61 +512,6 @@ watch(
 );
 </script>
 <style scoped lang="scss">
-.ol-popup {
-  width: 340px;
-  height: 280px;
-  position: absolute;
-  background-color: white;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-  padding: 5px;
-  border-radius: 4px;
-  border: 1px solid rgb(73, 208, 37);
-  top: -15px;
-  left: 10px;
-  color: black;
-  &:after,
-  &:before {
-    border: solid transparent;
-    content: " ";
-    height: 0;
-    width: 0;
-    position: absolute;
-    pointer-events: none;
-  }
-  &:after {
-    border-right-color: rgb(73, 208, 37);
-    border-width: 6px;
-    top: 8px;
-    left: -12px;
-    margin-left: -0px;
-  }
-  &:before {
-    border-right-color: rgb(73, 208, 37);
-    border-width: 8px;
-    top: 6px;
-    left: -16px;
-  }
-  .ol-popup-closer {
-    text-decoration: none;
-    position: absolute;
-    top: 6px;
-    right: 8px;
-    &:after {
-      color: var(--ep-color-primary);
-      content: "✖";
-    }
-  }
-  .title {
-    line-height: 30px;
-    color: white;
-    font-size: 16px;
-  }
-  .latestTime {
-    line-height: 30px;
-    font-size: 10px;
-    color: white;
-  }
-}
 $time: 1s;
 .bottom-drawer {
   position: absolute;
