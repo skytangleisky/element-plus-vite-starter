@@ -127,13 +127,13 @@
             }`"
           >
             <div
-              :class="`th dark:bg-#2b2b2b bg-white flex flex-col ${
+              :class="`th dark:bg-#2b2b2b bg-#aaa flex flex-col ${
                 addRow ? 'justify-between' : 'justify-end'
               }`"
             >
               <div
                 v-if="addRow"
-                class="dark:bg-#3b3b3b bg-#fff"
+                class="dark:bg-#3b3b3b bg-#ddd"
                 style="
                   border-right: 0;
                   border-bottom: 1px solid #444;
@@ -176,7 +176,7 @@
             </div>
             <div
               v-for="(_, k) in options.tdData"
-              class="cell dark:bg-#3b3b3b bg-#fff"
+              class="cell dark:bg-#3b3b3b bg-#ddd"
               style="display: flex; flex-direction: row; align-items: center"
             >
               <el-checkbox
@@ -204,7 +204,6 @@
     >
       <div>{{ sqlStr }}</div>
       <el-pagination
-        style="padding: 10px"
         :hide-on-single-page="false"
         v-model:current-page="paginationOptions.currentPage"
         v-model:page-size="paginationOptions.pageSize"
@@ -618,7 +617,6 @@ const allChange = (val: CheckboxValueType) => {
 </script>
 <style scoped lang="scss">
 .mainContainer {
-  padding: 20px;
   box-sizing: border-box;
   position: absolute;
   overflow: auto;
@@ -670,9 +668,28 @@ const allChange = (val: CheckboxValueType) => {
       position: sticky;
       top: 0;
       bottom: 0;
-      border-bottom: 1px solid #444;
+      border-bottom: 1px solid #ddd;
       font-weight: bolder;
       line-height: 1rem;
+    }
+    &:not(:last-child) {
+      .th {
+        border-right: 1px solid #ddd;
+      }
+      .cell {
+        border-right: 1px solid #ddd;
+      }
+    }
+  }
+  .cell:not(:last-child) {
+    border-bottom: 1px solid #ddd;
+  }
+}
+.dark .mainContainer {
+  background-color: #282828;
+  .col {
+    .th {
+      border-bottom: 1px solid #444;
     }
     &:not(:last-child) {
       .th {
@@ -686,9 +703,6 @@ const allChange = (val: CheckboxValueType) => {
   .cell:not(:last-child) {
     border-bottom: 1px solid #444;
   }
-}
-.dark .mainContainer {
-  background-color: #282828;
 }
 </style>
 <style>

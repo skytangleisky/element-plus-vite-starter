@@ -323,7 +323,7 @@ export default {
 				"minzoom": 0,
 				"maxzoom": 22,
 				layout:{
-					visibility:setting.loadmap?'visible':'none'
+					visibility:setting.无人机.监控.loadmap?'visible':'none'
 				}
 			},
 			{
@@ -331,7 +331,7 @@ export default {
 				'type': 'fill',
 				'source': 'district', // reference the data source
 				'layout': {
-					visibility:setting.district?'visible':'none'
+					visibility:setting.无人机.监控.district?'visible':'none'
 				},
 				'paint': {
 					'fill-color': '#000',
@@ -343,10 +343,10 @@ export default {
 				'type': 'line',
 				'source': 'district',
 				'layout': {
-					'visibility':setting.district?'visible':'none'
+					'visibility':setting.无人机.监控.district?'visible':'none'
 				},
 				'paint': {
-					'line-color': 'lightgrey',
+					'line-color': 'grey',
 					'line-width': 1
 				}
 			},

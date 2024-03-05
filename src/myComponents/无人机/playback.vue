@@ -1007,7 +1007,7 @@ watch(
   }
 );
 </script>
-<style lang="scss">
+<style scoped lang="scss">
 .ol-popup {
   width: 340px;
   height: 280px;

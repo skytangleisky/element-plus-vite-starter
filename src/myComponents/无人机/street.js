@@ -25,7 +25,11 @@ export default {
   "scheme": "xyz",
   "tilejson": "2.2.0",
   "tiles": [
-    'https://tanglei.site:3240/maps/vt?lyrs=s2&gl=CN&x={x}&y={y}&z={z}',
+    "https://wprd01.is.autonavi.com/appmaptile?style=10&x={x}&y={y}&z={z}",
+    "https://wprd02.is.autonavi.com/appmaptile?style=10&x={x}&y={y}&z={z}",
+    "https://wprd03.is.autonavi.com/appmaptile?style=10&x={x}&y={y}&z={z}",
+    "https://wprd04.is.autonavi.com/appmaptile?style=10&x={x}&y={y}&z={z}",
+    // 'https://tanglei.site:3240/maps/vt?lyrs=s2&gl=CN&x={x}&y={y}&z={z}',
   ],
   "webpage": "https://dev-studio.tilestream.net/tilesets/mapbox.satellite"
 }

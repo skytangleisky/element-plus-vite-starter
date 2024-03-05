@@ -20,6 +20,17 @@ export const useSettingStore = defineStore({
   ],
     },
     无人机:{
+      监控:{
+        "zoom": 8.882777980661407,
+        "center": [
+            117.04212403858509,
+            28.1994655756006
+        ],
+        district:true,
+        loadmap:true,
+        disappear:false,
+        bottom_disappear:false,
+      },
       回放:{
         "zoom": 8.882777980661407,
         "center": [

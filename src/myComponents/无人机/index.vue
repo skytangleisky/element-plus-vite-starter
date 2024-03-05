@@ -14,6 +14,69 @@
         outline: none;
       "
     ></div>
+    <div
+      class="absolute left-10px top-10px b-solid b-1px dark:b-gray-5 b-gray dark:bg-#2b2b2b bg-white dark:color-white color-black w-150px h-80px flex flex-col justify-between p-10px"
+      style="border-radius: 8px; font-size: 16px"
+    >
+      <span>反制设备 10台</span>
+      <span>合作无人机 0架</span>
+      <span>黑飞无人机 0架</span>
+    </div>
+    <div
+      :class="`bottom-drawer ${setting.无人机.监控.bottom_disappear ? 'disappear' : ''}`"
+    >
+      <div class="handle z-1" @click="setting.无人机.监控.bottom_disappear = false">
+        <el-icon
+          class="cursor-pointer"
+          style="position: absolute; top: 100%; font-size: 1.5rem"
+          v-html="forkSvg"
+          @click.stop="setting.无人机.监控.bottom_disappear = true"
+        ></el-icon>
+        <el-badge :value="12" type="primary"
+          ><el-icon v-html="warnSvg"></el-icon
+        ></el-badge>
+        <el-badge :value="12" type="success"
+          ><el-icon v-html="uavSvg"></el-icon
+        ></el-badge>
+        <el-badge :value="12" type="warning"
+          ><el-icon v-html="deviceSvg"></el-icon
+        ></el-badge>
+        <el-badge type="danger" :value="12"
+          ><el-icon v-html="recordSvg"></el-icon
+        ></el-badge>
+        <el-badge type="info" :value="12"
+          ><el-icon v-html="whitelistSvg"></el-icon
+        ></el-badge>
+        <el-badge :value="0" :show-zero="false"
+          ><el-icon v-html="statisticSvg"></el-icon
+        ></el-badge>
+      </div>
+      <datatable></datatable>
+    </div>
+    <div :class="`right-drawer ${setting.无人机.监控.disappear ? 'disappear' : ''}`">
+      <div
+        class="handle"
+        @click.native="setting.无人机.监控.disappear = !setting.无人机.监控.disappear"
+      >
+        <el-icon v-html="rightSvg"></el-icon>
+      </div>
+      <selectTile v-model:list="tileList"></selectTile>
+      <span style="font-size: 20px; margin-top: 20px">图层设置</span>
+      <div style="padding-left: 4px">
+        <div class="flex items-center">
+          <el-checkbox label="反制设备图层"></el-checkbox>
+        </div>
+        <div class="flex items-center">
+          <el-checkbox label="探测目标图层"></el-checkbox>
+        </div>
+        <div class="flex items-center">
+          <el-checkbox label="禁飞区图层"></el-checkbox>
+        </div>
+        <div class="flex items-center">
+          <el-checkbox label="备案空域图层"></el-checkbox>
+        </div>
+      </div>
+    </div>
     <!-- <graph
       v-if="DEV"
       class="absolute left-0 bottom-30px"
@@ -22,6 +85,15 @@
   </div>
 </template>
 <script setup>
+import forkSvg from "~/assets/fork.svg?raw";
+import rightSvg from "~/assets/right.svg?raw";
+import warnSvg from "~/assets/warn.svg?raw";
+import uavSvg from "~/assets/uav.svg?raw";
+import deviceSvg from "~/assets/device.svg?raw";
+import recordSvg from "~/assets/record.svg?raw";
+import whitelistSvg from "~/assets/whitelist.svg?raw";
+import statisticSvg from "~/assets/statistic.svg?raw";
+import selectTile from "./selectTile.vue";
 import { addFeatherImages, getFeather } from "~/tools";
 import { getLngLat } from "~/myComponents/map/js/core.js";
 import { watch, ref, onMounted, onBeforeUnmount, reactive, onActivated } from "vue";
@@ -33,115 +105,39 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 import { 获取净空区, saveData, deleteData } from "~/api/无人机/api";
 const bus = useBus();
-const DEV = import.meta.env.DEV;
-const graphArgs = reactive({
-  fps: { value: 0, min: 0, max: 144, strokeStyle: "#ffffff88" },
-  // memory: { value: 0, min: 0, max: 120, strokeStyle: "#0f0" },
-});
-const data = reactive([]);
-let preTime = 0;
-const change = (it) => {
-  // if (it.time !== preTime) {
-  //   console.log("change");
-  //   //删除相关站点的风羽
-  //   for (let i = 0; i < points.data.features.length; i++) {
-  //     if (
-  //       it.radar_id == points.data.features[i].properties.radar_id &&
-  //       points.data.features[i].properties.type == "风羽"
-  //     ) {
-  //       points.data.features.splice(i--, 1);
-  //     }
-  //   }
-  //   for (let k in it.attributes) {
-  //     let tmp2 = it.attributes[k].slice().reverse();
-  //     tmp2.forEach((tmp3) => {
-  //       for (let k in tmp3) {
-  //         let item = tmp3[k];
-  //         let ll = getLngLat(it.lngLat[0], it.lngLat[1], item.north_a, Number(k));
-  //         // item.center_h_direction_abs = Math.random() * 360;
-  //         // item.center_h_speed = Math.random() * 60;
-  //         if (item.center_h_direction_abs != -1000 && item.center_h_speed != -1000) {
-  //           points.data.features.push({
-  //             type: "Feature",
-  //             properties: {
-  //               type: "风羽",
-  //               radar_id: it.radar_id,
-  //               风速: item.center_h_speed,
-  //               image: "feather" + getFeather(item.center_h_speed),
-  //               风向: item.center_h_direction_abs,
-  //             },
-  //             geometry: {
-  //               type: "Point",
-  //               coordinates: [ll.lng, ll.lat],
-  //             },
-  //           });
-  //         }
-  //       }
-  //       let source = map.getSource("point");
-  //       source && source.setData(points.data);
-  //     });
-  //   }
-  //   preTime = it.time;
-  // }
-};
-const toLeft = () => {
-  console.log("toLeft");
-};
-const toMiddle = () => {
-  console.log("toMiddle");
-};
-const toRight = () => {
-  console.log("toRight");
-};
-const info = ref({
-  title: "南昌昌北国际机场(ZSCN)",
-  time: "2020-09-24 16:00",
-  name: "",
-  status: "",
-  speed: "",
-  longitude: "",
-  latitude: "",
-  deg: "",
-});
-
 import { useStationStore } from "~/stores/station";
 import { useRoute } from "vue-router";
 const route = useRoute();
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
-import style from "./streets-v11.js";
+import style1 from "./index.js";
+import style2 from "./index2.js";
+import url2 from "~/assets/street.png?url";
+import url1 from "~/assets/satellite.png?url";
+import datatable from "~/myComponents/datatable/index.vue";
 let enclosureList = [];
 console.log("route.query", route.query);
 const station = useStationStore();
-/** @type {import('ol/style/literal.js').LiteralStyle} */
-
+const tileList = ref([
+  { style: style2, name: "街道地图", url: url2, selected: true },
+  { style: style1, name: "卫星地图", url: url1, selected: false },
+]);
+watch(
+  tileList,
+  (list) => {
+    list.map((item) => {
+      if (item.selected) {
+        map.setStyle(item.style);
+      }
+    });
+  },
+  { deep: true }
+);
 const mapRef = ref(null);
 let timer, map;
 let mock;
-let speed = 20;
-const points = {
-  type: "geojson",
-  data: {
-    type: "FeatureCollection",
-    features: [
-      {
-        type: "Feature",
-        properties: {
-          风速: speed,
-          image: "feather" + getFeather(speed),
-          风向: 0,
-        },
-        geometry: {
-          type: "Point",
-          coordinates: [-122.414, 37.776],
-        },
-      },
-    ],
-  },
-};
 const clickFunc = (e) => {
   if (e.features) {
-    setting.disappear = false;
     for (let i = 0; i < bus.result.length; i++) {
       if (bus.result[i].radar.radar_id == e.features[0].properties.radar_id) {
         station
@@ -162,214 +158,11 @@ const clickFunc = (e) => {
   }
 };
 const zoomFunc = () => {
-  setting.openlayers.zoom = map.getZoom();
+  setting.无人机.监控.zoom = map.getZoom();
 };
 const moveFunc = () => {
   let center = map.getCenter();
-  setting.openlayers.center = [center.lng, center.lat];
-};
-const task = () => {
-  // if (prevDate === new Date(setting.now).Format("yyyyMMdd")) {
-  station
-    .查询雷达最新的平均风数据接口({
-      user_id: route.query.user_id,
-    })
-    .then((res) => {
-      bus.avgWindData = res.data.data;
-    });
-  // }
-  // station
-  //   .查询瞬时风数据接口({
-  //     user_id: route.query.user_id,
-  //   })
-  //   .then((res) => {
-  //     station.secondWindData = res.data.data;
-  //   });
-  // if (station.active) {//会导致服务器阻塞
-  //   station
-  //     .查询雷达最新的径向风数据接口({
-  //       radar_id: station.active.replaceAll("-", ""),
-  //     })
-  //     .then((res) => {
-  //       bus.radialWindData = res.data.data;
-  //     });
-  // }
-};
-// task();
-const loadFunc = () => {
-  map.addSource("point", points);
-  map.addLayer({
-    id: "stationLayer",
-    source: "point",
-    type: "circle",
-    paint: {
-      // "circle-radius": [
-      //   "interpolate",
-      //   ["exponential", 1.5],
-      //   ["zoom"],
-      //   15,
-      //   4.5,
-      //   16,
-      //   8,
-      //   18,
-      //   20,
-      //   22,
-      //   200,
-      // ],
-      "circle-radius": 5,
-      "circle-color": ["get", "color"],
-      // "circle-stroke-width": [
-      //   "interpolate",
-      //   ["linear"],
-      //   ["zoom"],
-      //   15,
-      //   0.8,
-      //   16,
-      //   1.2,
-      //   18,
-      //   2,
-      // ],
-      "circle-stroke-width": 1,
-      // "circle-stroke-color": "hsl(220, 20%, 85%)",
-      "circle-pitch-alignment": "map",
-    },
-    filter: ["==", ["get", "type"], "站点"],
-    layout: {
-      visibility: setting.station ? "visible" : "none",
-    },
-  });
-  map.addLayer({
-    id: "featherLayer",
-    source: "point",
-    type: "symbol",
-    layout: {
-      visibility: setting.station ? "visible" : "none",
-      // This icon is a part of the Mapbox Streets style.
-      // To view all images available in a Mapbox style, open
-      // the style in Mapbox Studio and click the "Images" tab.
-      // To add a new image to the style at runtime see
-      // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-      "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
-      "icon-image": ["get", "image"],
-      "icon-size": 1,
-      "icon-rotate": ["get", "风向"],
-      "icon-rotation-alignment": "map",
-      "icon-allow-overlap": true,
-      "icon-ignore-placement": true,
-      // "text-field": ["get", "风速"],
-      // "text-font": ["simkai"],
-      // "text-size": 14,
-      // "text-transform": "uppercase",
-      // // "text-letter-spacing": 0.05,
-      // "text-anchor": "center",
-      // "text-line-height": 1,
-      // // "text-justify": "center",
-      // "text-offset": [0, 0],
-      // "text-ignore-placement": true,
-      // "text-allow-overlap": true,
-      // "text-rotation-alignment": "map",
-    },
-    paint: {
-      "icon-opacity": setting.feather ? 1 : 0,
-    },
-    filter: ["==", ["get", "type"], "风羽"],
-  });
-  map.addLayer({
-    id: "textLayer",
-    source: "point",
-    type: "symbol",
-    layout: {
-      visibility: setting.station ? "visible" : "none",
-      "text-field": ["get", "name"],
-      "text-font": ["simkai"],
-      "text-size": 14,
-      "text-transform": "uppercase",
-      // "text-letter-spacing": 0.05,
-      "text-anchor": "center",
-      "text-line-height": 1,
-      "text-offset": [0, -1.2],
-      "text-ignore-placement": true,
-      "text-allow-overlap": true,
-      "text-rotation-alignment": "map",
-      "text-max-width": 400,
-    },
-    paint: {
-      "text-opacity": setting.factor[1].val ? 1 : 0,
-      "text-color": "white",
-    },
-    filter: ["==", ["get", "type"], "站点"],
-  });
-  map.addLayer({
-    id: "temperatureLayer",
-    source: "point",
-    type: "symbol",
-    layout: {
-      visibility: setting.station ? "visible" : "none",
-      "text-field": ["get", "external_temperature"],
-      "text-font": ["simkai"],
-      "text-size": 14,
-      "text-transform": "uppercase",
-      // "text-letter-spacing": 0.05,
-      "text-anchor": "right",
-      "text-line-height": 1,
-      "text-offset": [-1, -0.2],
-      "text-ignore-placement": true,
-      "text-allow-overlap": true,
-      "text-rotation-alignment": "map",
-    },
-    paint: {
-      "text-opacity": setting.factor[7].val ? 1 : 0,
-      "text-color": "white",
-    },
-    filter: ["==", ["get", "type"], "站点"],
-  });
-  map.addLayer({
-    id: "humidityLayer",
-    source: "point",
-    type: "symbol",
-    layout: {
-      visibility: setting.station ? "visible" : "none",
-      "text-field": ["get", "external_humidity"],
-      "text-font": ["simkai"],
-      "text-size": 14,
-      "text-transform": "uppercase",
-      // "text-letter-spacing": 0.05,
-      "text-anchor": "right",
-      "text-line-height": 1,
-      "text-offset": [-1, 1.2],
-      "text-ignore-placement": true,
-      "text-allow-overlap": true,
-      "text-rotation-alignment": "map",
-    },
-    paint: {
-      "text-opacity": setting.factor[9].val ? 1 : 0,
-      "text-color": "white",
-    },
-    filter: ["==", ["get", "type"], "站点"],
-  });
-  bus.avgWindData = [];
-  bus.secondWindData = [];
-  bus.radialWindData = [];
-  if (import.meta.env.PROD) {
-    timer = setInterval(() => task(), 4 * 60 * 1000);
-  } else if (import.meta.env.DEV) {
-    timer = setInterval(() => task(), 4 * 60 * 1000);
-  }
-  let frameCounter = map.painter.frameCounter;
-  mock = setInterval(() => {
-    graphArgs.fps.value = map.painter.frameCounter - frameCounter;
-    frameCounter = map.painter.frameCounter;
-    // graphArgs.memory.value = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
-    // graphArgs.memory.max = Math.round(performance.memory.jsHeapSizeLimit / 1024 / 1024);
-  }, 1000);
-  if (setting.checks[0].select)
-    station.查询雷达列表接口({ user_id: route.query.user_id });
-  if (setting.checks[1].select)
-    station.查询雷达在线列表接口({ user_id: route.query.user_id });
-  if (setting.checks[2].select)
-    station.查询雷达离线列表接口({ user_id: route.query.user_id });
-  if (setting.checks[3].select)
-    station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
+  setting.无人机.监控.center = [center.lng, center.lat];
 };
 const flyTo = (item) => {
   try {
@@ -397,7 +190,7 @@ onMounted(() => {
     // projection: "globe",
     // style: raster,
     performanceMetricsCollection: false,
-    style,
+    style: style2,
     dragRotate: false,
     touchRotate: false,
     touchPitch: false,
@@ -417,8 +210,8 @@ onMounted(() => {
     // zoom: 18,
     // center: [148.9819, -35.3981],
     // pitch: 60,
-    zoom: setting.openlayers.zoom,
-    center: setting.openlayers.center,
+    zoom: setting.无人机.监控.zoom,
+    center: setting.无人机.监控.center,
     pitch: 0,
   });
   map.addControl(
@@ -683,7 +476,6 @@ onMounted(() => {
   addFeatherImages(map);
   map.on("zoom", zoomFunc);
   map.on("move", moveFunc);
-  map.on("load", loadFunc);
   map.on("click", "stationLayer", clickFunc);
   eventbus.on("将站点移动到屏幕中心", flyTo);
 });
@@ -693,7 +485,6 @@ onBeforeUnmount(() => {
   clearInterval(mock);
   map.off("zoom", zoomFunc);
   map.off("move", moveFunc);
-  map.off("load", loadFunc);
   map.off("click", "stationLayer", clickFunc);
   map.remove();
 });
@@ -720,7 +511,7 @@ watch(
   }
 );
 </script>
-<style lang="scss">
+<style scoped lang="scss">
 .ol-popup {
   width: 340px;
   height: 280px;
@@ -776,39 +567,98 @@ watch(
     color: white;
   }
 }
+$time: 1s;
+.bottom-drawer {
+  position: absolute;
+  height: 240px;
+  background-color: #fff;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  box-sizing: border-box;
+  border-top: 1px solid #ddd;
+  transition: transform $time;
+  & > .handle {
+    position: absolute;
+    transform: translateY(-100%);
+    .ep-badge {
+      margin: 0 20px;
+      .ep-icon {
+        cursor: pointer;
+        filter: drop-shadow(0 0 8px #000);
+        font-size: 2rem;
+        color: #fff;
+      }
+    }
+  }
+  &.disappear {
+    transform: translateY(100%);
+  }
+}
+.dark .bottom-drawer {
+  border-top: 1px solid gray;
+  background-color: #2b2b2b;
+  & > .handle {
+    .ep-badge {
+      .ep-icon {
+        color: #2b2b2b;
+        filter: drop-shadow(0 0 8px #fff);
+      }
+    }
+  }
+}
 .right-drawer {
-  z-index: 1;
+  z-index: 2;
   position: absolute;
   right: 0;
-  width: 600px;
+  width: 240px;
   box-sizing: border-box;
   height: 100%;
   background-color: white;
   display: flex;
   flex-direction: column;
-  transition: all 250ms;
-  & > div > div {
-    padding: 20px 10px;
+  transition: transform $time;
+  border-left: 1px solid #ddd;
+  box-sizing: border-box;
+  & > .handle {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    overflow: hidden;
     box-sizing: border-box;
+    left: -16px;
+    background-color: #fff;
+    width: 16px;
+    height: 30px;
+    border: 1px solid #ddd;
+    border-right: none;
+    & > .ep-icon {
+      transition: transform $time;
+      color: #bbb;
+    }
   }
-  & > div > div:nth-child(odd) {
-    background: #eee;
+  &.disappear {
+    transform: translateX(calc(100%));
+    & > .handle > .ep-icon {
+      transform: rotateY(180deg);
+    }
   }
 }
 .dark .right-drawer {
-  background-color: black;
-  & > div > div:nth-child(odd) {
-    background: #304156;
+  background-color: #2b2b2b;
+  border-left: 1px solid gray;
+  & > .handle {
+    background-color: #2b2b2b;
+    border: 1px solid grey;
+    border-right: none;
+    & > .ep-icon {
+      color: #ddd;
+    }
   }
-  & > div > div:nth-child(even) {
-    background: #252948;
-  }
-}
-.disappear.right-drawer {
-  transform: translateX(calc(100% + 28px));
-  transition: all 250ms;
-}
-.mapboxgl-canvas:focus-visible {
-  outline: none;
 }
 </style>
