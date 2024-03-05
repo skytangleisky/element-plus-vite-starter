@@ -123,7 +123,7 @@
             }`"
           >
             <div
-              :class="`th dark:bg-#2b2b2b bg-#aaa flex flex-col ${
+              :class="`th dark:bg-#222 bg-#aaa flex flex-col ${
                 addRow ? 'justify-between' : 'justify-end'
               }`"
             >
@@ -685,19 +685,19 @@ const allChange = (val: CheckboxValueType) => {
   background-color: #282828;
   .col {
     .th {
-      border-bottom: 1px solid #444;
+      border-bottom: 1px solid #282828;
     }
     &:not(:last-child) {
       .th {
-        border-right: 1px solid #444;
+        border-right: 1px solid #282828;
       }
       .cell {
-        border-right: 1px solid #444;
+        border-right: 1px solid #282828;
       }
     }
   }
   .cell:not(:last-child) {
-    border-bottom: 1px solid #444;
+    border-bottom: 1px solid #282828;
   }
 }
 </style>
