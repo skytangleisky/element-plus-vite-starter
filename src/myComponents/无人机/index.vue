@@ -119,15 +119,24 @@ let enclosureList = [];
 console.log("route.query", route.query);
 const station = useStationStore();
 const tileList = ref([
-  { style: style2, name: "街道地图", url: url2, selected: true },
-  { style: style1, name: "卫星地图", url: url1, selected: false },
+  { style: style2, name: "街道地图", url: url2 },
+  { style: style1, name: "卫星地图", url: url1 },
 ]);
+let style = {};
+tileList.value.map((item, k) => {
+  if (item.name == setting.无人机.监控.tile) {
+    item.selected = true;
+    style = item.style;
+  }
+});
+
 watch(
   tileList,
   (list) => {
     list.map((item) => {
       if (item.selected) {
         map.setStyle(item.style);
+        setting.无人机.监控.tile = item.name;
       }
     });
   },
@@ -190,7 +199,7 @@ onMounted(() => {
     // projection: "globe",
     // style: raster,
     performanceMetricsCollection: false,
-    style: style2,
+    style,
     dragRotate: false,
     touchRotate: false,
     touchPitch: false,

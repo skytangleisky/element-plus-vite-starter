@@ -30,6 +30,7 @@ export const useSettingStore = defineStore({
         loadmap:true,
         disappear:false,
         bottom_disappear:false,
+        tile:'卫星地图',
       },
       回放:{
         "zoom": 8.882777980661407,

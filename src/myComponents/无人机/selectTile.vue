@@ -9,7 +9,12 @@
       <img
         :src="v.url"
         class="dark:b-#888 b-solid b-1px b-#ddd"
-        style="border-radius: 8px; width: 100%; box-sizing: border-box"
+        style="
+          border-radius: 8px;
+          width: 100%;
+          box-sizing: border-box;
+          -webkit-user-drag: none;
+        "
       />
       <el-icon
         class="checkColor"

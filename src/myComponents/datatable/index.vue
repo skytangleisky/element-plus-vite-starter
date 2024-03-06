@@ -358,10 +358,17 @@ function getData() {
           });
       })
       .catch((res) => {
-        ElMessage({
-          message: res.response.data[0].reason.sqlMessage,
-          type: "error",
-        });
+        if (e.response) {
+          if (e.response.status == 400) {
+            if (e.response.data.message) {
+              openVn(e.response.data.message);
+            } else {
+              openVn(e.response.data.sqlMessage);
+            }
+          }
+        } else {
+          openVn(e.message);
+        }
         reject();
       });
   });
@@ -571,10 +578,17 @@ const tickSvgClick = async () => {
         addRow.value = false;
       })
       .catch((res) => {
-        ElMessage({
-          message: res.response.data[0].reason.sqlMessage,
-          type: "error",
-        });
+        if (e.response) {
+          if (e.response.status == 400) {
+            if (e.response.data.message) {
+              openVn(e.response.data.message);
+            } else {
+              openVn(e.response.data.sqlMessage);
+            }
+          }
+        } else {
+          openVn(e.message);
+        }
       });
   }
 };
