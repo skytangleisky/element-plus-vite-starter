@@ -294,7 +294,7 @@ export default {
 	"glyphs_origin": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
 	"sprite": window.location.origin+"/resources/sprite",
 	"glyphs": window.location.origin+"/resources/glyphs/{fontstack}/{range}.pbf",
-	"projection": {"name": "mercator"},//albers, equalEarth, equirectangular, lambertConformalConic, mercator, naturalEarth, winkelTripel, globe
+	"projection": {"name": "globe"},//albers, equalEarth, equirectangular, lambertConformalConic, mercator, naturalEarth, winkelTripel, globe
 	"layers": [
 			{
 					"id": "land",

@@ -130,12 +130,14 @@ const logout = () => {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    height: 40px;
-    line-height: 40px;
+    height: 48px;
+    line-height: 48px;
     font-size: 2rem;
     padding: 2px 20px;
-    background: #0d7c9d;
-    clip-path: polygon(10px 100%, calc(100% - 10px) 100%, 100% 0, 0 0);
+    background: url(~/assets/titleBg.png);
+    background-position: center center;
+    background-size: 100% 100%;
+    // clip-path: polygon(10px 100%, calc(100% - 10px) 100%, 100% 0, 0 0);
   }
 }
 .dark .nav {

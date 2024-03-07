@@ -196,9 +196,10 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-direction: row-reverse;
+        padding: 5px 0;
       "
     >
-      <div>{{ sqlStr }}</div>
       <el-pagination
         :hide-on-single-page="false"
         v-model:current-page="paginationOptions.currentPage"
@@ -209,7 +210,11 @@
         :background="false"
         layout="total, sizes, prev, pager, next, jumper"
         :total="paginationOptions.total"
+        style="padding: 0 10px"
       />
+      <span class="sql" style="overflow: auto; white-space: nowrap">
+        {{ sqlStr }}
+      </span>
     </div>
   </div>
 </template>
@@ -295,7 +300,7 @@ function getData() {
       .then((res) => {
         // console.log(res.data);
         options.thData.length = 0;
-        let where = [];
+        let where: any = [];
         res.data[0].map((v: any) => {
           let item = { ...v, checked: false, placeholder: v.Type };
           if (["id", "uuid", "createtime", "updatetime"].indexOf(v.Field) > -1) {
@@ -357,18 +362,8 @@ function getData() {
             reject();
           });
       })
-      .catch((res) => {
-        if (e.response) {
-          if (e.response.status == 400) {
-            if (e.response.data.message) {
-              openVn(e.response.data.message);
-            } else {
-              openVn(e.response.data.sqlMessage);
-            }
-          }
-        } else {
-          openVn(e.message);
-        }
+      .catch((e) => {
+        throw e;
         reject();
       });
   });
@@ -383,7 +378,7 @@ const change = (item: any, k: string, oldVal: any) => {
     let tmp: { [key: string]: any } = {}; //用来存储必要的字段，减少网络传输的数据
     options.thData.map((v: any) => {
       // 找出必要的字段
-      if (v.Key === "PRI" || v.Key == "UNI") {
+      if (v.Key === "PRI" || v.Key == "UNI" || v.Null == "NO") {
         tmp[v.Field] = item[v.Field];
       }
     });
@@ -577,18 +572,8 @@ const tickSvgClick = async () => {
         getData();
         addRow.value = false;
       })
-      .catch((res) => {
-        if (e.response) {
-          if (e.response.status == 400) {
-            if (e.response.data.message) {
-              openVn(e.response.data.message);
-            } else {
-              openVn(e.response.data.sqlMessage);
-            }
-          }
-        } else {
-          openVn(e.message);
-        }
+      .catch((e) => {
+        throw e;
       });
   }
 };
@@ -651,6 +636,9 @@ const allChange = (val: CheckboxValueType) => {
       border-right: 1px solid #444;
       border-bottom: 1px solid #444;
     }
+  }
+  .sql::-webkit-scrollbar {
+    display: none;
   }
   .svg {
     padding: 4px;

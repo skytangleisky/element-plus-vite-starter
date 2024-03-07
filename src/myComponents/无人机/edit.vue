@@ -51,6 +51,14 @@
       <div ref="popup_closer" class="ol-popup-closer"></div>
     </div>
     <Dialog class="absolute" style="left: 10px; top: 10px"></Dialog>
+    <el-select v-model="color" placeholder="请选择颜色">
+      <el-option
+        v-for="(v, k) in options"
+        :label="v.label"
+        :value="v.value"
+        :key="k"
+      ></el-option>
+    </el-select>
     <!-- <graph
       v-if="DEV"
       class="absolute left-0 bottom-30px"
@@ -63,6 +71,12 @@ import * as turf from "@turf/turf";
 import { addFeatherImages, getFeather } from "~/tools";
 import { getLngLat } from "~/myComponents/map/js/core.js";
 import { watch, ref, onMounted, onBeforeUnmount, reactive, onActivated } from "vue";
+const color = ref("red");
+const options = ref([
+  { label: "红色", value: "red" },
+  { label: "绿色", value: "green" },
+  { label: "蓝色", value: "blue" },
+]);
 import { useBus } from "~/myComponents/bus";
 import Dialog from "../空域列表.vue";
 import { eventbus } from "~/eventbus";
@@ -70,6 +84,7 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 // var a = turf.sector(turf.point([-75, 40]), 100, 0, 360);
 // console.log(a);
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.scss";
+import theme from "./drawTheme/inactive.js";
 import { 获取净空区, saveData, deleteData } from "~/api/无人机/api";
 const bus = useBus();
 const DEV = import.meta.env.DEV;
@@ -485,14 +500,23 @@ onMounted(() => {
       combine_features: false,
       uncombine_features: false,
     },
+    styles: theme,
   });
   map.addControl(Draw, "top-right");
   //添加空域
   map.on("draw.create", function (e) {
+    let a = {
+      type: "FeatureCollection",
+      features: [],
+    };
+    let standby2 = color.value;
     let data = [];
     e.features.map((item) => {
+      item.properties.color = standby2;
+      a.features.push(item);
       if (item.geometry.type === "Point") {
         data.push({
+          standby2,
           id: item.id,
           enclosure_type: "06",
           line_width: 0,
@@ -501,6 +525,7 @@ onMounted(() => {
       } else if (item.geometry.type === "LineString") {
         console.log(item);
         data.push({
+          standby2,
           id: item.id,
           enclosure_type: "00",
           line_width: 0,
@@ -509,6 +534,7 @@ onMounted(() => {
       } else if (item.geometry.type === "Polygon") {
         if (item.properties.isCircle) {
           data.push({
+            standby2,
             id: item.id,
             enclosure_type: "03",
             line_width: 0,
@@ -518,6 +544,7 @@ onMounted(() => {
           });
         } else {
           data.push({
+            standby2,
             id: item.id,
             enclosure_type: "02",
             line_width: 0,
@@ -526,6 +553,7 @@ onMounted(() => {
         }
       }
     });
+    Draw.add(a);
     saveData(data)
       .then((res) => {
         console.log(res);
@@ -644,6 +672,9 @@ onMounted(() => {
         a.features.push({
           id: v.id,
           type: "Feature",
+          properties: {
+            color: v.standby2,
+          },
           geometry: {
             type: "Point",
             coordinates: list[0],
@@ -653,6 +684,9 @@ onMounted(() => {
         a.features.push({
           id: v.id,
           type: "Feature",
+          properties: {
+            color: v.standby2,
+          },
           geometry: {
             type: "LineString",
             coordinates: list,
@@ -663,6 +697,9 @@ onMounted(() => {
           a.features.push({
             id: v.id,
             type: "Feature",
+            properties: {
+              color: v.standby2,
+            },
             geometry: {
               type: "Polygon",
               coordinates: [list],
@@ -681,6 +718,7 @@ onMounted(() => {
             id: v.id,
             type: "Feature",
             properties: {
+              color: v.standby2,
               isCircle: true,
               center,
               radiusInKm: v.radius / 1000,

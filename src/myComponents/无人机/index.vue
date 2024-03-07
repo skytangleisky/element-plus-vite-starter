@@ -25,7 +25,7 @@
     <div
       :class="`bottom-drawer ${setting.无人机.监控.bottom_disappear ? 'disappear' : ''}`"
     >
-      <div class="handle z-1" @click="setting.无人机.监控.bottom_disappear = false">
+      <div class="handle" @click="setting.无人机.监控.bottom_disappear = false">
         <el-badge :value="12" type="primary"
           ><el-icon v-html="warnSvg"></el-icon
         ></el-badge>
@@ -100,6 +100,7 @@ import { watch, ref, onMounted, onBeforeUnmount, reactive, onActivated } from "v
 import { useBus } from "~/myComponents/bus";
 import { eventbus } from "~/eventbus";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import theme from "./drawTheme/theme.js";
 // var a = turf.sector(turf.point([-75, 40]), 100, 0, 360);
 // console.log(a);
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.scss";
@@ -244,6 +245,7 @@ onMounted(() => {
       combine_features: false,
       uncombine_features: false,
     },
+    styles: theme,
   });
   map.addControl(Draw, "top-right");
   //添加空域
@@ -388,6 +390,14 @@ onMounted(() => {
       type: "FeatureCollection",
       features: [],
     };
+    let b = {
+      type: "FeatureCollection",
+      features: [],
+    };
+    let c = {
+      type: "FeatureCollection",
+      features: [],
+    };
     console.log(res.data.results);
     enclosureList = res.data.results;
     for (let i = 0; i < res.data.results.length; i++) {
@@ -399,10 +409,14 @@ onMounted(() => {
         Number(item.match(RegExp(/(\-|\+)?\d+(\.\d+)?(?=,)/))[0]),
         Number(item.match(RegExp(/(?<=,)(\-|\+)?\d+(\.\d+)?/))[0]),
       ]);
+      let color = v.standby2;
       if (v.enclosure_type == "06") {
         a.features.push({
           id: v.id,
           type: "Feature",
+          properties: {
+            color,
+          },
           geometry: {
             type: "Point",
             coordinates: list[0],
@@ -412,6 +426,9 @@ onMounted(() => {
         a.features.push({
           id: v.id,
           type: "Feature",
+          properties: {
+            color,
+          },
           geometry: {
             type: "LineString",
             coordinates: list,
@@ -422,6 +439,9 @@ onMounted(() => {
           a.features.push({
             id: v.id,
             type: "Feature",
+            properties: {
+              color,
+            },
             geometry: {
               type: "Polygon",
               coordinates: [list],
@@ -440,6 +460,7 @@ onMounted(() => {
             id: v.id,
             type: "Feature",
             properties: {
+              color,
               isCircle: true,
               center,
               radiusInKm: v.radius / 1000,
