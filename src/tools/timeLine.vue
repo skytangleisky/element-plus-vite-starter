@@ -1,7 +1,7 @@
 <template>
   <div
-    class="timeline h-auto flex flex-row absolute"
-    style="background: #646464; width: 100%; bottom: 0"
+    class="timeline h-auto flex flex-row absolute dark:bg-#646464 bg-#fff"
+    style="width: 100%; bottom: 0"
     tabindex="-1"
   >
     <el-icon
@@ -39,7 +39,7 @@
       </span>
       <canvas
         ref="timeShaft"
-        class="bg-#646464 absolute"
+        class="dark:bg-#646464 bg-#fff absolute"
         style="width: 100%; height: 100%"
       ></canvas>
     </div>
@@ -55,7 +55,7 @@
       style="overflow: hidden; font-size: 2rem; min-width: 2rem"
       v-dompurify-html="status == 'play' ? pauseSvg : playSvg"
     />
-    <span @click="speed" style="color: white">x{{ Math.pow(2, options.times) }}</span>
+    <span @click="speed">x{{ Math.pow(2, options.times) }}</span>
     <!-- <graph
       v-if="DEV"
       :args="graphArgs"
@@ -71,6 +71,7 @@ import nextSvg from "~/assets/next.svg?raw";
 import rightSvg from "~/assets/right.svg?raw";
 import graph from "./graph.vue";
 import { onMounted, onBeforeUnmount, ref, reactive, watch } from "vue";
+import { isDark } from "~/composables";
 const emit = defineEmits(["update:now", "update:status", "update:level"]);
 const DEV = ref(import.meta.env.DEV);
 const props = withDefaults(
@@ -118,6 +119,14 @@ let options = reactive({
   value: props.level,
   targetValue: props.level,
   devicePixelRatio,
+  color: isDark.value ? "white" : "black",
+});
+watch(isDark, (v) => {
+  if (v) {
+    options.color = "white";
+  } else {
+    options.color = "black";
+  }
 });
 const arr = ["milliseconds", "seconds", "minutes", "hours", "day", "month", "year"];
 let left = 0;
@@ -412,7 +421,7 @@ const drawShortLine = (cvs, time) => {
   ctx.moveTo(x, cvs.height - options.short * options.devicePixelRatio);
   ctx.lineTo(x, cvs.height);
   ctx.lineWidth = 2 * options.devicePixelRatio;
-  ctx.strokeStyle = "#fff";
+  ctx.strokeStyle = options.color;
   ctx.stroke();
   ctx.restore();
 };
@@ -424,7 +433,7 @@ const drawMiddleLine = (cvs, time) => {
   ctx.moveTo(x, cvs.height - options.middle * options.devicePixelRatio);
   ctx.lineTo(x, cvs.height);
   ctx.lineWidth = 2 * options.devicePixelRatio;
-  ctx.strokeStyle = "#fff";
+  ctx.strokeStyle = options.color;
   ctx.stroke();
   ctx.restore();
 };
@@ -436,10 +445,10 @@ const drawLongLine = (cvs, time) => {
   ctx.moveTo(x, cvs.height - options.long * options.devicePixelRatio);
   ctx.lineTo(x, cvs.height);
   ctx.lineWidth = 2 * options.devicePixelRatio;
-  ctx.strokeStyle = "#fff";
+  ctx.strokeStyle = options.color;
   ctx.stroke();
   ctx.beginPath();
-  ctx.fillStyle = "white";
+  ctx.fillStyle = options.color;
   ctx.textAlign = "center";
   ctx.textBaseline = "bottom";
   ctx.fillText(
@@ -706,9 +715,8 @@ onBeforeUnmount(() => {
 </script>
 <style lang="scss" scoped>
 .btn {
-  color: white;
   &:active {
-    color: #2b2b2b;
+    color: gray;
   }
 }
 .timeline:focus .currentTime {
@@ -729,17 +737,33 @@ onBeforeUnmount(() => {
     padding: 4px;
     margin: 4px;
     border-radius: 4px;
-    background-color: #646464;
-    color: white;
+    background-color: #fff;
+    color: black;
     /* visibility: hidden; */
     &::before {
       position: absolute;
       content: "";
       border-width: 4px;
       border-style: solid;
-      border-color: #646464 transparent transparent transparent;
+      border-color: #fff transparent transparent transparent;
       left: calc(50% - 4px);
       top: calc(100% - 4px);
+    }
+  }
+}
+.dark {
+  .btn {
+    &:active {
+      color: #2b2b2b;
+    }
+  }
+  .currentTime {
+    div {
+      background-color: #646464;
+      color: white;
+      &::before {
+        border-color: #646464 transparent transparent transparent;
+      }
     }
   }
 }

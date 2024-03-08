@@ -44,7 +44,6 @@ export default function render() {
       type: Constants.geojsonTypes.FEATURE_COLLECTION,
       features: store.sources.cold
     }
-    console.log('==>',tmp)
     store.ctx.map.getSource(Constants.sources.COLD).setData(tmp);
   }
 

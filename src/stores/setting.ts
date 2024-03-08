@@ -29,7 +29,7 @@ export const useSettingStore = defineStore({
         district:true,
         loadmap:true,
         disappear:false,
-        bottom_disappear:false,
+        bottom_disappear:true,
         tile:'卫星地图',
       },
       回放:{
@@ -40,6 +40,7 @@ export const useSettingStore = defineStore({
         ],
         district:true,
         loadmap:true,
+        tile:'街道地图',
       },
       编辑:{
         "zoom": 8.882777980661407,
@@ -49,6 +50,7 @@ export const useSettingStore = defineStore({
         ],
         district:true,
         loadmap:true,
+        tile:'街道地图',
       },
       模拟:{
         "zoom": 8.882777980661407,
@@ -58,6 +60,7 @@ export const useSettingStore = defineStore({
         ],
         district:true,
         loadmap:true,
+        tile:'街道地图',
       }
     },
     projection: 'globe',// mercator|globe
@@ -200,7 +203,7 @@ export const useSettingStore = defineStore({
             name: '961a22a1-f5da-9845-fc89-3519ed950510',
             // component:'/src/myComponents/openlayers/radarStatistic.vue'
             // component:'/src/myComponents/menu/index.vue'
-            component:'/src/myComponents/无人机/index.vue',
+            component:'/src/myComponents/无人机/pages/synthesis.vue',
             replace:true,
             label:'综合监控',
             svg:'66ef0fa1d6cc11ee9aafb025aa2c9ada',
@@ -210,7 +213,7 @@ export const useSettingStore = defineStore({
             name: '961a22a1-f5da-9845-fc89-3519ed950610',
             // component:'/src/myComponents/openlayers/radarStatistic.vue'
             // component:'/src/myComponents/menu/index.vue'
-            component:'/src/myComponents/无人机/playback.vue',
+            component:'/src/myComponents/无人机/pages/playback.vue',
             replace:true,
             label:'历史回放',
             svg:'42a4578ed6cd11ee9aafb025aa2c9ada',
@@ -256,14 +259,14 @@ export const useSettingStore = defineStore({
               {
                 path: 'simulate',
                 name: 'c4961e04-e574-0e1f-ae23-94f157b15b45',
-                component:'/src/myComponents/无人机/simulate.vue',
+                component:'/src/myComponents/无人机/pages/simulate.vue',
                 label: '设备布防模拟',
                 svg:'8bdc8331d6c911ee9aafb025aa2c9ada'
               },
               {
                 path: 'airspace',
                 name: 'c4961e04-e574-0e1f-ae23-94f157b15c45',
-                component: '/src/myComponents/无人机/edit.vue',
+                component: '/src/myComponents/无人机/pages/edit.vue',
                 label: '禁飞区管理',
                 svg:'fb9ca5f8d6c811ee9aafb025aa2c9ada'
               },

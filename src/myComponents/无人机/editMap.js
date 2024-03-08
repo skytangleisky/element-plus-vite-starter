@@ -1,6 +1,6 @@
 import city from './鹰潭市.json?url'
-// import url from "./satellite.json?url"
-import data from "./satellite.js"
+// import url from "./street.json?url"
+import data from "./street.js"
 let url = URL.createObjectURL(new File([JSON.stringify(data)],"satellite.json",{type:"application/json"}))
 import { useSettingStore } from '~/stores/setting';
 const setting = useSettingStore()
@@ -239,38 +239,38 @@ export default {
 	"zoom": 12.711177223232953,
 	"bearing": 0,
 	"pitch": 0,
-	"fog": {
-			"range": [2, 20],
-			"color": "hsl(0, 0%, 100%)",
-			"high-color": "hsl(210, 100%, 80%)",
-			"space-color": [
-					"interpolate",
-					["exponential", 1.2],
-					["zoom"],
-					5,
-					"hsl(210, 40%, 30%)",
-					7,
-					"hsl(210, 100%, 80%)"
-			],
-			"horizon-blend": [
-					"interpolate",
-					["exponential", 1.2],
-					["zoom"],
-					5,
-					0.02,
-					7,
-					0.08
-			],
-			"star-intensity": [
-					"interpolate",
-					["exponential", 1.2],
-					["zoom"],
-					5,
-					0.1,
-					7,
-					0
-			]
-	},
+	// "fog": {
+	// 		"range": [2, 20],
+	// 		"color": "hsl(0, 0%, 100%)",
+	// 		"high-color": "hsl(210, 100%, 80%)",
+	// 		"space-color": [
+	// 				"interpolate",
+	// 				["exponential", 1.2],
+	// 				["zoom"],
+	// 				5,
+	// 				"hsl(210, 40%, 30%)",
+	// 				7,
+	// 				"hsl(210, 100%, 80%)"
+	// 		],
+	// 		"horizon-blend": [
+	// 				"interpolate",
+	// 				["exponential", 1.2],
+	// 				["zoom"],
+	// 				5,
+	// 				0.02,
+	// 				7,
+	// 				0.08
+	// 		],
+	// 		"star-intensity": [
+	// 				"interpolate",
+	// 				["exponential", 1.2],
+	// 				["zoom"],
+	// 				5,
+	// 				0.1,
+	// 				7,
+	// 				0
+	// 		]
+	// },
 	"sources": {
 		"district":{
 			"type":"geojson",
@@ -296,26 +296,26 @@ export default {
 	"glyphs": window.location.origin+"/resources/glyphs/{fontstack}/{range}.pbf",
 	"projection": {"name": "mercator"},//albers, equalEarth, equirectangular, lambertConformalConic, mercator, naturalEarth, winkelTripel, globe
 	"layers": [
-			{
-					"id": "land",
-					"type": "background",
-					"metadata": {
-							"mapbox:featureComponent": "land-and-water",
-							"mapbox:group": "Land & water, land"
-					},
-					"layout": {},
-					"paint": {
-							"background-color": [
-									"interpolate",
-									["linear"],
-									["zoom"],
-									9,
-									"#2b2b2b",
-									11,
-									"#2b2b2b"
-							]
-					}
-			},
+			// {
+			// 		"id": "land",
+			// 		"type": "background",
+			// 		"metadata": {
+			// 				"mapbox:featureComponent": "land-and-water",
+			// 				"mapbox:group": "Land & water, land"
+			// 		},
+			// 		"layout": {},
+			// 		"paint": {
+			// 				"background-color": [
+			// 						"interpolate",
+			// 						["linear"],
+			// 						["zoom"],
+			// 						9,
+			// 						"#2b2b2b",
+			// 						11,
+			// 						"#2b2b2b"
+			// 				]
+			// 		}
+			// },
 			{
 				"id": "simple-tiles",
 				"type": "raster",
@@ -323,7 +323,7 @@ export default {
 				"minzoom": 0,
 				"maxzoom": 22,
 				layout:{
-					visibility:setting.无人机.回放.loadmap?'visible':'none'
+					visibility:setting.无人机.模拟.loadmap?'visible':'none'
 				}
 			},
 			{
@@ -331,7 +331,7 @@ export default {
 				'type': 'fill',
 				'source': 'district', // reference the data source
 				'layout': {
-					visibility:setting.无人机.回放.district?'visible':'none'
+					visibility:setting.district?'visible':'none'
 				},
 				'paint': {
 					'fill-color': '#000',
@@ -343,10 +343,10 @@ export default {
 				'type': 'line',
 				'source': 'district',
 				'layout': {
-					'visibility':setting.无人机.回放.district?'visible':'none'
+					'visibility':setting.district?'visible':'none'
 				},
 				'paint': {
-					'line-color': 'grey',
+					'line-color': 'lightgrey',
 					'line-width': 1
 				}
 			},

@@ -2,10 +2,8 @@
   <div style="width: 100%; height: 100%; overflow: hidden; position: absolute">
     <div
       ref="mapRef"
-      class="map"
       style="
         position: absolute;
-        backdrop-filter: blur(25px);
         left: 0;
         top: 0;
         width: 100%;
@@ -14,147 +12,126 @@
         outline: none;
       "
     ></div>
-    <div
-      class="absolute left-10px top-10px b-solid b-1px dark:b-gray-5 b-gray dark:bg-#2b2b2b bg-white dark:color-white color-black w-150px h-80px flex flex-col justify-between p-10px"
-      style="border-radius: 8px; font-size: 16px"
+    <el-select
+      class="select"
+      style="position: absolute; width: 100px; left: 200px; top: 10px"
+      size="small"
+      v-model="color"
+      placeholder="请选择颜色"
     >
-      <span>反制设备 10台</span>
-      <span>合作无人机 0架</span>
-      <span>黑飞无人机 0架</span>
-    </div>
-    <div
-      :class="`bottom-drawer ${setting.无人机.监控.bottom_disappear ? 'disappear' : ''}`"
-    >
-      <div class="handle" @click="setting.无人机.监控.bottom_disappear = false">
-        <el-badge :value="12" type="primary"
-          ><el-icon v-html="warnSvg"></el-icon
-        ></el-badge>
-        <el-badge :value="12" type="success"
-          ><el-icon v-html="uavSvg"></el-icon
-        ></el-badge>
-        <el-badge :value="12" type="warning"
-          ><el-icon v-html="deviceSvg"></el-icon
-        ></el-badge>
-        <el-badge type="danger" :value="12"
-          ><el-icon v-html="recordSvg"></el-icon
-        ></el-badge>
-        <el-badge type="info" :value="12"
-          ><el-icon v-html="whitelistSvg"></el-icon
-        ></el-badge>
-        <el-badge :value="0" :show-zero="false"
-          ><el-icon v-html="statisticSvg"></el-icon
-        ></el-badge>
-      </div>
-      <el-icon
-        class="cursor-pointer z-1"
-        style="position: absolute; top: 0; right: 0; font-size: 1.5rem"
-        v-html="forkSvg"
-        @click.stop="setting.无人机.监控.bottom_disappear = true"
-      ></el-icon>
-      <datatable></datatable>
-    </div>
-    <div :class="`right-drawer ${setting.无人机.监控.disappear ? 'disappear' : ''}`">
-      <div
-        class="handle"
-        @click.native="setting.无人机.监控.disappear = !setting.无人机.监控.disappear"
-      >
-        <el-icon v-html="rightSvg"></el-icon>
-      </div>
-      <selectTile v-model:list="tileList"></selectTile>
-      <span style="font-size: 20px; margin-top: 20px">图层设置</span>
-      <div style="padding-left: 4px">
-        <div class="flex items-center">
-          <el-checkbox label="反制设备图层"></el-checkbox>
-        </div>
-        <div class="flex items-center">
-          <el-checkbox label="探测目标图层"></el-checkbox>
-        </div>
-        <div class="flex items-center">
-          <el-checkbox label="禁飞区图层"></el-checkbox>
-        </div>
-        <div class="flex items-center">
-          <el-checkbox label="备案空域图层"></el-checkbox>
-        </div>
-      </div>
-    </div>
-    <!-- <graph
-      v-if="DEV"
-      class="absolute left-0 bottom-30px"
-      v-model:args="graphArgs"
-    ></graph> -->
+      <el-option
+        v-for="(v, k) in options"
+        :label="v.label"
+        :value="v.value"
+        :key="k"
+      ></el-option>
+    </el-select>
   </div>
 </template>
-<script setup>
-import forkSvg from "~/assets/fork.svg?raw";
-import rightSvg from "~/assets/right.svg?raw";
-import warnSvg from "~/assets/warn.svg?raw";
-import uavSvg from "~/assets/uav.svg?raw";
-import deviceSvg from "~/assets/device.svg?raw";
-import recordSvg from "~/assets/record.svg?raw";
-import whitelistSvg from "~/assets/whitelist.svg?raw";
-import statisticSvg from "~/assets/statistic.svg?raw";
-import selectTile from "./selectTile.vue";
-import { addFeatherImages, getFeather } from "~/tools";
-import { getLngLat } from "~/myComponents/map/js/core.js";
-import { watch, ref, onMounted, onBeforeUnmount, reactive, onActivated } from "vue";
+<script setup lang="ts">
+import { watch, ref, onMounted, onBeforeUnmount, onActivated, defineEmits } from "vue";
+const color = ref("red");
+const options = ref([
+  { label: "红色", value: "red" },
+  { label: "绿色", value: "green" },
+  { label: "蓝色", value: "blue" },
+]);
 import { useBus } from "~/myComponents/bus";
 import { eventbus } from "~/eventbus";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
-import theme from "./drawTheme/theme.js";
-// var a = turf.sector(turf.point([-75, 40]), 100, 0, 360);
-// console.log(a);
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.scss";
 import { 获取净空区, saveData, deleteData } from "~/api/无人机/api";
 const bus = useBus();
-import { useStationStore } from "~/stores/station";
-import { useRoute } from "vue-router";
-const route = useRoute();
-import { useSettingStore } from "~/stores/setting";
-const setting = useSettingStore();
-import style1 from "./index.js";
-import style2 from "./index2.js";
-import url2 from "~/assets/street.png?url";
-import url1 from "~/assets/satellite.png?url";
-import datatable from "~/myComponents/datatable/index.vue";
-let enclosureList = [];
-console.log("route.query", route.query);
-const station = useStationStore();
-const tileList = ref([
-  { style: style2, name: "街道地图", url: url2 },
-  { style: style1, name: "卫星地图", url: url1 },
-]);
-let style = {};
-tileList.value.map((item, k) => {
-  if (item.name == setting.无人机.监控.tile) {
-    item.selected = true;
-    style = item.style;
+import theme from "./drawTheme/inactive.js";
+const props = withDefaults(
+  defineProps<{
+    loadmap?: boolean;
+    district?: boolean;
+    tile?: string;
+    center?: object;
+    zoom?: number;
+  }>(),
+  {
+    loadmap: true,
+    district: true,
+    tile: "街道地图",
+    center: [0, 0],
+    zoom: 4,
+  }
+);
+import style from "./editMap.js";
+style.layers.map((v: any) => {
+  if (v.id == "simple-tiles") {
+    v.layout.visibility = props.loadmap ? "visible" : "none";
+  } else if (v.id == "districtLayer" || v.id == "districtOutline") {
+    v.layout.visibility = props.district ? "visible" : "none";
   }
 });
-
-watch(
-  tileList,
-  (list) => {
-    list.map((item) => {
-      if (item.selected) {
-        map.setStyle(item.style);
-        setting.无人机.监控.tile = item.name;
-      }
-    });
-  },
-  { deep: true }
+import street from "./street.js";
+let streetUrl = URL.createObjectURL(
+  new File([JSON.stringify(street)], "street.json", { type: "application/json" })
 );
+import satellite from "./satellite.js";
+let satelliteUrl = URL.createObjectURL(
+  new File([JSON.stringify(satellite)], "satellite.json", { type: "application/json" })
+);
+const emit = defineEmits(["update:center", "update:zoom"]);
+let map: any;
+watch(
+  () => props.tile,
+  (v) => {
+    if (v == "街道地图") {
+      style.sources["raster-tiles"].url = streetUrl;
+    } else if (v == "卫星地图") {
+      style.sources["raster-tiles"].url = satelliteUrl;
+    }
+    map && map.setStyle(style);
+  },
+  {
+    immediate: true,
+  }
+);
+watch(
+  () => props.district,
+  (newVal) => {
+    if (newVal) {
+      map.setLayoutProperty("districtLayer", "visibility", "visible");
+      map.setLayoutProperty("districtOutline", "visibility", "visible");
+    } else {
+      map.setLayoutProperty("districtLayer", "visibility", "none");
+      map.setLayoutProperty("districtOutline", "visibility", "none");
+    }
+  }
+);
+watch(
+  () => props.loadmap,
+  (newVal) => {
+    if (newVal) {
+      map.setLayoutProperty("simple-tiles", "visibility", "visible");
+    } else {
+      map.setLayoutProperty("simple-tiles", "visibility", "none");
+    }
+  }
+);
+watch([() => props.zoom, () => props.center], ([zoom, center]) => {
+  //无法通过监听变量的变化实时设置地图的视角
+});
+import { useStationStore } from "~/stores/station";
+import { useSettingStore } from "~/stores/setting";
+const setting = useSettingStore();
+let enclosureList = new Array<any>();
+const station = useStationStore();
 const mapRef = ref(null);
-let timer, map;
-let mock;
-const clickFunc = (e) => {
+const clickFunc = (e: any) => {
   if (e.features) {
+    setting.disappear = false;
     for (let i = 0; i < bus.result.length; i++) {
       if (bus.result[i].radar.radar_id == e.features[0].properties.radar_id) {
         station
           .查询雷达最新的径向风数据接口({
             radar_id: e.features[0].properties.radar_id.replaceAll("-", ""),
           })
-          .then((res) => {
+          .then((res: any) => {
             bus.radialWindData = res.data.data;
           });
         station.active = bus.result[i].radar.radar_id;
@@ -168,13 +145,12 @@ const clickFunc = (e) => {
   }
 };
 const zoomFunc = () => {
-  setting.无人机.监控.zoom = map.getZoom();
+  emit("update:zoom", map.getZoom());
 };
 const moveFunc = () => {
-  let center = map.getCenter();
-  setting.无人机.监控.center = [center.lng, center.lat];
+  emit("update:center", map.getCenter());
 };
-const flyTo = (item) => {
+const flyTo = (item: any) => {
   try {
     map.flyTo({
       center: [item.longitude, item.latitude], // 新的中心点 [经度, 纬度]
@@ -220,8 +196,8 @@ onMounted(() => {
     // zoom: 18,
     // center: [148.9819, -35.3981],
     // pitch: 60,
-    zoom: setting.无人机.监控.zoom,
-    center: setting.无人机.监控.center,
+    zoom: props.zoom,
+    center: props.center,
     pitch: 0,
   });
   map.addControl(
@@ -235,13 +211,13 @@ onMounted(() => {
   var Draw = new MapboxDraw({
     userProperties: true,
     displayControlsDefault: true,
-    defaultMode: "static_select",
+    defaultMode: "simple_select",
     controls: {
-      point: false,
-      circle: false,
-      line_string: false,
-      polygon: false,
-      trash: false,
+      point: true,
+      circle: true,
+      line_string: true,
+      polygon: true,
+      trash: true,
       combine_features: false,
       uncombine_features: false,
     },
@@ -249,11 +225,19 @@ onMounted(() => {
   });
   map.addControl(Draw, "top-right");
   //添加空域
-  map.on("draw.create", function (e) {
-    let data = [];
-    e.features.map((item) => {
+  map.on("draw.create", function (e: any) {
+    let a = {
+      type: "FeatureCollection",
+      features: new Array<any>(),
+    };
+    let standby2 = color.value;
+    let data = new Array<any>();
+    e.features.map((item: any) => {
+      item.properties.color = standby2;
+      a.features.push(item);
       if (item.geometry.type === "Point") {
         data.push({
+          standby2,
           id: item.id,
           enclosure_type: "06",
           line_width: 0,
@@ -262,31 +246,37 @@ onMounted(() => {
       } else if (item.geometry.type === "LineString") {
         console.log(item);
         data.push({
+          standby2,
           id: item.id,
           enclosure_type: "00",
           line_width: 0,
-          points: item.geometry.coordinates.map((v) => v.join(",")).join(";") + ";",
+          points: item.geometry.coordinates.map((v: any) => v.join(",")).join(";") + ";",
         });
       } else if (item.geometry.type === "Polygon") {
         if (item.properties.isCircle) {
           data.push({
+            standby2,
             id: item.id,
             enclosure_type: "03",
             line_width: 0,
             circle_center: item.properties.center.join(",") + ";",
             radius: item.properties.radiusInKm * 1000,
-            points: item.geometry.coordinates[0].map((v) => v.join(",")).join(";") + ";",
+            points:
+              item.geometry.coordinates[0].map((v: any) => v.join(",")).join(";") + ";",
           });
         } else {
           data.push({
+            standby2,
             id: item.id,
             enclosure_type: "02",
             line_width: 0,
-            points: item.geometry.coordinates[0].map((v) => v.join(",")).join(";") + ";",
+            points:
+              item.geometry.coordinates[0].map((v: any) => v.join(",")).join(";") + ";",
           });
         }
       }
     });
+    Draw.add(a as never);
     saveData(data)
       .then((res) => {
         console.log(res);
@@ -299,9 +289,9 @@ onMounted(() => {
       });
   });
   //删除空域
-  map.on("draw.delete", function (e) {
-    let data = [];
-    e.features.map((v) => {
+  map.on("draw.delete", function (e: any) {
+    let data = new Array<any>();
+    e.features.map((v: any) => {
       data.push({ id: v.id });
     });
     if (data.length > 0) {
@@ -322,9 +312,9 @@ onMounted(() => {
     }
   });
   //修改空域
-  map.on("draw.update", function (e) {
-    let data = [];
-    e.features.map((item) => {
+  map.on("draw.update", function (e: any) {
+    let data = new Array<any>();
+    e.features.map((item: any) => {
       let tmp = enclosureList.filter((v) => v.id === item.id);
       if (tmp.length === 1) {
         console.log(tmp[0]);
@@ -340,7 +330,8 @@ onMounted(() => {
           data.push(
             Object.assign(tmp[0], {
               id: item.id,
-              points: item.geometry.coordinates.map((v) => v.join(",")).join(";") + ";",
+              points:
+                item.geometry.coordinates.map((v: any) => v.join(",")).join(";") + ";",
             })
           );
         } else {
@@ -351,7 +342,8 @@ onMounted(() => {
                 circle_center: item.properties.center.join(",") + ";",
                 radius: item.properties.radiusInKm * 1000,
                 points:
-                  item.geometry.coordinates[0].map((v) => v.join(",")).join(";") + ";",
+                  item.geometry.coordinates[0].map((v: any) => v.join(",")).join(";") +
+                  ";",
               })
             );
           } else {
@@ -359,7 +351,8 @@ onMounted(() => {
               Object.assign(tmp[0], {
                 id: item.id,
                 points:
-                  item.geometry.coordinates[0].map((v) => v.join(",")).join(";") + ";",
+                  item.geometry.coordinates[0].map((v: any) => v.join(",")).join(";") +
+                  ";",
               })
             );
           }
@@ -376,25 +369,17 @@ onMounted(() => {
         console.log(e);
       });
   });
-  map.on("draw.selectionchange", function (e) {
+  map.on("draw.selectionchange", function (e: any) {
     console.log(e);
   });
-  map.on("draw.combine", function (e) {
+  map.on("draw.combine", function (e: any) {
     console.log(e);
   });
-  map.on("draw.uncombine", function (e) {
+  map.on("draw.uncombine", function (e: any) {
     console.log(e);
   });
   获取净空区().then((res) => {
     let a = {
-      type: "FeatureCollection",
-      features: [],
-    };
-    let b = {
-      type: "FeatureCollection",
-      features: [],
-    };
-    let c = {
       type: "FeatureCollection",
       features: [],
     };
@@ -405,48 +390,47 @@ onMounted(() => {
       let strLngLatList = v.points.match(
         RegExp(/(\-|\+)?\d+(\.\d+)?,(\-|\+)?\d+(\.\d+)?/g)
       );
-      let list = strLngLatList.map((item) => [
+      let list = strLngLatList.map((item: any) => [
         Number(item.match(RegExp(/(\-|\+)?\d+(\.\d+)?(?=,)/))[0]),
         Number(item.match(RegExp(/(?<=,)(\-|\+)?\d+(\.\d+)?/))[0]),
       ]);
-      let color = v.standby2;
       if (v.enclosure_type == "06") {
         a.features.push({
           id: v.id,
           type: "Feature",
           properties: {
-            color,
+            color: v.standby2,
           },
           geometry: {
             type: "Point",
             coordinates: list[0],
           },
-        });
+        } as never);
       } else if (v.enclosure_type == "00") {
         a.features.push({
           id: v.id,
           type: "Feature",
           properties: {
-            color,
+            color: v.standby2,
           },
           geometry: {
             type: "LineString",
             coordinates: list,
           },
-        });
+        } as never);
       } else if (v.enclosure_type == "02") {
         if (list.length > 2) {
           a.features.push({
             id: v.id,
             type: "Feature",
             properties: {
-              color,
+              color: v.standby2,
             },
             geometry: {
               type: "Polygon",
               coordinates: [list],
             },
-          });
+          } as never);
         } else {
           console.error("v.enclosure_type == 02," + "list.length=" + list.length);
         }
@@ -455,71 +439,42 @@ onMounted(() => {
           let center = v.circle_center
             .match(RegExp(/(\-|\+)?\d+(\.\d+)?,(\-|\+)?\d+(\.\d+)?/g))[0]
             .split(",")
-            .map((v) => Number(v));
+            .map((v: any) => Number(v));
           a.features.push({
             id: v.id,
             type: "Feature",
             properties: {
-              color,
               isCircle: true,
               center,
               radiusInKm: v.radius / 1000,
+              color: v.standby2,
             },
             geometry: {
               type: "Polygon",
               coordinates: [list],
             },
-          });
+          } as never);
         } else {
           console.error("v.circle_center=" + v.circle_center);
         }
       }
     }
-    Draw.add(a);
-    // {
-    //   type: "FeatureCollection",
-    //   features: [
-    //     {
-    //       type: "Feature",
-    //       //"id": "the most unique id in the world",
-    //       properties: {
-    //         class_id: 1,
-    //       },
-    //       geometry: {
-    //         type: "Polygon",
-    //         coordinates: [
-    //           [
-    //             [0, 0],
-    //             [100, 0],
-    //             [100, 60],
-    //             [0, 60],
-    //             [0, 0],
-    //           ],
-    //         ],
-    //       },
-    //     },
-    //   ],
-    // }
+    Draw.add(a as never);
   });
 
   map.repaint = false;
-  addFeatherImages(map);
   map.on("zoom", zoomFunc);
   map.on("move", moveFunc);
-  map.on("click", "stationLayer", clickFunc);
   eventbus.on("将站点移动到屏幕中心", flyTo);
 });
 onBeforeUnmount(() => {
   eventbus.off("将站点移动到屏幕中心", flyTo);
-  clearInterval(timer);
-  clearInterval(mock);
   map.off("zoom", zoomFunc);
   map.off("move", moveFunc);
-  map.off("click", "stationLayer", clickFunc);
   map.remove();
 });
 watch(
-  () => setting.district,
+  () => props.district,
   (newVal) => {
     if (newVal) {
       map.setLayoutProperty("districtLayer", "visibility", "visible");
@@ -531,7 +486,7 @@ watch(
   }
 );
 watch(
-  () => setting.loadmap,
+  () => props.loadmap,
   (newVal) => {
     if (newVal) {
       map.setLayoutProperty("simple-tiles", "visibility", "visible");
@@ -541,99 +496,50 @@ watch(
   }
 );
 </script>
-<style scoped lang="scss">
-$time: 1s;
-.bottom-drawer {
-  position: absolute;
-  height: 240px;
-  background-color: #fff;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  box-sizing: border-box;
-  border-top: 1px solid #ddd;
-  transition: transform $time;
-  & > .handle {
-    position: absolute;
-    transform: translateY(-100%);
-    .ep-badge {
-      margin: 0 20px;
-      .ep-icon {
-        cursor: pointer;
-        filter: drop-shadow(0 0 8px #000);
-        font-size: 2rem;
-        color: #fff;
-      }
-    }
-  }
-  &.disappear {
-    transform: translateY(100%);
-  }
+<style lang="scss">
+.mapboxgl-ctrl-bottom-left {
+  bottom: 10px !important;
+  left: auto !important;
+  right: 10px !important;
 }
-.dark .bottom-drawer {
-  border-top: 1px solid gray;
+.dark .select .ep-select__wrapper {
   background-color: #2b2b2b;
-  & > .handle {
-    .ep-badge {
-      .ep-icon {
-        color: #2b2b2b;
-        filter: drop-shadow(0 0 8px #fff);
-      }
-    }
-  }
 }
+</style>
+<style scoped lang="scss">
 .right-drawer {
-  z-index: 2;
+  z-index: 1;
   position: absolute;
   right: 0;
-  width: 240px;
+  width: 600px;
   box-sizing: border-box;
   height: 100%;
   background-color: white;
   display: flex;
   flex-direction: column;
-  transition: transform $time;
-  border-left: 1px solid #ddd;
-  box-sizing: border-box;
-  & > .handle {
-    display: flex;
-    justify-content: start;
-    align-items: center;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    border-top-left-radius: 8px;
-    border-bottom-left-radius: 8px;
-    overflow: hidden;
+  transition: all 250ms;
+  & > div > div {
+    padding: 20px 10px;
     box-sizing: border-box;
-    left: -16px;
-    background-color: #fff;
-    width: 16px;
-    height: 30px;
-    border: 1px solid #ddd;
-    border-right: none;
-    & > .ep-icon {
-      transition: transform $time;
-      color: #bbb;
-    }
   }
-  &.disappear {
-    transform: translateX(calc(100%));
-    & > .handle > .ep-icon {
-      transform: rotateY(180deg);
-    }
+  & > div > div:nth-child(odd) {
+    background: #eee;
   }
 }
 .dark .right-drawer {
-  background-color: #2b2b2b;
-  border-left: 1px solid gray;
-  & > .handle {
-    background-color: #2b2b2b;
-    border: 1px solid grey;
-    border-right: none;
-    & > .ep-icon {
-      color: #ddd;
-    }
+  background-color: black;
+  & > div > div:nth-child(odd) {
+    background: #304156;
   }
+  & > div > div:nth-child(even) {
+    background: #252948;
+  }
+}
+.disappear.right-drawer {
+  transform: translateX(calc(100% + 28px));
+  transition: all 250ms;
+}
+.mapboxgl-canvas:focus-visible {
+  outline: none;
 }
 </style>
