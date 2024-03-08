@@ -55,19 +55,21 @@ DirectModeOverride.toDisplayFeatures = function (state, geojson, push) {
   if (state.featureId === geojson.properties.id) {
     geojson.properties.active = Constants.activeStates.ACTIVE;
     push(geojson);
-    const supplementaryPoints = geojson.properties.user_isCircle ? createSupplementaryPointsForCircle(geojson)
-      : createSupplementaryPoints(geojson, {
-        map: this.map,
-        midpoints: true,
-        selectedPaths: state.selectedCoordPaths
-      });
-    supplementaryPoints.forEach(push);
+    const supplementaryPoints = geojson.properties.user_isCircle ? createSupplementaryPointsForCircle(geojson, {
+      map: this.map,
+      midpoints: true,
+      selectedPaths: state.selectedCoordPaths
+    }):createSupplementaryPoints(geojson, {
+      map: this.map,
+      midpoints: true,
+      selectedPaths: state.selectedCoordPaths
+    })
+    supplementaryPoints.forEach(push)
   } else {
     geojson.properties.active = Constants.activeStates.INACTIVE;
     push(geojson);
   }
   this.fireActionable(state);
-
 }
 
 export default DirectModeOverride
