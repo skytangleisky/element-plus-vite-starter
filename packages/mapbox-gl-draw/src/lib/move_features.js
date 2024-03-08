@@ -5,6 +5,7 @@ export default function(features, delta) {
   const constrainedDelta = constrainFeatureMovement(features.map(feature => feature.toGeoJSON()), delta);
 
   features.forEach((feature) => {
+    console.log('移动图形=>>>',feature)
     const currentCoordinates = feature.getCoordinates();
 
     const moveCoordinate = (coord) => {

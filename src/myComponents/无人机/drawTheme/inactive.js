@@ -1,111 +1,6 @@
 let red = 'rgba(217,0,27,0.24)'
 let green = 'rgba(149,242,2,0.24)'
 let blue = 'rgba(2,167,240,0.3)'
-const inactive = [
-  {
-    'id': 'gl-draw-polygon-fill-inactive',
-    'type': 'fill',
-    'filter': ['all',
-      ['==', 'active', 'false'],
-      ['==', '$type', 'Polygon'],
-      ['!=', 'mode', 'static_select']
-    ],
-    'paint': {
-      'fill-color': '#3bb2d0',
-      'fill-outline-color': '#3bb2d0',
-      'fill-opacity': 0.1
-    }
-  },
-  {
-    'id': 'gl-draw-polygon-stroke-inactive',
-    'type': 'line',
-    'filter': ['all',
-      ['==', 'active', 'false'],
-      ['==', '$type', 'Polygon'],
-      ['!=', 'mode', 'static_select']
-    ],
-    'layout': {
-      'line-cap': 'round',
-      'line-join': 'round'
-    },
-    'paint': {
-      'line-color': '#3bb2d0',
-      'line-width': 2
-    }
-  },
-  {
-    'id': 'gl-draw-line-inactive',
-    'type': 'line',
-    'filter': ['all',
-      ['==', 'active', 'false'],
-      ['==', '$type', 'LineString'],
-      ['!=', 'mode', 'static_select']
-    ],
-    'layout': {
-      'line-cap': 'round',
-      'line-join': 'round'
-    },
-    'paint': {
-      'line-color': '#3bb2d0',
-      'line-width': 2
-    }
-  },
-  {
-    'id': 'gl-draw-polygon-and-line-vertex-stroke-inactive',
-    'type': 'circle',
-    'filter': ['all',
-      ['==', 'meta', 'vertex'],
-      ['==', '$type', 'Point'],
-      ['!=', 'mode', 'static_select']
-    ],
-    'paint': {
-      'circle-radius': 5,
-      'circle-color': '#fff'
-    }
-  },
-  {
-    'id': 'gl-draw-polygon-and-line-vertex-inactive',
-    'type': 'circle',
-    'filter': ['all',
-      ['==', 'meta', 'vertex'],
-      ['==', '$type', 'Point'],
-      ['!=', 'mode', 'static_select']
-    ],
-    'paint': {
-      'circle-radius': 3,
-      'circle-color': '#fbb03b'
-    }
-  },
-  {
-    'id': 'gl-draw-point-point-stroke-inactive',
-    'type': 'circle',
-    'filter': ['all',
-      ['==', 'active', 'false'],
-      ['==', '$type', 'Point'],
-      ['==', 'meta', 'feature'],
-      ['!=', 'mode', 'static_select']
-    ],
-    'paint': {
-      'circle-radius': 5,
-      'circle-opacity': 1,
-      'circle-color': '#fff'
-    }
-  },
-  {
-    'id': 'gl-draw-point-inactive',
-    'type': 'circle',
-    'filter': ['all',
-      ['==', 'active', 'false'],
-      ['==', '$type', 'Point'],
-      ['==', 'meta', 'feature'],
-      ['!=', 'mode', 'static_select']
-    ],
-    'paint': {
-      'circle-radius': 3,
-      'circle-color': '#3bb2d0',
-    }
-  },
-]
 function getInactive(key,color){
   return [{
     'id': 'gl-draw-polygon-fill-inactive_'+key,
@@ -265,7 +160,7 @@ const active = [
       ['!=', 'meta', 'midpoint']
     ],
     'paint': {
-      'circle-radius': 5,
+      'circle-radius': 7,
       'circle-color': '#fff'
     }
   },
@@ -277,7 +172,7 @@ const active = [
       ['!=', 'meta', 'midpoint'],
       ['==', 'active', 'true']],
     'paint': {
-      'circle-radius': 3,
+      'circle-radius': 5,
       'circle-color': '#fbb03b'
     }
   },

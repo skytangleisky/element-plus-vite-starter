@@ -97,7 +97,7 @@
   </div>
 </template>
 <script setup>
-import { getLngLat } from "~/myComponents/map/js/core.js";
+import { destinationPoint } from "~/myComponents/map/js/core.js";
 import FullScreen from "ol/control/FullScreen";
 import Graticule from "ol/layer/Graticule.js";
 const graticule = new Graticule({
@@ -648,7 +648,12 @@ onMounted(() => {
                 tmp2.forEach((tmp3) => {
                   for (let k in tmp3) {
                     let item = tmp3[k];
-                    let ll = getLngLat(lngLat[0], lngLat[1], item.north_a, Number(k));
+                    let ll = destinationPoint(
+                      lngLat[0],
+                      lngLat[1],
+                      item.north_a,
+                      Number(k)
+                    );
                     lngLat = [ll.lng, ll.lat];
                     source.addFeature(
                       new Feature({

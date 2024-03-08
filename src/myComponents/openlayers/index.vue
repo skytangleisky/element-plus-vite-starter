@@ -114,7 +114,7 @@
 </template>
 <script setup>
 import { addFeatherImages, getFeather } from "~/tools";
-import { getLngLat } from "~/myComponents/map/js/core.js";
+import { destinationPoint } from "~/myComponents/map/js/core.js";
 import { watch, ref, onMounted, onBeforeUnmount, reactive, onActivated } from "vue";
 import { useBus } from "~/myComponents/bus";
 import Dialog from "../dialog.vue";
@@ -144,7 +144,7 @@ const change = (it) => {
   //     tmp2.forEach((tmp3) => {
   //       for (let k in tmp3) {
   //         let item = tmp3[k];
-  //         let ll = getLngLat(it.lngLat[0], it.lngLat[1], item.north_a, Number(k));
+  //         let ll = destinationPoint(it.lngLat[0], it.lngLat[1], item.north_a, Number(k));
   //         // item.center_h_direction_abs = Math.random() * 360;
   //         // item.center_h_speed = Math.random() * 60;
   //         if (item.center_h_direction_abs != -1000 && item.center_h_speed != -1000) {
@@ -656,7 +656,7 @@ watch(
                   const lngLat = points.data.features[i].geometry.coordinates;
 
                   data_list.map((item) => {
-                    let ll = getLngLat(
+                    let ll = destinationPoint(
                       lngLat[0],
                       lngLat[1],
                       item.north_a,

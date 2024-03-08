@@ -41,6 +41,7 @@ CircleMode.clickAnywhere = function(state, e) {
     state.currentVertexPosition++;
     const center = [e.lngLat.lng, e.lngLat.lat];
     const circleFeature = circle(center, state.initialRadiusInKm);
+    console.log('1=>>>',circleFeature)
     state.polygon.incomingCoords(circleFeature.geometry.coordinates);
     state.polygon.properties.center = center;
     state.polygon.properties.radiusInKm = state.initialRadiusInKm;

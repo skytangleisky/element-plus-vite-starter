@@ -29,6 +29,7 @@ DirectModeOverride.dragVertex = function(state, e, delta) {
     const movedVertex = [e.lngLat.lng, e.lngLat.lat];
     const radius = distance(turfHelpers.point(center), turfHelpers.point(movedVertex), {units: 'kilometers'});
     const circleFeature = circle(center, radius);
+    console.log('修改圆=>>>',circleFeature)
     state.feature.incomingCoords(circleFeature.geometry.coordinates);
     state.feature.properties.radiusInKm = radius;
   } else {

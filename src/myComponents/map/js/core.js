@@ -54,7 +54,7 @@ export function pixel2XY(x,y,imgX,imgY,imgScale,TileWidth){
   let {lng,lat} = pixel2LngLat(x,y,imgX,imgY,imgScale,TileWidth)
   return lngLat2XY(lng,lat)
 }
-export function getLngLat(lon,lat,deg,distance){
+export function destinationPoint(lon,lat,deg,distance){
   let {x,y} = lngLat2XY(lon,lat)
   return XY2LngLat(x+Math.sin(deg/180*Math.PI)*distance,y+Math.cos(deg/180*Math.PI)*distance)
 }

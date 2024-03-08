@@ -52,7 +52,10 @@ DragCircleMode.onDrag = DragCircleMode.onMouseMove = function (state, e) {
       turfHelpers.point(center),
       turfHelpers.point([e.lngLat.lng, e.lngLat.lat]),
       { units : 'kilometers'});
-    const circleFeature = circle(center, distanceInKm);
+    const circleFeature = circle(center, distanceInKm,{steps: 64});
+    circleFeature.geometry.coordinates[0].unshift(circleFeature.geometry.coordinates[0].pop()) // Move the last point to the front
+    circleFeature.geometry.coordinates[0].push(circleFeature.geometry.coordinates[0]) // Close the path
+    console.log('绘制圆=>>>',circleFeature.geometry.coordinates)
     state.polygon.incomingCoords(circleFeature.geometry.coordinates);
     state.polygon.properties.radiusInKm = distanceInKm;
   }
