@@ -1,7 +1,6 @@
 import createVertex from '../lib/create_vertex';
 
 function createSupplementaryPointsForCircle(geojson,options={}) {
-  console.log(options.selectedPaths)
   const { properties, geometry } = geojson;
 
   if (!properties.user_isCircle) return null;
