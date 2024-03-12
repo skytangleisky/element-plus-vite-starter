@@ -29,7 +29,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { watch, ref, onMounted, onBeforeUnmount, onActivated, defineEmits } from "vue";
+import { watch, ref, onMounted, onBeforeUnmount, onActivated } from "vue";
 const color = ref("red");
 const options = ref([
   { label: "红色", value: "red" },
