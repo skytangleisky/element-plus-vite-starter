@@ -85,13 +85,13 @@ watch(
     } else if (tile == "卫星地图") {
       style.sources["raster-tiles"].url = satelliteUrl;
     }
-    // style.layers.map((v) => {
-    //   if (v.id == "simple-tiles") {
-    //     v.layout.visibility = props.loadmap ? "visible" : "none";
-    //   } else if (v.id == "districtLayer" || v.id == "districtOutline") {
-    //     v.layout.visibility = props.district ? "visible" : "none";
-    //   }
-    // });
+    style.layers.map((v) => {
+      if (v.id == "simple-tiles") {
+        v.layout.visibility = props.loadmap ? "visible" : "none";
+      } else if (v.id == "districtLayer" || v.id == "districtOutline") {
+        v.layout.visibility = props.district ? "visible" : "none";
+      }
+    });
 
     // console.log(style);
 
