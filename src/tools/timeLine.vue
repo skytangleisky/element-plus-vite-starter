@@ -137,9 +137,59 @@ let timeShaft = ref(undefined);
 let leftMouseDown = false;
 let aid: number;
 let observer: ResizeObserver;
-onMounted(() => {
-  let cvs = timeShaft.value;
+const mousewheelFunc = (evt: any) => {
+  let deltaY = evt.wheelDeltaY / 120 / 10;
+  options.targetValue -= deltaY;
   let ctx = cvs.getContext("2d");
+  let text_width = ctx.measureText("yyyy-MM-dd HH:mm:ss.SSS").width;
+  let min = Math.log2(1000 / (text_width + options.gap * devicePixelRatio) / 1.5);
+  let max = Math.log2(
+    (365 * 24 * 60 * 60 * 1000) / (text_width + options.gap * devicePixelRatio) / 1.5
+  );
+  if (options.targetValue > max) {
+    options.targetValue = max;
+  } else if (options.targetValue < min) {
+    options.targetValue = min;
+  }
+  gsap.killTweensOf(options);
+  gsap.to(options, {
+    duration: 1,
+    value: options.targetValue,
+  });
+};
+const mousedownFunc = (evt: any) => {
+  if (evt.which == 1) {
+    pause();
+    leftMouseDown = true;
+  }
+};
+const mouseupFunc = (evt: any) => {
+  if (evt.which == 1) {
+    leftMouseDown = false;
+  }
+};
+const mousemoveFunc = (evt: any) => {
+  if (leftMouseDown) {
+    options.targetNow -= evt.movementX * Math.pow(2, options.value);
+    gsap.killTweensOf(options);
+    gsap.to(options, {
+      duration: 1,
+      now: options.targetNow,
+      onUpdate: () => {
+        if (options.now > Date.now()) {
+          leftMouseDown = false;
+          gsap.killTweensOf(options);
+          options.targetNow = Date.now();
+          play();
+        }
+      },
+    });
+  }
+};
+let cvs: HTMLCanvasElement;
+onMounted(() => {
+  cvs = (timeShaft.value as unknown) as HTMLCanvasElement;
+  let ctx = cvs.getContext("2d") as CanvasRenderingContext2D;
   ctx.font = `${14 * options.devicePixelRatio}px Menlo,Consolas,Monaco`;
   if (options.value === undefined) {
     let text_width = ctx.measureText("yyyy-MM-dd HH:mm:ss.SSS").width;
@@ -158,54 +208,15 @@ onMounted(() => {
     }
     options.targetValue = options.value;
   }
-  cvs.addEventListener("mousewheel", (evt) => {
-    let deltaY = evt.wheelDeltaY / 120 / 10;
-    options.targetValue -= deltaY;
-    let ctx = cvs.getContext("2d");
-    let text_width = ctx.measureText("yyyy-MM-dd HH:mm:ss.SSS").width;
-    let min = Math.log2(1000 / (text_width + options.gap * devicePixelRatio) / 1.5);
-    let max = Math.log2(
-      (365 * 24 * 60 * 60 * 1000) / (text_width + options.gap * devicePixelRatio) / 1.5
-    );
-    if (options.targetValue > max) {
-      options.targetValue = max;
-    } else if (options.targetValue < min) {
-      options.targetValue = min;
-    }
-    gsap.killTweensOf(options);
-    gsap.to(options, {
-      duration: 1,
-      value: options.targetValue,
-    });
+  cvs.addEventListener("mousewheel", mousewheelFunc, { passive: true });
+  cvs.addEventListener("mousedown", mousedownFunc, {
+    passive: true,
   });
-  cvs.addEventListener("mousedown", (evt) => {
-    if (evt.which == 1) {
-      pause();
-      leftMouseDown = true;
-    }
+  document.addEventListener("mouseup", mouseupFunc, {
+    passive: true,
   });
-  document.addEventListener("mouseup", (evt) => {
-    if (evt.which == 1) {
-      leftMouseDown = false;
-    }
-  });
-  document.addEventListener("mousemove", (evt) => {
-    if (leftMouseDown) {
-      options.targetNow -= evt.movementX * Math.pow(2, options.value);
-      gsap.killTweensOf(options);
-      gsap.to(options, {
-        duration: 1,
-        now: options.targetNow,
-        onUpdate: () => {
-          if (options.now > Date.now()) {
-            leftMouseDown = false;
-            gsap.killTweensOf(options);
-            options.targetNow = Date.now();
-            play();
-          }
-        },
-      });
-    }
+  document.addEventListener("mousemove", mousemoveFunc, {
+    passive: true,
   });
   // for (let i = 0; i < 400; i++) {
   //   let time = options.now + 1000 * i;
@@ -708,6 +719,10 @@ const draw = () => {
   }
 };
 onBeforeUnmount(() => {
+  cvs.removeEventListener("mousewheel", mousewheelFunc);
+  cvs.addEventListener("mousedown", mousedownFunc);
+  document.removeEventListener("mouseup", mouseupFunc);
+  document.removeEventListener("mousemove", mousemoveFunc);
   clearInterval(timer);
   observer.disconnect();
   cancelAnimationFrame(aid);
