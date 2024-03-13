@@ -24,6 +24,6 @@ To learn more about Pinia, check [its documentation](https://pinia.vuejs.org).
 [MIT](http://opensource.org/licenses/MIT)
 pinia@2.1.7
 存在问题
-1.数据丢失响应性。
-2.数据无法还原。
+1.热更新后数据丢失响应性。（已解决）
+2.数据无法还原。（state热更新后，数据不能重置成 新的state中的数据）（已解决）
 base on version@2.1.7

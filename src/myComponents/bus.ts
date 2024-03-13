@@ -64,3 +64,7 @@ const obj = reactive({avgWindData:new Array<Wind>(),secondWindData:new Array<Win
 export const useBus = () => {
   return obj
 }
+const exclude = reactive(new Array<any>());
+export const useExclude = () => {
+  return exclude
+}

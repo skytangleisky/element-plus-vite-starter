@@ -7,6 +7,7 @@ declare module "pinia" {
     extends StoreProperties<Id> {
     //  选择自定义一个方法名，当然，你也可以覆盖$reset方法，这里只是不想破坏原有的东西，仅为示例
     $resetFields(fields?: String): void;
+    $options:DefineStoreOptionsInPlugin<Id, S, G, A>;
   }
 }
 
@@ -22,4 +23,5 @@ export default ({ options, store }: PiniaPluginContext): void => {//热更新后
       }
     })
   }
+  store.$options = options
 };

@@ -73,7 +73,7 @@
     </div>
   </div>
 </template>
-<script setup>
+<script setup name="961a22a1-f5da-9845-fc89-3519ed950510">
 import editMap from "../editMap.vue";
 import forkSvg from "~/assets/fork.svg?raw";
 import rightSvg from "~/assets/right.svg?raw";

@@ -89,19 +89,19 @@ export function acceptHMRUpdate<
     return () => {}
   }
   return (newModule: any) => {
-    const pinia: Pinia | undefined = hot.data.pinia || initialUseStore._pinia
-
+    const initialStore: StoreDefinition = hot.data.initialUseStore || initialUseStore
+    let pinia = initialStore._pinia
     if (!pinia) {
       // this store is still not used
       return
     }
-
     // preserve the pinia instance across loads
-    hot.data.pinia = pinia
+    hot.data.initialUseStore = initialStore
 
     // console.log('got data', newStore)
     for (const exportName in newModule) {
       const useStore = newModule[exportName]
+
       // console.log('checking for', exportName)
       if (isUseStore(useStore) && pinia._s.has(useStore.$id)) {
         // console.log('Accepting update for', useStore.$id)
@@ -120,7 +120,9 @@ export function acceptHMRUpdate<
           console.log(`[Pinia]: skipping hmr because store doesn't exist yet`)
           return
         }
-        useStore(pinia, existingStore)
+        let store = useStore(pinia, existingStore)
+        let tmp = JSON.parse(JSON.stringify(store.$state))
+        store.$options.state = () => tmp
       }
     }
   }
@@ -169,7 +171,9 @@ export function acceptHMRUpdate2<
           console.log(`[Pinia]: skipping hmr because store doesn't exist yet`)
           return
         }
-        useStore(pinia, existingStore)
+        let store = useStore(pinia, existingStore)
+        let tmp = JSON.parse(JSON.stringify(store.$state))
+        store.$options.state = () => tmp
       }
     }
   }

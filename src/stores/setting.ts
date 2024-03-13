@@ -66,7 +66,7 @@ export const useSettingStore = defineStore({
     projection: 'globe',// mercator|globe
     lang: 'zh-cn',
     webgpu:false,
-    loadmap:false,
+    loadmap:true,
     district:true,
     airline:true,
     navigation:true,

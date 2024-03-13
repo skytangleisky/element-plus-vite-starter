@@ -112,7 +112,6 @@ const change = (v: any) => {
 watch(
   () => setting.routes,
   (routes) => {
-    console.log(routes);
     router.getRoutes().forEach((v) => {
       v.name && router.removeRoute(v.name);
     });

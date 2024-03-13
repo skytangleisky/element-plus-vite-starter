@@ -5,6 +5,7 @@ import { visualizer } from 'rollup-plugin-visualizer'
 import { mock } from './packages/plugin-vite-mock'
 import fs from 'fs'
 import Components from 'unplugin-vue-components/vite'
+import vueSetupExtend from 'unplugin-vue-setup-extend-plus/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 import Unocss from 'unocss/vite'
@@ -47,6 +48,7 @@ export default defineConfig({
     vue(),
     mock(),
     vueJsx(),
+    vueSetupExtend({}),
     inject({
       $: "jquery",
       jQuery: "jquery",

@@ -79,12 +79,22 @@ const emit = defineEmits(["update:center", "update:zoom"]);
 let map: any;
 watch(
   () => props.tile,
-  (v) => {
-    if (v == "街道地图") {
+  (tile) => {
+    if (tile == "街道地图") {
       style.sources["raster-tiles"].url = streetUrl;
-    } else if (v == "卫星地图") {
+    } else if (tile == "卫星地图") {
       style.sources["raster-tiles"].url = satelliteUrl;
     }
+    // style.layers.map((v) => {
+    //   if (v.id == "simple-tiles") {
+    //     v.layout.visibility = props.loadmap ? "visible" : "none";
+    //   } else if (v.id == "districtLayer" || v.id == "districtOutline") {
+    //     v.layout.visibility = props.district ? "visible" : "none";
+    //   }
+    // });
+
+    // console.log(style);
+
     map && map.setStyle(style);
   },
   {

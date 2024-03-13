@@ -48,7 +48,6 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { h } from "vue";
 import logoutRaw from "~/assets/logout.svg?raw";
 import {
   Select,
@@ -64,7 +63,6 @@ import {
 } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
 const router = useRouter();
-import { ElMessage } from "element-plus";
 import { useSettingStore } from "./stores/setting";
 const setting = useSettingStore();
 import { useStationStore } from "./stores/station";
@@ -77,10 +75,10 @@ import { useDataStore } from "./stores/data";
 const data = useDataStore();
 import { toggleDark, isDark } from "~/composables";
 const click = () => {
-  let prev = setting.loadmap;
-  setting.$resetFields("loadmap"); //单独重置某项设置,store热更新后无效
-  console.log("loadmap", prev, "->", setting.loadmap);
+  setting.$resetFields("无人机.监控.loadmap");
 };
+import { useExclude } from "./myComponents/bus";
+const exclude = useExclude();
 const Reset = () => {
   setting.$resetFields();
   icon.$resetFields();
@@ -92,7 +90,8 @@ const Reset = () => {
   });
   sessionStorage.clear();
   localStorage.clear();
-  router.replace({ ...router.currentRoute.value, force: true }); //需要销毁的已缓存的组件无法被销毁，所以目前只能用下面的方式
+  exclude.push("65e99b66-e340-4d4b-6b26-629f41dc63d9"); //重置，对应组件和其子组件应该需要被重新渲染，因为重置pinia的数据后会导致页面可能显示异常，涉及到的组件需要重新渲染
+  router.replace({ ...router.currentRoute.value, force: true });
 };
 const login = () => {};
 const logout = () => {
@@ -119,7 +118,7 @@ const logout = () => {
 <style scoped lang="scss">
 .nav {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   width: 100%;
   height: 40px;
   line-height: 40px;

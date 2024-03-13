@@ -4,7 +4,7 @@
     <left-menu></left-menu>
     <div class="relative w-full h-full" style="overflow: auto">
       <router-view v-slot="{ Component }">
-        <keep-alive>
+        <keep-alive :include="['961a22a1-f5da-9845-fc89-3519ed950510']">
           <component :key="$route.fullPath" :is="Component" />
         </keep-alive>
       </router-view>
@@ -25,8 +25,8 @@
   <!-- <test-border></test-border> -->
   <!-- <remote-component></remote-component> -->
 </template>
-<script setup>
-import { ref } from "vue";
+<script setup name="65e99b66-e340-4d4b-6b26-629f41dc63d9">
+import { ref, onMounted } from "vue";
 // import { version as piniaVersion } from "~/tools/pinia/src/package.json'
 // import { version as vueVersion } from 'vue/package.json'
 // import { version as elementplusVersion } from 'element-plus/package.json'
@@ -37,7 +37,11 @@ import { ref } from "vue";
 import Search from "./myComponents/search.vue";
 import myHeader from "./header.vue";
 import leftMenu from "./myComponents/leftMenu/index.vue";
-
+import { useExclude } from "./myComponents/bus";
+const exclude = useExclude();
+onMounted(() => {
+  exclude.length = 0; //当组件被渲染后，该组件应该可以一直被复用
+});
 // const list = ref([{name:'测试',left:true,children:[{name:'456',leftImgSrc:'checked.svg'},{name:'789',leftImgSrc:'checked.svg'}]}])
 // setTimeout(()=>{
 //   list.value = undefined
