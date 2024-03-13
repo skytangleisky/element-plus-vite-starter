@@ -22,6 +22,21 @@
       <div class="info_item" style="grid-column: 1/2">
         <span>序列号:</span><span>{{ item?.radar.sn_code }}</span>
       </div>
+      <div style="grid-column: 3/4; width: 80px">
+        <div
+          v-if="item?.radar.type.name == '塔式'"
+          class="w-full h-full flex items-center"
+        >
+          <div :class="`battery${item?.battery_level}`" style="margin: 0 4px">
+            <div class="positiveElectrode"></div>
+          </div>
+          <div v-if="item?.battery_level <= 50">{{ item?.battery_level }}%</div>
+          <div v-else>{{ item?.battery_level }}%</div>
+        </div>
+      </div>
+      <div class="info_item" style="grid-column: 1/2">
+        <span>雷达类型:</span><span>{{ item?.radar.type.name }}</span>
+      </div>
       <div class="info_item" style="grid-column: 1/2">
         <span>在线状态:</span>
         <div
@@ -199,5 +214,65 @@ watch([() => bus.result, () => station.active], ([result, active]) => {
   padding: 0 2px;
   box-shadow: 0 0 4px 4px #00000011;
   border-color: #00000011;
+}
+@for $i from 0 through 100 {
+  .battery#{$i} {
+    box-sizing: border-box;
+    position: relative;
+    height: 18px;
+    width: 14px;
+    border: 1px solid grey;
+    margin: -1px;
+    .positiveElectrode {
+      position: absolute;
+      background-color: grey;
+      left: 50%;
+      top: -2px;
+      transform: translateX(-50%);
+      width: 6px;
+      height: 2px;
+    }
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: $i * 1%;
+      @if $i <=30 {
+        background-color: #f00;
+      } @else if $i <=80 {
+        background-color: #fa0;
+      } @else {
+        background-color: #0f0;
+      }
+    }
+  }
+}
+.battery-1000 {
+  box-sizing: border-box;
+  position: relative;
+  height: 18px;
+  width: 14px;
+  border: 1px solid grey;
+  margin: -1px;
+  .positiveElectrode {
+    position: absolute;
+    background-color: grey;
+    left: 50%;
+    top: -2px;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 2px;
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background-color: grey;
+  }
 }
 </style>
