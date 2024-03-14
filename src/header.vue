@@ -2,6 +2,7 @@
   <div class="nav">
     <div class="items-center flex">
       <div
+        v-if="user.logined"
         class="color-black dark:color-white"
         style="display: flex; align-items: center"
       >
@@ -12,9 +13,7 @@
           <img :src="user.avatar" style="width: 24px; height: 24px; border-radius: 50%" />
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item v-if="!user.logined" @click="login" :icon="Select"
-                >登陆</el-dropdown-item
-              >
+              <!-- <el-dropdown-item @click="login" :icon="Select">登陆</el-dropdown-item> -->
               <!-- <el-dropdown-item :icon="ColdDrink">捐赠</el-dropdown-item> -->
               <el-dropdown-item :icon="Switch" @click="Reset">重置</el-dropdown-item>
               <el-dropdown-item
