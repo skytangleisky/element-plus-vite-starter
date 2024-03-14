@@ -3,6 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import inject from '@rollup/plugin-inject'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { mock } from './packages/plugin-vite-mock'
+import { createHtmlPlugin } from 'vite-plugin-html'
 import fs from 'fs'
 import Components from 'unplugin-vue-components/vite'
 import vueSetupExtend from 'unplugin-vue-setup-extend-plus/vite'
@@ -19,8 +20,6 @@ import {
   transformerVariantGroup,
 } from 'unocss'
 
-const lifecycle = process.env.npm_lifecycle_event;
-
 // https://vitejs.dev/config/
 export default defineConfig({
   define: {
@@ -28,7 +27,7 @@ export default defineConfig({
     __TEST__: true,
     __BROWSER__: true,
     __USE_DEVTOOLS__: false,
-    __VUE_PROD_HYDRATION_MISMATCH_DETAILS__:true,
+    __VUE_PROD_HYDRATION_MISMATCH_DETAILS__:true
   },
   resolve: {
     alias: {
@@ -46,6 +45,16 @@ export default defineConfig({
   },
   plugins: [
     vue(),
+    createHtmlPlugin({
+      minify:true,
+      entry: '/src/main.ts',
+      template: 'index.html',
+      inject:{
+        data:{
+          project:'dark'
+        }
+      }
+    }),
     mock(),
     vueJsx(),
     vueSetupExtend({}),
@@ -83,7 +92,7 @@ export default defineConfig({
         transformerVariantGroup(),
       ]
     }),
-    lifecycle === 'report'? visualizer({ open: true, brotliSize: true, filename: 'report.html' }): null
+    process.env.npm_lifecycle_event === 'report'? visualizer({ open: true, brotliSize: true, filename: 'report.html' }): null
   ],
   preview:{
     port:5173
