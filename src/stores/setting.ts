@@ -326,14 +326,14 @@ export const useSettingStore = defineStore({
               {
                 path: 'group',
                 name: 'c4961e04-e572-0e1f-ae23-94f157b15b45',
-                component: '/src/myComponents/datatable/index.vue',
+                component: '/src/myComponents/datatable/group.vue',
                 label: '用户组管理',
                 svg:'e5fc96bfd6c611ee9aafb025aa2c9ada'
               },
               {
                 path: 'institution',
                 name: 'c4961e04-e573-0e1f-ae23-94f157b15b45',
-                component: '/src/myComponents/datatable/index.vue',
+                component: '/src/myComponents/datatable/institution.vue',
                 label: '机构管理',
                 svg:'2e727627d6c711ee9aafb025aa2c9ada'
               },
