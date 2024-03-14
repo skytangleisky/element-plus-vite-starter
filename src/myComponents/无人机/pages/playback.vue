@@ -47,8 +47,8 @@ import { ref, reactive } from "vue";
 const value2 = ref("");
 const defaultTime2 = [new Date(2000, 1, 1, 12, 0, 0), new Date(2000, 2, 1, 8, 0, 0)];
 const data = reactive([]);
-let prevDate;
-const change = (it) => {
+let preTime: number;
+const change = (it: any) => {
   if (it.time !== preTime) {
     // to do
     preTime = it.time;
