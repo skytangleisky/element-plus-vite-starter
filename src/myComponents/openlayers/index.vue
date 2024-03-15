@@ -876,7 +876,7 @@ watch(
   z-index: 1;
   position: absolute;
   right: 0;
-  width: 600px;
+  width: 610px;
   box-sizing: border-box;
   height: 100%;
   background-color: white;

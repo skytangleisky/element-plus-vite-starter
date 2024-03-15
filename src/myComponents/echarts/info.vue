@@ -22,11 +22,12 @@
       <div class="info_item" style="grid-column: 1/2">
         <span>序列号:</span><span>{{ item?.radar.sn_code }}</span>
       </div>
-      <div style="grid-column: 3/4; width: 80px">
+      <div style="grid-column: 3/4">
         <div
           v-if="item?.radar.type.name == '塔式'"
           class="w-full h-full flex items-center"
         >
+          蓄电池电量百分比:
           <div :class="`battery${item?.battery_level}`" style="margin: 0 4px">
             <div class="positiveElectrode"></div>
           </div>
