@@ -1,6 +1,7 @@
 <template>
   <div style="width: 100%; height: 100%; overflow: hidden; position: absolute">
     <div
+      v-resize="resize"
       ref="mapRef"
       class="map"
       style="
@@ -115,7 +116,7 @@
 <script setup>
 import { addFeatherImages, getFeather } from "~/tools";
 import { destinationPoint } from "~/myComponents/map/js/core.js";
-import { watch, ref, onMounted, onBeforeUnmount, reactive, onActivated } from "vue";
+import { watch, ref, onMounted, onBeforeUnmount, reactive } from "vue";
 import { useBus } from "~/myComponents/bus";
 import Dialog from "../dialog.vue";
 import { eventbus } from "~/eventbus";
@@ -520,9 +521,9 @@ const flyTo = (item) => {
     console.log(error);
   }
 };
-onActivated(() => {
+const resize = (entry) => {
   map && map.resize();
-});
+};
 onMounted(() => {
   map = new mapboxgl.Map({
     container: mapRef.value,

@@ -19,24 +19,18 @@
     <div
       :class="`bottom-drawer ${setting.无人机.监控.bottom_disappear ? 'disappear' : ''}`"
     >
-      <div class="handle" @click="setting.无人机.监控.bottom_disappear = false">
-        <el-badge :value="12" type="primary"
-          ><el-icon v-html="warnSvg"></el-icon
-        ></el-badge>
-        <el-badge :value="12" type="success"
-          ><el-icon v-html="uavSvg"></el-icon
-        ></el-badge>
-        <el-badge :value="12" type="warning"
-          ><el-icon v-html="deviceSvg"></el-icon
-        ></el-badge>
-        <el-badge type="danger" :value="12"
-          ><el-icon v-html="recordSvg"></el-icon
-        ></el-badge>
-        <el-badge type="info" :value="12"
-          ><el-icon v-html="whitelistSvg"></el-icon
-        ></el-badge>
-        <el-badge :value="0" :show-zero="false"
-          ><el-icon v-html="statisticSvg"></el-icon
+      <div class="handle p-8px" @click="setting.无人机.监控.bottom_disappear = false">
+        <el-badge
+          v-for="(v, k) in menus"
+          :key="k"
+          :value="v.value"
+          :type="v.type"
+          :show-zero="false"
+          @click="click(v)"
+          ><el-icon
+            :class="`p-8px ${v.active ? 'fourCorners' : ''}`"
+            v-html="v.svg"
+          ></el-icon
         ></el-badge>
       </div>
       <el-icon
@@ -73,7 +67,7 @@
     </div>
   </div>
 </template>
-<script setup name="961a22a1-f5da-9845-fc89-3519ed950510">
+<script setup>
 import editMap from "../editMap.vue";
 import forkSvg from "~/assets/fork.svg?raw";
 import rightSvg from "~/assets/right.svg?raw";
@@ -84,12 +78,28 @@ import recordSvg from "~/assets/record.svg?raw";
 import whitelistSvg from "~/assets/whitelist.svg?raw";
 import statisticSvg from "~/assets/statistic.svg?raw";
 import selectTile from "../selectTile.vue";
-import { watch, ref } from "vue";
+import { watch, ref, reactive } from "vue";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
 import url1 from "~/assets/street.png?url";
 import url2 from "~/assets/satellite.png?url";
 import datatable from "~/myComponents/datatable/index.vue";
+const menus = reactive([
+  { value: 12, type: "warning", svg: warnSvg, active: true },
+  { value: 12, type: "success", svg: uavSvg, active: false },
+  { value: 12, type: "primary", svg: deviceSvg, active: false },
+  { value: 12, type: "danger", svg: recordSvg, active: false },
+  { value: 12, type: "info", svg: whitelistSvg, active: false },
+  { value: 0, svg: statisticSvg, active: false },
+]);
+const click = (v) => {
+  v.active = true;
+  menus
+    .filter((item) => item !== v)
+    .map((item) => {
+      item.active = false;
+    });
+};
 const tileList = ref([
   { name: "街道地图", url: url1 },
   { name: "卫星地图", url: url2 },
@@ -220,5 +230,26 @@ $time: 1s;
       color: #ddd;
     }
   }
+}
+.fourCorners {
+  &::after {
+    filter: drop-shadow(-2px -2px 4px #00000044);
+    position: absolute;
+    left: 0;
+    top: 0;
+    content: "";
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    box-sizing: border-box;
+    border: 4px solid white;
+    --len: 12px;
+    mask: conic-gradient(at var(--len) var(--len), transparent 75%, red 75%) 0 0 /
+      calc(100% - var(--len)) calc(100% - var(--len));
+  }
+}
+.dark .fourCorners::after {
+  border: 4px solid #000;
+  filter: drop-shadow(2px 2px 4px #ffffff44);
 }
 </style>

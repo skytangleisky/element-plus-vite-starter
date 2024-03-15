@@ -869,10 +869,10 @@ onMounted(() => {
   // let timer = setInterval(func, 1000);
 
   options.cvs = (paintCanvasRef.value as unknown) as HTMLCanvasElement;
-  document.addEventListener("mousemove", mousemoveFunc);
-  options.cvs.addEventListener("mousewheel", mousewheelFunc);
-  options.cvs.addEventListener("mousedown", mousedownFunc);
-  document.addEventListener("mouseup", mouseupFunc);
+  document.addEventListener("mousemove", mousemoveFunc, { passive: false });
+  options.cvs.addEventListener("mousewheel", mousewheelFunc, { passive: false });
+  options.cvs.addEventListener("mousedown", mousedownFunc, { passive: false });
+  document.addEventListener("mouseup", mouseupFunc, { passive: false });
   new ResizeObserver((entries) => {
     options.cvs.width = options.cvs.getBoundingClientRect().width;
     options.cvs.height = options.cvs.getBoundingClientRect().height;

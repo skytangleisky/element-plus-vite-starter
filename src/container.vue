@@ -4,7 +4,7 @@
     <left-menu></left-menu>
     <div class="relative w-full h-full" style="overflow: auto">
       <router-view v-slot="{ Component }">
-        <keep-alive :include="['961a22a1-f5da-9845-fc89-3519ed950510']">
+        <keep-alive>
           <component :key="$route.fullPath" :is="Component" />
         </keep-alive>
       </router-view>

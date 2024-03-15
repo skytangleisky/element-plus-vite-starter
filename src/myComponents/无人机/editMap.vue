@@ -1,6 +1,7 @@
 <template>
   <div style="width: 100%; height: 100%; overflow: hidden; position: absolute">
     <div
+      v-resize="resize"
       ref="mapRef"
       style="
         position: absolute;
@@ -29,7 +30,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { watch, ref, onMounted, onBeforeUnmount, onActivated } from "vue";
+import { watch, ref, onMounted, onBeforeUnmount } from "vue";
 const color = ref("red");
 const options = ref([
   { label: "红色", value: "red" },
@@ -177,9 +178,9 @@ const flyTo = (item: any) => {
     console.log(error);
   }
 };
-onActivated(() => {
+const resize = () => {
   map && map.resize();
-});
+};
 onMounted(() => {
   map = new mapboxgl.Map({
     container: mapRef.value,
