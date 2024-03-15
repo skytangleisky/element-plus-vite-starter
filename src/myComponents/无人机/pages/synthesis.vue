@@ -27,10 +27,7 @@
           :type="v.type"
           :show-zero="false"
           @click="click(v)"
-          ><el-icon
-            :class="`p-8px ${v.active ? 'fourCorners' : ''}`"
-            v-html="v.svg"
-          ></el-icon
+          ><el-icon :class="`${v.active ? 'fourCorners' : ''}`" v-html="v.svg"></el-icon
         ></el-badge>
       </div>
       <el-icon
@@ -234,22 +231,24 @@ $time: 1s;
 .fourCorners {
   &::after {
     filter: drop-shadow(-2px -2px 4px #00000044);
+    --offset: -6px;
+    --borderWidth: 3px;
     position: absolute;
-    left: 0;
-    top: 0;
+    left: var(--offset);
+    top: var(--offset);
     content: "";
-    width: 100%;
-    height: 100%;
+    width: calc(100% - 2 * var(--offset));
+    height: calc(100% - 2 * var(--offset));
     border-radius: 6px;
     box-sizing: border-box;
-    border: 4px solid white;
+    border: var(--borderWidth) solid white;
     --len: 12px;
     mask: conic-gradient(at var(--len) var(--len), transparent 75%, red 75%) 0 0 /
       calc(100% - var(--len)) calc(100% - var(--len));
   }
 }
 .dark .fourCorners::after {
-  border: 4px solid #000;
+  border: var(--borderWidth) solid #000;
   filter: drop-shadow(2px 2px 4px #ffffff44);
 }
 </style>
