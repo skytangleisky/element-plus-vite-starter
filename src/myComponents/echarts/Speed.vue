@@ -13,7 +13,7 @@
       <div style="color: rgb(78, 129, 184); font-size: 20px">距离风速曲线</div>
       <div style="color: grey">{{ currentTime }}</div>
     </div>
-    <div ref="thContainer" class="w-full h-full flex-1"></div>
+    <div v-resize="resize" ref="thContainer" class="w-full h-full flex-1"></div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -157,11 +157,12 @@ var option = {
   ],
 };
 var myChart: any;
-let resizeObserver: ResizeObserver;
+const resize = () => {
+  myChart && myChart.resize();
+};
 const setChart = (isDark: boolean) => {
   if (myChart) {
     myChart && echarts.dispose(myChart);
-    resizeObserver && resizeObserver.disconnect();
   }
   if (!thContainer.value) throw Error("invalid thContainer!");
   if (isDark) {
@@ -169,13 +170,6 @@ const setChart = (isDark: boolean) => {
   } else {
     myChart = echarts.init(thContainer.value);
   }
-  resizeObserver = new ResizeObserver((entries) => {
-    myChart.resize();
-  });
-  resizeObserver.observe(thContainer.value);
   myChart.setOption(option, false, true);
 };
-onBeforeUnmount(() => {
-  resizeObserver.disconnect();
-});
 </script>

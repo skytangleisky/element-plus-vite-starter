@@ -61,7 +61,9 @@ watch(isDark, (isDark) => {
   setEcharts(isDark);
 });
 var myChart;
-let resizeObserver;
+const resize = () => {
+  myChart && myChart.resize();
+};
 let setEcharts = (isDark) => {
   if (myChart) {
     echarts.dispose(myChart);
@@ -72,10 +74,6 @@ let setEcharts = (isDark) => {
   } else {
     myChart = echarts.init(chartDom.value);
   }
-  resizeObserver = new ResizeObserver((entries) => {
-    myChart.resize();
-  });
-  resizeObserver.observe(chartDom.value);
   const dims = {
     time: 0,
     windSpeed: 1,
@@ -431,7 +429,4 @@ let setEcharts = (isDark) => {
 
   option && myChart.setOption(option, false, true);
 };
-onBeforeUnmount(() => {
-  resizeObserver.disconnect();
-});
 </script>

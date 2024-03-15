@@ -2,6 +2,7 @@
   <div class="graph h-auto flex flex-row justify-center" tabindex="-1">
     <div class="relative h-60px" style="background: hsl(230deg 7% 17%); width: 160px">
       <canvas
+        v-resize="resize"
         ref="timeShaft"
         style="
           position: absolute;
@@ -48,70 +49,64 @@ let timer = 0;
 let timeShaft = ref(undefined);
 let leftMouseDown = false;
 let aid: number;
-let observer: any;
 let data: any = reactive({});
 let offsetX: any;
 const interval = 200;
-let cvs: HTMLCanvasElement | undefined;
-onMounted(() => {
-  cvs = timeShaft.value as HTMLCanvasElement | undefined;
-  if (cvs) {
-    cvs.addEventListener("mousedown", (evt) => {
-      if (evt.which == 1 && cvs) {
-        leftMouseDown = true;
-        var rect = cvs.getBoundingClientRect(); // 获取 Canvas 相对于视口的位置信息
-        offsetX = evt.clientX - rect.left;
-        aid = requestAnimationFrame(loop);
-      }
-    });
-    document.addEventListener("mouseup", (evt) => {
-      if (evt.which == 1) {
-        leftMouseDown = false;
-      }
-    });
-    document.addEventListener("mousemove", (evt: any) => {
-      if (cvs && leftMouseDown) {
-        var rect = cvs.getBoundingClientRect(); // 获取 Canvas 相对于视口的位置信息
-        offsetX = evt.clientX - rect.left;
-        aid = requestAnimationFrame(loop);
-      }
-    });
-    observer = new ResizeObserver(() => {
-      if (cvs) {
-        let box = cvs.getBoundingClientRect();
-        if (box.width == 0 || box.height == 0) {
-          cancelAnimationFrame(aid);
-        } else {
-          cvs.width = box.width;
-          cvs.height = box.height;
-          draw();
-          cancelAnimationFrame(aid);
-          aid = requestAnimationFrame(loop);
-        }
-      }
-    });
-    observer.observe(cvs);
-    timer = setInterval(() => {
-      if (cvs) {
-        for (let k in props.args) {
-          if (data[k] == undefined)
-            data[k] = {
-              left: 0,
-              top: cvs.height - 4,
-              value: 0,
-              "padding-top": 4,
-              "padding-bottom": 4,
-              items: [],
-            };
-          data[k].items.push(Object.assign({}, props.args[k]));
-          while (data[k].items.length > count) {
-            data[k].items.shift();
-          }
-        }
-        aid = requestAnimationFrame(loop);
-      }
-    }, interval);
+let cvs: HTMLCanvasElement;
+const resize = () => {
+  let box = cvs.getBoundingClientRect();
+  if (box.width == 0 || box.height == 0) {
+    cancelAnimationFrame(aid);
+  } else {
+    cvs.width = box.width;
+    cvs.height = box.height;
+    draw();
+    cancelAnimationFrame(aid);
+    aid = requestAnimationFrame(loop);
   }
+};
+onMounted(() => {
+  cvs = (timeShaft.value as unknown) as HTMLCanvasElement;
+  cvs.addEventListener("mousedown", (evt) => {
+    if (evt.which == 1 && cvs) {
+      leftMouseDown = true;
+      var rect = cvs.getBoundingClientRect(); // 获取 Canvas 相对于视口的位置信息
+      offsetX = evt.clientX - rect.left;
+      aid = requestAnimationFrame(loop);
+    }
+  });
+  document.addEventListener("mouseup", (evt) => {
+    if (evt.which == 1) {
+      leftMouseDown = false;
+    }
+  });
+  document.addEventListener("mousemove", (evt: any) => {
+    if (cvs && leftMouseDown) {
+      var rect = cvs.getBoundingClientRect(); // 获取 Canvas 相对于视口的位置信息
+      offsetX = evt.clientX - rect.left;
+      aid = requestAnimationFrame(loop);
+    }
+  });
+  timer = setInterval(() => {
+    if (cvs) {
+      for (let k in props.args) {
+        if (data[k] == undefined)
+          data[k] = {
+            left: 0,
+            top: cvs.height - 4,
+            value: 0,
+            "padding-top": 4,
+            "padding-bottom": 4,
+            items: [],
+          };
+        data[k].items.push(Object.assign({}, props.args[k]));
+        while (data[k].items.length > count) {
+          data[k].items.shift();
+        }
+      }
+      aid = requestAnimationFrame(loop);
+    }
+  }, interval);
 });
 const loop = () => {
   let currentTime = Date.now();
@@ -170,7 +165,6 @@ const draw = () => {
 };
 onBeforeUnmount(() => {
   clearInterval(timer);
-  observer.disconnect();
   cancelAnimationFrame(aid);
 });
 </script>

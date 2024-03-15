@@ -13,7 +13,11 @@
     <div class="w-full h-full flex justify-center">
       <div style="position: relative; width: 80px; height: 80px; overflow: hidden">
         <img src="/src/assets/feathers/12.svg" class="imgClass" />
-        <canvas ref="canvasRef" style="width: 100%; height: 100%"></canvas>
+        <canvas
+          v-resize="resize"
+          ref="canvasRef"
+          style="width: 100%; height: 100%"
+        ></canvas>
       </div>
     </div>
   </div>
@@ -32,29 +36,21 @@ defineProps({
 });
 const canvasRef = ref(null);
 let canvas: HTMLCanvasElement;
-onMounted(() => {
-  if (canvasRef.value) {
-    canvas = canvasRef.value;
-    let observer = new ResizeObserver((size) => {
-      let rect = canvas.getBoundingClientRect();
-      if (rect.width != 0 && rect.height != 0) {
-        canvas.width = rect.width * devicePixelRatio;
-        canvas.height = rect.height * devicePixelRatio;
-        canvas.style.width = rect.width + "px";
-        canvas.style.height = rect.height + "px";
-        draw(canvas, isDark.value);
-      }
-    });
-    observer.observe(canvas);
-
-    onBeforeUnmount(() => {
-      observer.disconnect();
-    });
+const resize = () => {
+  let rect = canvas.getBoundingClientRect();
+  if (rect.width != 0 && rect.height != 0) {
+    canvas.width = rect.width * devicePixelRatio;
+    canvas.height = rect.height * devicePixelRatio;
+    canvas.style.width = rect.width + "px";
+    canvas.style.height = rect.height + "px";
+    draw(canvas, isDark.value);
   }
+};
+onMounted(() => {
+  canvas = (canvasRef.value as unknown) as HTMLCanvasElement;
 });
 function draw(canvas: HTMLCanvasElement, isDark: boolean) {
-  let context = canvas.getContext("2d");
-  if (!context) throw Error("invalid context");
+  let context = canvas.getContext("2d") as CanvasRenderingContext2D;
   context.clearRect(0, 0, canvas.width, canvas.height);
   context.save();
   context.lineWidth = 1 * devicePixelRatio;

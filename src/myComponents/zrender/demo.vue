@@ -1,26 +1,23 @@
 <template>
-  <div ref="zrenderRef" class="zrenderRef"></div>
+  <div v-resize="resize" ref="zrenderRef" class="zrenderRef"></div>
 </template>
 <script lang="ts" setup>
 import * as zrender from "zrender";
 import { onMounted, ref, onBeforeUnmount } from "vue";
 const zrenderRef = ref(null);
-let resizeObserver: ResizeObserver;
 import aircraft from "~/assets/aircraft.png?url";
-onMounted(() => {
-  if (!zrenderRef.value) return;
-  const zr = zrender.init(zrenderRef.value);
-  resizeObserver = new ResizeObserver((entry) => {
-    if (zrenderRef.value) {
-      let box = (zrenderRef.value as HTMLElement).getBoundingClientRect();
-      zr.resize({
-        width: box.width,
-        height: box.height,
-      });
-    }
+const resize = () => {
+  let box = canvas.getBoundingClientRect();
+  zr.resize({
+    width: box.width,
+    height: box.height,
   });
-  resizeObserver.observe(zrenderRef.value);
-
+};
+let zr: any;
+let canvas: HTMLCanvasElement;
+onMounted(() => {
+  canvas = (zrenderRef.value as unknown) as HTMLCanvasElement;
+  zr = zrender.init(zrenderRef.value);
   const circle = new zrender.Arc({
     shape: {
       cx: 15,
@@ -627,9 +624,6 @@ onMounted(() => {
   //     cy: evt.offsetY,
   //   });
   // });
-});
-onBeforeUnmount(() => {
-  resizeObserver.disconnect();
 });
 </script>
 <style lang="scss">

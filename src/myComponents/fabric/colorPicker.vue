@@ -1,5 +1,5 @@
 <template>
-  <div class="canvasContainer">
+  <div v-resize="resize" class="canvasContainer">
     <canvas id="gradient" class="w-full h-full"></canvas>
     <div class="title">拾色器</div>
     <div class="button confirm" @click.native="confirm">确认</div>
@@ -26,9 +26,8 @@ const color = computed(() => {
     `rgb(${presetRgb.value[0]},${presetRgb.value[1]},${presetRgb.value[2]})`
   ).toHex();
 });
-let resizeObserver, canvas;
+let canvas;
 onBeforeUnmount(() => {
-  resizeObserver && resizeObserver.disconnect();
   canvas && canvas.dispose();
 });
 
@@ -234,22 +233,20 @@ Promise.all(Object.values(images)).then((values)=>{
   // canvas.add(bgUrl);
 })
 */
-
+const resize = ()=>{
+  let rect = document.querySelector(".canvasContainer").getBoundingClientRect();
+  canvas.setDimensions({
+    width: rect.width,
+    height: rect.height,
+  });
+  canvas.renderAll();
+}
 onMounted(() => {
   canvas = new fabric.Canvas("gradient", {
     width: 300,
     height: 150,
     selection: false,
   });
-  resizeObserver = new ResizeObserver(() => {
-    let rect = document.querySelector(".canvasContainer").getBoundingClientRect();
-    canvas.setDimensions({
-      width: rect.width,
-      height: rect.height,
-    });
-    canvas.renderAll();
-  });
-  resizeObserver.observe(document.querySelector(".canvasContainer"));
   canvas.add(group);
   let rgb = HSBtoRGB(presentColorRef.H, presentColorRef.S, presentColorRef.B);
   let isLight = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255 > 0.5;

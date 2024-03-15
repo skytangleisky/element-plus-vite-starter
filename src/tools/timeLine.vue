@@ -38,6 +38,7 @@
         </div>
       </span>
       <canvas
+        v-resize="resize"
         ref="timeShaft"
         class="dark:bg-#646464 bg-#fff absolute"
         style="width: 100%; height: 100%"
@@ -136,11 +137,22 @@ let timer = 0;
 let timeShaft = ref(undefined);
 let leftMouseDown = false;
 let aid: number;
-let observer: ResizeObserver;
+const resize = () => {
+  let box = cvs.getBoundingClientRect();
+  if (box.width == 0 || box.height == 0) {
+    cancelAnimationFrame(aid);
+  } else {
+    cvs.width = box.width * options.devicePixelRatio;
+    cvs.height = box.height * options.devicePixelRatio;
+    draw();
+    cancelAnimationFrame(aid);
+    aid = requestAnimationFrame(loop);
+  }
+};
 const mousewheelFunc = (evt: any) => {
   let deltaY = evt.wheelDeltaY / 120 / 10;
   options.targetValue -= deltaY;
-  let ctx = cvs.getContext("2d");
+  let ctx = cvs.getContext("2d") as CanvasRenderingContext2D;
   let text_width = ctx.measureText("yyyy-MM-dd HH:mm:ss.SSS").width;
   let min = Math.log2(1000 / (text_width + options.gap * devicePixelRatio) / 1.5);
   let max = Math.log2(
@@ -225,19 +237,6 @@ onMounted(() => {
   //     right: time >= options.now
   //   });
   // }
-  observer = new ResizeObserver(() => {
-    let box = cvs.getBoundingClientRect();
-    if (box.width == 0 || box.height == 0) {
-      cancelAnimationFrame(aid);
-    } else {
-      cvs.width = box.width * options.devicePixelRatio;
-      cvs.height = box.height * options.devicePixelRatio;
-      draw();
-      cancelAnimationFrame(aid);
-      aid = requestAnimationFrame(loop);
-    }
-  });
-  observer.observe(cvs);
   timer = setInterval(() => {
     graphArgs.fps.value = options.frameCount - prevFrameCount;
     prevFrameCount = options.frameCount;
@@ -724,7 +723,6 @@ onBeforeUnmount(() => {
   document.removeEventListener("mouseup", mouseupFunc);
   document.removeEventListener("mousemove", mousemoveFunc);
   clearInterval(timer);
-  observer.disconnect();
   cancelAnimationFrame(aid);
 });
 </script>

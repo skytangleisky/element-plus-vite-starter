@@ -1,5 +1,5 @@
 <template>
-  <div ref="canvasContainer" class="canvasContainer bg-#2b2b2b">
+  <div v-resize="resize" ref="canvasContainer" class="canvasContainer bg-#2b2b2b">
     <canvas id="gradient" class="w-full h-full"></canvas>
     <div class="button confirm" @click.native="confirm">确认</div>
     <div class="button cancel" @click.native="cancel">取消</div>
@@ -24,9 +24,18 @@ for (let i = 0; i < collections.length; i++) {
 }
 import { onMounted, onBeforeUnmount, reactive, ref, Ref } from "vue";
 const canvasContainer = ref(null);
-let resizeObserver: ResizeObserver, canvas: fabric.Canvas;
+let canvas: fabric.Canvas;
+const resize = () => {
+  if (canvasContainer.value) {
+    let rect = (canvasContainer.value as HTMLCanvasElement).getBoundingClientRect();
+    canvas.setDimensions({
+      width: rect.width,
+      height: rect.height,
+    });
+    canvas.renderAll();
+  }
+};
 onBeforeUnmount(() => {
-  resizeObserver && resizeObserver.disconnect();
   canvas && canvas.dispose();
 });
 const confirm = () => {
@@ -41,19 +50,6 @@ onMounted(() => {
     height: 150,
     selection: true,
   });
-  if (canvasContainer.value) {
-    resizeObserver = new ResizeObserver(() => {
-      if (canvasContainer.value) {
-        let rect = (canvasContainer.value as HTMLCanvasElement).getBoundingClientRect();
-        canvas.setDimensions({
-          width: rect.width,
-          height: rect.height,
-        });
-        canvas.renderAll();
-      }
-    });
-    resizeObserver.observe(canvasContainer.value);
-  }
 
   for (let k in Color) {
     let color = Color[k];

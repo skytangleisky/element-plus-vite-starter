@@ -1,6 +1,6 @@
 <template>
   <div class="w-full h-full" style="background: #2b2b2b">
-    <canvas class="timeShaft" ref="timeShaft"></canvas>
+    <canvas v-resize="resize" class="timeShaft" ref="timeShaft"></canvas>
     <div style="padding: 0 30px">
       <el-slider v-model="value" :min="1" :max="100" :step="1" @input="input"></el-slider>
     </div>
@@ -57,7 +57,9 @@ export default {
       this.mousemove = { offsetX: evt.offsetX, offsetY: evt.offsetY };
       this.draw();
     });
-    new ResizeObserver(() => {
+  },
+  methods: {
+    resize() {
       let box = this.cvs.getBoundingClientRect();
       this.cvs.width = box.width;
       this.cvs.height = box.height;
@@ -66,9 +68,7 @@ export default {
         offsetY: this.cvs.height * this.rateX,
       };
       this.draw();
-    }).observe(this.cvs);
-  },
-  methods: {
+    },
     input(value) {
       let tmp = -(this.rateX * this.cvs.width * value - this.mousemove.offsetX);
       if (tmp > 0) {

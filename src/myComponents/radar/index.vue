@@ -8,7 +8,7 @@
       backdrop-filter: blur(15px);
     "
   >
-    <canvas ref="paintCanvasRef" class="paintCanvas"></canvas>
+    <canvas v-resize="resize" ref="paintCanvasRef" class="paintCanvas"></canvas>
     <div
       class="radar_hover_tip"
       ref="tipRef"
@@ -453,37 +453,67 @@ function radar_func() {
 }
 function test_radar(α: number, β: number, arr: Array<any>, rate: number) {
   if (!arr) return;
+  let Ⳡ = ((α + β) / 2 / 180) * Math.PI;
   let θ = (((α - β) / 2) * Math.PI) / 180;
   let cvs = options.radarCanvas;
   let ctx = cvs.getContext("2d") as CanvasRenderingContext2D;
+
   ctx.save();
   ctx.translate(cvs.width / 2 + options.offsetX, cvs.height / 2 + options.offsetY);
-  ctx.rotate(((α + β) / 2 / 180) * Math.PI);
+  ctx.rotate(Ⳡ);
 
   // 清除上次绘制的像素
-  // {
-  //   ctx.fillStyle = "#fff";
-  //   ctx.beginPath();
-  //   ctx.lineWidth = 0;
-  //   ctx.strokeStyle = "#fff";
-  //   ctx.arc(
-  //     0,
-  //     0,
-  //     (arr.length - 1 + 0.5) * 2 ** options.length + 2 ** options.length,
-  //     +θ,
-  //     -θ,
-  //     false
-  //   );
-  //   ctx.arc(0, 0, (0 + 0.5) * 2 ** options.length, -θ, +θ, true);
-  //   ctx.closePath();
-  //   ctx.globalCompositeOperation = "destination-out";
-  //   ctx.fill();
-  //   // ctx.stroke();
-  //   ctx.globalCompositeOperation = "source-over";
-  // }
+  {
+    ctx.fillStyle = "#fff";
+    ctx.beginPath();
+    ctx.lineWidth = 0;
+    ctx.strokeStyle = "#fff";
+    ctx.arc(
+      0,
+      0,
+      (arr.length - 1 + 0.5) * 2 ** options.length + 2 ** options.length,
+      +θ,
+      -θ,
+      false
+    );
+    ctx.arc(0, 0, (0 + 0.5) * 2 ** options.length, -θ, +θ, true);
+    ctx.closePath();
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.fill();
+    // ctx.stroke();
+    ctx.globalCompositeOperation = "source-over";
+  }
   arr.map((v, k) => {
     if (v !== undefined) {
-      if (true) {
+      let point1 = { x: (k + 0.5) * 2 ** options.length, y: 0 };
+      let point2 = { x: (k + 0.5) * 2 ** options.length + 2 ** options.length, y: 0 };
+      function getPt(pt: { x: number; y: number }, Ⲫ: number) {
+        return {
+          x: pt.x * Math.cos(Ⲫ) - pt.y * Math.sin(Ⲫ) + cvs.width / 2 + options.offsetX,
+          y: pt.x * Math.sin(Ⲫ) + pt.y * Math.cos(Ⲫ) + cvs.height / 2 + options.offsetY,
+        };
+      }
+      let pt1 = getPt(point1, Ⳡ + θ);
+      let pt2 = getPt(point1, Ⳡ - θ);
+      let pt3 = getPt(point2, Ⳡ + θ);
+      let pt4 = getPt(point2, Ⳡ - θ);
+      let a = Math.sqrt((pt1.x - pt2.x) ** 2 + (pt1.y - pt2.y) ** 2);
+      let b = Math.sqrt((pt2.x - pt3.x) ** 2 + (pt2.y - pt3.y) ** 2);
+      let c = Math.sqrt((pt3.x - pt1.x) ** 2 + (pt3.y - pt1.y) ** 2);
+      let s = (a + b + c) / 2;
+      let K = Math.sqrt(s * (s - a) * (s - b) * (s - c));
+      let R = (a * b * c) / (4 * K);
+      let center = {
+        x: (pt1.x + pt2.x + pt3.x + pt4.x) / 4,
+        y: (pt1.y + pt2.y + pt3.y + pt4.y) / 4,
+      };
+      //四个点围成的扇形区域的外接圆和屏幕有重叠才需要绘制扇形区域
+      if (
+        -R <= center.x &&
+        center.x < options.cvs.width + R &&
+        -R <= center.y &&
+        center.y < options.cvs.height + R
+      ) {
         ctx.beginPath();
         ctx.lineWidth = 1;
 
@@ -778,9 +808,9 @@ function mousewheelFunc(e: any) {
     (convert.y - options.offsetY - options.cvs.height / 2) /
     ((options.cvs.height / 2) * 2 ** options.length);
   if (e.deltaY < 0) {
-    options.length += 0.1;
+    options.length += 0.05;
   } else {
-    options.length -= 0.1;
+    options.length -= 0.05;
   }
   if (options.length < 0) {
     options.length = 0;
@@ -873,25 +903,25 @@ onMounted(() => {
   options.cvs.addEventListener("mousewheel", mousewheelFunc, { passive: false });
   options.cvs.addEventListener("mousedown", mousedownFunc, { passive: false });
   document.addEventListener("mouseup", mouseupFunc, { passive: false });
-  new ResizeObserver((entries) => {
-    options.cvs.width = options.cvs.getBoundingClientRect().width;
-    options.cvs.height = options.cvs.getBoundingClientRect().height;
-    if (options.cvs.width == 0 || options.cvs.height == 0) {
-      return;
-    }
-    options.offsetX = 0;
-    options.offsetY = 0;
-    options.radarCanvas.width = options.cvs.width;
-    options.radarCanvas.height = options.cvs.height;
-    options.hoverCanvas.width = options.cvs.width;
-    options.hoverCanvas.height = options.cvs.height;
-    options.scanCanvas.width = options.cvs.width;
-    options.scanCanvas.height = options.cvs.height;
-
-    radar_func();
-    draw();
-  }).observe(options.cvs as HTMLCanvasElement);
 });
+const resize = () => {
+  options.cvs.width = options.cvs.getBoundingClientRect().width;
+  options.cvs.height = options.cvs.getBoundingClientRect().height;
+  if (options.cvs.width == 0 || options.cvs.height == 0) {
+    return;
+  }
+  options.offsetX = 0;
+  options.offsetY = 0;
+  options.radarCanvas.width = options.cvs.width;
+  options.radarCanvas.height = options.cvs.height;
+  options.hoverCanvas.width = options.cvs.width;
+  options.hoverCanvas.height = options.cvs.height;
+  options.scanCanvas.width = options.cvs.width;
+  options.scanCanvas.height = options.cvs.height;
+
+  radar_func();
+  draw();
+};
 onBeforeUnmount(() => {
   document.removeEventListener("mousemove", mousemoveFunc);
   options.cvs.removeEventListener("mousewheel", mousewheelFunc);

@@ -1,5 +1,5 @@
 <template>
-  <canvas ref="canvasRef" class="canvasRef"></canvas>
+  <canvas v-resize="resize" ref="canvasRef" class="canvasRef"></canvas>
   <!-- <graph v-if="DEV" class="absolute left-0 bottom-0" v-model:args="graphArgs"></graph> -->
 </template>
 <script lang="ts" setup>
@@ -23,7 +23,6 @@ const canvasRef = ref(null);
 let timer: number = 0;
 let frameCount: number = 0;
 let prevFrameCount: number = 0;
-let resizeObserver: ResizeObserver;
 let cvs: HTMLCanvasElement;
 let ctx: ExtendedCanvasRenderingContext2D;
 let sleepController = new SleepController();
@@ -36,6 +35,16 @@ let rect = {
   y: 0,
   width: 100,
   height: 100,
+};
+const resize = () => {
+  let box = cvs.getBoundingClientRect();
+  cvs.width = box.width;
+  cvs.height = box.height;
+  sleepController.terminateSleep();
+  cancelAnimationFrame(aid);
+  lastTimestamp = performance.now();
+  queue.push({});
+  loop(lastTimestamp);
 };
 onMounted(() => {
   cvs = (canvasRef.value as unknown) as HTMLCanvasElement;
@@ -51,17 +60,6 @@ onMounted(() => {
     restore.call(this);
     ctx.saveCount--;
   };
-  resizeObserver = new ResizeObserver((entry) => {
-    let box = cvs.getBoundingClientRect();
-    cvs.width = box.width;
-    cvs.height = box.height;
-    sleepController.terminateSleep();
-    cancelAnimationFrame(aid);
-    lastTimestamp = performance.now();
-    queue.push({});
-    loop(lastTimestamp);
-  });
-  resizeObserver.observe(cvs);
   timer = setInterval(() => {
     graphArgs.fps.value = frameCount - prevFrameCount;
     prevFrameCount = frameCount;
@@ -134,7 +132,6 @@ async function loop(timestamp: number) {
 onBeforeUnmount(() => {
   sleepController.terminateSleep();
   cancelAnimationFrame(aid);
-  resizeObserver.disconnect();
   clearInterval(timer);
 });
 </script>

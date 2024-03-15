@@ -1,5 +1,6 @@
 <template>
   <canvas
+    v-resize="resize"
     ref="canvas"
     style="
       position: absolute;
@@ -152,6 +153,56 @@ let newPos: {
   targetY: number;
 } = { x: 0, y: 0, targetX: 0, targetY: 0 };
 let task: Task;
+const resize = () => {
+  let rect = cvs.getBoundingClientRect();
+  if (rect.width == 0 || rect.height == 0) return;
+  cvs.width = rect.width * devicePixelRatio;
+  cvs.height = rect.height * devicePixelRatio;
+  planeLayer.quadtree.bounds = { x: 0, y: 0, width: cvs.width, height: cvs.height };
+  stationLayer.quadtree.bounds = { x: 0, y: 0, width: cvs.width, height: cvs.height };
+  localStorage.L && (obj.targetL = obj.L = Number(localStorage.L));
+  eventbus.emit("systemInfo", { level: obj.L.toFixed(2) });
+  if (localStorage.center) {
+    var center = JSON.parse(localStorage.center);
+    obj.imgX = cvs.width / 2 - ((center[0] + 180) / 360) * tileWidth * 2 ** obj.L;
+    obj.imgY =
+      cvs.height / 2 -
+      ((1 - Math.asinh(Math.tan((center[1] * Math.PI) / 180)) / Math.PI) / 2) *
+        2 ** obj.L *
+        tileWidth;
+  } else {
+    let convert = wgs84togcj02(POINT.lng, POINT.lat);
+    obj.imgX = cvs.width / 2 - (tileWidth * 2 ** obj.L * (convert[0] + 180)) / 360;
+    obj.imgY =
+      cvs.height / 2 -
+      ((1 - Math.asinh(Math.tan((convert[1] * Math.PI) / 180)) / Math.PI) / 2) *
+        2 ** obj.L *
+        tileWidth;
+  }
+  limitScale();
+  limitRegion();
+  loadMap();
+  needRedraw = true;
+  windy.start(
+    [
+      [0, 0],
+      [cvs.width, cvs.height],
+    ],
+    cvs.width,
+    cvs.height,
+    [
+      [
+        pixel2Lng(0, obj.imgX, 2 ** obj.L, 256),
+        pixel2Lat(cvs.height, obj.imgY, 2 ** obj.L, 256),
+      ],
+      [
+        pixel2Lng(cvs.width, obj.imgX, 2 ** obj.L, 256),
+        pixel2Lat(0, obj.imgY, 2 ** obj.L, 256),
+      ],
+    ]
+  );
+  draw();
+};
 onMounted(async () => {
   task = new Task(20);
   mapLayer = new MapLayer();
@@ -186,57 +237,7 @@ onMounted(async () => {
   init();
   lastTime = performance.now();
   loop(lastTime);
-  const resizeObserver = new ResizeObserver(() => {
-    let rect = cvs.getBoundingClientRect();
-    if (rect.width == 0 || rect.height == 0) return;
-    cvs.width = rect.width * devicePixelRatio;
-    cvs.height = rect.height * devicePixelRatio;
-    planeLayer.quadtree.bounds = { x: 0, y: 0, width: cvs.width, height: cvs.height };
-    stationLayer.quadtree.bounds = { x: 0, y: 0, width: cvs.width, height: cvs.height };
-    localStorage.L && (obj.targetL = obj.L = Number(localStorage.L));
-    eventbus.emit("systemInfo", { level: obj.L.toFixed(2) });
-    if (localStorage.center) {
-      var center = JSON.parse(localStorage.center);
-      obj.imgX = cvs.width / 2 - ((center[0] + 180) / 360) * tileWidth * 2 ** obj.L;
-      obj.imgY =
-        cvs.height / 2 -
-        ((1 - Math.asinh(Math.tan((center[1] * Math.PI) / 180)) / Math.PI) / 2) *
-          2 ** obj.L *
-          tileWidth;
-    } else {
-      let convert = wgs84togcj02(POINT.lng, POINT.lat);
-      obj.imgX = cvs.width / 2 - (tileWidth * 2 ** obj.L * (convert[0] + 180)) / 360;
-      obj.imgY =
-        cvs.height / 2 -
-        ((1 - Math.asinh(Math.tan((convert[1] * Math.PI) / 180)) / Math.PI) / 2) *
-          2 ** obj.L *
-          tileWidth;
-    }
-    limitScale();
-    limitRegion();
-    loadMap();
-    needRedraw = true;
-    windy.start(
-      [
-        [0, 0],
-        [cvs.width, cvs.height],
-      ],
-      cvs.width,
-      cvs.height,
-      [
-        [
-          pixel2Lng(0, obj.imgX, 2 ** obj.L, 256),
-          pixel2Lat(cvs.height, obj.imgY, 2 ** obj.L, 256),
-        ],
-        [
-          pixel2Lng(cvs.width, obj.imgX, 2 ** obj.L, 256),
-          pixel2Lat(0, obj.imgY, 2 ** obj.L, 256),
-        ],
-      ]
-    );
-    draw();
-  });
-  resizeObserver.observe(cvs);
+
   cvs.addEventListener("mousewheel", mousewheelFunc, { passive: true });
   // document.addEventListener("mousewheel", mousewheelFunc, { passive: true });
   cvs.addEventListener("mousedown", mousedownFunc, { passive: true });
@@ -245,7 +246,6 @@ onMounted(async () => {
   eventbus.on("move", moveFunc);
   onBeforeUnmount(() => {
     cancel();
-    resizeObserver.disconnect();
   });
   1;
 });

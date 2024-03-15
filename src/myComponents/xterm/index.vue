@@ -1,5 +1,6 @@
 <template>
   <div
+    v-resize="resize"
     ref="termRef"
     style="
       position: absolute;
@@ -16,23 +17,21 @@ import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import "xterm/css/xterm.css";
 let termRef = ref(null);
+const resize = () => {
+  fitAddon.fit();
+};
 onMounted(() => {
   let term = new Terminal();
   let fitAddon = new FitAddon();
   term.loadAddon(fitAddon);
   term.open(termRef.value);
   // term.write("Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ");
-  let resizeObserver = new ResizeObserver(() => {
-    fitAddon.fit();
-  });
-  resizeObserver.observe(termRef.value);
   onBeforeUnmount(() => {
     term.dispose();
     if (ws) {
       ws.dead = true;
       ws.close();
     }
-    resizeObserver.disconnect();
   });
   let ws;
   term.onData((data) => ws && ws.send(JSON.stringify({ input: data })));

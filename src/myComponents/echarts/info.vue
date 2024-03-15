@@ -28,7 +28,7 @@
           class="w-full h-full flex items-center"
         >
           蓄电池电量百分比:
-          <div :class="`battery${item?.battery_level}`" style="margin: 0 4px">
+          <div ref="batteryRef" class="battery" style="margin: 0 4px">
             <div class="positiveElectrode"></div>
           </div>
           <div v-if="item?.battery_level <= 50">{{ item?.battery_level }}%</div>
@@ -184,7 +184,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { watch, ref } from "vue";
+import { watch, ref, nextTick } from "vue";
 import { useStationStore } from "~/stores/station";
 const station = useStationStore();
 import { useBus } from "~/myComponents/bus";
@@ -196,10 +196,29 @@ const click = () => {
     "_self"
   );
 };
+const batteryRef = ref(null);
 watch([() => bus.result, () => station.active], ([result, active]) => {
   result.map((v) => {
     if (v.radar.radar_id === active) {
       item.value = v;
+      nextTick(() => {
+        let battery_level = item.value.battery_level;
+        let battery = (batteryRef.value as unknown) as HTMLDivElement;
+        if (battery) {
+          if (battery_level < 0) {
+            //do nothing,use default style
+          } else if (battery_level < 30) {
+            battery.style.setProperty("--battery", battery_level + "%");
+            battery.style.setProperty("--batteryColor", "#f00");
+          } else if (battery_level < 80) {
+            battery.style.setProperty("--battery", battery_level + "%");
+            battery.style.setProperty("--batteryColor", "#fa0");
+          } else if (battery_level <= 100) {
+            battery.style.setProperty("--battery", battery_level + "%");
+            battery.style.setProperty("--batteryColor", "#0f0");
+          }
+        }
+      });
     }
   });
 });
@@ -216,41 +235,9 @@ watch([() => bus.result, () => station.active], ([result, active]) => {
   box-shadow: 0 0 4px 4px #00000011;
   border-color: #00000011;
 }
-@for $i from 0 through 100 {
-  .battery#{$i} {
-    box-sizing: border-box;
-    position: relative;
-    height: 18px;
-    width: 14px;
-    border: 1px solid grey;
-    margin: -1px;
-    .positiveElectrode {
-      position: absolute;
-      background-color: grey;
-      left: 50%;
-      top: -2px;
-      transform: translateX(-50%);
-      width: 6px;
-      height: 2px;
-    }
-    &::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 100%;
-      height: $i * 1%;
-      @if $i <=30 {
-        background-color: #f00;
-      } @else if $i <=80 {
-        background-color: #fa0;
-      } @else {
-        background-color: #0f0;
-      }
-    }
-  }
-}
-.battery-1000 {
+.battery {
+  --battery: 100%;
+  --batteryColor: grey;
   box-sizing: border-box;
   position: relative;
   height: 18px;
@@ -272,8 +259,8 @@ watch([() => bus.result, () => station.active], ([result, active]) => {
     left: 0;
     bottom: 0;
     width: 100%;
-    height: 100%;
-    background-color: grey;
+    height: var(--battery);
+    background-color: var(--batteryColor);
   }
 }
 </style>
