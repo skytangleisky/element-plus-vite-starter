@@ -139,8 +139,6 @@ const minLevel = 0;
 const maxLevel = 22;
 const 限制 = true;
 let mousemove: Pos = { x: 0, y: 0, targetX: 0, targetY: 0 };
-let pos: Pos = { x: 0, y: 0, targetX: 0, targetY: 0 };
-let posl: Pos = { x: 0, y: 0, targetX: 0, targetY: 0 };
 let currentLngLat: {
   lng: number;
   lat: number;
@@ -455,7 +453,6 @@ const mousedownFunc = (event: MouseEvent) => {
   // panel&&panel.mousedownFunc(event)
   let tmp = windowToCanvas(event.clientX, event.clientY, cvs);
   Object.assign(mousemove, { x: tmp.x, y: tmp.y, targetX: tmp.x, targetY: tmp.y });
-  Object.assign(posl, mousemove);
   let x = ((mousemove.x - obj.imgX) * precision) / (2 ** obj.L * tileWidth);
   let y = ((mousemove.y - obj.imgY) * precision) / (2 ** obj.L * tileWidth);
   Object.assign(newPos, { x, y, targetX: x, targetY: y });
@@ -478,13 +475,8 @@ const mousemoveFunc = (evt: MouseEvent) => {
   // this.drawCurrentLngLat()
   // panel&&divMask.addEventListener('mousemove',panel.mousemoveFunc,{passive:false})
   if (isMouseDown) {
-    let tmp = windowToCanvas(evt.clientX, evt.clientY, cvs);
-    pos = { x: tmp.x, y: tmp.y, targetX: tmp.x, targetY: tmp.y };
-    var deltaX = pos.x - posl.x,
-      deltaY = pos.y - posl.y;
-    mousemove.targetX += deltaX;
-    mousemove.targetY += deltaY;
-    posl = JSON.parse(JSON.stringify(pos));
+    mousemove.targetX += evt.movementX;
+    mousemove.targetY += evt.movementY;
     let period = 1;
     // if(config.动画){
     //   period=1

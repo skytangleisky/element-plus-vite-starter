@@ -30,7 +30,7 @@
         {{ user.username }}，欢迎您！
       </div>
     </div>
-    <span class="title color-black p-0 m-0 dark:color-white md:block hidden"
+    <span class="title inline-block color-black p-0 m-0 dark:color-white md:block hidden"
       >低空飞行安全监控系统</span
     >
     <div style="line-height: 40px" class="flex items-center">
@@ -117,7 +117,7 @@ const logout = () => {
 <style scoped lang="scss">
 .nav {
   position: relative;
-  z-index: 2;
+  z-index: 5;
   width: 100%;
   height: 40px;
   line-height: 40px;
@@ -125,6 +125,7 @@ const logout = () => {
   display: flex;
   justify-content: space-between;
   .title {
+    white-space: nowrap;
     position: absolute;
     left: 50%;
     transform: translateX(-50%);

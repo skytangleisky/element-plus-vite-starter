@@ -23,6 +23,7 @@
   </div>
 </template>
 <script lang="ts" setup>
+import gsap from "gsap";
 import { onMounted, watch, reactive, onBeforeUnmount, ref } from "vue";
 let rates = [5, 10, 20, 50, 100, 200, 500, 1000, 2000];
 function windowToCanvas(
@@ -37,8 +38,6 @@ function windowToCanvas(
   };
 }
 import 雷达数据 from "./RHI.js";
-console.log(雷达数据);
-
 function verticalFlowColor(v: number) {
   const colors = [
     "#0000ff",
@@ -471,12 +470,12 @@ function test_radar(α: number, β: number, arr: Array<any>, rate: number) {
     ctx.arc(
       0,
       0,
-      (arr.length - 1 + 0.5) * 2 ** options.length + 2 ** options.length,
+      (arr.length - 1 + 0.5) * 2 ** options.level + 2 ** options.level,
       +θ,
       -θ,
       false
     );
-    ctx.arc(0, 0, (0 + 0.5) * 2 ** options.length, -θ, +θ, true);
+    ctx.arc(0, 0, (0 + 0.5) * 2 ** options.level, -θ, +θ, true);
     ctx.closePath();
     ctx.globalCompositeOperation = "destination-out";
     ctx.fill();
@@ -485,8 +484,8 @@ function test_radar(α: number, β: number, arr: Array<any>, rate: number) {
   }
   arr.map((v, k) => {
     if (v !== undefined) {
-      let point1 = { x: (k + 0.5) * 2 ** options.length, y: 0 };
-      let point2 = { x: (k + 0.5) * 2 ** options.length + 2 ** options.length, y: 0 };
+      let point1 = { x: (k + 0.5) * 2 ** options.level, y: 0 };
+      let point2 = { x: (k + 0.5) * 2 ** options.level + 2 ** options.level, y: 0 };
       function getPt(pt: { x: number; y: number }, Ⲫ: number) {
         return {
           x: pt.x * Math.cos(Ⲫ) - pt.y * Math.sin(Ⲫ) + cvs.width / 2 + options.offsetX,
@@ -517,20 +516,13 @@ function test_radar(α: number, β: number, arr: Array<any>, rate: number) {
         ctx.beginPath();
         ctx.lineWidth = 1;
 
-        // ctx.moveTo((k + 0.5) * 2 ** options.length, (k + 0.5) * 2 ** options.length * Math.tan(-θ));
-        // ctx.lineTo((k + 0.5) * 2 ** options.length + 2 ** options.length, ((k + 0.5) * 2 ** options.length + 2 ** options.length) * Math.tan(-θ));
-        // ctx.lineTo((k + 0.5) * 2 ** options.length + 2 ** options.length, ((k + 0.5) * 2 ** options.length + 2 ** options.length) * Math.tan(θ));
-        // ctx.lineTo((k + 0.5) * 2 ** options.length, (k + 0.5) * 2 ** options.length * Math.tan(θ));
+        // ctx.moveTo((k + 0.5) * 2 ** options.level, (k + 0.5) * 2 ** options.level * Math.tan(-θ));
+        // ctx.lineTo((k + 0.5) * 2 ** options.level + 2 ** options.level, ((k + 0.5) * 2 ** options.level + 2 ** options.level) * Math.tan(-θ));
+        // ctx.lineTo((k + 0.5) * 2 ** options.level + 2 ** options.level, ((k + 0.5) * 2 ** options.level + 2 ** options.level) * Math.tan(θ));
+        // ctx.lineTo((k + 0.5) * 2 ** options.level, (k + 0.5) * 2 ** options.level * Math.tan(θ));
 
-        ctx.arc(
-          0,
-          0,
-          (k + 0.5) * 2 ** options.length + 2 ** options.length,
-          +θ,
-          -θ,
-          false
-        );
-        ctx.arc(0, 0, (k + 0.5) * 2 ** options.length, -θ, +θ, true);
+        ctx.arc(0, 0, (k + 0.5) * 2 ** options.level + 2 ** options.level, +θ, -θ, false);
+        ctx.arc(0, 0, (k + 0.5) * 2 ** options.level, -θ, +θ, true);
 
         ctx.closePath();
         // ctx.fillStyle=v.color.substr(0,7) + Math.floor(rate*255).toString(16).padStart(2,'0');
@@ -603,7 +595,7 @@ function test_hover(α: number, β: number, arr: Array<any>, distance: number) {
   ctx.translate(cvs.width / 2 + options.offsetX, cvs.height / 2 + options.offsetY);
   ctx.rotate(((α + β) / 2 / 180) * Math.PI);
 
-  let k = Math.floor(distance / 2 ** options.length - 0.5);
+  let k = Math.floor(distance / 2 ** options.level - 0.5);
   if (arr && k >= 0 && k < arr.length) {
     ctx.strokeStyle = "#000";
     ctx.lineWidth = 0.5;
@@ -611,12 +603,12 @@ function test_hover(α: number, β: number, arr: Array<any>, distance: number) {
     ctx.arc(
       0,
       0,
-      (arr.length - 1 + 0.5) * 2 ** options.length + 2 ** options.length,
+      (arr.length - 1 + 0.5) * 2 ** options.level + 2 ** options.level,
       +θ,
       -θ,
       false
     );
-    ctx.arc(0, 0, (1 + 0.5) * 2 ** options.length, -θ, +θ, true);
+    ctx.arc(0, 0, (1 + 0.5) * 2 ** options.level, -θ, +θ, true);
     ctx.closePath();
     ctx.stroke();
 
@@ -626,13 +618,13 @@ function test_hover(α: number, β: number, arr: Array<any>, distance: number) {
       ctx.lineWidth = 1.0;
       ctx.beginPath();
 
-      // ctx.moveTo((k+0.5)*2 ** options.length,((k+0.5)*2 ** options.length)*Math.tan(-θ));
-      // ctx.lineTo((k+0.5)*2 ** options.length+2 ** options.length,((k+0.5)*2 ** options.length+2 ** options.length)*Math.tan(-θ));
-      // ctx.lineTo((k+0.5)*2 ** options.length+2 ** options.length,((k+0.5)*2 ** options.length+2 ** options.length)*Math.tan(θ));
-      // ctx.lineTo((k+0.5)*2 ** options.length,((k+0.5)*2 ** options.length)*Math.tan(θ));
+      // ctx.moveTo((k+0.5)*2 ** options.level,((k+0.5)*2 ** options.level)*Math.tan(-θ));
+      // ctx.lineTo((k+0.5)*2 ** options.level+2 ** options.level,((k+0.5)*2 ** options.level+2 ** options.level)*Math.tan(-θ));
+      // ctx.lineTo((k+0.5)*2 ** options.level+2 ** options.level,((k+0.5)*2 ** options.level+2 ** options.level)*Math.tan(θ));
+      // ctx.lineTo((k+0.5)*2 ** options.level,((k+0.5)*2 ** options.level)*Math.tan(θ));
 
-      ctx.arc(0, 0, (k + 0.5) * 2 ** options.length + 2 ** options.length, +θ, -θ, false);
-      ctx.arc(0, 0, (k + 0.5) * 2 ** options.length, -θ, +θ, true);
+      ctx.arc(0, 0, (k + 0.5) * 2 ** options.level + 2 ** options.level, +θ, -θ, false);
+      ctx.arc(0, 0, (k + 0.5) * 2 ** options.level, -θ, +θ, true);
       ctx.closePath();
       ctx.stroke();
     }
@@ -662,12 +654,12 @@ function test_scan(α: number, β: number, arr: Array<any>) {
     ctx.arc(
       0,
       0,
-      (arr.length - 1 + 0.5) * 2 ** options.length + 2 ** options.length,
+      (arr.length - 1 + 0.5) * 2 ** options.level + 2 ** options.level,
       +θ,
       -θ,
       false
     );
-    ctx.arc(0, 0, (1 + 0.5) * 2 ** options.length, -θ, +θ, true);
+    ctx.arc(0, 0, (1 + 0.5) * 2 ** options.level, -θ, +θ, true);
     ctx.closePath();
     ctx.stroke();
   }
@@ -688,10 +680,10 @@ function draw() {
   );
   ctx.beginPath();
   ctx.rotate(Math.PI / 4);
-  ctx.moveTo(-190.5 * 2 ** options.length, 0);
-  ctx.lineTo(190.5 * 2 ** options.length, 0);
-  ctx.moveTo(0, -190.5 * 2 ** options.length);
-  ctx.lineTo(0, 190.5 * 2 ** options.length);
+  ctx.moveTo(-190.5 * 2 ** options.level, 0);
+  ctx.lineTo(190.5 * 2 ** options.level, 0);
+  ctx.moveTo(0, -190.5 * 2 ** options.level);
+  ctx.lineTo(0, 190.5 * 2 ** options.level);
   ctx.stroke();
   ctx.restore();
 
@@ -703,22 +695,22 @@ function draw() {
   ctx.strokeStyle = "#000";
   ctx.fillStyle = "#00000088";
   ctx.beginPath();
-  ctx.moveTo(-190.5 * 2 ** options.length, 0);
-  ctx.lineTo(190.5 * 2 ** options.length, 0);
-  ctx.moveTo(0, -190.5 * 2 ** options.length);
-  ctx.lineTo(0, 190.5 * 2 ** options.length);
+  ctx.moveTo(-190.5 * 2 ** options.level, 0);
+  ctx.lineTo(190.5 * 2 ** options.level, 0);
+  ctx.moveTo(0, -190.5 * 2 ** options.level);
+  ctx.lineTo(0, 190.5 * 2 ** options.level);
   ctx.stroke();
 
   // for(let i=1;i<=189.5;i++){
   //   ctx.beginPath();
-  //   ctx.arc(0,0,2 ** options.length*i,0,Math.PI*2);
+  //   ctx.arc(0,0,2 ** options.level*i,0,Math.PI*2);
   //   ctx.closePath();
   //   ctx.stroke();
   // }
   let len: number = 1;
   let rate: number = 1;
   for (let i = 0; i < rates.length; i++) {
-    len = (rates[i] / options.distance) * 2 ** options.length;
+    len = (rates[i] / options.distance) * 2 ** options.level;
     if (len > 50) {
       rate = rates[i];
       break;
@@ -742,27 +734,27 @@ function draw() {
   let distanceWidth = 45;
 
   ctx.beginPath();
-  ctx.moveTo((2 ** options.length * (distanceRunway - distanceWidth / 2)) / 30, 0);
+  ctx.moveTo((2 ** options.level * (distanceRunway - distanceWidth / 2)) / 30, 0);
   ctx.lineTo(
-    (2 ** options.length * (distanceRunway - distanceWidth / 2)) / 30,
+    (2 ** options.level * (distanceRunway - distanceWidth / 2)) / 30,
     -(options.cvs.height / 2 + options.offsetY)
   );
   ctx.setLineDash([]);
   ctx.stroke();
 
   ctx.beginPath();
-  ctx.moveTo((2 ** options.length * distanceRunway) / 30, 0);
+  ctx.moveTo((2 ** options.level * distanceRunway) / 30, 0);
   ctx.lineTo(
-    (2 ** options.length * distanceRunway) / 30,
+    (2 ** options.level * distanceRunway) / 30,
     -(options.cvs.height / 2 + options.offsetY)
   );
   ctx.setLineDash([5, 5]);
   ctx.stroke();
 
   ctx.beginPath();
-  ctx.moveTo((2 ** options.length * (distanceRunway + distanceWidth / 2)) / 30, 0);
+  ctx.moveTo((2 ** options.level * (distanceRunway + distanceWidth / 2)) / 30, 0);
   ctx.lineTo(
-    (2 ** options.length * (distanceRunway + distanceWidth / 2)) / 30,
+    (2 ** options.level * (distanceRunway + distanceWidth / 2)) / 30,
     -(options.cvs.height / 2 + options.offsetY)
   );
   ctx.setLineDash([]);
@@ -793,73 +785,75 @@ const options = reactive({
   offsetY: 0,
   mousedown: false,
   pos: { x: 0, y: 0 },
-  length: 2,
+  rate: { x: 0, y: 0 },
+  level: 2,
+  targetLevel: 2,
   distance: 30,
   item_hover: undefined,
   mousemove: { x: 0, y: 0 },
 });
 const paintCanvasRef = ref(null);
 function mousewheelFunc(e: any) {
-  let convert = windowToCanvas(e.clientX, e.clientY, options.cvs as HTMLCanvasElement);
-  let rateX =
-    (convert.x - options.offsetX - options.cvs.width / 2) /
-    ((options.cvs.width / 2) * 2 ** options.length);
-  let rateY =
-    (convert.y - options.offsetY - options.cvs.height / 2) /
-    ((options.cvs.height / 2) * 2 ** options.length);
   if (e.deltaY < 0) {
-    options.length += 0.05;
+    options.targetLevel += 0.05;
   } else {
-    options.length -= 0.05;
+    options.targetLevel -= 0.05;
   }
-  if (options.length < 0) {
-    options.length = 0;
-  } else if (options.length > 10) {
-    options.length = 10;
+  if (options.targetLevel < 0) {
+    options.targetLevel = 0;
+  } else if (options.targetLevel > 10) {
+    options.targetLevel = 10;
   }
-  options.offsetX =
-    convert.x -
-    options.cvs.width / 2 -
-    (options.cvs.width / 2) * 2 ** options.length * rateX;
-  options.offsetY =
-    convert.y -
-    options.cvs.height / 2 -
-    (options.cvs.height / 2) * 2 ** options.length * rateY;
+  gsap.killTweensOf(options);
+  gsap.to(options, {
+    level: options.targetLevel,
+    duration: 2,
+    onUpdate: () => {
+      options.offsetX =
+        options.mousemove.x -
+        options.cvs.width / 2 -
+        (options.cvs.width / 2) * 2 ** options.level * options.rate.x;
+      options.offsetY =
+        options.mousemove.y -
+        options.cvs.height / 2 -
+        (options.cvs.height / 2) * 2 ** options.level * options.rate.y;
 
-  radar_func();
-  hover_func(convert);
+      radar_func();
+      hover_func(options.mousemove);
 
-  draw();
+      draw();
+    },
+  });
 }
 function mousemoveFunc(e: any) {
   let convert = windowToCanvas(e.clientX, e.clientY, options.cvs as HTMLCanvasElement);
   options.mousemove = convert;
-  if (
-    (0 < convert.x &&
-      convert.x < options.cvs.width &&
-      0 < convert.y &&
-      convert.y < options.cvs.height) ||
-    options.mousedown
-  ) {
-    let tip = (tipRef.value as unknown) as HTMLElement;
-    let rect = tip.getBoundingClientRect();
-    $(tip).css({ top: convert.y + 20 + "px", left: convert.x + 20 + "px" });
-    if (options.mousedown) {
-      options.offsetX += convert.x - options.pos.x;
-      options.offsetY += convert.y - options.pos.y;
-      options.pos = { x: convert.x, y: convert.y };
-      radar_func();
-    }
-    hover_func(convert);
-    draw();
-    e.stopPropagation();
-    e.preventDefault();
+  options.rate.x =
+    (options.mousemove.x - options.offsetX - options.cvs.width / 2) /
+    ((options.cvs.width / 2) * 2 ** options.level);
+  options.rate.y =
+    (options.mousemove.y - options.offsetY - options.cvs.height / 2) /
+    ((options.cvs.height / 2) * 2 ** options.level);
+  let tip = (tipRef.value as unknown) as HTMLElement;
+  $(tip).css({ left: convert.x + 20 + "px", top: convert.y + 20 + "px" });
+  if (options.mousedown) {
+    options.offsetX += e.movementX;
+    options.offsetY += e.movementY;
+    options.rate.x =
+      (options.mousemove.x - options.offsetX - options.cvs.width / 2) /
+      ((options.cvs.width / 2) * 2 ** options.level);
+    options.rate.y =
+      (options.mousemove.y - options.offsetY - options.cvs.height / 2) /
+      ((options.cvs.height / 2) * 2 ** options.level);
+    radar_func();
   }
+  hover_func(convert);
+  draw();
+  e.stopPropagation();
+  e.preventDefault();
 }
 function mousedownFunc(e: any) {
-  let convert = windowToCanvas(e.clientX, e.clientY, options.cvs as HTMLCanvasElement);
   options.mousedown = true;
-  options.pos = { x: convert.x, y: convert.y };
 }
 function mouseupFunc(e: any) {
   options.mousedown = false;

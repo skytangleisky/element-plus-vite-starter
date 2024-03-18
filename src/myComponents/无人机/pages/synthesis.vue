@@ -175,7 +175,7 @@ $time: 1s;
   }
 }
 .right-drawer {
-  z-index: 2;
+  z-index: 4;
   position: absolute;
   right: 0;
   width: 240px;

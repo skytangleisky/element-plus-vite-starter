@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col">
+  <div class="relative flex flex-col">
     <el-scrollbar
       class="flex-1"
       :style="`height: 100%; background-color: ${isDark ? '#304156' : '#eee'};${
