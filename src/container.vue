@@ -3,7 +3,7 @@
   <div class="flex flex-row" style="width: 100%; height: calc(100% - 40px)">
     <left-menu></left-menu>
     <div
-      class="relative w-full h-full b-solid b-red b-1px box-border"
+      class="relative w-full h-full b-solid b-red b-0px box-border"
       style="overflow: auto"
     >
       <router-view v-slot="{ Component }">
