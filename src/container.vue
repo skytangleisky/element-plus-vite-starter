@@ -37,7 +37,7 @@ import { ref, onMounted } from "vue";
 // import RemoteComponent from './myComponents/remoteComponent.vue'
 // import TestButton from './elementplus/basic/button.vue'
 // import TestBorder from './elementplus/basic/border.vue'
-import Search from "./myComponents/search.vue";
+// import Search from "./myComponents/search.vue";
 import myHeader from "./header.vue";
 import leftMenu from "./myComponents/leftMenu/index.vue";
 import { useExclude } from "./myComponents/bus";

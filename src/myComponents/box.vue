@@ -7,7 +7,7 @@
     <slot></slot>
   </div>
 </template>
-<style lang="scss">
+<style scoped lang="scss">
 .fourCorners {
   padding: 10px;
   width: 200px;

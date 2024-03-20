@@ -1,13 +1,7 @@
 <template>
   <div class="login_dialog">
-    <div style="display: flex; align-items: center">
-      <img
-        src="/src/assets/eagle.png"
-        style="width: 40px; height: 40px; margin-right: 10px"
-      />
-      <div class="title">低空飞行安全监控系统</div>
-    </div>
-    <div class="rightPlane fourCorners">
+    <div class="leftImage">低空飞行安全监控系统</div>
+    <div class="rightPlane">
       <el-form
         ref="formEl"
         id="rightPlaneForm"
@@ -129,39 +123,46 @@ const resetForm = (formEl: FormInstance | undefined) => {
 };
 </script>
 <style lang="scss">
+.鹰潭 .login_dialog .leftImage {
+  background-image: url(assets/uavBg.jpg);
+}
 .login_dialog {
   position: absolute;
   transform: translate(-50%, -50%);
+  box-shadow: 4px 4px 12px 4px rgba(23, 38, 42, 0.49);
   top: 50%;
   left: 50%;
+  width: 1200px;
+  height: 600px;
   // background-color: #f00;
   display: flex;
-  flex-direction: column;
-  .title {
+  flex-direction: row;
+  border-radius: 8px;
+  overflow: hidden;
+  .leftImage {
+    width: 800px;
+    height: 600px;
+    background-image: url(assets/10.jpg);
     background-size: cover;
     font-family: "SourceHanSansSC-Bold";
     font-weight: 600;
     text-align: left;
-    font-size: 25px;
-    color: #1891ff;
+    font-size: 35px;
+    color: #fff;
     text-shadow: 5px 4px 5px rgba(0, 0, 0, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    display: inline-block;
-    white-space: nowrap;
   }
   .rightPlane {
-    position: relative;
-    border-radius: 8px;
-    margin-top: 18px;
-    padding-top: 18px;
+    width: 400px;
+    height: 600px;
     display: flex;
     flex-direction: colum;
     justify-content: center;
     align-items: center;
-    background-color: #ffffff66;
+    background-color: #ffffff88;
     .ep-input {
       .ep-input__wrapper {
         background: transparent;
@@ -182,26 +183,6 @@ const resetForm = (formEl: FormInstance | undefined) => {
         padding: 0;
       }
     }
-  }
-}
-</style>
-<style lang="scss" scoped>
-.fourCorners {
-  &::before {
-    --offset: 0px;
-    --borderWidth: 3px;
-    position: absolute;
-    left: var(--offset);
-    top: var(--offset);
-    content: "";
-    width: calc(100% - 2 * var(--offset));
-    height: calc(100% - 2 * var(--offset));
-    border-radius: 8px;
-    box-sizing: border-box;
-    border: var(--borderWidth) solid white;
-    --len: 16px;
-    mask: conic-gradient(at var(--len) var(--len), transparent 75%, red 75%) 0 0 /
-      calc(100% - var(--len)) calc(100% - var(--len));
   }
 }
 </style>

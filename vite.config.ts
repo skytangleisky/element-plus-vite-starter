@@ -51,7 +51,7 @@ export default defineConfig({
       template: 'index.html',
       inject:{
         data:{
-          project:'dark'
+          project:'鹰潭'
         }
       }
     }),

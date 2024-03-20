@@ -739,7 +739,7 @@ function draw() {
     (2 ** options.level * (distanceRunway - distanceWidth / 2)) / 30,
     -(options.cvs.height / 2 + options.offsetY)
   );
-  ctx.setLineDash([]);
+  ctx.setLineDash([3, 2, 8, 3]);
   ctx.stroke();
 
   ctx.beginPath();
@@ -748,7 +748,7 @@ function draw() {
     (2 ** options.level * distanceRunway) / 30,
     -(options.cvs.height / 2 + options.offsetY)
   );
-  ctx.setLineDash([5, 5]);
+  ctx.setLineDash([1, 5]);
   ctx.stroke();
 
   ctx.beginPath();
@@ -757,7 +757,7 @@ function draw() {
     (2 ** options.level * (distanceRunway + distanceWidth / 2)) / 30,
     -(options.cvs.height / 2 + options.offsetY)
   );
-  ctx.setLineDash([]);
+  ctx.setLineDash([2, 3, 8, 3]);
   ctx.stroke();
   ctx.restore();
 }
@@ -828,23 +828,26 @@ function mousewheelFunc(e: any) {
 function mousemoveFunc(e: any) {
   let convert = windowToCanvas(e.clientX, e.clientY, options.cvs as HTMLCanvasElement);
   options.mousemove = convert;
-  options.rate.x =
-    (options.mousemove.x - options.offsetX - options.cvs.width / 2) /
-    ((options.cvs.width / 2) * 2 ** options.level);
-  options.rate.y =
-    (options.mousemove.y - options.offsetY - options.cvs.height / 2) /
-    ((options.cvs.height / 2) * 2 ** options.level);
   let tip = (tipRef.value as unknown) as HTMLElement;
   $(tip).css({ left: convert.x + 20 + "px", top: convert.y + 20 + "px" });
   if (options.mousedown) {
-    options.offsetX += e.movementX;
-    options.offsetY += e.movementY;
+    // options.offsetX += e.movementX;
+    // options.offsetY += e.movementY;
+
     options.rate.x =
       (options.mousemove.x - options.offsetX - options.cvs.width / 2) /
       ((options.cvs.width / 2) * 2 ** options.level);
     options.rate.y =
       (options.mousemove.y - options.offsetY - options.cvs.height / 2) /
       ((options.cvs.height / 2) * 2 ** options.level);
+    options.offsetX =
+      options.mousemove.x -
+      options.cvs.width / 2 -
+      (options.cvs.width / 2) * 2 ** options.level * options.rate.x;
+    options.offsetY =
+      options.mousemove.y -
+      options.cvs.height / 2 -
+      (options.cvs.height / 2) * 2 ** options.level * options.rate.y;
     radar_func();
   }
   hover_func(convert);
@@ -890,7 +893,7 @@ onMounted(() => {
   //   draw();
   //   // clearInterval(timer);
   // };
-  // let timer = setInterval(func, 1000);
+  // let timer = setInterval(func, 100);
 
   options.cvs = (paintCanvasRef.value as unknown) as HTMLCanvasElement;
   document.addEventListener("mousemove", mousemoveFunc, { passive: false });
