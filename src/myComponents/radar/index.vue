@@ -1,25 +1,7 @@
 <template>
-  <div
-    style="
-      width: 100%;
-      height: 100%;
-      position: relative;
-      overflow: hidden;
-      backdrop-filter: blur(15px);
-    "
-  >
+  <div class="radarContainer">
     <canvas v-resize="resize" ref="paintCanvasRef" class="paintCanvas"></canvas>
-    <div
-      class="radar_hover_tip"
-      ref="tipRef"
-      style="
-        display: none;
-        position: absolute;
-        border: 1px solid red;
-        box-sizing: border-box;
-        color: black;
-      "
-    ></div>
+    <div class="radar_hover_tip" ref="tipRef"></div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -371,13 +353,12 @@ function processData(res: any) {
   }
   return dataArr;
 }
-const tipRef = ref(null);
+const tipRef = ref((null as unknown) as HTMLDivElement);
 function hoverItem_change(item: any) {
-  let tip = (tipRef.value as unknown) as HTMLElement;
   if (item) {
-    $(tip).show();
+    $(tipRef.value).show();
     if (item.Time) {
-      $(tip).html(
+      $(tipRef.value).html(
         "记录时间：" +
           item.Time.substr(0, 4) +
           "-" +
@@ -420,17 +401,15 @@ function hoverItem_change(item: any) {
           "<br/>"
       );
     } else {
-      $(tip).html(JSON.stringify(item));
+      $(tipRef.value).html(JSON.stringify(item));
     }
-
-    // $(tip).css('background-color',item.color)
-    if (options.mousemove) {
-      let convert = options.mousemove;
-      let rect = tip.getBoundingClientRect();
-      $(tip).css({ top: convert.y + 20 + "px", left: convert.x + 20 + "px" });
-    }
+    // $(tipRef.value).css("background-color", item.color);
+    $(tipRef.value).css({
+      top: options.pos.y + "px",
+      left: options.pos.x + "px",
+    });
   } else {
-    $(tip).hide();
+    $(tipRef.value).hide();
   }
 }
 function radar_func() {
@@ -580,8 +559,7 @@ function hover_func(convert: { x: number; y: number } | undefined) {
       }
     }
   } else {
-    let tip = (tipRef.value as unknown) as HTMLElement;
-    $(tip).hide();
+    $(tipRef.value).hide();
   }
 }
 //鼠标移入色块效果
@@ -673,20 +651,29 @@ function draw() {
   ctx.drawImage(options.scanCanvas as HTMLCanvasElement, 0, 0);
   ctx.drawImage(options.hoverCanvas as HTMLCanvasElement, 0, 0);
 
-  ctx.save();
-  ctx.translate(
-    options.cvs.width / 2 + options.offsetX,
-    options.cvs.height / 2 + options.offsetY
-  );
-  ctx.beginPath();
-  ctx.rotate(Math.PI / 4);
-  ctx.moveTo(-190.5 * 2 ** options.level, 0);
-  ctx.lineTo(190.5 * 2 ** options.level, 0);
-  ctx.moveTo(0, -190.5 * 2 ** options.level);
-  ctx.lineTo(0, 190.5 * 2 ** options.level);
-  ctx.stroke();
-  ctx.restore();
+  //绘制X
+  // ctx.save();
+  // ctx.translate(
+  //   options.cvs.width / 2 + options.offsetX,
+  //   options.cvs.height / 2 + options.offsetY
+  // );
+  // ctx.beginPath();
+  // ctx.rotate(Math.PI / 4);
+  // ctx.moveTo(-190.5 * 2 ** options.level, 0);
+  // ctx.lineTo(190.5 * 2 ** options.level, 0);
+  // ctx.moveTo(0, -190.5 * 2 ** options.level);
+  // ctx.lineTo(0, 190.5 * 2 ** options.level);
+  // ctx.stroke();
+  // ctx.restore();
 
+  // ctx.beginPath();
+  // ctx.arc(options.pos.x, options.pos.y, 2, 0, Math.PI * 2);
+  // ctx.fillStyle = "#fff";
+  // ctx.strokeStyle = "#000";
+  // ctx.stroke();
+  // ctx.fill();
+
+  //绘制十
   ctx.save();
   ctx.translate(
     options.cvs.width / 2 + options.offsetX,
@@ -700,6 +687,15 @@ function draw() {
   ctx.moveTo(0, -190.5 * 2 ** options.level);
   ctx.lineTo(0, 190.5 * 2 ** options.level);
   ctx.stroke();
+  ctx.restore();
+
+  ctx.save();
+  ctx.translate(
+    options.cvs.width / 2 + options.offsetX,
+    options.cvs.height / 2 + options.offsetY
+  );
+
+  ctx.strokeStyle = "#000";
 
   // for(let i=1;i<=189.5;i++){
   //   ctx.beginPath();
@@ -716,23 +712,34 @@ function draw() {
       break;
     }
   }
-  //距离环
-  // for (let i = 1; i <= Math.floor((190.5 * options.distance) / rate); i++) {
-  //   ctx.beginPath();
-  //   ctx.arc(0, 0, len * i, 0, Math.PI * 2);
-  //   ctx.closePath();
-  //   ctx.fillStyle = "black";
-  //   ctx.fillText((rate * i).toString(), len * i, 0);
-  //   ctx.fillText((rate * i).toString(), 0, -len * i);
-  //   ctx.fillText((rate * i).toString(), -len * i, 0);
-  //   ctx.fillText((rate * i).toString(), 0, len * i);
-  //   ctx.setLineDash([3, 3]);
-  //   ctx.stroke();
-  // }
 
+  //距离环
+  let center = {
+    x: options.cvs.width / 2 + options.offsetX,
+    y: options.cvs.height / 2 + options.offsetY,
+  };
+  let middle = { x: options.cvs.width / 2, y: options.cvs.height / 2 };
+  let distance = Math.sqrt((middle.x - center.x) ** 2 + (middle.y - center.y) ** 2);
+  let radius = Math.sqrt(options.cvs.width ** 2 + options.cvs.height ** 2) / 2;
+  for (let i = 1; i <= Math.floor((190.5 * options.distance) / rate); i++) {
+    let R = len * i;
+    if (distance > R - 2 * radius && distance < R + 2 * radius) {
+      ctx.beginPath();
+      ctx.arc(0, 0, len * i, (2 * Math.PI * 3) / 4, Math.PI * 2);
+      // ctx.closePath();
+      ctx.fillStyle = "black";
+      ctx.fillText((rate * i).toString(), len * i, 0);
+      ctx.fillText((rate * i).toString(), 0, -len * i);
+      ctx.fillText((rate * i).toString(), -len * i, 0);
+      ctx.fillText((rate * i).toString(), 0, len * i);
+      ctx.setLineDash([3, 3]);
+      ctx.stroke();
+    }
+  }
+
+  //绘制跑道门
   let distanceRunway = 600;
   let distanceWidth = 45;
-
   ctx.beginPath();
   ctx.moveTo((2 ** options.level * (distanceRunway - distanceWidth / 2)) / 30, 0);
   ctx.lineTo(
@@ -741,7 +748,6 @@ function draw() {
   );
   ctx.setLineDash([3, 2, 8, 3]);
   ctx.stroke();
-
   ctx.beginPath();
   ctx.moveTo((2 ** options.level * distanceRunway) / 30, 0);
   ctx.lineTo(
@@ -750,7 +756,6 @@ function draw() {
   );
   ctx.setLineDash([1, 5]);
   ctx.stroke();
-
   ctx.beginPath();
   ctx.moveTo((2 ** options.level * (distanceRunway + distanceWidth / 2)) / 30, 0);
   ctx.lineTo(
@@ -784,16 +789,24 @@ const options = reactive({
   offsetX: 0,
   offsetY: 0,
   mousedown: false,
-  pos: { x: 0, y: 0 },
+  pos: { x: 0, y: 0, targetX: 0, targetY: 0 }, //记录canvas中图形的真实位置
   rate: { x: 0, y: 0 },
   level: 2,
   targetLevel: 2,
   distance: 30,
   item_hover: undefined,
-  mousemove: { x: 0, y: 0 },
+  mousemove: { x: 0, y: 0 }, //记录实时鼠标位置
 });
 const paintCanvasRef = ref(null);
 function mousewheelFunc(e: any) {
+  let convert = windowToCanvas(e.clientX, e.clientY, options.cvs as HTMLCanvasElement);
+  options.pos = { ...convert, targetX: convert.x, targetY: convert.y };
+  options.rate.x =
+    (options.pos.x - options.offsetX - options.cvs.width / 2) /
+    ((options.cvs.width / 2) * 2 ** options.level);
+  options.rate.y =
+    (options.pos.y - options.offsetY - options.cvs.height / 2) /
+    ((options.cvs.height / 2) * 2 ** options.level);
   if (e.deltaY < 0) {
     options.targetLevel += 0.05;
   } else {
@@ -810,105 +823,223 @@ function mousewheelFunc(e: any) {
     duration: 2,
     onUpdate: () => {
       options.offsetX =
-        options.mousemove.x -
+        options.pos.x -
         options.cvs.width / 2 -
         (options.cvs.width / 2) * 2 ** options.level * options.rate.x;
       options.offsetY =
-        options.mousemove.y -
+        options.pos.y -
         options.cvs.height / 2 -
         (options.cvs.height / 2) * 2 ** options.level * options.rate.y;
 
       radar_func();
-      hover_func(options.mousemove);
+      hover_func(options.pos);
 
       draw();
     },
   });
 }
-function mousemoveFunc(e: any) {
-  let convert = windowToCanvas(e.clientX, e.clientY, options.cvs as HTMLCanvasElement);
-  options.mousemove = convert;
-  let tip = (tipRef.value as unknown) as HTMLElement;
-  $(tip).css({ left: convert.x + 20 + "px", top: convert.y + 20 + "px" });
-  if (options.mousedown) {
-    // options.offsetX += e.movementX;
-    // options.offsetY += e.movementY;
-
+let touchPosition = { clientX: 0, clientY: 0 };
+function mousemoveFunc(evt: MouseEvent | TouchEvent) {
+  if (evt instanceof MouseEvent) {
+    let convert = windowToCanvas(
+      evt.clientX,
+      evt.clientY,
+      options.cvs as HTMLCanvasElement
+    );
+    options.mousemove = convert;
+    if (options.mousedown) {
+      options.pos.targetX += evt.movementX;
+      options.pos.targetY += evt.movementY;
+      gsap.killTweensOf(options.pos);
+      gsap.to(options.pos, {
+        x: options.pos.targetX,
+        y: options.pos.targetY,
+        duration: 0.5,
+        onUpdate: () => {
+          $(tipRef.value).css({
+            top: options.pos.y + "px",
+            left: options.pos.x + "px",
+          });
+          options.offsetX =
+            options.pos.x -
+            options.cvs.width / 2 -
+            (options.cvs.width / 2) * 2 ** options.level * options.rate.x;
+          options.offsetY =
+            options.pos.y -
+            options.cvs.height / 2 -
+            (options.cvs.height / 2) * 2 ** options.level * options.rate.y;
+          radar_func();
+          hover_func(options.pos);
+          draw();
+        },
+      });
+    }
+  } else if (evt instanceof TouchEvent) {
+    let convert = windowToCanvas(
+      evt.touches[0].clientX,
+      evt.touches[0].clientY,
+      options.cvs as HTMLCanvasElement
+    );
+    options.mousemove = convert;
+    if (options.mousedown) {
+      options.pos.targetX += evt.touches[0].clientX - touchPosition.clientX;
+      options.pos.targetY += evt.touches[0].clientY - touchPosition.clientY;
+      touchPosition = {
+        clientX: evt.touches[0].clientX,
+        clientY: evt.touches[0].clientY,
+      };
+      gsap.killTweensOf(options.pos);
+      gsap.to(options.pos, {
+        x: options.pos.targetX,
+        y: options.pos.targetY,
+        duration: 0.5,
+        onUpdate: () => {
+          $(tipRef.value).css({
+            top: options.pos.y + "px",
+            left: options.pos.x + "px",
+          });
+          options.offsetX =
+            options.pos.x -
+            options.cvs.width / 2 -
+            (options.cvs.width / 2) * 2 ** options.level * options.rate.x;
+          options.offsetY =
+            options.pos.y -
+            options.cvs.height / 2 -
+            (options.cvs.height / 2) * 2 ** options.level * options.rate.y;
+          radar_func();
+          hover_func(options.pos);
+          draw();
+        },
+      });
+    }
+  }
+  evt.stopPropagation();
+  evt.preventDefault();
+}
+function mousedownFunc(evt: MouseEvent | TouchEvent) {
+  if (evt instanceof MouseEvent) {
+    let convert = windowToCanvas(
+      evt.clientX,
+      evt.clientY,
+      options.cvs as HTMLCanvasElement
+    );
+    options.pos = { ...convert, targetX: convert.x, targetY: convert.y };
+    $(tipRef.value).css({
+      left: options.pos.x + "px",
+      top: options.pos.y + "px",
+    });
     options.rate.x =
-      (options.mousemove.x - options.offsetX - options.cvs.width / 2) /
+      (options.pos.x - options.offsetX - options.cvs.width / 2) /
       ((options.cvs.width / 2) * 2 ** options.level);
     options.rate.y =
-      (options.mousemove.y - options.offsetY - options.cvs.height / 2) /
+      (options.pos.y - options.offsetY - options.cvs.height / 2) /
       ((options.cvs.height / 2) * 2 ** options.level);
-    options.offsetX =
-      options.mousemove.x -
-      options.cvs.width / 2 -
-      (options.cvs.width / 2) * 2 ** options.level * options.rate.x;
-    options.offsetY =
-      options.mousemove.y -
-      options.cvs.height / 2 -
-      (options.cvs.height / 2) * 2 ** options.level * options.rate.y;
-    radar_func();
+    hover_func(options.pos);
+    draw();
+    options.mousedown = true;
+  } else if (evt instanceof TouchEvent) {
+    let convert = windowToCanvas(
+      evt.touches[0].clientX,
+      evt.touches[0].clientY,
+      options.cvs as HTMLCanvasElement
+    );
+    touchPosition = { clientX: evt.touches[0].clientX, clientY: evt.touches[0].clientY };
+    options.pos = { ...convert, targetX: convert.x, targetY: convert.y };
+    $(tipRef.value).css({
+      left: options.pos.x + "px",
+      top: options.pos.y + "px",
+    });
+    options.rate.x =
+      (options.pos.x - options.offsetX - options.cvs.width / 2) /
+      ((options.cvs.width / 2) * 2 ** options.level);
+    options.rate.y =
+      (options.pos.y - options.offsetY - options.cvs.height / 2) /
+      ((options.cvs.height / 2) * 2 ** options.level);
+    hover_func(options.pos);
+    draw();
+    options.mousedown = true;
   }
-  hover_func(convert);
-  draw();
-  e.stopPropagation();
-  e.preventDefault();
-}
-function mousedownFunc(e: any) {
-  options.mousedown = true;
 }
 function mouseupFunc(e: any) {
   options.mousedown = false;
 }
 onMounted(() => {
   // mockData();
-
+  console.log("mounted");
   options.arr = processData(雷达数据);
 
-  // let currentRadian = 0;
-  // let radial_num = 10;
-  // let library_num = 150;
-  // let func = () => {
-  //   let array = [];
-  //   for (let i = 0; i < library_num; i++) {
-  //     if (Math.random() > 0.1) {
-  //       array.push({
-  //         color: "#" + Math.random().toString(16).substr(2, 6).toUpperCase() + "ff",
-  //       });
-  //     } else {
-  //       array.push(undefined);
-  //     }
-  //   }
-  //   let α = currentRadian,
-  //     β = currentRadian + 4;
-  //   currentRadian += 4;
-  //   options.arr.push({ α, β, array });
-  //   if (options.arr.length > radial_num) options.arr.shift();
-  //   radar_func();
-  //   if (options.mousemove) {
-  //     let convert = options.mousemove;
-  //     hover_func(convert);
-  //   }
-  //   draw();
-  //   // clearInterval(timer);
-  // };
-  // let timer = setInterval(func, 100);
+  let currentRadian = -3;
+  let radial_num = 45;
+  let library_num = 150;
+  let direction = "clockwise";
+  let func = () => {
+    let array = [];
+    for (let i = 0; i < library_num; i++) {
+      if (Math.random() > 0.1) {
+        array.push({
+          color: "#" + Math.random().toString(16).substr(2, 6).toUpperCase() + "ff",
+        });
+      } else {
+        array.push(undefined);
+      }
+    }
+    let α = currentRadian,
+      β = currentRadian + 4;
+
+    if (currentRadian >= -3) {
+      direction = "anticlockwise";
+    } else if (currentRadian < -90) {
+      direction = "clockwise";
+    }
+    if (direction == "clockwise") {
+      currentRadian += 4;
+    } else if (direction == "anticlockwise") {
+      currentRadian -= 4;
+    }
+
+    options.arr.push({ α, β, array });
+    while (options.arr.length > radial_num) options.arr.shift();
+    radar_func();
+    if (options.pos) {
+      hover_func(options.pos);
+    }
+    draw();
+    // clearInterval(timer);
+  };
+  let timer = setInterval(func, 100);
 
   options.cvs = (paintCanvasRef.value as unknown) as HTMLCanvasElement;
+  options.pos.targetX = options.pos.x = options.cvs.width / 2;
+  options.pos.targetY = options.pos.y = options.cvs.height / 2;
   document.addEventListener("mousemove", mousemoveFunc, { passive: false });
+  document.addEventListener("touchmove", mousemoveFunc, { passive: false });
   options.cvs.addEventListener("mousewheel", mousewheelFunc, { passive: false });
   options.cvs.addEventListener("mousedown", mousedownFunc, { passive: false });
+  options.cvs.addEventListener("touchstart", mousedownFunc, { passive: false });
   document.addEventListener("mouseup", mouseupFunc, { passive: false });
+  document.addEventListener("touchend", mouseupFunc, { passive: false });
 });
 const resize = () => {
-  options.cvs.width = options.cvs.getBoundingClientRect().width;
-  options.cvs.height = options.cvs.getBoundingClientRect().height;
-  if (options.cvs.width == 0 || options.cvs.height == 0) {
+  let targetWidth = options.cvs.getBoundingClientRect().width;
+  let targetHeight = options.cvs.getBoundingClientRect().height;
+  if (targetWidth == 0 || targetHeight == 0) {
     return;
   }
-  options.offsetX = 0;
-  options.offsetY = 0;
+  let X = options.cvs.width / 2 + options.offsetX;
+  let Y = options.cvs.height / 2 + options.offsetY;
+  let x = options.pos.x - X;
+  let y = options.pos.y - Y;
+  options.cvs.width = targetWidth;
+  options.cvs.height = targetHeight;
+  X = options.cvs.width / 2 + options.offsetX;
+  Y = options.cvs.height / 2 + options.offsetY;
+  options.pos.targetX = options.pos.x = x + X;
+  options.pos.targetY = options.pos.y = y + Y;
+  console.log(options.pos);
+  $(tipRef.value).css({
+    top: options.pos.y + "px",
+    left: options.pos.x + "px",
+  });
   options.radarCanvas.width = options.cvs.width;
   options.radarCanvas.height = options.cvs.height;
   options.hoverCanvas.width = options.cvs.width;
@@ -917,28 +1048,56 @@ const resize = () => {
   options.scanCanvas.height = options.cvs.height;
 
   radar_func();
+  hover_func(options.pos);
   draw();
 };
 onBeforeUnmount(() => {
   document.removeEventListener("mousemove", mousemoveFunc);
+  document.removeEventListener("touchmove", mousemoveFunc);
   options.cvs.removeEventListener("mousewheel", mousewheelFunc);
   options.cvs.removeEventListener("mousedown", mousedownFunc);
+  options.cvs.removeEventListener("touchstart", mousedownFunc);
   document.removeEventListener("mouseup", mouseupFunc);
+  document.removeEventListener("touchend", mouseupFunc);
 });
 </script>
-<style>
-.paintCanvas {
+<style scoped lang="scss">
+.radarContainer {
   position: absolute;
-  /* left:100px;
-  top:100px; */
+  box-sizing: border-box;
   width: 100%;
   height: 100%;
-  /* border:1px solid red; */
-  box-sizing: border-box;
-  /* background: #2b2b2b; */
-}
-.radar_hover_tip {
-  white-space: noWrap;
-  background: lightgrey;
+  overflow: hidden;
+  .paintCanvas {
+    backdrop-filter: blur(25px);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+  }
+  .radar_hover_tip {
+    border-radius: 8px;
+    white-space: noWrap;
+    background: lightgrey;
+    display: none;
+    position: absolute;
+    border: 1px solid gray;
+    box-sizing: border-box;
+    padding: 4px;
+    color: black;
+    &::before {
+      content: "";
+      pointer-events: none;
+      position: absolute;
+      background: #fff;
+      border: 1px solid gray;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      left: 0;
+      top: 0;
+      transform: translate(-50%, -50%);
+    }
+  }
 }
 </style>

@@ -3,7 +3,7 @@
     <div style="display: flex; align-items: center">
       <img
         src="/src/assets/eagle.png"
-        style="width: 40px; height: 40px; margin-right: 10px"
+        style="width: 60px; height: 60px; margin-right: 10px"
       />
       <div class="title">低空飞行安全监控系统</div>
     </div>
@@ -50,7 +50,14 @@
           </el-input>
         </el-form-item>
         <el-form-item>
+          <slider-check
+            ref="sliderCheckRef"
+            v-model:sliderStatus="sliderStatus"
+          ></slider-check>
+        </el-form-item>
+        <el-form-item>
           <el-button
+            :disabled="sliderStatus !== '验证通过'"
             type="primary"
             :loading="loading"
             class="w-full"
@@ -62,7 +69,8 @@
     </div>
   </div>
 </template>
-<script lang="ts" setup>
+<script lang="ts" setup name="loginPage">
+import sliderCheck from "./sliderCheck.vue";
 import { reactive, ref, h } from "vue";
 import type { FormInstance } from "element-plus";
 import { User, Lock, Hide, View } from "@element-plus/icons-vue";
@@ -71,9 +79,11 @@ let user = useUserStore();
 import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
 const router = useRouter();
-
+const sliderCheckRef = ref<{ reset: Function }>();
 const hide = ref(true);
 const formEl = ref<FormInstance>();
+import { useExclude } from "./myComponents/bus";
+let exclude = useExclude();
 
 const numberValidateForm = reactive({
   username: "",
@@ -81,6 +91,7 @@ const numberValidateForm = reactive({
   secure: window.location.protocol == "https:",
 });
 const loading = ref(false);
+const sliderStatus = ref<"验证中" | "验证通过">("验证中");
 const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   loading.value = true;
@@ -91,8 +102,10 @@ const submitForm = (formEl: FormInstance | undefined) => {
         .then((res: any) => {
           loading.value = false;
           router.push({ path: "/", replace: true });
+          exclude.push("loginPage"); //标志此页面再次进入，不要复用已经缓存的页面，而是重新渲染
         })
         .catch((e) => {
+          sliderCheckRef.value?.reset();
           loading.value = false;
           if (e.response) {
             if (e.response.status == 400) {
@@ -136,15 +149,16 @@ const resetForm = (formEl: FormInstance | undefined) => {
   left: 50%;
   // background-color: #f00;
   display: flex;
+  align-items: center;
   flex-direction: column;
   .title {
     background-size: cover;
     font-family: "SourceHanSansSC-Bold";
     font-weight: 600;
     text-align: left;
-    font-size: 25px;
-    color: #1891ff;
-    text-shadow: 5px 4px 5px rgba(0, 0, 0, 0.3);
+    font-size: 35px;
+    color: #40b9ff;
+    text-shadow: 5px 4px 5px rgba(0, 0, 0, 0.15);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -154,9 +168,8 @@ const resetForm = (formEl: FormInstance | undefined) => {
   }
   .rightPlane {
     position: relative;
-    border-radius: 8px;
-    margin-top: 18px;
-    padding-top: 18px;
+    margin-top: 40px;
+    padding: 40px;
     display: flex;
     flex-direction: colum;
     justify-content: center;
@@ -172,36 +185,44 @@ const resetForm = (formEl: FormInstance | undefined) => {
           background-image: none;
           padding: 15px 0;
           background-clip: content-box;
+          &::selection {
+            background-color: #a2caf7;
+            color: grey;
+            -webkit-text-fill-color: grey;
+          }
         }
       }
-      .ep-input-group__append {
-        background: transparent;
-        color: grey;
-      }
-      .ep-input-group__append {
-        padding: 0;
-      }
+      // .ep-input-group__append {
+      //   background: transparent;
+      //   color: grey;
+      // }
+      // .ep-input-group__append {
+      //   padding: 0;
+      // }
     }
+  }
+}
+.ep-form {
+  .ep-form-item:last-child {
+    margin-bottom: 0;
   }
 }
 </style>
 <style lang="scss" scoped>
-.fourCorners {
-  &::before {
-    --offset: 0px;
-    --borderWidth: 3px;
-    position: absolute;
-    left: var(--offset);
-    top: var(--offset);
-    content: "";
-    width: calc(100% - 2 * var(--offset));
-    height: calc(100% - 2 * var(--offset));
-    border-radius: 8px;
-    box-sizing: border-box;
-    border: var(--borderWidth) solid white;
-    --len: 16px;
-    mask: conic-gradient(at var(--len) var(--len), transparent 75%, red 75%) 0 0 /
-      calc(100% - var(--len)) calc(100% - var(--len));
-  }
+.fourCorners::before {
+  --offset: 0px;
+  --borderWidth: 4px;
+  position: absolute;
+  left: var(--offset);
+  top: var(--offset);
+  content: "";
+  width: calc(100% - 2 * var(--offset));
+  height: calc(100% - 2 * var(--offset));
+  border-radius: 0px;
+  box-sizing: border-box;
+  border: var(--borderWidth) solid #469dee;
+  --len: 15px;
+  mask: conic-gradient(at var(--len) var(--len), transparent 270deg, red 270deg) 0 0 /
+    calc(100% - var(--len)) calc(100% - var(--len));
 }
 </style>

@@ -6,7 +6,6 @@
 
 // or use cdn, uncomment cdn link in `index.html`
 // import locale from './languages/zh-cn.mjs'
-
 import "~/styles/index.scss";
 import '~/composables';//初始化主题，默认自动主题
 import 'uno.css'
