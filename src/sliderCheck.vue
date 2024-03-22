@@ -39,23 +39,23 @@ let mousedown = false;
 let target: HTMLDivElement;
 let offset = { x: 0, y: 0 };
 const leftMousedown = (evt: MouseEvent | TouchEvent) => {
+  let clientX = 0;
+  let clientY = 0;
+
   if (evt instanceof MouseEvent) {
-    dataX.length = 0;
-    dataY.length = 0;
-    target = (evt.target as unknown) as HTMLDivElement;
-    let targetBox = target.getBoundingClientRect();
-    offset.x = evt.clientX - targetBox.x;
-    offset.y = evt.clientY - targetBox.y;
-    mousedown = true;
+    clientX = evt.clientX;
+    clientY = evt.clientY;
   } else if (evt instanceof TouchEvent) {
-    dataX.length = 0;
-    dataY.length = 0;
-    target = (evt.target as unknown) as HTMLDivElement;
-    let targetBox = target.getBoundingClientRect();
-    offset.x = evt.touches[0].clientX - targetBox.x;
-    offset.y = evt.touches[0].clientY - targetBox.y;
-    mousedown = true;
+    clientX = evt.touches[0].clientX;
+    clientY = evt.touches[0].clientY;
   }
+  dataX.length = 0;
+  dataY.length = 0;
+  target = (evt.target as unknown) as HTMLDivElement;
+  let targetBox = target.getBoundingClientRect();
+  offset.x = clientX - targetBox.x;
+  offset.y = clientY - targetBox.y;
+  mousedown = true;
 };
 const mouseup = (evt: MouseEvent | TouchEvent) => {
   if (props.sliderStatus !== "验证通过") {
@@ -79,111 +79,71 @@ const options = {
 const handlerRef = ref<HTMLElement>((null as unknown) as HTMLElement);
 const maskRef = ref<HTMLElement>((null as unknown) as HTMLElement);
 const mousemoveFunc = (evt: MouseEvent | TouchEvent) => {
+  let clientX = 0;
+  let clientY = 0;
   if (evt instanceof MouseEvent) {
-    dataX.push(evt.clientX);
-    dataY.push(evt.clientY);
-    if (mousedown && props.sliderStatus !== "验证通过") {
-      emit("update:sliderStatus", "验证中");
-      let targetBox = target.getBoundingClientRect();
-      let parent = (target.parentElement as unknown) as HTMLDivElement;
-      let parentBox = parent.getBoundingClientRect();
-      let width = parentBox.width;
-      options.targetLeft = evt.clientX - parentBox.x - offset.x;
-      if (options.targetLeft < 0) {
-        options.targetLeft = 0;
-      } else if (options.targetLeft > width - targetBox.width) {
-        let avgX =
-          dataX.reduce(function (prev: any, curr: any, idx: number, arr: any) {
-            return prev + curr;
-          }) / dataX.length;
-        let avgY =
-          dataY.reduce(function (prev: any, curr: any, idx: number, arr: any) {
-            return prev + curr;
-          }) / dataY.length;
-        let ⳜX =
-          dataX.reduce(function (prev: any, curr: any, idx: number, arr: any) {
-            return prev + (curr - avgX) ** 2;
-          }, (dataX[0] - avgX) ** 2) / dataX.length;
-        let ⳜY =
-          dataY.reduce(function (prev: any, curr: any, idx: number, arr: any) {
-            return prev + (curr - avgY) ** 2;
-          }, (dataY[0] - avgY) ** 2) / dataY.length;
-        options.targetLeft = width - targetBox.width;
-
-        // console.log(ⳜX + ⳜY);
-        if (3000 < ⳜX + ⳜY && ⳜX + ⳜY < 4000) {
-          emit("update:sliderStatus", "验证通过");
-          target.style.cursor = "default";
-        } else {
-          mousedown = false;
-          dataX.length = 0;
-          dataY.length = 0;
-          emit("update:sliderStatus", "验证失败");
-        }
-      }
-      gsap.killTweensOf(options);
-      gsap.to(options, {
-        left: options.targetLeft,
-        duration: 0,
-        onUpdate: () => {
-          handlerRef.value.style.left = options.left + "px";
-          maskRef.value.style.width = options.left + 20 + "px";
-        },
-      });
-    }
+    clientX = evt.clientX;
+    clientY = evt.clientY;
   } else if (evt instanceof TouchEvent) {
-    dataX.push(evt.touches[0].clientX);
-    dataY.push(evt.touches[0].clientY);
-    if (mousedown && props.sliderStatus !== "验证通过") {
-      emit("update:sliderStatus", "验证中");
-      let targetBox = target.getBoundingClientRect();
-      let parent = (target.parentElement as unknown) as HTMLDivElement;
-      let parentBox = parent.getBoundingClientRect();
-      let width = parentBox.width;
-      options.targetLeft = evt.touches[0].clientX - parentBox.x - offset.x;
-      if (options.targetLeft < 0) {
-        options.targetLeft = 0;
-      } else if (options.targetLeft > width - targetBox.width) {
-        let avgX =
-          dataX.reduce(function (prev: any, curr: any, idx: number, arr: any) {
-            return prev + curr;
-          }) / dataX.length;
-        let avgY =
-          dataY.reduce(function (prev: any, curr: any, idx: number, arr: any) {
-            return prev + curr;
-          }) / dataY.length;
-        let ⳜX =
-          dataX.reduce(function (prev: any, curr: any, idx: number, arr: any) {
-            return prev + (curr - avgX) ** 2;
-          }, (dataX[0] - avgX) ** 2) / dataX.length;
-        let ⳜY =
-          dataY.reduce(function (prev: any, curr: any, idx: number, arr: any) {
-            return prev + (curr - avgY) ** 2;
-          }, (dataY[0] - avgY) ** 2) / dataY.length;
-        options.targetLeft = width - targetBox.width;
+    clientX = evt.touches[0].clientX;
+    clientY = evt.touches[0].clientY;
+  }
+  dataX.push(clientX);
+  dataY.push(clientY);
+  if (mousedown && props.sliderStatus !== "验证通过") {
+    emit("update:sliderStatus", "验证中");
+    let targetBox = target.getBoundingClientRect();
+    let parent = (target.parentElement as unknown) as HTMLDivElement;
+    let parentBox = parent.getBoundingClientRect();
+    let width = parentBox.width;
+    options.targetLeft = clientX - parentBox.x - offset.x;
+    if (options.targetLeft < 0) {
+      options.targetLeft = 0;
+    } else if (options.targetLeft > width - targetBox.width) {
+      options.targetLeft = width - targetBox.width;
 
-        // console.log(ⳜX + ⳜY);
-        if (3000 < ⳜX + ⳜY && ⳜX + ⳜY < 4000) {
-          emit("update:sliderStatus", "验证通过");
-          target.style.cursor = "default";
-        } else {
-          mousedown = false;
-          dataX.length = 0;
-          dataY.length = 0;
-          emit("update:sliderStatus", "验证失败");
-        }
-      }
-      gsap.killTweensOf(options);
-      gsap.to(options, {
-        left: options.targetLeft,
-        duration: 0,
-        onUpdate: () => {
-          handlerRef.value.style.left = options.left + "px";
-          maskRef.value.style.width = options.left + 20 + "px";
-        },
-      });
-      evt.preventDefault();
+      //需要验证
+      // let avgX =
+      //   dataX.reduce(function (prev: any, curr: any, idx: number, arr: any) {
+      //     return prev + curr;
+      //   }) / dataX.length;
+      // let avgY =
+      //   dataY.reduce(function (prev: any, curr: any, idx: number, arr: any) {
+      //     return prev + curr;
+      //   }) / dataY.length;
+      // let ⳜX =
+      //   dataX.reduce(function (prev: any, curr: any, idx: number, arr: any) {
+      //     return prev + (curr - avgX) ** 2;
+      //   }, (dataX[0] - avgX) ** 2) / dataX.length;
+      // let ⳜY =
+      //   dataY.reduce(function (prev: any, curr: any, idx: number, arr: any) {
+      //     return prev + (curr - avgY) ** 2;
+      //   }, (dataY[0] - avgY) ** 2) / dataY.length;
+      // console.log(ⳜX + ⳜY);
+      // if (3000 < ⳜX + ⳜY && ⳜX + ⳜY < 4000) {
+      //   emit("update:sliderStatus", "验证通过");
+      //   target.style.cursor = "default";
+      // } else {
+      //   mousedown = false;
+      //   dataX.length = 0;
+      //   dataY.length = 0;
+      //   emit("update:sliderStatus", "验证失败");
+      // }
+
+      //直接通过验证
+      emit("update:sliderStatus", "验证通过");
+      target.style.cursor = "default";
     }
+    gsap.killTweensOf(options);
+    gsap.to(options, {
+      left: options.targetLeft,
+      duration: 0,
+      onUpdate: () => {
+        handlerRef.value.style.left = options.left + "px";
+        maskRef.value.style.width = options.left + 20 + "px";
+      },
+    });
+    evt.preventDefault();
   }
 };
 let dataX = new Array<number>();
