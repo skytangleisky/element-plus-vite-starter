@@ -9,8 +9,8 @@
     <div
       ref="handlerRef"
       class="handler"
-      @mousedown.left="leftMousedown"
-      @touchstart.stop="leftMousedown"
+      @mousedown.left.passive="leftMousedown"
+      @touchstart.stop.passive="leftMousedown"
     >
       <el-icon
         style="color: gray; width: 1rem; height: 1rem; pointer-events: none"
