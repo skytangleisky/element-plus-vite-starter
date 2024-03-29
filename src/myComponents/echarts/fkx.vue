@@ -52,6 +52,7 @@ const setDBS = (isDark: boolean) => {
   //   // clearInterval(timer);
   // }, 5000);
   watch([() => bus.avgWindData, () => station.active], ([avgWindData, active]) => {
+    console.log("dbs", avgWindData);
     dbs.clear();
     if (avgWindData) {
       avgWindData.map((v, k) => {

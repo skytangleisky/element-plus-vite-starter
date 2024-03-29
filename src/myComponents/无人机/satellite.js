@@ -25,7 +25,11 @@ export default {
   "scheme": "xyz",
   "tilejson": "2.2.0",
   "tiles": [
-    'https://tanglei.site:3240/maps/vt?lyrs=s2&gl=CN&x={x}&y={y}&z={z}',
+    'https://tanglei.site:3240/maps/vt?lyrs=s&x={x}&y={y}&z={z}',
+    // 'https://mt0.google.com/vt?lyrs=y&x={x}&y={y}&z={z}',
+    // 'https://mt1.google.com/vt?lyrs=y&x={x}&y={y}&z={z}',
+    // 'https://mt2.google.com/vt?lyrs=y&x={x}&y={y}&z={z}',
+    // 'https://mt3.google.com/vt?lyrs=y&x={x}&y={y}&z={z}',
   ],
   "webpage": "https://dev-studio.tilestream.net/tilesets/mapbox.satellite"
 }

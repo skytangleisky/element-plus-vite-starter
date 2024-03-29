@@ -223,7 +223,7 @@ export class View{
   }
   getFloat32(){
     let val = this.dataView.getFloat32(this.pos,this.littleEndian)
-    this.pos += 8
+    this.pos += 4
     return val
   }
   getFloat64(){

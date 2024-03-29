@@ -7,7 +7,7 @@ interface ExtendedCanvasRenderingContext2D extends CanvasRenderingContext2D {
   saveCount: number;
 }
 import { ref, onMounted, onBeforeUnmount, reactive } from "vue";
-import SleepController from "./SleepController";
+import Sleeper from "./sleeper";
 import graph from "../../tools/graph.vue";
 const graphArgs = reactive({
   fps: { value: 0, min: 0, max: 144, strokeStyle: "#ffffff88" },
@@ -25,7 +25,7 @@ let frameCount: number = 0;
 let prevFrameCount: number = 0;
 let cvs: HTMLCanvasElement;
 let ctx: ExtendedCanvasRenderingContext2D;
-let sleepController = new SleepController();
+let sleeper = new Sleeper();
 let queue: Array<any> = [];
 for (let i = 0; i < 1000; i++) {
   queue.push({});
@@ -40,7 +40,7 @@ const resize = () => {
   let box = cvs.getBoundingClientRect();
   cvs.width = box.width;
   cvs.height = box.height;
-  sleepController.terminateSleep();
+  sleeper.abort();
   cancelAnimationFrame(aid);
   lastTimestamp = performance.now();
   queue.push({});
@@ -113,7 +113,7 @@ async function loop(timestamp: number) {
       }
     }
   }
-  await sleepController
+  await sleeper
     .sleep(0)
     .then(() => {
       if (queue.length > 0) {
@@ -130,7 +130,7 @@ async function loop(timestamp: number) {
     });
 }
 onBeforeUnmount(() => {
-  sleepController.terminateSleep();
+  sleeper.abort();
   cancelAnimationFrame(aid);
   clearInterval(timer);
 });

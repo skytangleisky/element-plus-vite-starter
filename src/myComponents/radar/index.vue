@@ -4,7 +4,7 @@
     <div class="radar_hover_tip" ref="tipRef"></div>
   </div>
 </template>
-<script lang="ts" setup>
+<script lang="ts" setup name="radar">
 import gsap from "gsap";
 import { onMounted, watch, reactive, onBeforeUnmount, ref } from "vue";
 let rates = [5, 10, 20, 50, 100, 200, 500, 1000, 2000];
@@ -19,7 +19,6 @@ function windowToCanvas(
     y: ((y - box.top) / box.height) * canvas.height,
   };
 }
-import 雷达数据 from "./RHI.js";
 function verticalFlowColor(v: number) {
   const colors = [
     "#0000ff",
@@ -197,15 +196,6 @@ function getFeatherColor(speed: number) {
     ? "#e60000"
     : "#b30000";
 }
-
-async function dataChange() {
-  let res = 雷达数据.data;
-  let dataArr = processData(res);
-  options.arr = dataArr;
-  hover_func(undefined);
-  radar_func();
-  draw();
-}
 function mockData() {
   let library_num = 150;
   let radial_num = 90;
@@ -227,139 +217,25 @@ function mockData() {
     options.arr.push({ α, β, array });
   }
 }
-function processData(res: any) {
-  let dataArr = new Array<any>();
-  for (let k in res.data) {
-    if (k !== "radar_id" && k !== "radar_name") {
-      let radial = res.data[k];
-      let array = [undefined];
-      let HorAngel = radial["HorAngel"];
-      let Time = radial["Time"];
-      let VerAngel = radial["VerAngel"];
-      if (props.type == "ppi") {
-        options.distance = 30 * Math.cos((VerAngel / 180) * Math.PI);
-      }
-      for (let r in radial) {
-        if (typeof radial[r] === "object") {
-          let item: any = {
-            HorAngel,
-            Time,
-            VerAngel,
-            Hei: radial[r].Hei,
-            Speed: radial[r].Speed,
-            PK: radial[r].PK,
-            SNR: radial[r].SNR,
-            PKQD: radial[r].PKQD,
-          };
-          if (props.type == "ppi") {
-            if (props.PPIval === 3) {
-              if (radial[r].Speed === 999) {
-                item = undefined;
-              } else {
-                item.color = verticalFlowColor(radial[r].Speed);
-                item.distance = r;
-              }
-            } else if (props.PPIval === 4) {
-              item.color = getPKColor(radial[r].PK);
-              item.distance = r;
-            } else if (props.PPIval === 5) {
-              item.color = getSNRColor(radial[r].SNR);
-              item.distance = r;
-            } else if (props.PPIval === 6) {
-              item.color = getPKQDColor(radial[r].PKQD);
-              item.distance = r;
-            }
-          } else if (props.type == "rhi") {
-            if (props.RHIval === 1) {
-              if (radial[r].Speed === 999) {
-                item = undefined;
-              } else {
-                item.color = verticalFlowColor(radial[r].Speed);
-                item.distance = r;
-              }
-            } else if (props.RHIval === 2) {
-              item.color = getPKColor(radial[r].PK);
-              item.distance = r;
-            } else if (props.RHIval === 3) {
-              item.color = getSNRColor(radial[r].SNR);
-              item.distance = r;
-            } else if (props.RHIval === 4) {
-              item.color = getPKQDColor(radial[r].PKQD);
-              item.distance = r;
-            }
-          }
-          array.push(item);
-        }
-      }
-      if (props.type == "ppi") {
-        dataArr.push({ Angle: HorAngel - 90, array });
-      } else if (props.type == "rhi") {
-        dataArr.push({ Angle: VerAngel, array });
-      }
-      // if(dataArr.length==10)break;
-    }
-  }
-  if (dataArr.length >= 2) {
-    for (let i = 1; i < dataArr.length - 1; i++) {
-      let Angle1 = dataArr[i - 1].Angle;
-      let Angle2 = dataArr[i].Angle;
-      let Angle3 = dataArr[i + 1].Angle;
-      let α = (Angle1 + Angle2) / 2,
-        β = (Angle2 + Angle3) / 2;
-      if (props.type == "rhi") {
-        α = -(Angle2 + Angle3) / 2;
-        β = -(Angle1 + Angle2) / 2;
-      }
-      dataArr.splice(i, 1, {
-        α,
-        Angle: dataArr[i].Angle,
-        β,
-        array: dataArr[i].array,
-      });
-    }
-    let Angle1 = dataArr[0].Angle;
-    let Angle2 = dataArr[1].Angle;
-    let α = Angle1 - (Angle2 - Angle1) / 2,
-      β = Angle1 + (Angle2 - Angle1) / 2;
-    if (props.type == "rhi") {
-      α = -Angle1 - (Angle2 - Angle1) / 2;
-      β = -Angle1 + (Angle2 - Angle1) / 2;
-    }
-    dataArr.splice(0, 1, { α, Angle: dataArr[0].Angle, β, array: dataArr[0].array });
-
-    Angle1 = dataArr.slice(-2)[0].Angle;
-    Angle2 = dataArr.slice(-1)[0].Angle;
-    α = Angle2 - (Angle2 - Angle1) / 2;
-    β = Angle2 + (Angle2 - Angle1) / 2;
-    if (props.type == "rhi") {
-      α = -Angle2 - (Angle2 - Angle1) / 2;
-      β = -Angle2 + (Angle2 - Angle1) / 2;
-    }
-    dataArr.splice(dataArr.length - 1, 1, {
-      α,
-      Angle: dataArr.slice(-1)[0].Angle,
-      β,
-      array: dataArr.slice(-1)[0].array,
-    });
-  } else if (dataArr.length == 1) {
-    let Angle = dataArr[0].Angle;
-    let α = Angle - 0.5,
-      β = Angle + 0.5;
-    if (props.type == "rhi") {
-      α = -Angle - 0.5;
-      β = -Angle + 0.5;
-    }
-    dataArr.splice(0, 1, { α, Angle: dataArr[0].Angle, β, array: dataArr[0].array });
-  }
-  return dataArr;
-}
 const tipRef = ref((null as unknown) as HTMLDivElement);
 function hoverItem_change(item: any) {
   if (item) {
     $(tipRef.value).show();
     if (item.Time) {
       $(tipRef.value).html(
-        "记录时间：" +
+        "序号:" +
+          item.j +
+          "<br/>" +
+          "进度:" +
+          item.percent +
+          "<br/>" +
+          "库数量:" +
+          item.BinNum +
+          "<br/>" +
+          "ScanNo:" +
+          item.ScanNo +
+          "<br/>" +
+          "记录时间：" +
           item.Time.substr(0, 4) +
           "-" +
           item.Time.substr(4, 2) +
@@ -373,13 +249,13 @@ function hoverItem_change(item: any) {
           item.Time.substr(12, 2) +
           "<br/>" +
           "&emsp;&emsp;距离：" +
-          Number(item.distance).toFixed() +
+          Number(item.Distance).toFixed() +
           "米<br/>" +
           "水平距离：" +
-          (item.distance * Math.cos((item.VerAngel / 180) * Math.PI)).toFixed() +
+          (item.Distance * Math.cos((item.VerAngel / 180) * Math.PI)).toFixed() +
           "米<br/>" +
           "&emsp;&emsp;高度：" +
-          (item.distance * Math.sin((item.VerAngel / 180) * Math.PI)).toFixed() +
+          (item.Distance * Math.sin((item.VerAngel / 180) * Math.PI)).toFixed() +
           "米<br/>" +
           "&emsp;方位角：" +
           item.HorAngel.toFixed(1) +
@@ -403,7 +279,6 @@ function hoverItem_change(item: any) {
     } else {
       $(tipRef.value).html(JSON.stringify(item));
     }
-    // $(tipRef.value).css("background-color", item.color);
     $(tipRef.value).css({
       top: options.pos.y + "px",
       left: options.pos.x + "px",
@@ -420,16 +295,11 @@ function radar_func() {
   let ctx_scan = cvs_scan.getContext("2d") as CanvasRenderingContext2D;
   ctx_scan.clearRect(0, 0, cvs_scan.width, cvs_scan.height);
   for (let i = 0; i < options.arr.length; i++) {
-    test_radar(
-      options.arr[i].α,
-      options.arr[i].β,
-      options.arr[i].array,
-      (i + 1) / options.arr.length
-    );
+    test_radar(options.arr[i].α, options.arr[i].β, options.arr[i].array);
     test_scan(options.arr[i].α, options.arr[i].β, options.arr[i].array);
   }
 }
-function test_radar(α: number, β: number, arr: Array<any>, rate: number) {
+function test_radar(α: number, β: number, arr: Array<any>) {
   if (!arr) return;
   let Ⳡ = ((α + β) / 2 / 180) * Math.PI;
   let θ = (((α - β) / 2) * Math.PI) / 180;
@@ -446,25 +316,27 @@ function test_radar(α: number, β: number, arr: Array<any>, rate: number) {
     ctx.beginPath();
     ctx.lineWidth = 0;
     ctx.strokeStyle = "#fff";
-    ctx.arc(
-      0,
-      0,
-      (arr.length - 1 + 0.5) * 2 ** options.level + 2 ** options.level,
-      +θ,
-      -θ,
-      false
-    );
-    ctx.arc(0, 0, (0 + 0.5) * 2 ** options.level, -θ, +θ, true);
+    let min = arr[0].Distance / options.distance - 0.5;
+    let max = arr[arr.length - 1].Distance / options.distance - 0.5;
+    ctx.arc(0, 0, max * 2 ** options.level + 2 ** options.level, +θ, -θ, false);
+    ctx.arc(0, 0, min * 2 ** options.level, -θ, +θ, true);
     ctx.closePath();
     ctx.globalCompositeOperation = "destination-out";
     ctx.fill();
     // ctx.stroke();
     ctx.globalCompositeOperation = "source-over";
   }
-  arr.map((v, k) => {
-    if (v !== undefined) {
-      let point1 = { x: (k + 0.5) * 2 ** options.level, y: 0 };
-      let point2 = { x: (k + 0.5) * 2 ** options.level + 2 ** options.level, y: 0 };
+  for (let i = 0; i < arr.length; i++) {
+    let v = arr[i];
+    if (
+      v !== undefined &&
+      v.color &&
+      options.distanceMin <= v.Distance &&
+      v.Distance <= options.distanceMax
+    ) {
+      let k = v.Distance / options.distance - 0.5;
+      let point1 = { x: k * 2 ** options.level, y: 0 };
+      let point2 = { x: (k + 1) * 2 ** options.level, y: 0 };
       function getPt(pt: { x: number; y: number }, Ⲫ: number) {
         return {
           x: pt.x * Math.cos(Ⲫ) - pt.y * Math.sin(Ⲫ) + cvs.width / 2 + options.offsetX,
@@ -475,9 +347,10 @@ function test_radar(α: number, β: number, arr: Array<any>, rate: number) {
       let pt2 = getPt(point1, Ⳡ - θ);
       let pt3 = getPt(point2, Ⳡ + θ);
       let pt4 = getPt(point2, Ⳡ - θ);
-      let a = Math.sqrt((pt1.x - pt2.x) ** 2 + (pt1.y - pt2.y) ** 2);
-      let b = Math.sqrt((pt2.x - pt3.x) ** 2 + (pt2.y - pt3.y) ** 2);
-      let c = Math.sqrt((pt3.x - pt1.x) ** 2 + (pt3.y - pt1.y) ** 2);
+      //注意当k==0时,pt1和pt2会重合，下面abc的计算只能用pt2,pt3,pt4
+      let a = Math.sqrt((pt2.x - pt3.x) ** 2 + (pt2.y - pt3.y) ** 2);
+      let b = Math.sqrt((pt2.x - pt4.x) ** 2 + (pt2.y - pt4.y) ** 2);
+      let c = Math.sqrt((pt3.x - pt4.x) ** 2 + (pt3.y - pt4.y) ** 2);
       let s = (a + b + c) / 2;
       let K = Math.sqrt(s * (s - a) * (s - b) * (s - c));
       let R = (a * b * c) / (4 * K);
@@ -493,26 +366,24 @@ function test_radar(α: number, β: number, arr: Array<any>, rate: number) {
         center.y < options.cvs.height + R
       ) {
         ctx.beginPath();
-        ctx.lineWidth = 1;
+        // ctx.lineWidth = 1;
 
-        // ctx.moveTo((k + 0.5) * 2 ** options.level, (k + 0.5) * 2 ** options.level * Math.tan(-θ));
-        // ctx.lineTo((k + 0.5) * 2 ** options.level + 2 ** options.level, ((k + 0.5) * 2 ** options.level + 2 ** options.level) * Math.tan(-θ));
-        // ctx.lineTo((k + 0.5) * 2 ** options.level + 2 ** options.level, ((k + 0.5) * 2 ** options.level + 2 ** options.level) * Math.tan(θ));
-        // ctx.lineTo((k + 0.5) * 2 ** options.level, (k + 0.5) * 2 ** options.level * Math.tan(θ));
+        // ctx.moveTo(k * 2 ** options.level, k * 2 ** options.level * Math.tan(-θ));
+        // ctx.lineTo((k+1) * 2 ** options.level, (k+1) * 2 ** options.level * Math.tan(-θ));
+        // ctx.lineTo((k+1) * 2 ** options.level, (k+1) * 2 ** options.level * Math.tan(θ));
+        // ctx.lineTo(k * 2 ** options.level, k * 2 ** options.level * Math.tan(θ));
 
-        ctx.arc(0, 0, (k + 0.5) * 2 ** options.level + 2 ** options.level, +θ, -θ, false);
-        ctx.arc(0, 0, (k + 0.5) * 2 ** options.level, -θ, +θ, true);
+        ctx.arc(0, 0, k * 2 ** options.level, -θ, +θ, true);
+        ctx.arc(0, 0, (k + 1) * 2 ** options.level, +θ, -θ, false);
 
         ctx.closePath();
-        // ctx.fillStyle=v.color.substr(0,7) + Math.floor(rate*255).toString(16).padStart(2,'0');
-        // ctx.strokeStyle=v.color.substr(0,7) + Math.floor(rate*255).toString(16).padStart(2,'0');
         ctx.fillStyle = v.color;
         ctx.strokeStyle = v.color;
         ctx.fill();
         ctx.stroke();
       }
     }
-  });
+  }
   ctx.restore();
 }
 function hover_func(convert: { x: number; y: number } | undefined) {
@@ -564,7 +435,7 @@ function hover_func(convert: { x: number; y: number } | undefined) {
 }
 //鼠标移入色块效果
 function test_hover(α: number, β: number, arr: Array<any>, distance: number) {
-  if (!arr) return;
+  if (!arr.length) return;
   let θ = (((α - β) / 2) * Math.PI) / 180;
   let cvs = options.hoverCanvas;
   let ctx = cvs.getContext("2d") as CanvasRenderingContext2D;
@@ -572,45 +443,57 @@ function test_hover(α: number, β: number, arr: Array<any>, distance: number) {
 
   ctx.translate(cvs.width / 2 + options.offsetX, cvs.height / 2 + options.offsetY);
   ctx.rotate(((α + β) / 2 / 180) * Math.PI);
-
-  let k = Math.floor(distance / 2 ** options.level - 0.5);
-  if (arr && k >= 0 && k < arr.length) {
+  let index = Math.ceil(
+    ((distance / 2 ** options.level) * options.distance - arr[0].Distance) /
+      options.distance -
+      0.5
+  );
+  if (
+    arr &&
+    index >= 0 &&
+    index < arr.length &&
+    options.distanceMin <= arr[index].Distance &&
+    arr[index].Distance <= options.distanceMax
+  ) {
+    let k = arr[index].Distance / options.distance - 0.5;
     ctx.strokeStyle = "#000";
     ctx.lineWidth = 0.5;
     ctx.beginPath();
-    ctx.arc(
-      0,
-      0,
-      (arr.length - 1 + 0.5) * 2 ** options.level + 2 ** options.level,
-      +θ,
-      -θ,
-      false
-    );
-    ctx.arc(0, 0, (1 + 0.5) * 2 ** options.level, -θ, +θ, true);
+    let min = arr[0].Distance / options.distance - 0.5;
+    let max = arr[arr.length - 1].Distance / options.distance - 0.5;
+    ctx.arc(0, 0, max * 2 ** options.level + 2 ** options.level, +θ, -θ, false);
+    ctx.arc(0, 0, min * 2 ** options.level, -θ, +θ, true);
     ctx.closePath();
     ctx.stroke();
 
-    if (arr[k] !== undefined) {
-      ctx.fillStyle = "#fff";
-      ctx.strokeStyle = "#000";
-      ctx.lineWidth = 1.0;
-      ctx.beginPath();
+    ctx.fillStyle = "#fff";
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 1.0;
+    ctx.beginPath();
 
-      // ctx.moveTo((k+0.5)*2 ** options.level,((k+0.5)*2 ** options.level)*Math.tan(-θ));
-      // ctx.lineTo((k+0.5)*2 ** options.level+2 ** options.level,((k+0.5)*2 ** options.level+2 ** options.level)*Math.tan(-θ));
-      // ctx.lineTo((k+0.5)*2 ** options.level+2 ** options.level,((k+0.5)*2 ** options.level+2 ** options.level)*Math.tan(θ));
-      // ctx.lineTo((k+0.5)*2 ** options.level,((k+0.5)*2 ** options.level)*Math.tan(θ));
+    // ctx.moveTo(k*2 ** options.level,k*2 ** options.level*Math.tan(-θ));
+    // ctx.lineTo((k+1)*2 ** options.level,(k+1)*2 ** options.level*Math.tan(-θ));
+    // ctx.lineTo((k+1)*2 ** options.level,(k+1)*2 ** options.level*Math.tan(θ));
+    // ctx.lineTo(k*2 ** options.level,k*2 ** options.level*Math.tan(θ));
 
-      ctx.arc(0, 0, (k + 0.5) * 2 ** options.level + 2 ** options.level, +θ, -θ, false);
-      ctx.arc(0, 0, (k + 0.5) * 2 ** options.level, -θ, +θ, true);
-      ctx.closePath();
-      ctx.stroke();
-    }
+    ctx.arc(0, 0, k * 2 ** options.level, -θ, +θ, true);
+    ctx.arc(0, 0, (k + 1) * 2 ** options.level, +θ, -θ, false);
+    ctx.closePath();
+    ctx.stroke();
   }
-  if (options.item_hover !== arr[k]) {
-    options.item_hover = arr[k];
+  if (options.item_hover !== arr[index]) {
+    options.item_hover = arr[index];
     hoverItem_change(options.item_hover);
   }
+  if (
+    arr[index] &&
+    (arr[index].Distance < options.distanceMin ||
+      arr[index].Distance > options.distanceMax)
+  ) {
+    options.item_hover = undefined;
+    hoverItem_change(options.item_hover);
+  }
+
   ctx.restore();
 }
 //绘制扫描的当前径向范围
@@ -624,20 +507,14 @@ function test_scan(α: number, β: number, arr: Array<any>) {
 
   ctx.translate(cvs.width / 2 + options.offsetX, cvs.height / 2 + options.offsetY);
   ctx.rotate(((α + β) / 2 / 180) * Math.PI);
-
-  if (arr) {
-    ctx.strokeStyle = "#000";
+  if (arr.length) {
+    ctx.strokeStyle = "#f00";
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(
-      0,
-      0,
-      (arr.length - 1 + 0.5) * 2 ** options.level + 2 ** options.level,
-      +θ,
-      -θ,
-      false
-    );
-    ctx.arc(0, 0, (1 + 0.5) * 2 ** options.level, -θ, +θ, true);
+    let min = arr[0].Distance / options.distance - 0.5;
+    let max = arr[arr.length - 1].Distance / options.distance - 0.5;
+    ctx.arc(0, 0, max * 2 ** options.level + 2 ** options.level, +θ, -θ, false);
+    ctx.arc(0, 0, min * 2 ** options.level, -θ, +θ, true);
     ctx.closePath();
     ctx.stroke();
   }
@@ -659,13 +536,14 @@ function draw() {
   // );
   // ctx.beginPath();
   // ctx.rotate(Math.PI / 4);
-  // ctx.moveTo(-190.5 * 2 ** options.level, 0);
-  // ctx.lineTo(190.5 * 2 ** options.level, 0);
-  // ctx.moveTo(0, -190.5 * 2 ** options.level);
-  // ctx.lineTo(0, 190.5 * 2 ** options.level);
+  // ctx.moveTo((-options.range / options.distance) * 2 ** options.level, 0);
+  // ctx.lineTo((options.range / options.distance) * 2 ** options.level, 0);
+  // ctx.moveTo(0, (-options.range / options.distance) * 2 ** options.level);
+  // ctx.lineTo(0, (options.range / options.distance) * 2 ** options.level);
   // ctx.stroke();
   // ctx.restore();
 
+  //小白点
   // ctx.beginPath();
   // ctx.arc(options.pos.x, options.pos.y, 2, 0, Math.PI * 2);
   // ctx.fillStyle = "#fff";
@@ -674,20 +552,20 @@ function draw() {
   // ctx.fill();
 
   //绘制十
-  ctx.save();
-  ctx.translate(
-    options.cvs.width / 2 + options.offsetX,
-    options.cvs.height / 2 + options.offsetY
-  );
-  ctx.strokeStyle = "#000";
-  ctx.fillStyle = "#00000088";
-  ctx.beginPath();
-  ctx.moveTo(-190.5 * 2 ** options.level, 0);
-  ctx.lineTo(190.5 * 2 ** options.level, 0);
-  ctx.moveTo(0, -190.5 * 2 ** options.level);
-  ctx.lineTo(0, 190.5 * 2 ** options.level);
-  ctx.stroke();
-  ctx.restore();
+  // ctx.save();
+  // ctx.translate(
+  //   options.cvs.width / 2 + options.offsetX,
+  //   options.cvs.height / 2 + options.offsetY
+  // );
+  // ctx.strokeStyle = "#000";
+  // ctx.fillStyle = "#00000088";
+  // ctx.beginPath();
+  // ctx.moveTo(0, 0);
+  // ctx.lineTo((options.range / options.distance) * 2 ** options.level, 0);
+  // ctx.moveTo(0, (-options.range / options.distance) * 2 ** options.level);
+  // ctx.lineTo(0, 0);
+  // ctx.stroke();
+  // ctx.restore();
 
   ctx.save();
   ctx.translate(
@@ -695,8 +573,7 @@ function draw() {
     options.cvs.height / 2 + options.offsetY
   );
 
-  ctx.strokeStyle = "#000";
-
+  ctx.strokeStyle = "#00000088";
   // for(let i=1;i<=189.5;i++){
   //   ctx.beginPath();
   //   ctx.arc(0,0,2 ** options.level*i,0,Math.PI*2);
@@ -707,7 +584,7 @@ function draw() {
   let rate: number = 1;
   for (let i = 0; i < rates.length; i++) {
     len = (rates[i] / options.distance) * 2 ** options.level;
-    if (len > 50) {
+    if (len > 100) {
       rate = rates[i];
       break;
     }
@@ -721,63 +598,165 @@ function draw() {
   let middle = { x: options.cvs.width / 2, y: options.cvs.height / 2 };
   let distance = Math.sqrt((middle.x - center.x) ** 2 + (middle.y - center.y) ** 2);
   let radius = Math.sqrt(options.cvs.width ** 2 + options.cvs.height ** 2) / 2;
-  for (let i = 1; i <= Math.floor((190.5 * options.distance) / rate); i++) {
+  for (let i = 1; i <= Math.floor(options.range / rate); i++) {
+    let r = len * (i - 1);
     let R = len * i;
     if (distance > R - 2 * radius && distance < R + 2 * radius) {
       ctx.beginPath();
-      ctx.arc(0, 0, len * i, (2 * Math.PI * 3) / 4, Math.PI * 2);
-      // ctx.closePath();
-      ctx.fillStyle = "black";
-      ctx.fillText((rate * i).toString(), len * i, 0);
-      ctx.fillText((rate * i).toString(), 0, -len * i);
-      ctx.fillText((rate * i).toString(), -len * i, 0);
-      ctx.fillText((rate * i).toString(), 0, len * i);
+      ctx.rotate((options.deg1 / 180) * Math.PI);
+      ctx.moveTo(r, 0);
+      ctx.rotate(-(options.deg1 / 180) * Math.PI);
+      ctx.arc(0, 0, R, (options.deg1 / 180) * Math.PI, (options.deg2 / 180) * Math.PI);
+      ctx.rotate((options.deg2 / 180) * Math.PI);
+      ctx.lineTo(r, 0);
+      ctx.rotate(-(options.deg2 / 180) * Math.PI);
+      ctx.strokeStyle = "#00000088";
       ctx.setLineDash([3, 3]);
       ctx.stroke();
+
+      ctx.fillStyle = "black";
+      ctx.fillText((rate * i).toString(), len * i, 0); //+x
+      // ctx.fillText((rate * i).toString(), -len * i, 0);//-x
+      // ctx.fillText((rate * i).toString(), 0, -len * i); //+y
+      // ctx.fillText((rate * i).toString(), 0, len * i);//-y
     }
   }
 
   //绘制跑道门
-  let distanceRunway = 600;
+  ctx.strokeStyle = "#000";
+  let distanceRunway = 500;
   let distanceWidth = 45;
   ctx.beginPath();
-  ctx.moveTo((2 ** options.level * (distanceRunway - distanceWidth / 2)) / 30, 0);
+  ctx.moveTo(
+    (2 ** options.level * (distanceRunway - distanceWidth / 2)) / options.distance,
+    0
+  );
   ctx.lineTo(
-    (2 ** options.level * (distanceRunway - distanceWidth / 2)) / 30,
+    (2 ** options.level * (distanceRunway - distanceWidth / 2)) / options.distance,
     -(options.cvs.height / 2 + options.offsetY)
   );
-  ctx.setLineDash([3, 2, 8, 3]);
+  ctx.lineWidth = 2;
+  ctx.setLineDash([4, 2, 8, 2]);
   ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo((2 ** options.level * distanceRunway) / 30, 0);
+  ctx.moveTo((2 ** options.level * distanceRunway) / options.distance, 0);
   ctx.lineTo(
-    (2 ** options.level * distanceRunway) / 30,
+    (2 ** options.level * distanceRunway) / options.distance,
     -(options.cvs.height / 2 + options.offsetY)
   );
-  ctx.setLineDash([1, 5]);
+  ctx.setLineDash([2, 5]);
   ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo((2 ** options.level * (distanceRunway + distanceWidth / 2)) / 30, 0);
+  ctx.moveTo(
+    (2 ** options.level * (distanceRunway + distanceWidth / 2)) / options.distance,
+    0
+  );
   ctx.lineTo(
-    (2 ** options.level * (distanceRunway + distanceWidth / 2)) / 30,
+    (2 ** options.level * (distanceRunway + distanceWidth / 2)) / options.distance,
     -(options.cvs.height / 2 + options.offsetY)
   );
-  ctx.setLineDash([2, 3, 8, 3]);
+  ctx.setLineDash([4, 2, 8, 2]);
   ctx.stroke();
   ctx.restore();
 }
-const props = withDefaults(
-  defineProps<{ type?: string; PPIval?: number; RHIval?: number }>(),
-  {
-    type: "rhi", // rhi | ppi
-    PPIval: 3, // 3|4|5|6
-    RHIval: 1, // 1|2|3|4
+const props = withDefaults(defineProps<{ type?: string }>(), {
+  type: "Speed",
+});
+import { useBus } from "../bus";
+const bus = useBus();
+let List: any = [];
+watch(
+  () => props.type,
+  () => {
+    options.arr.length = 0;
   }
 );
 watch(
-  () => props.PPIval,
-  () => {
-    dataChange();
+  () => bus.wsData,
+  (wsData: any) => {
+    if (wsData.data) {
+      let { BeamEl: deg, RadVrData: list, BeamAz, BeamEl, ScanNo } = wsData.data;
+      // console.log(ScanNo, BeamEl, wsData.data.j);
+      let radial_num = 60;
+      let array = [];
+      for (let i = 0; i < list.length; i++) {
+        //显示径向速度
+        let item: any = {
+          HorAngel: BeamAz,
+          Time: "20220326144106",
+          VerAngel: BeamEl,
+          Distance: list[i].距离,
+          Speed: list[i].径向速度,
+          PK: list[i].谱宽,
+          SNR: list[i].信噪比,
+          PKQD: list[i].频谱强度,
+          ScanNo: ScanNo,
+          j: wsData.data.j + 1 + "/" + wsData.data.n,
+          percent: ((wsData.data.j + 1) / wsData.data.n).toFixed(2) + "%",
+          BinNum: wsData.data.BinNum,
+        };
+        if (props.type == "Speed") {
+          item.color =
+            Math.abs(list[i].径向速度) !== 999
+              ? verticalFlowColor(list[i].径向速度)
+              : undefined;
+        } else if (props.type == "PK") {
+          item.color = getPKColor(list[i].谱宽);
+        } else if (props.type == "SNR") {
+          item.color = getSNRColor(list[i].信噪比);
+        } else if (props.type == "PKQD") {
+          item.color = getPKQDColor(Math.log10(list[i].频谱强度));
+        }
+        array.push(item);
+      }
+      List.push({ Angle: -deg, array });
+      while (List.length > radial_num) List.shift();
+      if (List.length >= 2) {
+        //定义始末两条径向内的径向位置
+        for (let i = 1; i < List.length - 1; i++) {
+          let Angle1 = List[i - 1].Angle;
+          let Angle2 = List[i].Angle;
+          let Angle3 = List[i + 1].Angle;
+          let α = Math.min((Angle1 + Angle2) / 2, (Angle2 + Angle3) / 2);
+          let β = Math.max((Angle1 + Angle2) / 2, (Angle2 + Angle3) / 2);
+          List.splice(i, 1, {
+            α,
+            Angle: List[i].Angle,
+            β,
+            array: List[i].array,
+          });
+        }
+        //定义第一条径向位置
+        let Angle1 = List[0].Angle;
+        let Angle2 = List[1].Angle;
+        let α = Math.min(Angle1 - (Angle2 - Angle1) / 2, Angle1 + (Angle2 - Angle1) / 2);
+        let β = Math.max(Angle1 - (Angle2 - Angle1) / 2, Angle1 + (Angle2 - Angle1) / 2);
+        List.splice(0, 1, { α, Angle: List[0].Angle, β, array: List[0].array });
+        //定义最后一条径向位置
+        Angle1 = List.slice(-2)[0].Angle;
+        Angle2 = List.slice(-1)[0].Angle;
+        α = Math.min(Angle2 - (Angle2 - Angle1) / 2, Angle2 + (Angle2 - Angle1) / 2);
+        β = Math.max(Angle2 - (Angle2 - Angle1) / 2, Angle2 + (Angle2 - Angle1) / 2);
+        List.splice(List.length - 1, 1, {
+          α,
+          Angle: List.slice(-1)[0].Angle,
+          β,
+          array: List.slice(-1)[0].array,
+        });
+      } else if (List.length == 1) {
+        //定义只有一条径向的位置
+        let Angle = List[0].Angle;
+        let α = Angle - 0.5;
+        let β = Angle + 0.5;
+        List.splice(0, 1, { α, Angle: List[0].Angle, β, array: List[0].array });
+      }
+      options.arr = List;
+      radar_func();
+      if (options.pos) {
+        hover_func(options.pos);
+      }
+      draw();
+    }
   }
 );
 const options = reactive({
@@ -786,16 +765,22 @@ const options = reactive({
   radarCanvas: document.createElement("canvas"),
   hoverCanvas: document.createElement("canvas"),
   scanCanvas: document.createElement("canvas"),
-  offsetX: 0,
-  offsetY: 0,
+  offsetX: -650,
+  offsetY: 150,
   mousedown: false,
   pos: { x: 0, y: 0, targetX: 0, targetY: 0 }, //记录canvas中图形的真实位置
   rate: { x: 0, y: 0 },
-  level: 2,
-  targetLevel: 2,
-  distance: 30,
+  level: 4,
+  distanceMin: 400,
+  distanceMax: 600,
+  range: 52 * 12 + 43 - 6, //52 * 12 | 62 * 15
+  deg1: -20,
+  deg2: 0,
+  targetLevel: 4,
+  distance: 12, // 12 | 15  //一个像素代表一个库长,一个库长代表distance米
   item_hover: undefined,
   mousemove: { x: 0, y: 0 }, //记录实时鼠标位置
+  duration: 0,
 });
 const paintCanvasRef = ref(null);
 function mousewheelFunc(e: any) {
@@ -820,7 +805,7 @@ function mousewheelFunc(e: any) {
   gsap.killTweensOf(options);
   gsap.to(options, {
     level: options.targetLevel,
-    duration: 2,
+    duration: options.duration,
     onUpdate: () => {
       options.offsetX =
         options.pos.x -
@@ -837,6 +822,7 @@ function mousewheelFunc(e: any) {
       draw();
     },
   });
+  e.preventDefault();
 }
 let touchPosition = { clientX: 0, clientY: 0 };
 function mousemoveFunc(evt: MouseEvent | TouchEvent) {
@@ -854,7 +840,7 @@ function mousemoveFunc(evt: MouseEvent | TouchEvent) {
       gsap.to(options.pos, {
         x: options.pos.targetX,
         y: options.pos.targetY,
-        duration: 0.5,
+        duration: options.duration,
         onUpdate: () => {
           $(tipRef.value).css({
             top: options.pos.y + "px",
@@ -871,6 +857,16 @@ function mousemoveFunc(evt: MouseEvent | TouchEvent) {
           radar_func();
           hover_func(options.pos);
           draw();
+          if (
+            options.pos.x < 0 ||
+            options.pos.x > options.cvs.width ||
+            options.pos.y < 0 ||
+            options.pos.y > options.cvs.height
+          ) {
+            $(tipRef.value).css({ opacity: 0 });
+          } else {
+            $(tipRef.value).css({ opacity: 1 });
+          }
         },
       });
     }
@@ -892,7 +888,7 @@ function mousemoveFunc(evt: MouseEvent | TouchEvent) {
       gsap.to(options.pos, {
         x: options.pos.targetX,
         y: options.pos.targetY,
-        duration: 0.5,
+        duration: options.duration,
         onUpdate: () => {
           $(tipRef.value).css({
             top: options.pos.y + "px",
@@ -965,8 +961,7 @@ function mouseupFunc(e: any) {
 }
 onMounted(() => {
   // mockData();
-  console.log("mounted");
-  options.arr = processData(雷达数据);
+  // options.arr = processData(雷达数据);//废弃
 
   let currentRadian = -3;
   let radial_num = 45;
@@ -1006,11 +1001,11 @@ onMounted(() => {
     draw();
     // clearInterval(timer);
   };
-  let timer = setInterval(func, 100);
+  // let timer = setInterval(func, 100);
 
   options.cvs = (paintCanvasRef.value as unknown) as HTMLCanvasElement;
-  options.pos.targetX = options.pos.x = options.cvs.width / 2;
-  options.pos.targetY = options.pos.y = options.cvs.height / 2;
+  options.pos.targetX = options.pos.x = options.cvs.width / 2 + options.offsetX;
+  options.pos.targetY = options.pos.y = options.cvs.height / 2 + options.offsetY;
   document.addEventListener("mousemove", mousemoveFunc, { passive: false });
   document.addEventListener("touchmove", mousemoveFunc, { passive: false });
   options.cvs.addEventListener("mousewheel", mousewheelFunc, { passive: false });
@@ -1035,7 +1030,6 @@ const resize = () => {
   Y = options.cvs.height / 2 + options.offsetY;
   options.pos.targetX = options.pos.x = x + X;
   options.pos.targetY = options.pos.y = y + Y;
-  console.log(options.pos);
   $(tipRef.value).css({
     top: options.pos.y + "px",
     left: options.pos.x + "px",
@@ -1067,15 +1061,15 @@ onBeforeUnmount(() => {
   box-sizing: border-box;
   width: 100%;
   height: 100%;
-  overflow: hidden;
   .paintCanvas {
-    backdrop-filter: blur(25px);
+    // backdrop-filter: blur(25px);
     position: absolute;
     width: 100%;
     height: 100%;
     box-sizing: border-box;
   }
   .radar_hover_tip {
+    pointer-events: none;
     border-radius: 8px;
     white-space: noWrap;
     background: lightgrey;
@@ -1085,6 +1079,7 @@ onBeforeUnmount(() => {
     box-sizing: border-box;
     padding: 4px;
     color: black;
+    z-index: 4;
     &::before {
       content: "";
       pointer-events: none;

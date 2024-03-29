@@ -10,8 +10,10 @@
       </keep-alive>
     </router-view>
   </el-config-provider>
+  <websocket></websocket>
 </template>
 <script lang="ts" setup>
+import websocket from "~/myComponents/websocket/index.vue";
 import { useSettingStore } from "./stores/setting";
 const setting = useSettingStore();
 import { useExclude } from "./myComponents/bus";

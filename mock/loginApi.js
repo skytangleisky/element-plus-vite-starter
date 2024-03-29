@@ -23,10 +23,7 @@ const users = {
         "user_path": "/",
         "debug_enable": "true",
         "roles": [
-            "admin",
-            "guangzhou",
-            "editor",
-            "prod"
+            "admin"
         ]
     }
 }
@@ -41,12 +38,9 @@ const users = {
 //             code: 20000
 //         }
 //         }else{
-//             res.statusCode = 400
-//             res.write(JSON.stringify({
+//             res.status(400).send({
 //                 message: 'Account or password are incorrect.'
-//             }))
-//             res.end()
-//             return
+//             })
 //         }
 //     }
 // },
@@ -64,12 +58,9 @@ const users = {
 //                 }
 //             }
 //         }
-//         res.statusCode = 400
-//         res.write(JSON.stringify({
+//         res.status(400).send({
 //             message: 'invalid token!'
-//         }))
-//         res.end()
-//         return
+//         })
 //     }
 // },
 // {
@@ -77,9 +68,8 @@ const users = {
 //     method: 'DELETE',
 //     response: (req,res) => {
 //         res.clearCookie('Admin-Token')
-//         res.write(JSON.stringify({
+//         res.send({
 //             message: 'success'
-//         }))
-//         res.end()
+//         })
 //     }
 // }]

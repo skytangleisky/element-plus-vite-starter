@@ -198,7 +198,7 @@ onMounted(() => {
     antialias: true,
     renderWorldCopies: true,
     // maxZoom: 17,
-    maxZoom: 18,
+    maxZoom: 21, //mapbox最高支持21,瓦片等级最高到22级
     // minZoom: 1,
     // maxBounds: [
     //   [60.0, 0],

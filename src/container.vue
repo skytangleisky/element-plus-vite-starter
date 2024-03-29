@@ -8,7 +8,14 @@
     >
       <router-view v-slot="{ Component }">
         <keep-alive>
-          <component :key="$route.fullPath" :is="Component" />
+          <component
+            :key="
+              $route.meta?.time
+                ? $route.fullPath + '?time=' + $route.meta.time
+                : $route.fullPath
+            "
+            :is="Component"
+          />
         </keep-alive>
       </router-view>
     </div>
@@ -28,7 +35,7 @@
   <!-- <test-border></test-border> -->
   <!-- <remote-component></remote-component> -->
 </template>
-<script setup name="65e99b66-e340-4d4b-6b26-629f41dc63d9">
+<script setup name="contain">
 import { ref, onMounted } from "vue";
 // import { version as piniaVersion } from "~/tools/pinia/src/package.json'
 // import { version as vueVersion } from 'vue/package.json'
@@ -49,8 +56,10 @@ onMounted(() => {
 // setTimeout(()=>{
 //   list.value = undefined
 // },1000)
-</script>
 
+// <component :is="Component" /> // 存在的问题是相同组件在router-view中无法区分
+// <component :key="$route.fullPath" :is="Component" /> // 存在的问题是路由组件无法热更新
+</script>
 <style lang="scss">
 @media (prefers-color-scheme: light) {
   /** ... */

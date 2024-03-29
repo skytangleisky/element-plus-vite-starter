@@ -60,7 +60,13 @@ interface Wind {
     }>
   }>;
 }
-const obj = reactive({avgWindData:new Array<Wind>(),secondWindData:new Array<Wind>, radialWindData:Array<Wind>(),result:new Array<Station>})
+const obj = reactive({
+  avgWindData:new Array<Wind>(),
+  secondWindData:new Array<Wind>(),
+  radialWindData:Array<Wind>(),
+  result:new Array<Station>(),
+  wsData:new Object()
+})
 export const useBus = () => {
   return obj
 }

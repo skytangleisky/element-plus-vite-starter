@@ -67,7 +67,8 @@
 </template>
 <script lang="ts" setup>
 import { isDark } from "~/composables";
-import { ref, onMounted, watch, nextTick } from "vue";
+import { ref, onMounted, watch, getCurrentInstance } from "vue";
+let instance = getCurrentInstance();
 import { useIconStore } from "~/stores/icon";
 const icon = useIconStore();
 const modules = import.meta.glob("~/**/*.vue");
@@ -75,7 +76,7 @@ const languages = ref(modules);
 import { useRouter } from "vue-router";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
-const router = useRouter();
+let router = useRouter();
 import SubMenu from "./SubMenu.vue";
 import { array2components } from "~/tools";
 let DEV = import.meta.env.DEV;
@@ -120,6 +121,7 @@ watch(
     });
     try {
       router.replace(router.currentRoute.value.fullPath);
+      // router.replace({ ...router.currentRoute.value, force: true });
     } catch (error) {
       console.log(error);
     }

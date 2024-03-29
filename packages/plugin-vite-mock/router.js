@@ -16,9 +16,7 @@ async function sleep(timeout=0){
 }
 function loggerOutput(title, msg, type = 'info') {
   const tag = type === 'info' ? colors.cyan(`[vite:mock]`) : colors.red(`[vite:mock-server]`)
-  return console.log(
-    `${colors.dim(new Date().toLocaleTimeString())} ${tag} ${colors.green(title)} ${colors.dim( msg)}`,
-  )
+  console.log(`${colors.dim(new Date().toLocaleTimeString())} ${tag} ${colors.green(title)} ${colors.dim( msg)}`)
 }
 const watcher = chokidar.watch(mockPath, {
   ignoreInitial: true
@@ -62,6 +60,18 @@ function parseQuery(queryString) {
   return query;
 }
 module.exports = async(req, res, next) => {
+  if(!res.status){
+    res.status = (statusCode)=>{
+      res.statusCode = statusCode
+      return res
+    }
+  }
+  if(!res.send){
+    res.send = (json)=>{
+      res.write(JSON.stringify(json))
+      res.end()
+    }
+  }
   res.cookie = (name,value,options)=>{
     res.setHeader('Set-Cookie',cookie.serialize(name, value, options))
   }
@@ -116,7 +126,7 @@ async function matchRoute(req,res,next,routes){
           await raw(req,res)
           await multipart(req,res)
           let delay = Object.prototype.toString.call(routes[i].delay)==='[object Function]'?routes[i].delay():routes[i].delay
-          loggerOutput('request invoke', req.method.padEnd(10,' ') + req.url + '\t' + (routes[i].delay?(delay+'ms'):''))
+          loggerOutput('request invoke', req.method.padEnd(10,' ') + req.url + ' ' + (routes[i].delay?(delay+'ms'):''))
           await sleep(delay)
           if(Object.prototype.toString.call(routes[i].response)==='[object Object]'){
             res.setHeader('Content-Type','application/json')

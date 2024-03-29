@@ -97,18 +97,12 @@ let webgpu = ref(null);
 // let POINT = {lng:113.42165142106768,lat:23.098844381632485}
 let POINT = { lng: 116.39139324235674, lat: 39.90723893689098 };
 const urls = ref([
-  { url: "https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}" },
-  { url: "https://gac-geo.googlecnapps.cn/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}" },
-  { url: "https://gac-geo.googlecnapps.cn/maps/vt?lyrs=p&gl=CN&x={x}&y={y}&z={z}" },
-  { url: "https://tanglei.site:3210/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}" },
-  { url: "https://tanglei.site:3210/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}" },
-  { url: "https://tanglei.site:3210/maps/vt?lyrs=h&gl=CN&x={x}&y={y}&z={z}" },
-  { url: "https://tanglei.site:3210/maps/vt?lyrs=p&gl=CN&x={x}&y={y}&z={z}" },
-  { url: "https://tanglei.site:3210/maps/vt?lyrs=m&gl=CN&x={x}&y={y}&z={z}" },
-  { url: "https://tanglei.site:3210/maps/vt?lyrs=t&gl=CN&x={x}&y={y}&z={z}" },
-  {
-    url: "/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}",
-  },
+  { url: "https://tanglei.site:3240/maps/vt?lyrs=y&x={x}&y={y}&z={z}" },
+  { url: "https://tanglei.site:3240/maps/vt?lyrs=s&x={x}&y={y}&z={z}" },
+  { url: "https://tanglei.site:3240/maps/vt?lyrs=h&x={x}&y={y}&z={z}" },
+  { url: "https://tanglei.site:3240/maps/vt?lyrs=p&x={x}&y={y}&z={z}" },
+  { url: "https://tanglei.site:3240/maps/vt?lyrs=m&x={x}&y={y}&z={z}" },
+  { url: "https://tanglei.site:3240/maps/vt?lyrs=t&x={x}&y={y}&z={z}" },
 ]);
 if (setting.tileUrl == "") {
   setting.tileUrl = urls.value[3].url;

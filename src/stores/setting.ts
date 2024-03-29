@@ -172,11 +172,15 @@ export const useSettingStore = defineStore({
           {
             path:'radar',
             name:'b7ef7b88-5e6b-0c62-129b-00a18980cdce',
-            component:'/src/myComponents/radar/index.vue',
+            // component:'/src/myComponents/radar/index.vue',
+            component:'/src/myComponents/激光测风尾涡/index.vue',
             label:'雷达',
             replace:true,
             hide:false,
             svg:'8226ee256c6711ee8c80b025aa2c9ada',
+            meta:{
+              time:Date.now()
+            }
           },
           {
             path:'map',

@@ -89,7 +89,7 @@ const Reset = () => {
   });
   sessionStorage.clear();
   localStorage.clear();
-  exclude.push("65e99b66-e340-4d4b-6b26-629f41dc63d9"); //重置，对应组件和其子组件应该需要被重新渲染，因为重置pinia的数据后会导致页面可能显示异常，涉及到的组件需要重新渲染
+  exclude.push("contain"); //重置，对应组件和其子组件应该需要被重新渲染，因为重置pinia的数据后会导致页面可能显示异常，涉及到的组件需要重新渲染
   router.replace({ ...router.currentRoute.value, force: true });
 };
 const login = () => {};
