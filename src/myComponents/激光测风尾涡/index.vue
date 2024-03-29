@@ -17,6 +17,8 @@
         :value="v.value"
       ></el-option>
     </el-select>
+    <chromatography></chromatography>
+    <chromatography2></chromatography2>
     <radar-rhi :type="select1" class="radarRhi"></radar-rhi>
     <radar-rhi :type="select2" class="radarRhi2"></radar-rhi>
     <data-table class="dataTable"></data-table>
@@ -26,6 +28,8 @@
 import { reactive, ref } from "vue";
 import radarRhi from "../radar/index.vue";
 import dataTable from "./table.vue";
+import chromatography from "./chromatography.vue";
+import chromatography2 from "./chromatography2.vue";
 const options1 = reactive([
   {
     label: "径向速度",
@@ -69,7 +73,7 @@ const select2 = ref("SNR");
 .mainContainer {
   width: 100%;
   height: 100%;
-  // background: url(/src/assets/rhi.jpg) no-repeat;
+  background: url(/src/assets/rhi.jpg) no-repeat;
   .select1 {
     position: absolute;
     width: 100px;
@@ -89,7 +93,7 @@ const select2 = ref("SNR");
   .effect {
     position: absolute;
     inset: 0;
-    backdrop-filter: blur(0px);
+    backdrop-filter: blur(1px);
   }
   .radarRhi {
     border: 1px solid red;

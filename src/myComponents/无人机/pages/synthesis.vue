@@ -136,6 +136,7 @@ watch(
 <style scoped lang="scss">
 $time: 1s;
 .bottom-drawer {
+  white-space: nowrap;
   position: absolute;
   height: 240px;
   background-color: #fff;
