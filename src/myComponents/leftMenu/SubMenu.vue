@@ -65,10 +65,10 @@ const { item } = defineProps({
   },
 });
 const click = ($router: any, absoluteRootPath: any, item: any) => {
-  if (item.replace) {
-    $router.replace(`${absoluteRootPath}/${item.path}`);
-  } else {
+  if (item.replace == false) {
     $router.push(`${absoluteRootPath}/${item.path}`);
+  } else {
+    $router.replace(`${absoluteRootPath}/${item.path}`);
   }
 };
 const format = (svg: string) => {
