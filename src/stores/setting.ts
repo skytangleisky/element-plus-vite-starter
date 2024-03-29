@@ -244,7 +244,8 @@ export const useSettingStore = defineStore({
             name: 'c4961e04-e574-0e1f-ae23-94f157b14a45',
             component: '/src/myComponents/datatable/index.vue',
             label: '备案查询',
-            svg:'18821b0ad6cb11ee9aafb025aa2c9ada'
+            svg:'18821b0ad6cb11ee9aafb025aa2c9ada',
+            replace:true
           },
           {
             path: 'statistic',
@@ -267,28 +268,32 @@ export const useSettingStore = defineStore({
                 name: 'c4961e04-e574-0e1f-ae23-94f157b15a45',
                 component: '/src/myComponents/datatable/index.vue',
                 label: '反无设备详情',
-                svg:'2133405ad6ca11ee9aafb025aa2c9ada'
+                svg:'2133405ad6ca11ee9aafb025aa2c9ada',
+                replace:true
               },
               {
                 path: 'simulate',
                 name: 'c4961e04-e574-0e1f-ae23-94f157b15b45',
                 component:'/src/myComponents/无人机/pages/simulate.vue',
                 label: '设备布防模拟',
-                svg:'8bdc8331d6c911ee9aafb025aa2c9ada'
+                svg:'8bdc8331d6c911ee9aafb025aa2c9ada',
+                replace:true
               },
               {
                 path: 'airspace',
                 name: 'c4961e04-e574-0e1f-ae23-94f157b15c45',
                 component: '/src/myComponents/无人机/pages/edit.vue',
                 label: '禁飞区管理',
-                svg:'fb9ca5f8d6c811ee9aafb025aa2c9ada'
+                svg:'fb9ca5f8d6c811ee9aafb025aa2c9ada',
+                replace:true
               },
               {
                 path: 'whitelist',
                 name: 'c4961e04-e574-0e1f-ae23-94f157b15d45',
                 component: '/src/myComponents/datatable/index.vue',
                 label: '白名单管理',
-                svg:'41416b3ed6c911ee9aafb025aa2c9ada'
+                svg:'41416b3ed6c911ee9aafb025aa2c9ada',
+                replace:true
               },
             ]
           },
@@ -303,14 +308,16 @@ export const useSettingStore = defineStore({
                 name: 'c4961e01-e571-0e1f-ae23-94f157b15a45',
                 component: '/src/myComponents/datatable/index.vue',
                 label: '个人用户',
-                svg:'f11a18a8d6c711ee9aafb025aa2c9ada'
+                svg:'f11a18a8d6c711ee9aafb025aa2c9ada',
+                replace:true
               },
               {
                 path: 'enterprise',
                 name: 'c4961e02-e572-0e1f-ae23-94f157b15b45',
                 component: '/src/myComponents/datatable/index.vue',
                 label: '企业用户',
-                svg:'20a7ae2bd6c811ee9aafb025aa2c9ada'
+                svg:'20a7ae2bd6c811ee9aafb025aa2c9ada',
+                replace:true
               },
             ]
           },
@@ -325,21 +332,24 @@ export const useSettingStore = defineStore({
                 name: 'c4961e04-e571-0e1f-ae23-94f157b15a45',
                 component: '/src/myComponents/datatable/index.vue',
                 label: '系统用户管理',
-                svg:'6a190295d6c711ee9aafb025aa2c9ada'
+                svg:'6a190295d6c711ee9aafb025aa2c9ada',
+                replace:true
               },
               {
                 path: 'group',
                 name: 'c4961e04-e572-0e1f-ae23-94f157b15b45',
                 component: '/src/myComponents/datatable/group.vue',
                 label: '用户组管理',
-                svg:'e5fc96bfd6c611ee9aafb025aa2c9ada'
+                svg:'e5fc96bfd6c611ee9aafb025aa2c9ada',
+                replace:true
               },
               {
                 path: 'institution',
                 name: 'c4961e04-e573-0e1f-ae23-94f157b15b45',
                 component: '/src/myComponents/datatable/institution.vue',
                 label: '机构管理',
-                svg:'2e727627d6c711ee9aafb025aa2c9ada'
+                svg:'2e727627d6c711ee9aafb025aa2c9ada',
+                replace:true
               },
             ]
           },
