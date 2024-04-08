@@ -19,7 +19,7 @@
     <div
       :class="`bottom-drawer ${setting.无人机.监控.bottom_disappear ? 'disappear' : ''}`"
     >
-      <div class="handle p-8px" @click="setting.无人机.监控.bottom_disappear = false">
+      <div class="handle p-8px">
         <el-badge
           v-for="(v, k) in menus"
           :key="k"
@@ -90,6 +90,7 @@ const menus = reactive([
   { value: 0, svg: statisticSvg, active: false },
 ]);
 const click = (v) => {
+  setting.无人机.监控.bottom_disappear = false;
   v.active = true;
   menus
     .filter((item) => item !== v)
