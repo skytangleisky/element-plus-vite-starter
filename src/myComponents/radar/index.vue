@@ -1,12 +1,20 @@
 <template>
   <div class="radarContainer">
-    <canvas v-resize="resize" ref="paintCanvasRef" class="paintCanvas"></canvas>
-    <div class="radar_hover_tip" ref="tipRef"></div>
+    <div class="w-full h-40px flex justify-center items-center">
+      RHI(100) 径向风速 UTC 2022-09-30 16:01:19 to 16:01:36
+    </div>
+    <div class="w-full h-full relative">
+      <canvas v-resize="resize" ref="paintCanvasRef" class="paintCanvas"></canvas>
+      <div class="radar_hover_tip" ref="tipRef"></div>
+      <chromatography :arr="options.values" ref="chromatographyRef"></chromatography>
+    </div>
   </div>
 </template>
 <script lang="ts" setup name="radar">
+import chromatography from "../激光测风尾涡/chromatography.vue";
 import gsap from "gsap";
 import { onMounted, watch, reactive, onBeforeUnmount, ref } from "vue";
+const chromatographyRef = ref<any>();
 let rates = [5, 10, 20, 50, 100, 200, 500, 1000, 2000];
 function windowToCanvas(
   x: number,
@@ -18,183 +26,6 @@ function windowToCanvas(
     x: ((x - box.left) / box.width) * canvas.width,
     y: ((y - box.top) / box.height) * canvas.height,
   };
-}
-function verticalFlowColor(v: number) {
-  const colors = [
-    "#0000ff",
-    "#001cff",
-    "#0038ff",
-    "#0054ff",
-    "#0070ff",
-    "#008cff",
-    "#00a8ff",
-    "#00c4ff",
-    "#00e0ff",
-    "#78ffff",
-    "#ffff50",
-    "#ffe600",
-    "#ffbf00",
-    "#ff9800",
-    "#ff7100",
-    "#ff4a00",
-    "#ff2300",
-    "#fb0000",
-    "#d40000",
-    "#ad0000",
-  ];
-  return v <= -5.4
-    ? colors[0]
-    : v <= -4.8
-    ? colors[1]
-    : v <= -4.2
-    ? colors[2]
-    : v <= -3.6
-    ? colors[3]
-    : v <= -3
-    ? colors[4]
-    : v <= -2.4
-    ? colors[5]
-    : v <= -1.8
-    ? colors[6]
-    : v <= -1.2
-    ? colors[7]
-    : v <= -0.6
-    ? colors[8]
-    : v <= 0
-    ? colors[9]
-    : v <= 0.6
-    ? colors[10]
-    : v <= 1.2
-    ? colors[11]
-    : v <= 1.8
-    ? colors[12]
-    : v <= 2.4
-    ? colors[13]
-    : v <= 3
-    ? colors[14]
-    : v <= 3.6
-    ? colors[15]
-    : v <= 4.2
-    ? colors[16]
-    : v <= 4.8
-    ? colors[17]
-    : v <= 5.4
-    ? colors[18]
-    : colors[19];
-}
-function getSNRColor(val: number) {
-  let colors = [
-    "#0000ff",
-    "#003fff",
-    "#007eff",
-    "#00bdff",
-    "#14d474",
-    "#a6dd00",
-    "#ffe600",
-    "#ff8c00",
-    "#ff3200",
-    "#d70000",
-  ];
-  let values = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
-  for (let i = 0; i < values.length - 2; i++) {
-    if (values[i] <= val && val < values[i + 1]) {
-      return colors[i];
-    }
-  }
-  if (val >= 20) {
-    return colors.slice(-1)[0];
-  }
-  return undefined;
-}
-function getPKColor(val: number) {
-  let colors = [
-    "#0000ff",
-    "#003fff",
-    "#007eff",
-    "#00bdff",
-    "#14d474",
-    "#a6dd00",
-    "#ffe600",
-    "#ff8c00",
-    "#ff3200",
-    "#d70000",
-  ];
-  let values = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-  for (let i = 0; i < values.length - 2; i++) {
-    if (values[i] <= val && val < values[i + 1]) {
-      return colors[i];
-    }
-  }
-  if (val >= 10) {
-    return colors.slice(-1)[0];
-  }
-  return undefined;
-}
-function getPKQDColor(val: number) {
-  let colors = [
-    "#0000ff",
-    "#001cff",
-    "#0038ff",
-    "#0054ff",
-    "#0070ff",
-    "#008cff",
-    "#00a8ff",
-    "#00c4ff",
-    "#00e0ff",
-    "#14d474",
-    "#a6dd00",
-    "#ffe600",
-    "#ffbf00",
-    "#ff9800",
-    "#ff7100",
-    "#ff4a00",
-    "#ff2300",
-    "#fb0000",
-    "#d40000",
-    "#ad0000",
-  ];
-  let values = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
-  for (let i = 0; i < values.length - 2; i++) {
-    if (values[i] <= val && val < values[i + 1]) {
-      return colors[i];
-    }
-  }
-  if (val >= 20) {
-    return colors.slice(-1)[0];
-  }
-  return undefined;
-}
-
-function getFeatherColor(speed: number) {
-  return speed <= 4
-    ? "#0000ff"
-    : speed <= 8
-    ? "#002aff"
-    : speed <= 12
-    ? "#0054ff"
-    : speed <= 16
-    ? "#007eff"
-    : speed <= 20
-    ? "#00a8ff"
-    : speed <= 24
-    ? "#00d2ff"
-    : speed <= 28
-    ? "#14d474"
-    : speed <= 32
-    ? "#a6dd00"
-    : speed <= 36
-    ? "#ffe600"
-    : speed <= 40
-    ? "#ffb300"
-    : speed <= 44
-    ? "#ff8000"
-    : speed <= 48
-    ? "#ff4d00"
-    : speed <= 52
-    ? "#ff1a00"
-    : speed <= 56
-    ? "#e60000"
-    : "#b30000";
 }
 function mockData() {
   let library_num = 150;
@@ -665,101 +496,8 @@ const props = withDefaults(defineProps<{ type?: string }>(), {
 import { useBus } from "../bus";
 const bus = useBus();
 let List: any = [];
-watch(
-  () => props.type,
-  () => {
-    options.arr.length = 0;
-  }
-);
-watch(
-  () => bus.wsData,
-  (wsData: any) => {
-    if (wsData.data) {
-      let { BeamEl: deg, RadVrData: list, BeamAz, BeamEl, ScanNo } = wsData.data;
-      // console.log(ScanNo, BeamEl, wsData.data.j);
-      let radial_num = 60;
-      let array = [];
-      for (let i = 0; i < list.length; i++) {
-        //显示径向速度
-        let item: any = {
-          HorAngel: BeamAz,
-          Time: "20220326144106",
-          VerAngel: BeamEl,
-          Distance: list[i].距离,
-          Speed: list[i].径向速度,
-          PK: list[i].谱宽,
-          SNR: list[i].信噪比,
-          PKQD: list[i].频谱强度,
-          ScanNo: ScanNo,
-          j: wsData.data.j + 1 + "/" + wsData.data.n,
-          percent: ((wsData.data.j + 1) / wsData.data.n).toFixed(2) + "%",
-          BinNum: wsData.data.BinNum,
-        };
-        if (props.type == "Speed") {
-          item.color =
-            Math.abs(list[i].径向速度) !== 999
-              ? verticalFlowColor(list[i].径向速度)
-              : undefined;
-        } else if (props.type == "PK") {
-          item.color = getPKColor(list[i].谱宽);
-        } else if (props.type == "SNR") {
-          item.color = getSNRColor(list[i].信噪比);
-        } else if (props.type == "PKQD") {
-          item.color = getPKQDColor(Math.log10(list[i].频谱强度));
-        }
-        array.push(item);
-      }
-      List.push({ Angle: -deg, array });
-      while (List.length > radial_num) List.shift();
-      if (List.length >= 2) {
-        //定义始末两条径向内的径向位置
-        for (let i = 1; i < List.length - 1; i++) {
-          let Angle1 = List[i - 1].Angle;
-          let Angle2 = List[i].Angle;
-          let Angle3 = List[i + 1].Angle;
-          let α = Math.min((Angle1 + Angle2) / 2, (Angle2 + Angle3) / 2);
-          let β = Math.max((Angle1 + Angle2) / 2, (Angle2 + Angle3) / 2);
-          List.splice(i, 1, {
-            α,
-            Angle: List[i].Angle,
-            β,
-            array: List[i].array,
-          });
-        }
-        //定义第一条径向位置
-        let Angle1 = List[0].Angle;
-        let Angle2 = List[1].Angle;
-        let α = Math.min(Angle1 - (Angle2 - Angle1) / 2, Angle1 + (Angle2 - Angle1) / 2);
-        let β = Math.max(Angle1 - (Angle2 - Angle1) / 2, Angle1 + (Angle2 - Angle1) / 2);
-        List.splice(0, 1, { α, Angle: List[0].Angle, β, array: List[0].array });
-        //定义最后一条径向位置
-        Angle1 = List.slice(-2)[0].Angle;
-        Angle2 = List.slice(-1)[0].Angle;
-        α = Math.min(Angle2 - (Angle2 - Angle1) / 2, Angle2 + (Angle2 - Angle1) / 2);
-        β = Math.max(Angle2 - (Angle2 - Angle1) / 2, Angle2 + (Angle2 - Angle1) / 2);
-        List.splice(List.length - 1, 1, {
-          α,
-          Angle: List.slice(-1)[0].Angle,
-          β,
-          array: List.slice(-1)[0].array,
-        });
-      } else if (List.length == 1) {
-        //定义只有一条径向的位置
-        let Angle = List[0].Angle;
-        let α = Angle - 0.5;
-        let β = Angle + 0.5;
-        List.splice(0, 1, { α, Angle: List[0].Angle, β, array: List[0].array });
-      }
-      options.arr = List;
-      radar_func();
-      if (options.pos) {
-        hover_func(options.pos);
-      }
-      draw();
-    }
-  }
-);
 const options = reactive({
+  values: new Array<number>(),
   arr: new Array<any>(),
   cvs: document.createElement("canvas"),
   radarCanvas: document.createElement("canvas"),
@@ -771,16 +509,16 @@ const options = reactive({
   pos: { x: 0, y: 0, targetX: 0, targetY: 0 }, //记录canvas中图形的真实位置
   rate: { x: 0, y: 0 },
   level: 4,
-  distanceMin: 400,
-  distanceMax: 600,
-  range: 52 * 12 + 43 - 6, //52 * 12 | 62 * 15
+  distanceMin: 0,
+  distanceMax: Infinity,
+  range: 52 * 12 + 43 - 6, //52 * 12 + 43 - 6 | 62 * 15 + 45 - 7.5
   deg1: -20,
   deg2: 0,
   targetLevel: 4,
   distance: 12, // 12 | 15  //一个像素代表一个库长,一个库长代表distance米
   item_hover: undefined,
   mousemove: { x: 0, y: 0 }, //记录实时鼠标位置
-  duration: 0,
+  duration: 0.1,
 });
 const paintCanvasRef = ref(null);
 function mousewheelFunc(e: any) {
@@ -869,6 +607,8 @@ function mousemoveFunc(evt: MouseEvent | TouchEvent) {
           }
         },
       });
+      evt.stopPropagation();
+      evt.preventDefault();
     }
   } else if (evt instanceof TouchEvent) {
     let convert = windowToCanvas(
@@ -907,10 +647,10 @@ function mousemoveFunc(evt: MouseEvent | TouchEvent) {
           draw();
         },
       });
+      evt.stopPropagation();
+      evt.preventDefault();
     }
   }
-  evt.stopPropagation();
-  evt.preventDefault();
 }
 function mousedownFunc(evt: MouseEvent | TouchEvent) {
   if (evt instanceof MouseEvent) {
@@ -961,7 +701,6 @@ function mouseupFunc(e: any) {
 }
 onMounted(() => {
   // mockData();
-  // options.arr = processData(雷达数据);//废弃
 
   let currentRadian = -3;
   let radial_num = 45;
@@ -1013,6 +752,147 @@ onMounted(() => {
   options.cvs.addEventListener("touchstart", mousedownFunc, { passive: false });
   document.addEventListener("mouseup", mouseupFunc, { passive: false });
   document.addEventListener("touchend", mouseupFunc, { passive: false });
+
+  watch(
+    () => props.type,
+    () => {
+      options.arr.length = 0;
+      if (props.type == "Speed") {
+        options.values = [-5, -4, -3, -2, -1, -0.5, 0, 0.5, 1, 2, 3, 4, 5];
+      } else if (props.type == "PK") {
+        options.values = [0, 0.5, 1.0, 1.5, 2, 2.5, 3, 3.5, 4];
+      } else if (props.type == "PKQD") {
+        options.values = [
+          200,
+          202,
+          204,
+          208,
+          210,
+          212,
+          214,
+          216,
+          218,
+          220,
+          222,
+          224,
+          226,
+          228,
+          230,
+          232,
+          234,
+          236,
+          238,
+          240,
+        ];
+      } else if (props.type == "SNR") {
+        options.values = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 28, 32, 36, 40];
+      }
+    },
+    {
+      immediate: true,
+    }
+  );
+  let processData = (data: any) => {
+    data.map((wsData: any) => {
+      let { BeamEl: deg, RadVrData: list, BeamAz, BeamEl, ScanNo } = wsData;
+      // console.log(ScanNo, BeamEl, wsData.data.j);
+      let radial_num = 60;
+      let array = [];
+      for (let i = 0; i < list.length; i++) {
+        //显示径向速度
+        let item: any = {
+          HorAngel: BeamAz,
+          Time: "20220326144106",
+          VerAngel: BeamEl,
+          Distance: list[i].距离,
+          Speed: list[i].径向速度,
+          PK: list[i].谱宽,
+          SNR: list[i].信噪比,
+          PKQD: list[i].频谱强度,
+          ScanNo: ScanNo,
+          j: wsData.j + 1 + "/" + wsData.n,
+          percent: ((wsData.j + 1) / wsData.n).toFixed(2) + "%",
+          BinNum: wsData.BinNum,
+        };
+        if (props.type == "Speed") {
+          item.color =
+            Math.abs(list[i].径向速度) !== 999
+              ? chromatographyRef.value.getColor(list[i].径向速度)
+              : undefined;
+        } else if (props.type == "PK") {
+          item.color = chromatographyRef.value.getColor(list[i].谱宽);
+        } else if (props.type == "SNR") {
+          item.color = chromatographyRef.value.getColor(list[i].信噪比);
+        } else if (props.type == "PKQD") {
+          item.color = chromatographyRef.value.getColor(10 * Math.log(list[i].频谱强度));
+        }
+        array.push(item);
+      }
+      List.push({ Angle: -deg, array });
+      while (List.length > radial_num) List.shift();
+      if (List.length >= 2) {
+        //定义始末两条径向内的径向位置
+        for (let i = 1; i < List.length - 1; i++) {
+          let Angle1 = List[i - 1].Angle;
+          let Angle2 = List[i].Angle;
+          let Angle3 = List[i + 1].Angle;
+          let α = Math.min((Angle1 + Angle2) / 2, (Angle2 + Angle3) / 2);
+          let β = Math.max((Angle1 + Angle2) / 2, (Angle2 + Angle3) / 2);
+          List.splice(i, 1, {
+            α,
+            Angle: List[i].Angle,
+            β,
+            array: List[i].array,
+          });
+        }
+        //定义第一条径向位置
+        let Angle1 = List[0].Angle;
+        let Angle2 = List[1].Angle;
+        let α = Math.min(Angle1 - (Angle2 - Angle1) / 2, Angle1 + (Angle2 - Angle1) / 2);
+        let β = Math.max(Angle1 - (Angle2 - Angle1) / 2, Angle1 + (Angle2 - Angle1) / 2);
+        List.splice(0, 1, { α, Angle: List[0].Angle, β, array: List[0].array });
+        //定义最后一条径向位置
+        Angle1 = List.slice(-2)[0].Angle;
+        Angle2 = List.slice(-1)[0].Angle;
+        α = Math.min(Angle2 - (Angle2 - Angle1) / 2, Angle2 + (Angle2 - Angle1) / 2);
+        β = Math.max(Angle2 - (Angle2 - Angle1) / 2, Angle2 + (Angle2 - Angle1) / 2);
+        List.splice(List.length - 1, 1, {
+          α,
+          Angle: List.slice(-1)[0].Angle,
+          β,
+          array: List.slice(-1)[0].array,
+        });
+      } else if (List.length == 1) {
+        //定义只有一条径向的位置
+        let Angle = List[0].Angle;
+        let α = Angle - 0.5;
+        let β = Angle + 0.5;
+        List.splice(0, 1, { α, Angle: List[0].Angle, β, array: List[0].array });
+      }
+    });
+    options.arr = List;
+    radar_func();
+    if (options.pos) {
+      hover_func(options.pos);
+    }
+    draw();
+  };
+  //实时数据
+  // watch(
+  //   () => bus.wsData,
+  //   (wsData: any) => {
+  //     console.log(wsData.data);
+  //     if (wsData.data) {
+  //       processData([wsData.data]);
+  //     }
+  //   }
+  // );
+  watch(
+    () => bus.listData,
+    (data) => {
+      processData(data);
+    }
+  );
 });
 const resize = () => {
   let targetWidth = options.cvs.getBoundingClientRect().width;
@@ -1057,10 +937,10 @@ onBeforeUnmount(() => {
 </script>
 <style scoped lang="scss">
 .radarContainer {
-  position: absolute;
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
   box-sizing: border-box;
-  width: 100%;
-  height: 100%;
   .paintCanvas {
     // backdrop-filter: blur(25px);
     position: absolute;
@@ -1072,7 +952,7 @@ onBeforeUnmount(() => {
     pointer-events: none;
     border-radius: 8px;
     white-space: noWrap;
-    background: lightgrey;
+    background: white;
     display: none;
     position: absolute;
     border: 1px solid gray;

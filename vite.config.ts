@@ -116,7 +116,7 @@ export default defineConfig({
         changeOrigin:true,//开启代理，允许跨域
       },
       '/backend':{
-        // target:'http://websocket.tanglei.top/backend',//替换的服务端地址
+        // target:'http://websocket.tanglei.top',//替换的服务端地址
         target:'http://127.0.0.1:9988',//替换的服务端地址
         changeOrigin:true,//开启代理，允许跨域
         // rewrite:path=>path.replace(/^\/backend/,''), // 设置重写的路径

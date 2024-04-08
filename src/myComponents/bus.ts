@@ -65,7 +65,8 @@ const obj = reactive({
   secondWindData:new Array<Wind>(),
   radialWindData:Array<Wind>(),
   result:new Array<Station>(),
-  wsData:new Object()
+  wsData:new Object(),
+  listData:new Object(),
 })
 export const useBus = () => {
   return obj

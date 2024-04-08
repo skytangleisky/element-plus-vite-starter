@@ -1,13 +1,21 @@
 <template>
-  <div class="absolute left-0 top-0 z-5">{{ num }}</div>
-  <div class="absolute left-0 top-40px z-5">{{ usedJSHeapSize }}</div>
+  <div class="infos absolute left-0 top-0 z-5">
+    <div>{{ infos.num }}</div>
+    <div>{{ infos.usedJSHeapSize }}</div>
+    <div>{{ infos.delay }}</div>
+  </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, onBeforeUnmount, ref } from "vue";
+import { onMounted, onBeforeUnmount, ref, reactive } from "vue";
 import { useBus } from "../bus";
-const usedJSHeapSize = ref((performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(2));
+import Sleeper from "../zrender/sleeper";
+let sleeper = new Sleeper();
 let bus = useBus();
-const num = ref("");
+const infos = reactive({
+  num: "",
+  delay: "",
+  usedJSHeapSize: (performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(2),
+});
 class MyWebSocket extends WebSocket {
   dead: boolean = false;
 }
@@ -20,28 +28,69 @@ function connect() {
   );
   ws.onopen = function () {
     ws.send(JSON.stringify({ type: "login", content: Math.ceil(Math.random() * 10000) }));
+    const loop = async () => {
+      //心跳检测
+      try {
+        ws.readyState === WebSocket.OPEN &&
+          ws.send(
+            JSON.stringify({
+              content: null,
+              type: "heart1",
+              user_list: [],
+              clientTime1: performance.now(),
+            })
+          );
+        await sleeper.sleep(5000);
+        loop();
+      } catch (e) {
+        console.log(e);
+        //不做处理
+      }
+    };
+    loop();
   };
   ws.onmessage = function (e) {
-    var msg = JSON.parse(e.data);
-    bus.wsData = msg;
-    num.value = msg.content;
-    // switch (msg.type) {
-    //     case 'handshake':
-    //     case 'login':
-    //     case 'logout':
-    //       console.log(msg);
-    //     return;
-    // }
-    usedJSHeapSize.value =
+    var obj = JSON.parse(e.data);
+    bus.wsData = obj;
+    infos.num = obj.content;
+    switch (obj.type) {
+      case "heart2": //客户端延时
+        obj.type = "heart3";
+        obj.clientTime2 = performance.now();
+        // console.log((obj.clientTime2 - obj.clientTime1).toFixed(2), "ms");
+        ws.readyState === WebSocket.OPEN && ws.send(JSON.stringify(obj));
+        break;
+      case "heart4": //服务端延时
+        let cDelay = (obj.clientTime2 - obj.clientTime1).toFixed(2);
+        let sDelay = (obj.serverTime2 - obj.serverTime1).toFixed(2);
+        infos.delay = sDelay + "ms";
+        break;
+      case "handshake":
+        break;
+      case "login":
+        break;
+      case "logout":
+        console.log(obj);
+        break;
+      case "目录信息":
+        console.log(obj.dirs, obj.files);
+        break;
+      case "目录信息改变":
+        console.log(obj.event, obj.file);
+        break;
+    }
+    infos.usedJSHeapSize =
       (performance.memory.usedJSHeapSize / 1000 / 1000).toFixed(2) + "MB";
   };
   ws.onerror = function (err) {
     console.log(err);
   };
   ws.onclose = function () {
-    num.value = "-";
+    sleeper.abort();
+    infos.num = "-";
     if (!ws.dead) {
       setTimeout(() => {
+        sleeper = new Sleeper();
         connect();
       }, 5000);
     }
@@ -51,10 +100,18 @@ onMounted(() => {
   connect();
 });
 onBeforeUnmount(() => {
+  sleeper.abort();
   if (ws) {
     ws.dead = true;
     ws.close();
   }
 });
 </script>
-<style lang="scss"></style>
+<style lang="scss">
+.infos {
+  div {
+    min-height: 1em;
+    line-height: 1em;
+  }
+}
+</style>

@@ -1,13 +1,14 @@
 <template>
   <div>
     <el-table
+      class="rounded-table"
       :data="tableData"
       :span-method="objectSpanMethod"
       table-layout="auto"
       :header-cell-style="{ 'text-align': 'center' }"
       :cell-style="{ 'text-align': 'center' }"
       border
-      style="width: 100%; margin-top: 20px; text-align: center"
+      style="width: 100%; text-align: center"
     >
       <el-table-column prop="id" label="序号" />
       <el-table-column prop="duration" label="持续时间(s)" />

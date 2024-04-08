@@ -66,12 +66,6 @@ module.exports = async(req, res, next) => {
       return res
     }
   }
-  if(!res.send){
-    res.send = (json)=>{
-      res.write(JSON.stringify(json))
-      res.end()
-    }
-  }
   res.cookie = (name,value,options)=>{
     res.setHeader('Set-Cookie',cookie.serialize(name, value, options))
   }

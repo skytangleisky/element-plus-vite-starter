@@ -54,7 +54,7 @@
       @click="status == 'play' ? pause() : play()"
       class="btn"
       style="overflow: hidden; font-size: 2rem; min-width: 2rem"
-      v-dompurify-html="status == 'play' ? pauseSvg : playSvg"
+      v-dompurify-html="status == 'play' ? stopSvg : playSvg"
     />
     <span @click="speed">x{{ Math.pow(2, options.times) }}</span>
     <!-- <graph
@@ -66,7 +66,7 @@
 </template>
 <script lang="ts" setup>
 import { gsap } from "gsap";
-import pauseSvg from "~/assets/pause.svg?raw";
+import stopSvg from "~/assets/stop.svg?raw";
 import playSvg from "~/assets/play.svg?raw";
 import nextSvg from "~/assets/next.svg?raw";
 import rightSvg from "~/assets/right.svg?raw";

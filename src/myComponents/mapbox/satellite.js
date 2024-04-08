@@ -26,7 +26,7 @@ export default {
   "tilejson": "2.2.0",
   "tiles": [
     // `https://api.weather.com/v3/TileServer/tile?product=temp&ts=1703471700&xyz={x}:{y}:{z}&apiKey=bbd90b15bb534e3c990b15bb53fe3c03`
-    'https://tanglei.site:3240/maps/vt?lyrs=s2&gl=CN&x={x}&y={y}&z={z}'
+    'https://tanglei.site:3240/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}'
     // "https://api.weather.com/v3/TileServer/tile?product=twcRadarMosaic&ts=1703311500&xyz={x}:{y}:{z}&apiKey=bbd90b15bb534e3c990b15bb53fe3c03"//雷达
     // "https://api.weather.com/v3/TileServer/tile?product=sat&ts=1703313000&xyz={x}:{y}:{z}&apiKey=bbd90b15bb534e3c990b15bb53fe3c03"//云图
     // "https://api.weather.com/v3/TileServer/tile?product=temp&ts=1703471700&xyz={x}:{y}:{z}&apiKey=bbd90b15bb534e3c990b15bb53fe3c03"//温度

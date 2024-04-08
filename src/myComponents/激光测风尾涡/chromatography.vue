@@ -9,59 +9,88 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 const orientation = "to top";
-const getHue = (percent: number) => {
-  if (percent < 0 || percent > 1) {
-    throw Error("percent should be between 0 adn 1");
+const getHue = (min: number, v: number, max: number) => {
+  if (v < min) {
+    // console.error(`${v} should be greater than ${min}`);
+    return 240;
+  } else if (v > max) {
+    // console.error(`${v} should be less than ${max}`);
+    return 0;
+  } else {
+    //hsl(240,100%,50%)～hsl(180,100%,50%)hsl(60,100%,50%)～hsl(0,100%,50%)
+    let percent = (v - min) / (max - min);
+    return percent < 0.5
+      ? ((0.5 - percent) / 0.5) * 60 + 180
+      : ((1 - percent) / 0.5) * 60;
   }
-  //hsl(240,100%,50%)～hsl(180,100%,50%)hsl(60,100%,50%)～hsl(0,100%,50%)
-  return percent < 0.5 ? ((0.5 - percent) / 0.5) * 60 + 180 : ((1 - percent) / 0.5) * 60;
 };
-let arr = [-5, -4, -3, -2, -1, -0.5, 0, 0.5, 1, 2, 3, 4, 5];
+const props = withDefaults(defineProps<{ arr: Array<number> }>(), {
+  arr: () => [0, 0.25, 0.5, 0.75, 1],
+});
 const colors: Array<{ percent: number; color: string }> = [];
-let min = Math.min(...arr);
-let range = Math.max(...arr) - min;
-// arr.map((v, k) => {
-//   let percent = (v - min) / range;
-//   colors.push({
-//     percent: k / (arr.length - 1),
-//     color: `hsl(${getHue(percent)},100%,50%)`,
-//   });
-// });
-for (let i = 1; i < arr.length; i++) {
-  let pre = arr[i - 1];
-  let cur = arr[i];
-  let percent1 = (pre - min) / range;
-  let percent2 = (cur - min) / range;
-  let avg = (getHue(percent1) + getHue(percent2)) / 2;
-  let color = `hsl(${avg},100%,50%)`;
-  colors.push({ percent: (i - 1) / (arr.length - 1), color });
-  colors.push({ percent: i / (arr.length - 1), color });
-}
 const gradientRef = ref(null);
 onMounted(() => {
   const gradient = (gradientRef.value as unknown) as HTMLDivElement;
-  if (colors.length > 0) {
-    gradient.style.setProperty(
-      "--gradient",
-      `linear-gradient( ${orientation}, ${colors
-        .map((item) => item.color + " " + item.percent * 100 + "%")
-        .join(", ")})`
-    );
-  } else {
-    gradient.style.setProperty("--gradient", "unset");
-  }
+  watch(
+    () => props.arr,
+    (arr) => {
+      colors.length = 0;
+      let min = Math.min(...props.arr);
+      let max = Math.max(...props.arr);
+      //渐变色标
+      // props.arr.map((v, k) => {
+      //   // let percent = (v - min) / (max - min);
+      //   let percent = k / (props.arr.length - 1);
+      //   colors.push({
+      //     percent: percent,
+      //     color: `hsl(${getHue(min, v, max)},100%,50%)`,
+      //   });
+      // });
+      //色块色标
+      for (let i = 1; i < props.arr.length; i++) {
+        let pre = props.arr[i - 1];
+        let cur = props.arr[i];
+        // let percent1 = (pre - min) / (max - min);
+        // let percent2 = (cur - min) / (max - min);
+        let percent1 = (i - 1) / (props.arr.length - 1);
+        let percent2 = i / (props.arr.length - 1);
+        let avg = (getHue(min, pre, max) + getHue(min, cur, max)) / 2;
+        let color = `hsl(${avg},100%,50%)`;
+        colors.push({ percent: percent1, color });
+        colors.push({ percent: percent2, color });
+      }
+      if (colors.length > 0) {
+        gradient.style.setProperty(
+          "--gradient",
+          `linear-gradient( ${orientation}, ${colors
+            .map((item) => item.color + " " + item.percent * 100 + "%")
+            .join(", ")})`
+        );
+      } else {
+        gradient.style.setProperty("--gradient", "unset");
+      }
+    },
+    { immediate: true }
+  );
+});
+defineExpose({
+  getColor: (v: number) => {
+    let min = Math.min(...props.arr);
+    let max = Math.max(...props.arr);
+    return `hsl(${getHue(min, v, max)},100%,50%)`;
+  },
 });
 </script>
 <style scoped lang="scss">
 .gradient {
   --gradient: unset;
   position: absolute;
-  left: 750px;
-  top: 300px;
-  width: 40px;
-  height: 400px;
+  right: 0;
+  top: 0;
+  width: 20px;
+  height: 100%;
   // border: 1px solid red;
   box-sizing: border-box;
   background: var(--gradient, linear-gradient(to top, #f00, #0f0, #00f));

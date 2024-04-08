@@ -4,10 +4,14 @@ import en from '../languages/en.mjs'
 export const useSettingStore = defineStore({
   id: 'setting',
   state:()=>({
+    catalogue:{
+      dirs:[],
+      files:[],
+    },
     mapbox:{
-      showStation:false,
-      showStream:false,
-      satellite:false,
+      showStation:true,
+      showStream:true,
+      satellite:true,
     },
     openlayers:{
       // zoom:5,
@@ -439,11 +443,11 @@ export const useSettingStore = defineStore({
         redirect: '/contain/synthesis',
         hide:true
       },
-      {
-        path: ':catchAll(.*)*',
-        component: '/src/myComponents/404/index.vue',
-        hide:true
-      },
+      // {
+      //   path: ':catchAll(.*)*',
+      //   component: '/src/myComponents/404/index.vue',
+      //   hide:true
+      // },
     ]
   }),
   getters:{

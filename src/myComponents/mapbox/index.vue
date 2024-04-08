@@ -270,16 +270,6 @@ mapboxgl.accessToken =
   "pk.eyJ1Ijoic2hldmF3ZW4iLCJhIjoiY2lwZXN2OGlvMDAwMXR1bmh0aG5vbDFteiJ9.2fsD37adZ1hC2MUU-2xByA";
 const mapRef = ref(null);
 var map: mapboxgl.Map;
-watch(
-  () => setting.mapbox.showStream,
-  (v) => {
-    if (v) {
-      map.addLayer(new CustomLayer());
-    } else {
-      map.removeLayer("null-island");
-    }
-  }
-);
 // 可视化及交互部分
 onMounted(() => {
   if (!mapRef.value) throw Error("invalid mapRef!");
@@ -472,7 +462,6 @@ onMounted(() => {
     watch(
       () => setting.mapbox.showStation,
       (v) => {
-        console.log(v);
         if (v) {
           getMicapsData(plotUrl).then((result: any) => {
             let points = {
@@ -735,6 +724,19 @@ onMounted(() => {
         }
       },
       { immediate: true }
+    );
+    watch(
+      () => setting.mapbox.showStream,
+      (v) => {
+        if (v) {
+          map.addLayer(new CustomLayer());
+        } else {
+          map.removeLayer("null-island");
+        }
+      },
+      {
+        immediate: true,
+      }
     );
   });
   let timer: number;
