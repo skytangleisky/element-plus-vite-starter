@@ -93,7 +93,7 @@ const numberValidateForm = reactive({
 const loading = ref(false);
 const sliderStatus = ref<"验证中" | "验证通过">("验证中");
 const submitForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
+  if (!formEl || sliderStatus.value !== "验证通过") return;
   loading.value = true;
   formEl.validate((valid) => {
     if (valid) {
