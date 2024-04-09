@@ -67,6 +67,50 @@ export const useSettingStore = defineStore({
         tile:'街道地图',
       }
     },
+    组网:{
+      监控:{
+        "zoom": 8.882777980661407,
+        "center": [
+            117.04212403858509,
+            28.1994655756006
+        ],
+        district:true,
+        loadmap:true,
+        disappear:false,
+        bottom_disappear:true,
+        tile:'卫星地图',
+      },
+      回放:{
+        "zoom": 8.882777980661407,
+        "center": [
+            117.04212403858509,
+            28.1994655756006
+        ],
+        district:true,
+        loadmap:true,
+        tile:'街道地图',
+      },
+      编辑:{
+        "zoom": 8.882777980661407,
+        "center": [
+            117.04212403858509,
+            28.1994655756006
+        ],
+        district:true,
+        loadmap:true,
+        tile:'街道地图',
+      },
+      模拟:{
+        "zoom": 8.882777980661407,
+        "center": [
+            117.04212403858509,
+            28.1994655756006
+        ],
+        district:true,
+        loadmap:true,
+        tile:'街道地图',
+      }
+    },
     projection: 'globe',// mercator|globe
     lang: 'zh-cn',
     webgpu:false,
@@ -179,6 +223,17 @@ export const useSettingStore = defineStore({
             // component:'/src/myComponents/radar/index.vue',
             component:'/src/myComponents/激光测风尾涡/index.vue',
             label:'雷达',
+            hide:false,
+            svg:'8226ee256c6711ee8c80b025aa2c9ada',
+            meta:{
+              time:Date.now()
+            }
+          },
+          {
+            path:'networking',
+            name:'b7ef7b88-5e6b-0c62-129b-00a18980cd11',
+            component:'/src/myComponents/组网/pages/synthesis.vue',
+            label:'组网',
             hide:false,
             svg:'8226ee256c6711ee8c80b025aa2c9ada',
             meta:{
