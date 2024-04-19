@@ -1,8 +1,8 @@
 <template>
   <div class="infos absolute left-0 top-0 z-5">
     <div>{{ infos.num }}</div>
-    <div>{{ infos.usedJSHeapSize }}</div>
     <div>{{ infos.delay }}</div>
+    <div>{{ infos.usedJSHeapSize }}</div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -14,7 +14,7 @@ let bus = useBus();
 const infos = reactive({
   num: "",
   delay: "",
-  usedJSHeapSize: (performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(2),
+  usedJSHeapSize: "",
 });
 class MyWebSocket extends WebSocket {
   dead: boolean = false;
@@ -64,6 +64,8 @@ function connect() {
         let cDelay = (obj.clientTime2 - obj.clientTime1).toFixed(2);
         let sDelay = (obj.serverTime2 - obj.serverTime1).toFixed(2);
         infos.delay = sDelay + "ms";
+        infos.usedJSHeapSize =
+          (performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(2) + "MB";
         break;
       case "handshake":
         break;
@@ -97,7 +99,7 @@ function connect() {
   };
 }
 onMounted(() => {
-  connect();
+  // connect();
 });
 onBeforeUnmount(() => {
   sleeper.abort();

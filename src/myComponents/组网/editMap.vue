@@ -11,16 +11,17 @@
         height: 100%;
         line-height: 1;
         outline: none;
+        background: #2b2b2b;
       "
     ></div>
     <Dialog
       class="absolute"
       v-model:menus="dialogOptions.menus"
-      style="left: 350px; top: 10px"
+      style="left: 10px; top: 10px"
     ></Dialog>
     <el-select
       class="select"
-      style="position: absolute; width: 100px; left: 200px; top: 10px"
+      style="position: absolute; width: 100px; left: 530px; top: 10px"
       size="small"
       v-model="color"
       placeholder="请选择颜色"
@@ -35,6 +36,13 @@
   </div>
 </template>
 <script setup lang="ts">
+import Map = mapboxgl.Map;
+import Marker = mapboxgl.Marker;
+import NavigationControl = mapboxgl.NavigationControl;
+import FullscreenControl = mapboxgl.FullscreenControl;
+import { getRandomPointBetweenR1R2 } from "~/tools/index.js";
+import * as turf from "@turf/turf";
+import Circle from "@turf/circle";
 import { wgs84togcj02 } from "~/myComponents/map/workers/mapUtil";
 import { watch, ref, onMounted, onBeforeUnmount, reactive } from "vue";
 import Dialog from "./dialog.vue";
@@ -52,6 +60,7 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.scss";
 import { 获取净空区, saveData, deleteData } from "~/api/无人机/api";
 import { getDevice } from "~/api/组网/device.js";
+import { addFeatherImages, getFeather } from "~/tools";
 const bus = useBus();
 import theme from "./drawTheme/inactive.js";
 const props = withDefaults(
@@ -61,6 +70,7 @@ const props = withDefaults(
     tile?: string;
     center?: object;
     zoom?: number;
+    pitch?: number;
   }>(),
   {
     loadmap: true,
@@ -68,6 +78,7 @@ const props = withDefaults(
     tile: "街道地图",
     center: [0, 0],
     zoom: 4,
+    pitch: 0,
   }
 );
 import style from "./editMap.js";
@@ -86,7 +97,7 @@ import satellite from "./satellite.js";
 let satelliteUrl = URL.createObjectURL(
   new File([JSON.stringify(satellite)], "satellite.json", { type: "application/json" })
 );
-const emit = defineEmits(["update:center", "update:zoom"]);
+const emit = defineEmits(["update:center", "update:zoom", "update:pitch"]);
 let map: any;
 watch(
   () => props.tile,
@@ -97,7 +108,7 @@ watch(
     } else if (tile == "卫星地图") {
       s.sources["raster-tiles"].url = satelliteUrl;
     }
-    s.layers.map((v) => {
+    s.layers.map((v: any) => {
       if (v.id == "simple-tiles") {
         v.layout.visibility = props.loadmap ? "visible" : "none";
       } else if (v.id == "districtLayer" || v.id == "districtOutline") {
@@ -141,39 +152,34 @@ const setting = useSettingStore();
 let enclosureList = new Array<any>();
 const station = useStationStore();
 const mapRef = ref(null);
-const clickFunc = (e: any) => {
-  if (e.features) {
-    setting.disappear = false;
-    for (let i = 0; i < bus.result.length; i++) {
-      if (bus.result[i].radar.radar_id == e.features[0].properties.radar_id) {
-        station
-          .查询雷达最新的径向风数据接口({
-            radar_id: e.features[0].properties.radar_id.replaceAll("-", ""),
-          })
-          .then((res: any) => {
-            bus.radialWindData = res.data.data;
-          });
-        station.active = bus.result[i].radar.radar_id;
-        $(`#${station.active}`)[0].scrollIntoView({
-          block: "nearest",
-          behavior: "smooth",
-          inline: "center",
-        });
-      }
-    }
-  }
-};
 const zoomFunc = () => {
   emit("update:zoom", map.getZoom());
+};
+const pitchFunc = () => {
+  emit("update:pitch", map.getPitch());
 };
 const moveFunc = () => {
   emit("update:center", map.getCenter());
 };
 const flyTo = (item: any) => {
   try {
+    let v = item.lngLat;
+    let lng = v.substring(0, v.indexOf("E"));
+    let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
+    let pt = {
+      lng:
+        Number(lng.substring(0, 3)) +
+        Number(lng.substring(3, 5)) / 60 +
+        Number(lng.substring(5, 9)) / 100 / 3600,
+      lat:
+        Number(lat.substring(0, 2)) +
+        Number(lat.substring(2, 4)) / 60 +
+        Number(lat.substring(4, 8)) / 100 / 3600,
+    };
+    let position = wgs84togcj02(pt.lng, pt.lat);
     map.flyTo({
-      center: [item.longitude, item.latitude], // 新的中心点 [经度, 纬度]
-      zoom: item.zoom || 10, // 目标缩放级别
+      center: position, // 新的中心点 [经度, 纬度]
+      zoom: item.zoom || 16, // 目标缩放级别
       speed: 1, // 飞行速度，1 为默认速度
       // curve: 1, // 飞行路径的曲率, 1 是直线
       // easing: function (t) {
@@ -182,7 +188,7 @@ const flyTo = (item: any) => {
       essential: true, // 这个飞行动作对于用户交互是必要的
     });
   } catch (error) {
-    console.log({ longitude: item.longitude, latitude: item.latitude });
+    console.log({ longitude: item.lng, latitude: item.lat });
     console.log(error);
   }
 };
@@ -190,12 +196,13 @@ const resize = () => {
   map && map.resize();
 };
 onMounted(() => {
-  map = new mapboxgl.Map({
+  map = new Map({
     container: (mapRef.value as unknown) as HTMLCanvasElement,
     // projection: "globe",
     // style: raster,
     performanceMetricsCollection: false,
     style,
+    // fadeDuration: 0,
     dragRotate: false,
     touchRotate: false,
     touchPitch: false,
@@ -214,12 +221,12 @@ onMounted(() => {
     // ],
     // zoom: 18,
     // center: [148.9819, -35.3981],
-    // pitch: 60,
     zoom: props.zoom,
     center: props.center,
-    pitch: 0,
+    pitch: props.pitch,
   });
-  map.on("load", () => {
+  map.on("load", async () => {
+    await addFeatherImages(map);
     map.addLayer({
       id: "maine",
       type: "fill",
@@ -236,10 +243,11 @@ onMounted(() => {
       layout: {},
       paint: {
         "fill-color": "blue",
-        "fill-opacity": 0.8,
+        "fill-opacity": 0.4,
       },
     });
     getDevice().then((res) => {
+      console.log(res.data);
       dialogOptions.menus = res.data;
       console.log("设备数据", res.data);
       let features: any = [];
@@ -273,21 +281,19 @@ onMounted(() => {
             coordinates: position,
           },
         });
-        let offset: [number, number] = [
-          100 * Math.random() - 50,
-          100 * Math.random() - 50,
-        ];
+
+        let offset = (getRandomPointBetweenR1R2(50, 100) as unknown) as [number, number];
         let div = document.createElement("div");
         div.id = "组网" + item.id;
         div.className = "deviceStation";
         div.style.position = "absolute";
-        $(div).append(
-          $(
-            `<div class="station" style="z-index:-1;background: ${
-              item.color
-            };left:50%;top:50%;transform:translate(-50%,-50%) translate(${-offset[0]}px,${-offset[1]}px)"></div>`
-          )
+        $(div).data("id", item.id);
+        let device = $(
+          `<div class="station" style="z-index:-1;background: ${
+            item.color
+          };left:50%;top:50%;transform:translate(-50%,-50%) translate(${-offset[0]}px,${-offset[1]}px)"></div>`
         );
+        $(div).append(device);
         $(div).append(
           $(
             `<div class="connectingLine" style="pointer-events:none;background:${
@@ -300,8 +306,22 @@ onMounted(() => {
             )}rad);width:${Math.sqrt(offset[0] ** 2 + offset[1] ** 2)}px"></div>`
           )
         );
-        $(div).append($(`<div class="label">${item.name}</div>`));
-        var marker = new mapboxgl.Marker(div, {
+        let label = $(`<div class="label">${item.name}</div>`);
+        $(div).append(label);
+
+        device.on("click", function click() {
+          station.组网界面被选中的设备 = $(this).parent().data("id");
+          $(`#组网-tr-${station.组网界面被选中的设备}`)[0].scrollIntoView({
+            block: "nearest",
+            behavior: "smooth",
+            inline: "center",
+          });
+        });
+        device.on("mousedown", (evt) => {
+          evt.preventDefault();
+          evt.stopPropagation();
+        });
+        var marker = new Marker(div, {
           draggable: true,
           pitchAlignment: "map",
           rotationAlignment: "map",
@@ -348,61 +368,331 @@ onMounted(() => {
           marker.setLngLat(position);
         });
       });
-      // map.addSource("stationSource", {
-      //   type: "geojson",
-      //   data: {
-      //     type: "FeatureCollection",
-      //     features,
-      //   },
-      // });
-      // map.addLayer({
-      //   id: "geojson-layer",
-      //   type: "circle",
-      //   source: "stationSource",
-      //   paint: {
-      //     "circle-radius": 6,
-      //     "circle-color": ["get", "color"],
-      //     "circle-stroke-width": 1,
-      //     "circle-stroke-color": "black",
-      //   },
-      // });
-      // map.addLayer({
-      //   id: "textLayer",
-      //   source: "stationSource",
-      //   type: "symbol",
-      //   layout: {
-      //     visibility: "visible",
-      //     "text-field": ["get", "name"],
-      //     "text-font": ["simkai"],
-      //     "text-size": 14,
-      //     "text-transform": "uppercase",
-      //     // "text-letter-spacing": 0.05,
-      //     "text-anchor": "center",
-      //     "text-line-height": 1,
-      //     "text-offset": [0, -1.2],
-      //     "text-ignore-placement": true,
-      //     "text-allow-overlap": true,
-      //     "text-rotation-alignment": "map",
-      //     "text-max-width": 400,
-      //   },
-      //   paint: {
-      //     "text-opacity": 1,
-      //     "text-color": "white",
-      //     "text-halo-color": "black", // 描边颜色
-      //     "text-halo-width": 1, // 描边宽度
-      //   },
-      //   filter: ["==", ["get", "type"], "站点"],
-      // });
+      let feathers = [];
+      for (let j = 0; j < 30; j++) {
+        for (let i = 0; i < 20; i++) {
+          const pt = turf.destination(
+            turf.point([101.91223724839354, 36.548604620850995]),
+            45 + 1000 * i,
+            j * 10,
+            {
+              units: "meters",
+            }
+          );
+          let speed = Math.random() * 60;
+          feathers.push({
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: pt.geometry?.coordinates,
+            },
+            properties: {
+              type: "风羽",
+              风速: speed,
+              image: "feather" + getFeather(speed),
+              风向: 45,
+            },
+          });
+        }
+      }
+      map.addLayer({
+        id: "绘制风羽",
+        type: "symbol",
+        source: {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: feathers,
+          },
+        },
+        layout: {
+          visibility: "visible",
+          // This icon is a part of the Mapbox Streets style.
+          // To view all images available in a Mapbox style, open
+          // the style in Mapbox Studio and click the "Images" tab.
+          // To add a new image to the style at runtime see
+          // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+          "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
+          "icon-image": ["get", "image"],
+          "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
+          "icon-rotate": ["get", "风向"],
+          "icon-rotation-alignment": "map",
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+          // "text-field": ["get", "风速"],
+          // "text-font": ["simkai"],
+          // "text-size": 14,
+          // "text-transform": "uppercase",
+          // // "text-letter-spacing": 0.05,
+          // "text-anchor": "center",
+          // "text-line-height": 1,
+          // // "text-justify": "center",
+          // "text-offset": [0, 0],
+          // "text-ignore-placement": true,
+          // "text-allow-overlap": true,
+          // "text-rotation-alignment": "map",
+        },
+        paint: {
+          "icon-opacity": setting.feather ? 1 : 0,
+        },
+        filter: ["==", ["get", "type"], "风羽"],
+      });
+
+      let circleFeatures = [];
+      let pointFeatures = [];
+      for (let i = 1; i <= 10; i++) {
+        let circle = Circle([102.04150296221326, 36.530313361869744], i * 1000, {
+          steps: 64,
+          units: "meters",
+        });
+        circleFeatures.push(circle);
+
+        let pts: any = [];
+        const pt1 = turf.destination(
+          turf.point([102.04150296221326, 36.530313361869744]),
+          1000 * i,
+          0,
+          { units: "meters" }
+        );
+        const pt2 = turf.destination(
+          turf.point([102.04150296221326, 36.530313361869744]),
+          1000 * i,
+          90,
+          { units: "meters" }
+        );
+        const pt3 = turf.destination(
+          turf.point([102.04150296221326, 36.530313361869744]),
+          1000 * i,
+          180,
+          { units: "meters" }
+        );
+        const pt4 = turf.destination(
+          turf.point([102.04150296221326, 36.530313361869744]),
+          1000 * i,
+          270,
+          { units: "meters" }
+        );
+        pts.push(
+          pt1.geometry?.coordinates,
+          pt2.geometry?.coordinates,
+          pt3.geometry?.coordinates,
+          pt4.geometry?.coordinates
+        );
+        pointFeatures.push({
+          type: "Feature",
+          geometry: {
+            type: "MultiPoint",
+            coordinates: pts,
+          },
+          properties: {
+            units: i + "km",
+          },
+        });
+      }
+      new Marker({
+        draggable: false,
+        pitchAlignment: "map",
+        rotationAlignment: "map",
+      })
+        .setLngLat([102.04150296221326, 36.530313361869744])
+        .addTo(map);
+      map.addLayer({
+        id: "等距环",
+        type: "line",
+        source: {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: circleFeatures,
+          },
+        },
+        paint: {
+          "line-color": "#000",
+          "line-width": 2,
+          "line-dasharray": [2, 2],
+        },
+      });
+      map.addLayer({
+        id: "等距环的单位",
+        type: "symbol",
+        source: {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: pointFeatures,
+          },
+        },
+        layout: {
+          "text-field": ["get", "units"],
+          "text-font": ["simkai"],
+          "text-size": 14,
+          "text-anchor": "bottom-left",
+          "text-allow-overlap": true,
+          "text-ignore-placement": true,
+          "text-rotation-alignment": "map",
+          "text-pitch-alignment": "map",
+        },
+        paint: {
+          "text-color": "white",
+          "text-halo-color": "black",
+          "text-halo-width": 1,
+        },
+      });
+      map.addLayer({
+        id: "绘制空域",
+        type: "line",
+        source: {
+          type: "geojson",
+          data: {
+            type: "Feature",
+            properties: {},
+            geometry: {
+              type: "LineString",
+              coordinates: [
+                [-122.48369693756104, 37.83381888486939],
+                [-122.48348236083984, 37.83317489144141],
+                [-122.48339653015138, 37.83270036637107],
+                [-122.48356819152832, 37.832056363179625],
+                [-122.48404026031496, 37.83114119107971],
+                [-122.48404026031496, 37.83049717427869],
+                [-122.48348236083984, 37.829920943955045],
+                [-122.48356819152832, 37.82954808664175],
+              ],
+            },
+          },
+        },
+        layout: {
+          "line-cap": "round",
+          "line-join": "round",
+        },
+        paint: {
+          "line-color": "#f00",
+          "line-width": {
+            base: 2,
+            stops: [
+              [4, 2], // 线宽为2像素
+              [22, 1000], // 线宽为10像素
+            ],
+          },
+        },
+      });
+    });
+    let airplanes = [];
+    for (let i = 0; i < 100; i++) {
+      airplanes.push({
+        type: "Feature",
+        properties: {
+          name: "Example Point",
+          deg: 290 * Math.random(),
+        },
+        geometry: {
+          type: "Point",
+          coordinates: [102.05 * Math.random(), 36.5281 * Math.random()],
+          // coordinates: [0, 0],
+        },
+      });
+    }
+    map.addLayer({
+      id: "飞机",
+      type: "symbol",
+      source: {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: airplanes,
+        },
+      },
+      layout: {
+        "icon-image": "airplane",
+        "icon-size": {
+          base: 1,
+          stops: [
+            [0, 0.25],
+            [22, 0.5],
+          ],
+        },
+        "icon-rotate": ["get", "deg"],
+        "icon-rotation-alignment": "map",
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+      },
+    });
+
+    const points = turf.randomPoint(50, { bbox: [100, 35, 103, 38] });
+    points.features.forEach((pt: any) => (pt.properties.elevation = Math.random() * 600));
+    const grid = turf.interpolate(points, 0.01, {
+      gridType: "points",
+      property: "elevation",
+      units: "degrees",
+      weight: 5,
+    });
+    const isobands = turf.isobands(grid, [100, 200, 300, 400, 500], {
+      zProperty: "elevation",
+    });
+    console.log("===>", isobands);
+    map.addLayer({
+      id: "isobands-layer",
+      type: "fill",
+      source: {
+        type: "geojson",
+        data: isobands,
+      },
+      layout: {},
+      paint: {
+        "fill-color": [
+          "match",
+          ["get", "elevation"],
+          "100-200",
+          "#FFEDA0",
+          "200-300",
+          "#FED976",
+          "300-400",
+          "#FC4E2A",
+          "400-500",
+          "#BD0026",
+          "transparent",
+        ],
+        "fill-opacity": 0.5,
+      },
+    });
+    const isolines = turf.isolines(grid, [NaN, 100, 200, 300, 400, 500], {
+      zProperty: "elevation",
+    });
+    console.log("??", isolines);
+    map.addLayer({
+      id: "isolines-layer",
+      type: "line",
+      source: {
+        type: "geojson",
+        data: isolines,
+      },
+      layout: {},
+      paint: {
+        "line-color": [
+          "step",
+          ["get", "elevation"],
+          "#FFFFCC",
+          100,
+          "#FFEDA0",
+          200,
+          "#FED976",
+          300,
+          "#FC4E2A",
+          400,
+          "#BD0026",
+        ],
+        "line-width": 2,
+      },
     });
   });
   map.addControl(
-    new mapboxgl.NavigationControl({
-      showCompass: false,
+    new NavigationControl({
+      showCompass: true,
       showZoom: true,
     })
   );
-  // map.addControl(new mapboxgl.ScaleControl());
-  map.addControl(new mapboxgl.FullscreenControl());
+  // map.addControl(new ScaleControl());
+  map.addControl(new FullscreenControl());
   var Draw = new MapboxDraw({
     userProperties: true,
     displayControlsDefault: true,
@@ -659,13 +949,15 @@ onMounted(() => {
 
   map.repaint = false;
   map.on("zoom", zoomFunc);
+  map.on("pitch", pitchFunc);
   map.on("move", moveFunc);
-  eventbus.on("将站点移动到屏幕中心", flyTo);
+  eventbus.on("组网-将站点移动到屏幕中心", flyTo);
 });
 onBeforeUnmount(() => {
-  eventbus.off("将站点移动到屏幕中心", flyTo);
+  eventbus.off("组网-将站点移动到屏幕中心", flyTo);
   map.off("zoom", zoomFunc);
   map.off("move", moveFunc);
+  map.off("pitch", pitchFunc);
   map.remove();
 });
 watch(
@@ -701,23 +993,33 @@ watch(
   background-color: #2b2b2b;
 }
 .deviceStation {
+  box-sizing: border-box;
   position: absolute;
   font-size: 14px;
   .connectingLine {
-    height: 2px;
+    position: absolute;
+    height: 3px;
     z-index: -1;
+    clip-path: polygon(0% 50%, 100% 100%, 100% 0%, 0% 50%);
   }
   .label {
+    position: relative;
     text-shadow: 0 0 2px #fff;
     box-shadow: 0 0 0 1px #757575, 0 0 0 2px #010201;
+    &:active {
+      box-shadow: 0 0 0 1px #757575, 0 0 0 2px cyan;
+    }
+    &:hover {
+      cursor: pointer;
+    }
     color: black;
     padding: 4px;
-    background-color: #fff;
+    background-color: #ffffff;
     border-radius: 4px;
     border: 1px solid #ddd;
   }
   .station {
-    pointer-events: none;
+    cursor: pointer;
     width: 8px;
     height: 8px;
     position: absolute;

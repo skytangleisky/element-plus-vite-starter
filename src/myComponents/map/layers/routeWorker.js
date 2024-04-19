@@ -67,33 +67,33 @@ export default class RouteLayer{
       //不需要绘制
     }else{
       for(let i=0;i<this.航线.length;i++){
-        let line = this.航线[i].points;
-        let widths = this.航线[i].widths;
-        let heights = this.航线[i].heights;
-        let points = [];
-        for(let j=0;j<widths.length;j++){
-          if((widths[j-1]==0&&widths[j]!=0)||(widths[j]==widths[j-1]&&widths[j]!=0)){
-            points.push({lng:line[j].lng,lat:line[j].lat})
-            if(j===widths.length-1){
-              this.drawRoute(points,Number(widths[j]),this.航线[i].color,args);
-            }
-          }else if(widths[j]==0&&widths[j-1]==0){
-            points = [{lng:line[j].lng,lat:line[j].lat}]
-          }else if(widths[j]!=widths[j-1]&&j>0){
-            this.drawRoute(points,Number(widths[j-1]),this.航线[i].color,args);
-            points = [{lng:line[j-1].lng,lat:line[j-1].lat}];
-            if(widths[j]==0){
-              points = [{lng:line[j].lng,lat:line[j].lat}];
-            }else{
+          let line = this.航线[i].points;
+          let widths = this.航线[i].widths;
+          let heights = this.航线[i].heights;
+          let points = [];
+          for(let j=0;j<widths.length;j++){
+            if((widths[j-1]==0&&widths[j]!=0)||(widths[j]==widths[j-1]&&widths[j]!=0)){
               points.push({lng:line[j].lng,lat:line[j].lat})
               if(j===widths.length-1){
                 this.drawRoute(points,Number(widths[j]),this.航线[i].color,args);
               }
+            }else if(widths[j]==0&&widths[j-1]==0){
+              points = [{lng:line[j].lng,lat:line[j].lat}]
+            }else if(widths[j]!=widths[j-1]&&j>0){
+              this.drawRoute(points,Number(widths[j-1]),this.航线[i].color,args);
+              points = [{lng:line[j-1].lng,lat:line[j-1].lat}];
+              if(widths[j]==0){
+                points = [{lng:line[j].lng,lat:line[j].lat}];
+              }else{
+                points.push({lng:line[j].lng,lat:line[j].lat})
+                if(j===widths.length-1){
+                  this.drawRoute(points,Number(widths[j]),this.航线[i].color,args);
+                }
+              }
+            }else if(j==0){
+              points = [{lng:line[j].lng,lat:line[j].lat}];
             }
-          }else if(j==0){
-            points = [{lng:line[j].lng,lat:line[j].lat}];
           }
-        }
       }
       for(let i=0;i<this.航线.length;i++){
         let line = this.航线[i].points;

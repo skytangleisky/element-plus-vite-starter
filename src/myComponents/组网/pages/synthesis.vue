@@ -7,10 +7,11 @@
       v-model:tile="setting.组网.监控.tile"
       v-model:center="setting.组网.监控.center"
       v-model:zoom="setting.组网.监控.zoom"
+      v-model:pitch="setting.组网.监控.pitch"
     ></edit-map>
     <div
       class="absolute left-10px top-10px b-solid b-1px dark:b-gray-5 b-gray dark:bg-#2b2b2b bg-white dark:color-white color-black w-150px h-80px flex flex-col justify-between p-10px"
-      style="border-radius: 8px; font-size: 16px"
+      style="border-radius: 8px; font-size: 16px; display: none"
     >
       <span>反制设备 10台</span>
       <span>合作无人机 0架</span>

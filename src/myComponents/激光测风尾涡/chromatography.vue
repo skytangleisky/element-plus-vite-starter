@@ -12,19 +12,17 @@
 import { ref, onMounted, watch } from "vue";
 const orientation = "to top";
 const getHue = (min: number, v: number, max: number) => {
+  let value: number;
   if (v < min) {
-    // console.error(`${v} should be greater than ${min}`);
-    return 240;
+    value = min;
   } else if (v > max) {
-    // console.error(`${v} should be less than ${max}`);
-    return 0;
+    value = max;
   } else {
-    //hsl(240,100%,50%)～hsl(180,100%,50%)hsl(60,100%,50%)～hsl(0,100%,50%)
-    let percent = (v - min) / (max - min);
-    return percent < 0.5
-      ? ((0.5 - percent) / 0.5) * 60 + 180
-      : ((1 - percent) / 0.5) * 60;
+    value = v;
   }
+  //hsl(240,100%,50%)～hsl(180,100%,50%)hsl(60,100%,50%)～hsl(0,100%,50%)
+  let percent = (v - min) / (max - min);
+  return percent < 0.5 ? ((0.5 - percent) / 0.5) * 60 + 180 : ((1 - percent) / 0.5) * 60;
 };
 const props = withDefaults(defineProps<{ arr: Array<number> }>(), {
   arr: () => [0, 0.25, 0.5, 0.75, 1],

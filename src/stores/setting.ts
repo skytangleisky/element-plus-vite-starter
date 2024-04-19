@@ -74,6 +74,7 @@ export const useSettingStore = defineStore({
             117.04212403858509,
             28.1994655756006
         ],
+        pitch:0,
         district:true,
         loadmap:true,
         disappear:false,
@@ -159,7 +160,10 @@ export const useSettingStore = defineStore({
         children: [
           {name:'机舱雷达',val: 2},
           {name:'塔式雷达',val: 0},
-          {name:'三维雷达',val: 0}
+          {name:'三维雷达',val: 0},
+          {name:'linux-机舱雷达',val: 2},
+          {name:'linux-塔式雷达',val: 0},
+          {name:'linux-三维雷达',val: 0},
         ],
         select: true
       },
@@ -173,7 +177,10 @@ export const useSettingStore = defineStore({
         children:[
           {name:'机舱雷达',val: 1},
           {name:'塔式雷达',val: 0},
-          {name:'三维雷达',val: 0}
+          {name:'三维雷达',val: 0},
+          {name:'linux-机舱雷达',val: 1},
+          {name:'linux-塔式雷达',val: 0},
+          {name:'linux-三维雷达',val: 0},
         ],
         select: false
       },
@@ -187,7 +194,10 @@ export const useSettingStore = defineStore({
         children: [
           {name:'机舱雷达',val: 1},
           {name:'塔式雷达',val: 0},
-          {name:'三维雷达',val: 0}
+          {name:'三维雷达',val: 0},
+          {name:'linux-机舱雷达',val: 1},
+          {name:'linux-塔式雷达',val: 0},
+          {name:'linux-三维雷达',val: 0},
         ],
         select: false
       },
@@ -201,7 +211,10 @@ export const useSettingStore = defineStore({
         children: [
           {name:'机舱雷达',val: 2},
           {name:'塔式雷达',val: 0},
-          {name:'三维雷达',val: 0}
+          {name:'三维雷达',val: 0},
+          {name:'linux-机舱雷达',val: 2},
+          {name:'linux-塔式雷达',val: 0},
+          {name:'linux-三维雷达',val: 0},
         ],
         select: false
       },
@@ -394,6 +407,17 @@ export const useSettingStore = defineStore({
                 svg:'2e727627d6c711ee9aafb025aa2c9ada'
               },
             ]
+          },
+          {
+            path:'graph',
+            name:'b7ef7b88-5e6b-0c62-129b-00a28980cdce',
+            component:'/src/myComponents/echarts/图.vue',
+            label:'无向图',
+            hide:false,
+            svg:'16bb869bfba411eeb1e8b025aa2c9ada',
+            meta:{
+              time:Date.now()
+            }
           },
           {
             path: ':catchAll(.*)*',

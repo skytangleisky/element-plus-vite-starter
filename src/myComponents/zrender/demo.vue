@@ -2,7 +2,7 @@
   <div v-resize="resize" ref="zrenderRef" class="zrenderRef"></div>
 </template>
 <script lang="ts" setup>
-import * as zrender from "zrender";
+const { Text, Line, Rect, Arc, init, Image } = zrender;
 import { onMounted, ref, onBeforeUnmount } from "vue";
 const zrenderRef = ref(null);
 import aircraft from "~/assets/aircraft.png?url";
@@ -17,8 +17,8 @@ let zr: any;
 let canvas: HTMLCanvasElement;
 onMounted(() => {
   canvas = (zrenderRef.value as unknown) as HTMLCanvasElement;
-  zr = zrender.init(zrenderRef.value);
-  const circle = new zrender.Arc({
+  zr = init(zrenderRef.value);
+  const circle = new Arc({
     shape: {
       cx: 15,
       cy: 15,
@@ -46,9 +46,6 @@ onMounted(() => {
   var zrWidth = zr.getWidth();
   var zrHeight = zr.getHeight();
   var unit = 100;
-  var Text = zrender.Text;
-  var Line = zrender.Line;
-  var Rect = zrender.Rect;
   for (var i = 0; i < 100 && i * unit < zrWidth; i++) {
     zr.add(
       new Line({
@@ -592,7 +589,7 @@ onMounted(() => {
   for (let i = 0; i < 5; i++) {
     let x = 100 * Math.random() - 50;
     let y = 100 * Math.random() - 50;
-    var image = new zrender.Image({
+    var image = new Image({
       style: {
         // image: "path/to/image.png",
         image: aircraft,

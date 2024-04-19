@@ -139,38 +139,68 @@ const update = () => {
   雷达统计接口({ user_id: route.query.user_id })
     .then((res) => {
       const { data } = res.data;
-      let _jc, _ts, _3d;
+      let _jc, _ts, _3d, _linux_jc, _linux_ts, _linux_3d;
       _jc = data.radar_count.radar_count_jc;
       _ts = data.radar_count.radar_count_ts;
       _3d = data.radar_count.radar_count_3d;
+      _linux_jc = data.radar_count.radar_count_linux_jc;
+      _linux_ts = data.radar_count.radar_count_linux_ts;
+      _linux_3d = data.radar_count.radar_count_linux_3d;
       setting.checks[0].children[0].val = _jc;
       setting.checks[0].children[1].val = _ts;
       setting.checks[0].children[2].val = _3d;
-      setting.checks[0].val = _jc + _ts + _3d;
+      setting.checks[0].children[3].val = _linux_jc;
+      setting.checks[0].children[4].val = _linux_ts;
+      setting.checks[0].children[5].val = _linux_3d;
+      setting.checks[0].val = _jc + _ts + _3d + _linux_jc + _linux_ts + _linux_3d;
 
       _jc = data.online_radar_count.online_radar_count_jc;
       _ts = data.online_radar_count.online_radar_count_ts;
       _3d = data.online_radar_count.online_radar_count_3d;
+      _linux_jc = data.online_radar_count.online_radar_count_linux_jc;
+      _linux_ts = data.online_radar_count.online_radar_count_linux_ts;
+      _linux_3d = data.online_radar_count.online_radar_count_linux_3d;
       setting.checks[1].children[0].val = data.online_radar_count.online_radar_count_jc;
       setting.checks[1].children[1].val = data.online_radar_count.online_radar_count_ts;
       setting.checks[1].children[2].val = data.online_radar_count.online_radar_count_3d;
-      setting.checks[1].val = _jc + _ts + _3d;
+      setting.checks[1].children[3].val =
+        data.online_radar_count.online_radar_count_linux_jc;
+      setting.checks[1].children[4].val =
+        data.online_radar_count.online_radar_count_linux_ts;
+      setting.checks[1].children[5].val =
+        data.online_radar_count.online_radar_count_linux_3d;
+      setting.checks[1].val = _jc + _ts + _3d + _linux_jc + _linux_ts + _linux_3d;
 
       _jc = data.offline_radar_count.offline_radar_count_jc;
       _ts = data.offline_radar_count.offline_radar_count_ts;
       _3d = data.offline_radar_count.offline_radar_count_3d;
+      _linux_jc = data.offline_radar_count.offline_radar_count_linux_jc;
+      _linux_ts = data.offline_radar_count.offline_radar_count_linux_ts;
+      _linux_3d = data.offline_radar_count.offline_radar_count_linux_3d;
       setting.checks[2].children[0].val = data.offline_radar_count.offline_radar_count_jc;
       setting.checks[2].children[1].val = data.offline_radar_count.offline_radar_count_ts;
       setting.checks[2].children[2].val = data.offline_radar_count.offline_radar_count_3d;
-      setting.checks[2].val = _jc + _ts + _3d;
+      setting.checks[2].children[3].val =
+        data.offline_radar_count.offline_radar_count_linux_jc;
+      setting.checks[2].children[4].val =
+        data.offline_radar_count.offline_radar_count_linux_ts;
+      setting.checks[2].children[5].val =
+        data.offline_radar_count.offline_radar_count_linux_3d;
+      setting.checks[2].val = _jc + _ts + _3d + _linux_jc + _linux_ts + _linux_3d;
 
       _jc = data.new_radar_count.new_radar_count_jc;
       _ts = data.new_radar_count.new_radar_count_ts;
       _3d = data.new_radar_count.new_radar_count_3d;
+      _linux_jc = data.new_radar_count.new_radar_count_linux_jc;
+      _linux_ts = data.new_radar_count.new_radar_count_linux_ts;
+      _linux_3d = data.new_radar_count.new_radar_count_linux_3d;
       setting.checks[3].children[0].val = data.new_radar_count.new_radar_count_jc;
       setting.checks[3].children[1].val = data.new_radar_count.new_radar_count_ts;
       setting.checks[3].children[2].val = data.new_radar_count.new_radar_count_3d;
-      setting.checks[3].val = _jc + _ts + _3d;
+      setting.checks[3].children[3].val = data.new_radar_count.new_radar_count_linux_jc;
+      setting.checks[3].children[4].val = data.new_radar_count.new_radar_count_linux_ts;
+      setting.checks[3].children[5].val = data.new_radar_count.new_radar_count_linux_3d;
+      setting.checks[3].val = _jc + _ts + _3d + _linux_jc + _linux_ts + _linux_3d;
     })
     .catch((e) => {
       ElMessage({

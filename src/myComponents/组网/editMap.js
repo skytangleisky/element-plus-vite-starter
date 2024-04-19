@@ -1,7 +1,9 @@
-import city from './鹰潭市.json?url'
+import city from './省界.json?url'
 // import url from "./street.json?url"
 import data from "./street.js"
 let url = URL.createObjectURL(new File([JSON.stringify(data)],"satellite.json",{type:"application/json"}))
+import data2 from "./satellite2.js"
+let url2 = URL.createObjectURL(new File([JSON.stringify(data2)],"satellite.json",{type:"application/json"}))
 import { useSettingStore } from '~/stores/setting';
 const setting = useSettingStore()
 export default {
@@ -288,8 +290,24 @@ export default {
 			// 	"https://tanglei.site:3210/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}"
 			// ],
 			"tileSize": 256
-		}
+		},
+		"raster-route": {
+			"type": "raster",
+			url:url2,
+			// "tiles": [
+			// 	window.location.origin+"/backend/image?x={x}&y={y}&z={z}"
+			// ],
+			"tileSize": 256
+		},
+		"mapbox-dem": {
+			"type": "raster-dem",
+			"url_origin": 'mapbox://mapbox.mapbox-terrain-dem-v1',
+			"tiles":["https://tanglei.site:3230?lyrs=terrain&x={x}&y={y}&z={z}"],
+			"tileSize": 512,
+			"maxzoom": 14
+		},
 	},
+	"terrain": { 'source': 'mapbox-dem', 'exaggeration': 1 },
 	"sprite_origin": "mapbox://sprites/tanglei201314/clons7b5v00dm01prgrblhncs/6iqitl5z21pbbxxwuij8b59i2",
 	"glyphs_origin": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
 	"sprite": window.location.origin+"/resources/sprite",
@@ -324,6 +342,16 @@ export default {
 				"maxzoom": 22,
 				layout:{
 					visibility:setting.组网.模拟.loadmap?'visible':'none'
+				}
+			},
+			{
+				"id": "航路",
+				"type": "raster",
+				"source": "raster-route",
+				"minzoom": 0,
+				"maxzoom": 22,
+				layout:{
+					visibility:'visible'
 				}
 			},
 			{

@@ -1,5 +1,5 @@
 <template>
-  <div class="collapse dragDialog absolute w-350px" style="left: 20px; top: 20px">
+  <div class="!collapse dragDialog absolute w-500px" style="left: 20px; top: 20px">
     <div class="flex flex-row" style="align-items: center">
       <input
         @mousedown.stop
@@ -56,13 +56,17 @@
             >
               <th>序号</th>
               <th>名称</th>
-              <th>状态</th>
+              <th>设备类型</th>
+              <th>经纬度</th>
+              <th>海拔</th>
             </tr>
           </thead>
           <tbody style="position: relative">
             <tr
-              :id="v.id"
-              :class="`${true ? 'bg-gray-5' : 'bg-transparent'}`"
+              :id="'组网-tr-' + v.id"
+              :class="`${
+                station.组网界面被选中的设备 == v.id ? 'bg-gray-5' : 'bg-transparent'
+              }`"
               v-for="(v, k) in options.list"
               :key="v.name"
               @contextmenu.prevent="contextmenu($event, v)"
@@ -70,9 +74,9 @@
             >
               <td>{{ k + 1 }}</td>
               <td>{{ v.name }}</td>
-              <td :class="v.is_online == true ? 'color-green' : 'color-red'">
-                {{ v.is_online ? "在线" : "离线" }}
-              </td>
+              <td>{{ v.deviceType }}</td>
+              <td>{{ v.lngLat }}</td>
+              <td>{{ v.altitude }}</td>
             </tr>
           </tbody>
         </table>
@@ -163,8 +167,8 @@ const click = (event: MouseEvent) => {
   $(".menuUl").trigger("blur");
 };
 const flyTo = (event: any, v: any) => {
-  station.active = v.radar_id;
-  eventbus.emit("将站点移动到屏幕中心", v);
+  station.组网界面被选中的设备 = v.id;
+  eventbus.emit("组网-将站点移动到屏幕中心", v);
 };
 const toggleCollapse = () => {
   $(".dragDialog").toggleClass("collapse");

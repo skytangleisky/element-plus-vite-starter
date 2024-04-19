@@ -1,5 +1,6 @@
 const modules = import.meta.glob('~/**/*.vue')
 import imageUrl from "~/assets/feather.svg?url";
+import planeUrl from "~/assets/plane.svg?url";
 /**
  * This is just a simple version of deep copy
  * Has a lot of edge cases bug
@@ -293,42 +294,20 @@ export function loadImage(url,width,height,options){
     image.src=url;
   });
 }
-
-export const getColor = v => {
-  return v <= 0
-    ? "#0000ff"
-    : v <= 4
-    ? "#002aff"
-    : v <= 8
-    ? "#0054ff"
-    : v <= 12
-    ? "#007eff"
-    : v <= 16
-    ? "#00a8ff"
-    : v <= 20
-    ? "#00d2ff"
-    : v <= 24
-    ? "#14d474"
-    : v <= 28
-    ? "#a6dd00"
-    : v <= 32
-    ? "#ffe600"
-    : v <= 36
-    ? "#ffb300"
-    : v <= 40
-    ? "#ff8000"
-    : v <= 44
-    ? "#ff4d00"
-    : v <= 48
-    ? "#ff1a00"
-    : v <= 52
-    ? "#e60000"
-    : v <= 56
-    ? "#b30000"
-    : v <= 58
-    ? "#b30000"
-    : "#b30000";
+const getHue = (min, v, max) => {
+  let value;
+  if (v < min) {
+    value = min;
+  } else if (v > max) {
+    value = max;
+  } else {
+    value = v;
+  }
+  //hsl(240,100%,50%)～hsl(180,100%,50%)hsl(60,100%,50%)～hsl(0,100%,50%)
+  let percent = (v - min) / (max - min);
+  return percent < 0.5 ? ((0.5 - percent) / 0.5) * 60 + 180 : ((1 - percent) / 0.5) * 60;
 };
+export const getColor = v => `hsl(${getHue(0,v,60)},100%,50%)`
 export const getFeather = v =>
   v <= 0
     ? 0
@@ -401,8 +380,8 @@ export const getCoord = (i, j, v) => ({
   fill: getColor(v),
 });
 export const addFeatherImages = async( map ) => {
-  return new Promise((resolve) => {
-    loadImage(imageUrl, 340, 188, {
+    let result
+    result = await loadImage(imageUrl, 340, 188, {
       feather0: getCoord(0, 0, 0),
       feather1: getCoord(1, 0, 1),
       feather2: getCoord(2, 0, 2),
@@ -435,11 +414,30 @@ export const addFeatherImages = async( map ) => {
       feather56: getCoord(9, 2, 56),
       feather58: getCoord(0, 3, 58),
       feather60: getCoord(1, 3, 60),
-    }).then((result) => {
-      for (let k in result) {
-        map.addImage(k, result[k]);
-      }
-      resolve('finished');
     });
-  })
+    for (let k in result) {
+      map.addImage(k, result[k]);
+    }
+    result = await loadImage(planeUrl,64,64,{
+      airplane:{
+        x1: 0,
+        y1: 0,
+        x2: 1,
+        y2: 1,
+        fill: 'yellow',
+      }
+    })
+    console.log(result)
+    for (let k in result) {
+      map.addImage(k, result[k]);
+    }
 }
+export const getRandomPointBetweenR1R2 = (r1, r2) => {
+  let min = Math.min(r1, r2);
+  let max = Math.max(r1, r2);
+  let R = (max - min) * Math.random() + min;
+  let Ⳡ = Math.random() * Math.PI * 2;
+  let x = R * Math.cos(Ⳡ);
+  let y = R * Math.sin(Ⳡ);
+  return [x, y];
+};

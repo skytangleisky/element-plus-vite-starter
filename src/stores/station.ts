@@ -71,7 +71,8 @@ export const useStationStore = defineStore({
     avgWindData: new Array<Wind>(),//平均风数据
     secondWindData: new Array<Wind>(),//平均风数据
     radialWindData: new Array(),
-    active:""
+    active:"",
+    组网界面被选中的设备:'',
   }),
   actions: {
     查询雷达列表接口(query:any){
