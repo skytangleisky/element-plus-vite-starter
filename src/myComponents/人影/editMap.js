@@ -355,13 +355,13 @@ export default {
 				}
 			},
 			{
-				"id": "航路",
+				"id": "routeLineLayer",
 				"type": "raster",
 				"source": "raster-route",
 				"minzoom": 0,
 				"maxzoom": 22,
 				layout:{
-					visibility:'visible'
+					visibility:setting.人影.监控.routeLine?'visible':'none'
 				}
 			},
 			{

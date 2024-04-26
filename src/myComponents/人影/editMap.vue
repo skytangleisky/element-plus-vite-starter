@@ -83,14 +83,18 @@ import theme from "./drawTheme/inactive.js";
 let timer = 0;
 const props = withDefaults(
   defineProps<{
+    routeLine?: boolean;
     loadmap?: boolean;
     district?: boolean;
+    zyd?: boolean;
     tile?: string;
     center?: object;
     zoom?: number;
     pitch?: number;
   }>(),
   {
+    routeLine: true,
+    zyd: true,
     loadmap: true,
     district: true,
     tile: "街道地图",
@@ -382,7 +386,7 @@ onMounted(() => {
         // });
       });
       map.addLayer({
-        id: "绘制作业点",
+        id: "zydLayer",
         type: "symbol",
         source: {
           type: "geojson",
@@ -392,7 +396,7 @@ onMounted(() => {
           },
         },
         layout: {
-          visibility: "visible",
+          visibility: props.zyd ? "visible" : "none",
           // This icon is a part of the Mapbox Streets style.
           // To view all images available in a Mapbox style, open
           // the style in Mapbox Studio and click the "Images" tab.
@@ -701,7 +705,7 @@ onMounted(() => {
     points.features.forEach(
       (pt: any) => (pt.properties.elevation = Math.random() * 1000)
     );
-    const grid = turf.interpolate(points, 0.01, {
+    const grid = turf.interpolate(points, 0.04, {
       gridType: "point", // 以点为基础进行插值
       property: "elevation", // 从点的属性中提取值
       units: "degrees", // 单位
@@ -1035,6 +1039,26 @@ onBeforeUnmount(() => {
   map.off("pitch", pitchFunc);
   map.remove();
 });
+watch(
+  () => props.zyd,
+  (newVal) => {
+    if (newVal) {
+      map.setLayoutProperty("zydLayer", "visibility", "visible");
+    } else {
+      map.setLayoutProperty("zydLayer", "visibility", "none");
+    }
+  }
+);
+watch(
+  () => props.routeLine,
+  (newVal) => {
+    if (newVal) {
+      map.setLayoutProperty("routeLineLayer", "visibility", "visible");
+    } else {
+      map.setLayoutProperty("routeLineLayer", "visibility", "none");
+    }
+  }
+);
 watch(
   () => props.district,
   (newVal) => {

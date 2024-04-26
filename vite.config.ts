@@ -50,7 +50,7 @@ export default defineConfig({
       template: 'index.html',
       inject:{
         data:{
-          project:'鹰潭'
+          project:'光恒'
         }
       }
     }),

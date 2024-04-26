@@ -425,7 +425,7 @@ export const addFeatherImages = async( map ) => {
         y1: 0,
         x2: 1,
         y2: 1,
-        fill: 'cyan',
+        fill: 'yellow',
       }
     })
     for (let k in result) {

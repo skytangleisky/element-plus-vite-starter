@@ -120,6 +120,8 @@ export const useSettingStore = defineStore({
             28.1994655756006
         ],
         pitch:0,
+        routeLine:true,
+        zyd:true,
         district:true,
         loadmap:true,
         disappear:false,

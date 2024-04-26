@@ -2,7 +2,9 @@
   <div style="width: 100%; height: 100%; overflow: hidden; position: absolute">
     <edit-map
       style="backdrop-filter: blur(25px)"
+      v-model:routeLine="setting.人影.监控.routeLine"
       v-model:loadmap="setting.人影.监控.loadmap"
+      v-model:zyd="setting.人影.监控.zyd"
       v-model:district="setting.人影.监控.district"
       v-model:tile="setting.人影.监控.tile"
       v-model:center="setting.人影.监控.center"
@@ -57,6 +59,8 @@
           v-model="setting.人影.监控.district"
           label="显示行政区划"
         ></el-checkbox>
+        <el-checkbox v-model="setting.人影.监控.zyd" label="显示作业点"></el-checkbox>
+        <el-checkbox v-model="setting.人影.监控.routeLine" label="航路航线"></el-checkbox>
         <el-checkbox label="反制设备图层"></el-checkbox>
         <el-checkbox label="探测目标图层"></el-checkbox>
         <el-checkbox label="禁飞区图层"></el-checkbox>
