@@ -76,7 +76,7 @@ import { eventbus } from "~/eventbus";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.scss";
 import { 获取净空区, saveData, deleteData } from "~/api/无人机/api";
-import { getDevice } from "~/api/组网/device.js";
+import { getDevice } from "~/api/人影/device.js";
 import { addFeatherImages, getFeather } from "~/tools";
 const bus = useBus();
 import theme from "./drawTheme/inactive.js";
@@ -221,10 +221,10 @@ onMounted(() => {
     performanceMetricsCollection: false,
     style,
     // fadeDuration: 0,
-    // dragRotate: false,
-    // touchRotate: false,
-    // touchPitch: false,
-    // dragPitch: false,
+    dragRotate: false,
+    touchRotate: false,
+    touchPitch: false,
+    dragPitch: false,
     // bounds: turf.bbox(boundaries),
     // localIdeographFontFamily: "Microsoft YoHei",
     localIdeographFontFamily: "",
@@ -301,20 +301,18 @@ onMounted(() => {
         let offset = (getRandomPointBetweenR1R2(50, 100) as unknown) as [number, number];
         let div = document.createElement("div");
         div.id = "组网" + item.id;
-        div.className = "deviceStation_组网";
+        div.className = "deviceStation_人影";
         div.style.position = "absolute";
         $(div).data("id", item.id);
         let device = $(
-          `<div class="station" style="z-index:-1;background: ${
+          `<div class="station" style="z-index:-1;left:50%;top:50%;transform:translate(-50%,-50%) translate(${-offset[0]}px,${-offset[1]}px)"><div class="projectile" style="filter: drop-shadow(${
             item.color
-          };left:50%;top:50%;transform:translate(-50%,-50%) translate(${-offset[0]}px,${-offset[1]}px)"></div>`
+          } 0 -60px);transform:translateY(60px)"/></div>`
         );
         $(div).append(device);
         $(div).append(
           $(
-            `<div class="connectingLine" style="pointer-events:none;background:${
-              item.color
-            };position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) translate(${
+            `<div class="connectingLine" style="pointer-events:none;background:white;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) translate(${
               -offset[0] / 2
             }px,${-offset[1] / 2}px) rotate(${Math.atan2(
               offset[1],
@@ -625,8 +623,8 @@ onMounted(() => {
         "icon-size": {
           base: 1,
           stops: [
-            [0, 0.25],
-            [22, 0.5],
+            [0, 0.5],
+            [22, 1],
           ],
         },
         "icon-rotate": ["get", "deg"],
@@ -1023,10 +1021,15 @@ watch(
 .dark .select .ep-select__wrapper {
   background-color: #2b2b2b;
 }
-.deviceStation_组网 {
+.deviceStation_人影 {
   box-sizing: border-box;
   position: absolute;
   font-size: 14px;
+  filter: drop-shadow(#00000088 0 0 1px);
+  &:hover,
+  &:active {
+    filter: drop-shadow(#000000 4px 4px);
+  }
   .connectingLine {
     position: absolute;
     height: 4px;
@@ -1036,10 +1039,6 @@ watch(
   .label {
     position: relative;
     text-shadow: 0 0 2px #fff;
-    box-shadow: 0 0 0 1px #757575, 0 0 0 2px #010201;
-    &:active {
-      box-shadow: 0 0 0 1px #757575, 0 0 0 2px cyan;
-    }
     &:hover {
       cursor: pointer;
     }
@@ -1050,11 +1049,16 @@ watch(
   }
   .station {
     cursor: pointer;
-    width: 8px;
-    height: 8px;
+    width: 32px;
+    height: 32px;
     position: absolute;
-    border-radius: 50%;
-    border: 1px solid black;
+    overflow: hidden;
+    border: none;
+    .projectile {
+      width: 100%;
+      height: 100%;
+      background: url("/src/assets/projectile.svg") no-repeat center center;
+    }
   }
 }
 </style>

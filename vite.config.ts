@@ -113,6 +113,7 @@ export default defineConfig({
       // },
       '/api':{
         target:'https://main.emgo-tech.com',//替换的服务端地址
+        // target:'http://192.168.101.93:8000',//替换的服务端地址
         changeOrigin:true,//开启代理，允许跨域
       },
       '/backend':{

@@ -276,7 +276,7 @@ export default class StationLayer{
 
 
       let point0 = lngLat2Pixel(item.lng,item.lat,obj.imgX,obj.imgY,2**obj.L,256)
-      let R = 5000/(2*Math.PI*6378137)*2**obj.L*256
+      let R = 5000/(2*Math.PI*6371008.8)*2**obj.L*256
       let point1 = {x:point0.x-R,y:point0.y-R}
       let point2 = {x:point0.x+R,y:point0.y-R}
       let point3 = {x:point0.x+R,y:point0.y+R}

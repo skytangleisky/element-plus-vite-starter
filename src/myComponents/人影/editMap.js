@@ -351,7 +351,7 @@ export default {
 				"minzoom": 0,
 				"maxzoom": 22,
 				layout:{
-					visibility:setting.组网.模拟.loadmap?'visible':'none'
+					visibility:setting.人影.模拟.loadmap?'visible':'none'
 				}
 			},
 			{
@@ -374,18 +374,18 @@ export default {
 					visibility:'none'
 				}
 			},
-			{
-				'id': 'districtLayer',
-				'type': 'fill',
-				'source': 'district', // reference the data source
-				'layout': {
-					visibility:setting.district?'visible':'none'
-				},
-				'paint': {
-					'fill-color': '#000',
-					'fill-opacity': 0.2
-				}
-			},
+			// {
+			// 	'id': 'districtLayer',
+			// 	'type': 'fill',
+			// 	'source': 'district', // reference the data source
+			// 	'layout': {
+			// 		visibility:setting.district?'visible':'none'
+			// 	},
+			// 	'paint': {
+			// 		'fill-color': '#000',
+			// 		'fill-opacity': 0.2
+			// 	}
+			// },
 			{
 				'id': 'districtOutline',
 				'type': 'line',

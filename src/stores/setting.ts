@@ -112,6 +112,51 @@ export const useSettingStore = defineStore({
         tile:'街道地图',
       }
     },
+    人影:{
+      监控:{
+        "zoom": 8.882777980661407,
+        "center": [
+            117.04212403858509,
+            28.1994655756006
+        ],
+        pitch:0,
+        district:true,
+        loadmap:true,
+        disappear:false,
+        bottom_disappear:true,
+        tile:'卫星地图',
+      },
+      回放:{
+        "zoom": 8.882777980661407,
+        "center": [
+            117.04212403858509,
+            28.1994655756006
+        ],
+        district:true,
+        loadmap:true,
+        tile:'街道地图',
+      },
+      编辑:{
+        "zoom": 8.882777980661407,
+        "center": [
+            117.04212403858509,
+            28.1994655756006
+        ],
+        district:true,
+        loadmap:true,
+        tile:'街道地图',
+      },
+      模拟:{
+        "zoom": 8.882777980661407,
+        "center": [
+            117.04212403858509,
+            28.1994655756006
+        ],
+        district:true,
+        loadmap:true,
+        tile:'街道地图',
+      }
+    },
     projection: 'globe',// mercator|globe
     lang: 'zh-cn',
     webgpu:false,
@@ -248,7 +293,18 @@ export const useSettingStore = defineStore({
             component:'/src/myComponents/组网/pages/synthesis.vue',
             label:'组网',
             hide:false,
-            svg:'8226ee256c6711ee8c80b025aa2c9ada',
+            svg:'4441a5b002a511efb1e8b025aa2c9ada',
+            meta:{
+              time:Date.now()
+            }
+          },
+          {
+            path:'ry',
+            name:'b7ef7b88-5e6b-0c62-129b-a0a18980cd11',
+            component:'/src/myComponents/人影/pages/synthesis.vue',
+            label:'人影',
+            hide:false,
+            svg:'45a839fb02a411efb1e8b025aa2c9ada',
             meta:{
               time:Date.now()
             }

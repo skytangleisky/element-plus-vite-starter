@@ -255,8 +255,8 @@ export function loadImage(url,width,height,options){
     image.onload = function(){
       if(options){
         ctx.save()
-        cvs.width = image.width
-        cvs.height = image.height
+        cvs.width = image.width * devicePixelRatio
+        cvs.height = image.height * devicePixelRatio
         ctx.clearRect(0,0,cvs.width,cvs.height)
         ctx.drawImage(image,0,0)
         let result = {}
@@ -270,7 +270,7 @@ export function loadImage(url,width,height,options){
             let preGlobalCompositeOperation = ctx.globalCompositeOperation
             ctx.globalCompositeOperation = 'source-in'
             ctx.fillStyle = v.fill
-            ctx.fillRect(0,0,width,height)
+            ctx.fillRect(0,0,width * devicePixelRatio,height * devicePixelRatio)
             ctx.globalCompositeOperation = preGlobalCompositeOperation
           }
           let imageData = ctx.getImageData(x,y,w,h)
@@ -294,7 +294,7 @@ export function loadImage(url,width,height,options){
     image.src=url;
   });
 }
-const getHue = (min, v, max) => {
+export const getHue = (min, v, max) => {
   let value;
   if (v < min) {
     value = min;
@@ -418,16 +418,15 @@ export const addFeatherImages = async( map ) => {
     for (let k in result) {
       map.addImage(k, result[k]);
     }
-    result = await loadImage(planeUrl,64,64,{
+    result = await loadImage(planeUrl,32,32,{
       airplane:{
         x1: 0,
         y1: 0,
         x2: 1,
         y2: 1,
-        fill: 'yellow',
+        fill: 'cyan',
       }
     })
-    console.log(result)
     for (let k in result) {
       map.addImage(k, result[k]);
     }

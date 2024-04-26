@@ -63,7 +63,7 @@ test(args){
     args.ctx.lineCap = "round";
     args.ctx.lineJoin = "round";
     let anticlockwise = false
-    let g = 30/(2*Math.PI*6378137)*2**args._LL*256
+    let g = 30/(2*Math.PI*6371008.8)*2**args._LL*256
     for(let j=0;j<41;j++){
       let α=this.country[j].α/180*Math.PI
       let β=this.country[j].β/180*Math.PI

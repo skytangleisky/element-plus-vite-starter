@@ -1,4 +1,4 @@
-const EARTH_RADIUS = 6371008.8 // 6378137
+const EARTH_RADIUS = 6371008.8
 export function getDistance( lng1, lat1,  lng2, lat2 ){
   // var radLng1 = lng1*Math.PI / 180.0
   // var radLat1 = lat1*Math.PI / 180.0

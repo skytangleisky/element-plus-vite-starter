@@ -269,8 +269,8 @@ export default class PlaneLayer{
       item.x = lng2Pixel(item.lng,obj.imgX,2**obj.L,256) - item.width/2
       item.y = lat2Pixel(item.lat,obj.imgY,2**obj.L,256) - item.height/2
 
-      item.lng = pixel2Lng(item.x+item.vx*deltaTime/1000/(2*Math.PI*6378137)*2**obj.L*256+item.width/2,obj.imgX,2**obj.L,256)
-      item.lat = pixel2Lat(item.y+item.vy*deltaTime/1000/(2*Math.PI*6378137)*2**obj.L*256+item.height/2,obj.imgY,2**obj.L,256)
+      item.lng = pixel2Lng(item.x+item.vx*deltaTime/1000/(2*Math.PI*6371008.8)*2**obj.L*256+item.width/2,obj.imgX,2**obj.L,256)
+      item.lat = pixel2Lat(item.y+item.vy*deltaTime/1000/(2*Math.PI*6371008.8)*2**obj.L*256+item.height/2,obj.imgY,2**obj.L,256)
       item.x -= item.pt.x
       item.y -= item.pt.y
 
