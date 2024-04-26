@@ -312,9 +312,7 @@ onMounted(() => {
         $(div).append(device);
         $(div).append(
           $(
-            `<div class="connectingLine" style="pointer-events:none;background:${
-              item.color
-            };position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) translate(${
+            `<div class="connectingLine" style="pointer-events:none;background:white;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) translate(${
               -offset[0] / 2
             }px,${-offset[1] / 2}px) rotate(${Math.atan2(
               offset[1],
@@ -1027,6 +1025,11 @@ watch(
   box-sizing: border-box;
   position: absolute;
   font-size: 14px;
+  filter: drop-shadow(#00000088 0 0 1px);
+  &:hover,
+  &:active {
+    filter: drop-shadow(#000000 2px 2px);
+  }
   .connectingLine {
     position: absolute;
     height: 4px;
@@ -1035,21 +1038,12 @@ watch(
   }
   .label {
     position: relative;
-    text-shadow: 0 0 2px #fff;
-    box-shadow: 0 0 0 1px #757575, 0 0 0 2px #010201;
-    &:active {
-      box-shadow: 0 0 0 1px #757575, 0 0 0 2px cyan;
-    }
-    &:hover {
-      cursor: pointer;
-    }
     color: black;
     padding: 4px;
     background-color: #ffffff;
     border-radius: 4px;
   }
   .station {
-    cursor: pointer;
     width: 8px;
     height: 8px;
     position: absolute;

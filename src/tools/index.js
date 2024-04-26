@@ -1,6 +1,7 @@
 const modules = import.meta.glob('~/**/*.vue')
 import imageUrl from "~/assets/feather.svg?url";
 import planeUrl from "~/assets/plane.svg?url";
+import projectileUrl from "~/assets/projectile.svg?url";
 /**
  * This is just a simple version of deep copy
  * Has a lot of edge cases bug
@@ -425,6 +426,18 @@ export const addFeatherImages = async( map ) => {
         x2: 1,
         y2: 1,
         fill: 'cyan',
+      }
+    })
+    for (let k in result) {
+      map.addImage(k, result[k]);
+    }
+    result = await loadImage(projectileUrl,32,32,{
+      projectile:{
+        x1: 0,
+        y1: 0,
+        x2: 1,
+        y2: 1,
+        fill: 'red',
       }
     })
     for (let k in result) {

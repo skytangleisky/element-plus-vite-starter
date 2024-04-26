@@ -221,10 +221,10 @@ onMounted(() => {
     performanceMetricsCollection: false,
     style,
     // fadeDuration: 0,
-    dragRotate: false,
-    touchRotate: false,
-    touchPitch: false,
-    dragPitch: false,
+    // dragRotate: false,
+    // touchRotate: false,
+    // touchPitch: false,
+    // dragPitch: false,
     // bounds: turf.bbox(boundaries),
     // localIdeographFontFamily: "Microsoft YoHei",
     localIdeographFontFamily: "",
@@ -297,91 +297,137 @@ onMounted(() => {
             coordinates: position,
           },
         });
+        // let offset = (getRandomPointBetweenR1R2(50, 100) as unknown) as [number, number];
+        // let div = document.createElement("div");
+        // div.id = "组网" + item.id;
+        // div.className = "deviceStation_人影";
+        // div.style.position = "absolute";
+        // $(div).data("id", item.id);
+        // let device = $(
+        //   `<div class="station" style="z-index:-1;left:50%;top:50%;transform:translate(-50%,-50%) translate(${-offset[0]}px,${-offset[1]}px)"><div class="projectile" style="filter: drop-shadow(${
+        //     item.color
+        //   } 0 -60px);transform:translateY(60px)"/></div>`
+        // );
+        // $(div).append(device);
+        // $(div).append(
+        //   $(
+        //     `<div class="connectingLine" style="pointer-events:none;background:white;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) translate(${
+        //       -offset[0] / 2
+        //     }px,${-offset[1] / 2}px) rotate(${Math.atan2(
+        //       offset[1],
+        //       offset[0]
+        //     )}rad);width:${Math.sqrt(offset[0] ** 2 + offset[1] ** 2)}px"></div>`
+        //   )
+        // );
+        // let label = $(`<div class="label">${item.name}</div>`);
+        // $(div).append(label);
 
-        let offset = (getRandomPointBetweenR1R2(50, 100) as unknown) as [number, number];
-        let div = document.createElement("div");
-        div.id = "组网" + item.id;
-        div.className = "deviceStation_人影";
-        div.style.position = "absolute";
-        $(div).data("id", item.id);
-        let device = $(
-          `<div class="station" style="z-index:-1;left:50%;top:50%;transform:translate(-50%,-50%) translate(${-offset[0]}px,${-offset[1]}px)"><div class="projectile" style="filter: drop-shadow(${
-            item.color
-          } 0 -60px);transform:translateY(60px)"/></div>`
-        );
-        $(div).append(device);
-        $(div).append(
-          $(
-            `<div class="connectingLine" style="pointer-events:none;background:white;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) translate(${
-              -offset[0] / 2
-            }px,${-offset[1] / 2}px) rotate(${Math.atan2(
-              offset[1],
-              offset[0]
-            )}rad);width:${Math.sqrt(offset[0] ** 2 + offset[1] ** 2)}px"></div>`
-          )
-        );
-        let label = $(`<div class="label">${item.name}</div>`);
-        $(div).append(label);
-
-        device.on("click", function click() {
-          station.组网界面被选中的设备 = $(this).parent().data("id");
-          $(`#组网-tr-${station.组网界面被选中的设备}`)[0].scrollIntoView({
-            block: "nearest",
-            behavior: "smooth",
-            inline: "center",
-          });
-        });
-        device.on("mousedown", (evt) => {
-          evt.preventDefault();
-          evt.stopPropagation();
-        });
-        var marker = new Marker(div, {
-          draggable: true,
-          pitchAlignment: "map",
-          rotationAlignment: "map",
-          anchor: "center",
-        })
-          .setLngLat(position) // 设置标记的经纬度坐标
-          .addTo(map)
-          .setOffset(offset);
-        let dragStartOffset: { x: number; y: number };
-        marker.on("dragstart", () => {
-          dragStartOffset = marker.getOffset() as { x: number; y: number };
-        });
-        marker.on("drag", (e: any) => {
-          let dragEndPoint = marker.getLngLat();
-          let pt1 = map.project({ lng: position[0], lat: position[1] });
-          let pt2 = map.project(dragEndPoint);
-          let x = dragStartOffset.x + pt2.x - pt1.x;
-          let y = dragStartOffset.y + pt2.y - pt1.y;
-          marker.setOffset([x, y]);
-          let line = $("#组网" + item.id).find(".connectingLine")[0];
-          line.style.transform = `translate(-50%,-50%) translate(${-x / 2}px,${
-            -y / 2
-          }px) rotate(${Math.atan2(y, x)}rad)`;
-          line.style.width = `${Math.sqrt(x ** 2 + y ** 2)}px`;
-          let station = $("#组网" + item.id).find(".station")[0];
-          station.style.transform = `translate(-50%,-50%) translate(${-x}px,${-y}px)`;
-          marker.setLngLat(position);
-        });
-        marker.on("dragend", (e: any) => {
-          let dragEndPoint = e.target.getLngLat();
-          let pt1 = map.project({ lng: position[0], lat: position[1] });
-          let pt2 = map.project(dragEndPoint);
-          let offset = marker.getOffset() as { x: number; y: number };
-          let x = offset.x + pt2.x - pt1.x;
-          let y = offset.y + pt2.y - pt1.y;
-          marker.setOffset([x, y]);
-          let line = $("#组网" + item.id).find(".connectingLine")[0];
-          line.style.transform = `translate(-50%,-50%) translate(${-x / 2}px,${
-            -y / 2
-          }px) rotate(${Math.atan2(y, x)}rad)`;
-          line.style.width = `${Math.sqrt(x ** 2 + y ** 2)}px`;
-          let station = $("#组网" + item.id).find(".station")[0];
-          station.style.transform = `translate(-50%,-50%) translate(${-x}px,${-y}px)`;
-          marker.setLngLat(position);
-        });
+        // device.on("click", function click() {
+        //   station.组网界面被选中的设备 = $(this).parent().data("id");
+        //   $(`#组网-tr-${station.组网界面被选中的设备}`)[0].scrollIntoView({
+        //     block: "nearest",
+        //     behavior: "smooth",
+        //     inline: "center",
+        //   });
+        // });
+        // device.on("mousedown", (evt) => {
+        //   evt.preventDefault();
+        //   evt.stopPropagation();
+        // });
+        // var marker = new Marker(div, {
+        //   draggable: true,
+        //   pitchAlignment: "map",
+        //   rotationAlignment: "map",
+        //   anchor: "center",
+        // })
+        //   .setLngLat(position) // 设置标记的经纬度坐标
+        //   .addTo(map)
+        //   .setOffset(offset);
+        // let dragStartOffset: { x: number; y: number };
+        // marker.on("dragstart", () => {
+        //   dragStartOffset = marker.getOffset() as { x: number; y: number };
+        // });
+        // marker.on("drag", (e: any) => {
+        //   let dragEndPoint = marker.getLngLat();
+        //   let pt1 = map.project({ lng: position[0], lat: position[1] });
+        //   let pt2 = map.project(dragEndPoint);
+        //   let x = dragStartOffset.x + pt2.x - pt1.x;
+        //   let y = dragStartOffset.y + pt2.y - pt1.y;
+        //   marker.setOffset([x, y]);
+        //   let line = $("#组网" + item.id).find(".connectingLine")[0];
+        //   line.style.transform = `translate(-50%,-50%) translate(${-x / 2}px,${
+        //     -y / 2
+        //   }px) rotate(${Math.atan2(y, x)}rad)`;
+        //   line.style.width = `${Math.sqrt(x ** 2 + y ** 2)}px`;
+        //   let station = $("#组网" + item.id).find(".station")[0];
+        //   station.style.transform = `translate(-50%,-50%) translate(${-x}px,${-y}px)`;
+        //   marker.setLngLat(position);
+        // });
+        // marker.on("dragend", (e: any) => {
+        //   let dragEndPoint = e.target.getLngLat();
+        //   let pt1 = map.project({ lng: position[0], lat: position[1] });
+        //   let pt2 = map.project(dragEndPoint);
+        //   let offset = marker.getOffset() as { x: number; y: number };
+        //   let x = offset.x + pt2.x - pt1.x;
+        //   let y = offset.y + pt2.y - pt1.y;
+        //   marker.setOffset([x, y]);
+        //   let line = $("#组网" + item.id).find(".connectingLine")[0];
+        //   line.style.transform = `translate(-50%,-50%) translate(${-x / 2}px,${
+        //     -y / 2
+        //   }px) rotate(${Math.atan2(y, x)}rad)`;
+        //   line.style.width = `${Math.sqrt(x ** 2 + y ** 2)}px`;
+        //   let station = $("#组网" + item.id).find(".station")[0];
+        //   station.style.transform = `translate(-50%,-50%) translate(${-x}px,${-y}px)`;
+        //   marker.setLngLat(position);
+        // });
       });
+      map.addLayer({
+        id: "绘制作业点",
+        type: "symbol",
+        source: {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: features,
+          },
+        },
+        layout: {
+          visibility: "visible",
+          // This icon is a part of the Mapbox Streets style.
+          // To view all images available in a Mapbox style, open
+          // the style in Mapbox Studio and click the "Images" tab.
+          // To add a new image to the style at runtime see
+          // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+          "icon-anchor": "left",
+          "icon-image": "projectile",
+          "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
+          "icon-rotate": 0,
+          "icon-rotation-alignment": "map",
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+          "text-field": ["get", "name"],
+          "text-font": ["simkai"],
+          "text-size": 16,
+          "text-transform": "uppercase",
+          // "text-letter-spacing": 0.05,
+          "text-anchor": "center",
+          "text-line-height": 1,
+          "text-justify": "center",
+          "text-offset": [0, -1],
+          "text-ignore-placement": true,
+          "text-allow-overlap": true,
+          "text-rotation-alignment": "map",
+          "text-max-width": 400,
+        },
+        paint: {
+          "icon-opacity": 1,
+          "text-color": "white",
+          "text-halo-color": "black",
+          "text-halo-width": 1,
+        },
+        filter: ["==", ["get", "type"], "站点"],
+      });
+
       let feathers = [];
       for (let j = 0; j < 30; j++) {
         for (let i = 0; i < 20; i++) {
@@ -661,22 +707,22 @@ onMounted(() => {
       units: "degrees", // 单位
       weight: 5, // 使用反距离加权进行插值
     });
-    // const isobands = turf.isobands(grid, [NaN, ...breaks], {
-    //   zProperty: "elevation",
-    // });
-    // map.addLayer({
-    //   id: "isobands-layer",
-    //   type: "fill",
-    //   source: {
-    //     type: "geojson",
-    //     data: isobands,
-    //   },
-    //   layout: {},
-    //   paint: {
-    //     "fill-color": ["match", ["get", "elevation"], ...fillColors, "transparent"],
-    //     "fill-opacity": 0.5,
-    //   },
-    // });
+    const isobands = turf.isobands(grid, [NaN, ...breaks], {
+      zProperty: "elevation",
+    });
+    map.addLayer({
+      id: "isobands-layer",
+      type: "fill",
+      source: {
+        type: "geojson",
+        data: isobands,
+      },
+      layout: {},
+      paint: {
+        "fill-color": ["match", ["get", "elevation"], ...fillColors, "transparent"],
+        "fill-opacity": 0.5,
+      },
+    });
     const isolines = turf.isolines(grid, [NaN, ...breaks], {
       zProperty: "elevation",
     });
