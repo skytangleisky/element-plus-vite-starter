@@ -623,8 +623,8 @@ onMounted(() => {
         "icon-size": {
           base: 1,
           stops: [
-            [0, 0.25],
-            [22, 0.5],
+            [0, 0.5],
+            [22, 1],
           ],
         },
         "icon-rotate": ["get", "deg"],
@@ -680,7 +680,6 @@ onMounted(() => {
     const isolines = turf.isolines(grid, [NaN, ...breaks], {
       zProperty: "elevation",
     });
-    console.log(isolines);
     map.addLayer({
       id: "isolines-layer",
       type: "line",

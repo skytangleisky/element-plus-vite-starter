@@ -9,6 +9,7 @@ import Components from 'unplugin-vue-components/vite'
 import vueSetupExtend from 'unplugin-vue-setup-extend-plus/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Unocss from 'unocss/vite'
+import wasm from 'vite-plugin-wasm';
 
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import {
@@ -43,6 +44,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    wasm(),
     vue(),
     createHtmlPlugin({
       minify:true,
