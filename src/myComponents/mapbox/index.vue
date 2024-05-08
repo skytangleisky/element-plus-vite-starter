@@ -464,6 +464,7 @@ onMounted(() => {
       (v) => {
         if (v) {
           getMicapsData(plotUrl).then((result: any) => {
+            console.log(result);
             let points = {
               type: "geojson",
               data: {

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<palette name="850hPaTemp1" valuedefined="true" entrystyle="Default">
+  <entry value="-100.00" rgba="20,100,210,255" />
+  <entry value="-96.00" rgba="37,118,218,255" />
+  <entry value="-92.00" rgba="56,135,226,255" />
+  <entry value="-88.00" rgba="76,149,234,255" />
+  <entry value="-84.00" rgba="97,167,242,255" />
+  <entry value="-80.00" rgba="116,185,253,255" />
+  <entry value="-76.00" rgba="127,200,245,255" />
+  <entry value="-72.00" rgba="159,224,248,255" />
+  <entry value="-68.00" rgba="192,244,252,255" />
+  <entry value="-64.00" rgba="225,255,255,255" />
+  <entry value="-60.00" rgba="255,255,255,255" />
+  <entry value="-56.00" rgba="255,232,120,255" />
+  <entry value="-52.00" rgba="255,192,60,255" />
+  <entry value="-48.00" rgba="255,160,0,255" />
+  <entry value="-44.00" rgba="255,96,0,255" />
+  <entry value="-40.00" rgba="225,75,1,255" />
+  <entry value="-36.00" rgba="195,59,1,255" />
+  <entry value="-32.00" rgba="164,45,2,255" />
+</palette>

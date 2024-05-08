@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<palette name="tempreture1" valuedefined="true" entrystyle="Default">
+  <entry value="-36.00" rgba="200,124,255,255" />
+  <entry value="-32.00" rgba="140,151,247,255" />
+  <entry value="-28.00" rgba="157,221,242,255" />
+  <entry value="-24.00" rgba="173,237,211,255" />
+  <entry value="-20.00" rgba="154,226,165,255" />
+  <entry value="-16.00" rgba="116,211,105,255" />
+  <entry value="-12.00" rgba="109,196,62,255" />
+  <entry value="-8.00" rgba="118,181,25,255" />
+  <entry value="-4.00" rgba="180,193,31,255" />
+  <entry value="-1.00" rgba="209,182,48,255" />
+  <entry value="0.00" rgba="216,176,54,255" />
+  <entry value="1.00" rgba="221,165,59,255" />
+  <entry value="4.00" rgba="237,143,80,255" />
+  <entry value="8.00" rgba="255,179,99,255" />
+  <entry value="12.00" rgba="89,255,97,255" />
+  <entry value="16.00" rgba="79,152,255,255" />
+  <entry value="20.00" rgba="255,68,233,255" />
+  <entry value="24.00" rgba="255,53,80,255" />
+  <entry value="28.00" rgba="255,35,68,255" />
+  <entry value="32.00" rgba="255,17,57,255" />
+  <entry value="36.00" rgba="255,0,42,255" />
+</palette>

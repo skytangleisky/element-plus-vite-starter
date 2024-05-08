@@ -10,6 +10,12 @@
       v-model:center="setting.人影.监控.center"
       v-model:zoom="setting.人影.监控.zoom"
       v-model:pitch="setting.人影.监控.pitch"
+      v-model:bearing="setting.人影.监控.bearing"
+      v-model:zdz="setting.人影.监控.zdz"
+      v-model:isolines="setting.人影.监控.isolines"
+      v-model:isobands="setting.人影.监控.isobands"
+      v-model:gridPoint="setting.人影.监控.gridPoint"
+      v-model:gridValue="setting.人影.监控.gridValue"
     ></edit-map>
     <div
       class="absolute left-10px top-10px b-solid b-1px dark:b-gray-5 b-gray dark:bg-#2b2b2b bg-white dark:color-white color-black w-150px h-80px flex flex-col justify-between p-10px"
@@ -61,10 +67,11 @@
         ></el-checkbox>
         <el-checkbox v-model="setting.人影.监控.zyd" label="显示作业点"></el-checkbox>
         <el-checkbox v-model="setting.人影.监控.routeLine" label="航路航线"></el-checkbox>
-        <el-checkbox label="反制设备图层"></el-checkbox>
-        <el-checkbox label="探测目标图层"></el-checkbox>
-        <el-checkbox label="禁飞区图层"></el-checkbox>
-        <el-checkbox label="备案空域图层"></el-checkbox>
+        <el-checkbox v-model="setting.人影.监控.zdz" label="自动站"></el-checkbox>
+        <el-checkbox v-model="setting.人影.监控.isobands" label="等值带"></el-checkbox>
+        <el-checkbox v-model="setting.人影.监控.isolines" label="等值线"></el-checkbox>
+        <el-checkbox v-model="setting.人影.监控.gridPoint" label="网格点"></el-checkbox>
+        <el-checkbox v-model="setting.人影.监控.gridValue" label="网格值"></el-checkbox>
       </div>
     </div>
   </div>

@@ -14,7 +14,44 @@ export const getMicapsData = (dataUrl:string) => {
         let symbol = gbkDecoder.decode(view.getOne()).trim()
         let type = gbkDecoder.decode(view.getOne()).trim()
         if(symbol=='diamond'){
-          if(type=='1'){//第一类数据格式：地面全要素填图数据
+          if(type=='4'){//第四类数据格式，格点数据
+            view.seek(0)
+            let firstLine = gbkDecoder.decode(view.getLine()).trim().split(/\s+/)
+            result.symbol = firstLine[0]
+            result.type = firstLine[1]
+            result.describe = firstLine[2]
+            let secondLine = gbkDecoder.decode(view.getLine()).trim().split(/\s+/)
+            result.year = secondLine[0]
+            result.month = secondLine[1]
+            result.day = secondLine[2]
+            result.hour = secondLine[3]
+            result.时效 = Number(secondLine[4])
+            result.层次 = Number(secondLine[5])
+            let thirdLine = gbkDecoder.decode(view.getLine()).trim().split(/\s+/)
+            result.intervalU = Number(thirdLine[0])
+            result.intervalV = Number(thirdLine[1])
+            result.beginLng = Number(thirdLine[2])
+            result.endLng = Number(thirdLine[3])
+            result.beginLat = Number(thirdLine[4])
+            result.endLat = Number(thirdLine[5])
+            let fourthLine = gbkDecoder.decode(view.getLine()).trim().split(/\s+/)
+            result.sizeU = Number(fourthLine[0])
+            result.sizeV = Number(fourthLine[1])
+            result.isolineInterval = Number(fourthLine[2])
+            result.isolineBegin = Number(fourthLine[3])
+            result.smoothingCoefficient = Number(fourthLine[4])
+            result.smoothingCoefficient = Number(fourthLine[5])
+            result.bold = Number(fourthLine[6])
+            result.data = [];
+            for(let i=0;i<result.sizeV;i++){
+              let row = []
+              for(let j=0;j<result.sizeU;j++){
+                row.push(Number(gbkDecoder.decode(view.getOne()).trim()))
+              }
+              result.data.push(row)
+            }
+            resolve(result)
+          }else if(type=='1'){//第一类数据格式：地面全要素填图数据
             view.seek(0)
             let firstLine = gbkDecoder.decode(view.getLine()).trim().split(/\s+/)
             result.symbol = firstLine[0]
@@ -83,8 +120,34 @@ export const getMicapsData = (dataUrl:string) => {
             resolve(result)
           }
         }
-        reject('格式不支持')
+        reject('type='+type+'，格式不支持')
       }
     };
   })
+}
+
+
+function transpose(arr:Array<Array<number>>) {
+  // 获取原始矩阵的行数和列数
+  const rows = arr.length;
+  const cols = arr[0].length;
+
+  // 创建一个新的二维数组来保存转置后的矩阵
+  const transposedMatrix = [];
+
+  // 遍历原始矩阵的列
+  for (let j = 0; j < cols; j++) {
+      // 创建一个新的一维数组来保存转置后的列
+      const newRow = [];
+      // 遍历原始矩阵的行
+      for (let i = 0; i < rows; i++) {
+          // 将原始矩阵的行和列互换，并保存到新的一维数组中
+          newRow.push(arr[i][j]);
+      }
+      // 将新的一维数组添加到转置后的矩阵中
+      transposedMatrix.push(newRow);
+  }
+
+  // 返回转置后的矩阵
+  return transposedMatrix;
 }

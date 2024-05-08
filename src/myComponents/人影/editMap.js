@@ -365,7 +365,7 @@ export default {
 				}
 			},
 			{
-				"id": "等值线",
+				"id": "isolines-satellite",
 				"type": "raster",
 				"source": "raster-isoline",
 				"minzoom": 0,

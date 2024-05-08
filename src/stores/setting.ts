@@ -119,6 +119,12 @@ export const useSettingStore = defineStore({
             117.04212403858509,
             28.1994655756006
         ],
+        gridValue:true,
+        gridPoint:true,
+        isobands:true,
+        isolines:true,
+        zdz:true,
+        bearing:0,
         pitch:0,
         routeLine:true,
         zyd:true,

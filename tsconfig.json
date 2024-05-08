@@ -4,6 +4,8 @@
     "baseUrl": ".",
     "target": "esnext",
     "useDefineForClassFields": true,
+    "noEmit":true,
+    "allowImportingTsExtensions": true,
     "module": "esnext",
     "moduleResolution": "node",
     "strict": true,
@@ -18,6 +20,9 @@
     "paths": {
       "pinia": [
         "./packages/pinia/src/index.d.ts"
+      ],
+      "marchingsquares":[
+        "./packages/marchingsquares.js/src/main.d.ts"
       ],
       "~/*": ["src/*"]
     },

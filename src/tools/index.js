@@ -256,10 +256,10 @@ export function loadImage(url,width,height,options){
     image.onload = function(){
       if(options){
         ctx.save()
-        cvs.width = image.width * devicePixelRatio
-        cvs.height = image.height * devicePixelRatio
+        cvs.width = width * devicePixelRatio
+        cvs.height = height * devicePixelRatio
         ctx.clearRect(0,0,cvs.width,cvs.height)
-        ctx.drawImage(image,0,0)
+        ctx.drawImage(image,0,0,image.width,image.height,0,0,cvs.width,cvs.height)
         let result = {}
         for(let k in options){
           let v = options[k]
@@ -271,7 +271,7 @@ export function loadImage(url,width,height,options){
             let preGlobalCompositeOperation = ctx.globalCompositeOperation
             ctx.globalCompositeOperation = 'source-in'
             ctx.fillStyle = v.fill
-            ctx.fillRect(0,0,width * devicePixelRatio,height * devicePixelRatio)
+            ctx.fillRect(0,0,cvs.width,cvs.height)
             ctx.globalCompositeOperation = preGlobalCompositeOperation
           }
           let imageData = ctx.getImageData(x,y,w,h)
@@ -290,8 +290,10 @@ export function loadImage(url,width,height,options){
       reject(err);
     }
     image.crossOrigin = 'anonymous';
-    width&&(image.width=width)
-    height&&(image.height=height)
+    if(url.endsWith('.svg')){
+      width&&(image.width=width)
+      height&&(image.height=height)
+    }
     image.src=url;
   });
 }
