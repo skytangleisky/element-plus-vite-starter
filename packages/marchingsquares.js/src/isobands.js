@@ -1243,19 +1243,7 @@ function isoBands(input, minV, bandWidth, options) {
     if(typeof settings.successCallback === 'function')
       settings.successCallback(ret, lowerBound, bandWidth[b]);
   });
-  ret = ret.map(lines=>lines.map(line=>{
-    //去掉重复点
-    for(let i=0;i<line.length-1;i++){
-      if(JSON.stringify(line[i])==JSON.stringify(line[(i+1)])){
-        line.splice(i--,1)
-      }
-    }
-    //确保首尾相连
-    if(JSON.stringify(line[0])!==JSON.stringify(line.slice(-1)[0])){
-      line.push(line[0])
-    }
-    return BSpline(line,0)
-  }))
+  ret = ret.map(lines=>lines.map(line=>BSpline(line,0)))
   return ret;
 }
 

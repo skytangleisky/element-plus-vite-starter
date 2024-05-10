@@ -202,10 +202,18 @@ export function traceBandPaths(data, cellGrid, settings) {
         x                 = i;
         y                 = j;
         finalized         = false;
-        origin            = [ i + ee.path[0][0], j + ee.path[0][1] ];
+        origin            = [ x + ee.path[0][0], y + ee.path[0][1] ];
 
         /* add start coordinate */
-        path.push(origin);
+        if(JSON.stringify(path[path.length-1])!==JSON.stringify(origin)){
+          if(origin[0]==0||origin[0]==cols||origin[1]==0||origin[1]==rows){
+            path.push(origin);
+            path.push(origin);
+            path.push(origin);
+          } else {
+            path.push(origin);
+          }
+        }
 
         /* start traceback */
         while (!finalized) {
@@ -220,10 +228,16 @@ export function traceBandPaths(data, cellGrid, settings) {
           delete cc.edges[enter];
 
           /* add last point of edge to path arra, since we extend a polygon */
-          point = ee.path[1];
-          point[0] += x;
-          point[1] += y;
-          path.push(point);
+          let point = [ x + ee.path[1][0], y + ee.path[1][1] ]
+          if(JSON.stringify(path[path.length-1])!==JSON.stringify(point)){
+            if(point[0]==0||point[0]==cols||point[1]==0||point[1]==rows){
+              path.push(point);
+              path.push(point);
+              path.push(point);
+            } else {
+              path.push(point);
+            }
+          }
 
           enter = ee.move.enter;
           x     = x + ee.move.x;
@@ -263,8 +277,8 @@ export function traceBandPaths(data, cellGrid, settings) {
               if (count > 4)
                 throw new Error('Direction change counter overflow! This should never happen!');
 
-              if (!((typeof cellGrid[x] === 'undefined') ||
-                    (typeof cellGrid[x][y] === 'undefined'))) {
+              if (((typeof cellGrid[x] !== 'undefined') &&
+                    (typeof cellGrid[x][y] !== 'undefined'))) {
                 cc = cellGrid[x][y];
 
                 /* check for re-entry */
@@ -273,7 +287,12 @@ export function traceBandPaths(data, cellGrid, settings) {
                   if (typeof cc.edges[ve] === 'object') {
                     /* found re-entry */
                     ee = cc.edges[ve];
-                    path.push(entry_coordinate(x, y, dir, ee.path));
+                    let point = entry_coordinate(x, y, dir, ee.path)
+                    if(JSON.stringify(path[path.length-1])!==JSON.stringify(point)){
+                      path.push(point);
+                      path.push(point);
+                      path.push(point);
+                    }
                     enter = ve;
                     found_entry = true;
                     break;
@@ -284,14 +303,18 @@ export function traceBandPaths(data, cellGrid, settings) {
               if (found_entry) {
                 break;
               } else {
-                path.push(skip_coordinate(x, y, dir));
+                let point = skip_coordinate(x, y, dir)
+                if(JSON.stringify(path[path.length-1])!==JSON.stringify(point)){
+                  path.push(point);
+                  path.push(point);
+                  path.push(point);
+                }
 
                 x += add_x[dir];
                 y += add_y[dir];
 
                 /* change direction if we'e moved out of grid again */
-                if ((typeof cellGrid[x] === 'undefined') ||
-                    (typeof cellGrid[x][y] === 'undefined')) {
+                if ((typeof cellGrid[x] === 'undefined') || (typeof cellGrid[x][y] === 'undefined')) {
                   if (((dir === 0) && (y < 0)) ||
                       ((dir === 1) && (x < 0)) ||
                       ((dir === 2) && (y === rows)) ||
@@ -319,24 +342,13 @@ export function traceBandPaths(data, cellGrid, settings) {
           ((path[path.length - 1][0] !== origin[0]) ||
           (path[path.length - 1][1] !== origin[1])))
           path.push(origin);
-
+        if(JSON.stringify(path[0])!==JSON.stringify(path[path.length - 1])){
+          path.push(path[0])
+        }
         polygons.push(path);
       } /* end forall entry sites */
     }); /* end foreach i */
   }); /* end foreach j */
-  polygons = polygons.map(line=>{
-    //去掉重复点
-    for(let i=0;i<line.length-1;i++){
-      if(JSON.stringify(line[i])==JSON.stringify(line[(i+1)])){
-        line.splice(i--,1)
-      }
-    }
-    //确保首尾相连
-    if(JSON.stringify(line[0])!==JSON.stringify(line.slice(-1)[0])){
-      line.push(line[0])
-    }
-    return line;
-  })
   return polygons;
 }
 
@@ -433,16 +445,16 @@ export function traceLinePaths(data, cellGrid, settings) {
           point = ee.path[1];
           point[0] += x;
           point[1] += y;
-          path.push(point);
+          if(JSON.stringify(path[path.length-1])!==JSON.stringify(point)){
+            path.push(point);
+          }
 
           enter = ee.move.enter;
           x     = x + ee.move.x;
           y     = y + ee.move.y;
 
           /* handle out-of-grid moves */
-          if ((typeof cellGrid[x] === 'undefined') ||
-              (typeof cellGrid[x][y] === 'undefined')) {
-
+          if ((typeof cellGrid[x] === 'undefined') || (typeof cellGrid[x][y] === 'undefined')) {
             if (!settings.linearRing)
               break;
 
@@ -599,5 +611,4 @@ export function traceLinePaths(data, cellGrid, settings) {
   polygons = arr;
   return polygons;
 }
-
 

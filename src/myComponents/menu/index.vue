@@ -3,52 +3,52 @@
     <!--导航栏-->
     <my-map></my-map>
     <!-- <div class="nav-wrapper">人影空域申报系统</div> -->
-    <box class="info-box color-cyan" right bottom>
-      <span
-        >Framerate(FPS)<span>{{ data.fps }}</span></span
-      >
-      <span
-        >Level<span>{{ data.level }}</span></span
-      >
-      <span
-        >Tiles<span>{{ data.tiles }}</span></span
-      >
-      <span
-        >Draw call<span>{{ data.drawCall }}</span></span
-      >
-      <span
-        >Frame time(ms)<span>{{ data.frameTime }}</span></span
-      >
-      <span
-        >Period time(ms)<span>{{ data.periodTime }}</span></span
-      >
-      <span
-        >Occupy(%)<span>{{ data.occupy }}</span></span
-      >
-      <span
-        >Instance Count<span>{{ data.instanceCount }}</span></span
-      >
-      <span
-        >Triangle <span>{{ data.triangle }}</span></span
-      >
-      <span
-        >Game Logic(ms)<span>{{ data.gameLogic }}</span></span
-      >
-      <span
-        >Physics(ms)<span>{{ data.physics }}</span></span
-      >
-      <span
-        >Renderer(ms)<span>{{ data.renderer }}</span></span
-      >
-      <span
-        >GFX Texture Mem (M)<span>{{ data.texture }}</span></span
-      >
-      <span
-        >GFX Buffer Mem (M)<span>{{ data.buffer }}</span></span
-      >
-      <span
-        >Thead<span>{{ data.thead }}</span></span
-      >
+    <box v-dialogDrag class="info-box color-cyan" right bottom>
+      <div>
+        <span>Framerate(FPS)</span><span>{{ data.fps }}</span>
+      </div>
+      <div>
+        <span>Level</span><span>{{ data.level }}</span>
+      </div>
+      <div>
+        <span>Tiles</span><span>{{ data.tiles }}</span>
+      </div>
+      <div>
+        <span>Draw call</span><span>{{ data.drawCall }}</span>
+      </div>
+      <div>
+        <span>Frame time(ms)</span><span>{{ data.frameTime }}</span>
+      </div>
+      <div>
+        <span>Period time(ms)</span><span>{{ data.periodTime }}</span>
+      </div>
+      <div>
+        <span>Occupy(%)</span><span>{{ data.occupy }}</span>
+      </div>
+      <div>
+        <span>Instance Count</span><span>{{ data.instanceCount }}</span>
+      </div>
+      <div>
+        <span>Triangle </span><span>{{ data.triangle }}</span>
+      </div>
+      <div>
+        <span>Game Logic(ms)</span><span>{{ data.gameLogic }}</span>
+      </div>
+      <div>
+        <span>Physics(ms)</span><span>{{ data.physics }}</span>
+      </div>
+      <div>
+        <span>Renderer(ms)</span><span>{{ data.renderer }}</span>
+      </div>
+      <div>
+        <span>GFX Texture Mem (M)</span><span>{{ data.texture }}</span>
+      </div>
+      <div>
+        <span>GFX Buffer Mem (M)</span><span>{{ data.buffer }}</span>
+      </div>
+      <div>
+        <span>Thead</span><span>{{ data.thead }}</span>
+      </div>
     </box>
     <my-dialog></my-dialog>
     <dialog-plan-request v-model:show="planShow"></dialog-plan-request>
@@ -145,7 +145,14 @@ onBeforeUnmount(() => {
   position: absolute;
   right: 0;
   bottom: 0;
+  width: 200px;
+  height: 275px;
   display: block;
+  & > div {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
 }
 .ol_list {
   user-select: none;

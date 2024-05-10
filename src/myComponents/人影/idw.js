@@ -18,7 +18,8 @@ function idwInterpolation(pt, points, power) {
   });
   return numerator / denominator;
 }
-export default function interpolate(data, options={sizeU:10,sizeV:10,boundary:{lng:0,lat:0,width:30,height:40},power:2}){
+export default function interpolate(data, options){
+  options = Object.assign({sizeU:10,sizeV:10,boundary:{lng:0,lat:0,width:30,height:40},power:2},options)
   let grid = []
   for(let j=0;j<options.sizeV;j++){
     let row = []
@@ -33,3 +34,16 @@ export default function interpolate(data, options={sizeU:10,sizeV:10,boundary:{l
   }
   return grid
 }
+// let data = [];
+// for(let j=0;j<250;j++){
+//   for(let i=0;i<150;i++){
+//     data.push({
+//       lng:100+20*Math.random(),
+//       lat:20+40*Math.random(),
+//       value:Math.random()*100,
+//     })
+//   }
+// }
+// console.time('离散点网格化压力测试');
+// let grid = interpolate(data,{sizeU:141,sizeV:71})
+// console.timeEnd('离散点网格化压力测试');//18889.673095703125 ms

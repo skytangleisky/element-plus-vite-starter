@@ -290,14 +290,12 @@ onMounted(() => {
     //   [60.0, 0],
     //   [160.0, 60],
     // ],
-    // zoom: 18,
-    // center: [148.9819, -35.3981],
+    zoom: setting.mapbox.zoom,
+    center: setting.mapbox.center,
     // pitch: 60,
-    zoom: 4,
-    center: [0, 0],
     pitch: 0,
   });
-  // map.repaint = true;
+  map.repaint = false;
   map.addControl(new mapboxgl.NavigationControl());
   map.addControl(new mapboxgl.ScaleControl());
   map.addControl(new mapboxgl.FullscreenControl());
@@ -443,6 +441,13 @@ onMounted(() => {
     // }
   });
   var hoveredStateId: boolean = false;
+  map.on("move", () => {
+    let center = map.getCenter();
+    setting.mapbox.center = [center.lng, center.lat];
+  });
+  map.on("zoom", () => {
+    setting.mapbox.zoom = map.getZoom();
+  });
   map.on("mousemove", "intersection", function (e: any) {
     if (e.features.length > 0) {
       if (hoveredStateId) {
@@ -754,6 +759,7 @@ onMounted(() => {
     }
   }
   onBeforeUnmount(() => {
+    map.remove();
     timer && clearInterval(timer);
   });
 });

@@ -168,7 +168,7 @@ export function isoLines(input, threshold, options) {
       settings.successCallback(ret, t);
 
   });
-  ret = ret.map(lines=>lines.map(line=>BSpline(line,10)))
+  ret = ret.map(lines=>lines.map(line=>BSpline(line,0)))
   return ret;
 }
 
@@ -182,7 +182,6 @@ export function isoLines(input, threshold, options) {
  * Isocontour implementation below
  * ################################
  */
-
 function prepareCell(grid, x, y, settings) {
   var left,
     right,
@@ -278,12 +277,20 @@ function prepareCell(grid, x, y, settings) {
     bottom  = settings.interpolate(x0, x1, threshold);
 
     if (settings.polygons_full) {
-      cell.edges.left = {
-        path: [ [0, left], [bottom, 0] ],
+      // cell.edges.left = {
+      //   path: [ [0, left], [bottom, 0] ],
+      //   move: {
+      //     x:      0,
+      //     y:      -1,
+      //     enter:  'top'
+      //   }
+      // };
+      cell.edges.bottom = {
+        path: [ [bottom, 0], [0, left] ],
         move: {
-          x:      0,
-          y:      -1,
-          enter:  'top'
+          x:      -1,
+          y:      0,
+          enter:  'right'
         }
       };
     }
@@ -298,12 +305,20 @@ function prepareCell(grid, x, y, settings) {
     right   = settings.interpolate(x1, x2, threshold);
 
     if (settings.polygons_full) {
-      cell.edges.bottom = {
-        path: [ [bottom, 0], [1, right] ],
+      // cell.edges.bottom = {
+      //   path: [ [bottom, 0], [1, right] ],
+      //   move: {
+      //     x:      1,
+      //     y:      0,
+      //     enter:  'left'
+      //   }
+      // };
+      cell.edges.right = {
+        path: [ [1, right], [bottom, 0] ],
         move: {
-          x:      1,
-          y:      0,
-          enter:  'left'
+          x:      0,
+          y:      -1,
+          enter:  'top'
         }
       };
     }
@@ -318,12 +333,20 @@ function prepareCell(grid, x, y, settings) {
     top   = settings.interpolate(x3, x2, threshold);
 
     if (settings.polygons_full) {
-      cell.edges.right = {
-        path: [ [1, right], [top, 1] ],
+      // cell.edges.right = {
+      //   path: [ [1, right], [top, 1] ],
+      //   move: {
+      //     x:      0,
+      //     y:      1,
+      //     enter:  'bottom'
+      //   }
+      // };
+      cell.edges.top = {
+        path: [ [top, 1], [1, right] ],
         move: {
-          x:      0,
-          y:      1,
-          enter:  'bottom'
+          x:      1,
+          y:      0,
+          enter:  'left'
         }
       };
     }
@@ -338,12 +361,20 @@ function prepareCell(grid, x, y, settings) {
     top   = settings.interpolate(x3, x2, threshold);
 
     if (settings.polygons_full) {
-      cell.edges.top = {
-        path: [ [top, 1], [0, left] ],
+      // cell.edges.top = {
+      //   path: [ [top, 1], [0, left] ],
+      //   move: {
+      //     x:      -1,
+      //     y:      0,
+      //     enter:  'right'
+      //   }
+      // };
+      cell.edges.left = {
+        path: [ [0, left], [top, 1] ],
         move: {
-          x:      -1,
-          y:      0,
-          enter:  'right'
+          x:      0,
+          y:      1,
+          enter:  'bottom'
         }
       };
     }
@@ -358,12 +389,20 @@ function prepareCell(grid, x, y, settings) {
     bottom  = settings.interpolate(x0, x1, threshold);
 
     if (settings.polygons_full) {
-      cell.edges.bottom = {
-        path: [ [bottom, 0], [0, left] ],
+      // cell.edges.bottom = {
+      //   path: [ [bottom, 0], [0, left] ],
+      //   move: {
+      //     x:      -1,
+      //     y:      0,
+      //     enter:  'right'
+      //   }
+      // };
+      cell.edges.left = {
+        path: [ [0, left], [bottom, 0] ],
         move: {
-          x:      -1,
-          y:      0,
-          enter:  'right'
+          x:      0,
+          y:      -1,
+          enter:  'top'
         }
       };
     }
@@ -378,12 +417,20 @@ function prepareCell(grid, x, y, settings) {
     right   = settings.interpolate(x1, x2, threshold);
 
     if (settings.polygons_full) {
-      cell.edges.right = {
-        path: [ [1, right], [bottom, 0] ],
+      // cell.edges.right = {
+      //   path: [ [1, right], [bottom, 0] ],
+      //   move: {
+      //     x:      0,
+      //     y:      -1,
+      //     enter:  'top'
+      //   }
+      // };
+      cell.edges.bottom = {
+        path: [ [bottom, 0], [1, right] ],
         move: {
-          x:      0,
-          y:      -1,
-          enter:  'top'
+          x:      1,
+          y:      0,
+          enter:  'left'
         }
       };
     }
@@ -398,12 +445,20 @@ function prepareCell(grid, x, y, settings) {
     top   = settings.interpolate(x3, x2, threshold);
 
     if (settings.polygons_full) {
-      cell.edges.top = {
-        path: [ [top, 1], [1, right] ],
+      // cell.edges.top = {
+      //   path: [ [top, 1], [1, right] ],
+      //   move: {
+      //     x:      1,
+      //     y:      0,
+      //     enter:  'left'
+      //   }
+      // };
+      cell.edges.right = {
+        path: [ [1, right], [top, 1] ],
         move: {
-          x:      1,
-          y:      0,
-          enter:  'left'
+          x:      0,
+          y:      1,
+          enter:  'bottom'
         }
       };
     }
@@ -418,12 +473,20 @@ function prepareCell(grid, x, y, settings) {
     top   = settings.interpolate(x3, x2, threshold);
 
     if (settings.polygons_full) {
-      cell.edges.left = {
-        path: [ [0, left], [top, 1] ],
+      // cell.edges.left = {
+      //   path: [ [0, left], [top, 1] ],
+      //   move: {
+      //     x:      0,
+      //     y:      1,
+      //     enter:  'bottom'
+      //   }
+      // };
+      cell.edges.top = {
+        path: [ [top, 1], [0, left] ],
         move: {
-          x:      0,
-          y:      1,
-          enter:  'bottom'
+          x:      -1,
+          y:      0,
+          enter:  'right'
         }
       };
     }
@@ -438,12 +501,20 @@ function prepareCell(grid, x, y, settings) {
     right = settings.interpolate(x1, x2, threshold);
 
     if (settings.polygons_full) {
-      cell.edges.left = {
-        path: [ [0, left], [1, right] ],
+      // cell.edges.left = {
+      //   path: [ [0, left], [1, right] ],
+      //   move: {
+      //     x:      1,
+      //     y:      0,
+      //     enter:  'left'
+      //   }
+      // };
+      cell.edges.right = {
+        path: [ [1, right], [0, left] ],
         move: {
-          x:      1,
+          x:      -1,
           y:      0,
-          enter:  'left'
+          enter:  'right'
         }
       };
     }
@@ -458,12 +529,20 @@ function prepareCell(grid, x, y, settings) {
     top     = settings.interpolate(x3, x2, threshold);
 
     if (settings.polygons_full) {
-      cell.edges.bottom = {
-        path: [ [bottom, 0], [top, 1] ],
+      // cell.edges.bottom = {
+      //   path: [ [bottom, 0], [top, 1] ],
+      //   move: {
+      //     x:      0,
+      //     y:      1,
+      //     enter:  'bottom'
+      //   }
+      // };
+      cell.edges.top = {
+        path: [ [top, 1], [bottom, 0] ],
         move: {
           x:      0,
-          y:      1,
-          enter:  'bottom'
+          y:      -1,
+          enter:  'top'
         }
       };
     }
@@ -478,12 +557,20 @@ function prepareCell(grid, x, y, settings) {
     right = settings.interpolate(x1, x2, threshold);
 
     if (settings.polygons_full) {
-      cell.edges.right = {
-        path: [ [1, right], [0, left] ],
+      // cell.edges.right = {
+      //   path: [ [1, right], [0, left] ],
+      //   move: {
+      //     x:      -1,
+      //     y:      0,
+      //     enter:  'right'
+      //   }
+      // };
+      cell.edges.left = {
+        path: [ [0, left], [1, right] ],
         move: {
-          x:      -1,
+          x:      1,
           y:      0,
-          enter:  'right'
+          enter:  'left'
         }
       };
     }
@@ -498,12 +585,20 @@ function prepareCell(grid, x, y, settings) {
     top     = settings.interpolate(x3, x2, threshold);
 
     if (settings.polygons_full) {
-      cell.edges.top = {
-        path: [ [top, 1], [bottom, 0] ],
+      // cell.edges.top = {
+      //   path: [ [top, 1], [bottom, 0] ],
+      //   move: {
+      //     x:      0,
+      //     y:      -1,
+      //     enter:  'top'
+      //   }
+      // };
+      cell.edges.bottom = {
+        path: [ [bottom, 0], [top, 1] ],
         move: {
           x:      0,
-          y:      -1,
-          enter:  'top'
+          y:      1,
+          enter:  'bottom'
         }
       };
     }
@@ -522,37 +617,71 @@ function prepareCell(grid, x, y, settings) {
 
     if (settings.polygons_full) {
       if (average < threshold) {
-        cell.edges.left = {
-          path: [ [0, left], [top, 1] ],
+        // cell.edges.left = {
+        //   path: [ [0, left], [top, 1] ],
+        //   move: {
+        //     x:      0,
+        //     y:      1,
+        //     enter:  'bottom'
+        //   }
+        // };
+        // cell.edges.right = {
+        //   path: [ [1, right], [bottom, 0] ],
+        //   move: {
+        //     x:      0,
+        //     y:      -1,
+        //     enter:  'top'
+        //   }
+        // };
+
+        cell.edges.top = {
+          path: [ [top, 1], [0, left] ],
           move: {
-            x:      0,
-            y:      1,
-            enter:  'bottom'
+            x:      -1,
+            y:      0,
+            enter:  'right'
           }
         };
-        cell.edges.right = {
-          path: [ [1, right], [bottom, 0] ],
+        cell.edges.bottom = {
+          path: [ [bottom, 0], [1, right] ],
           move: {
-            x:      0,
-            y:      -1,
-            enter:  'top'
+            x:      1,
+            y:      0,
+            enter:  'left'
           }
         };
       } else {
-        cell.edges.right = {
-          path: [ [1, right], [top, 1] ],
+        // cell.edges.right = {
+        //   path: [ [1, right], [top, 1] ],
+        //   move: {
+        //     x:      0,
+        //     y:      1,
+        //     enter:  'bottom'
+        //   }
+        // };
+        // cell.edges.left = {
+        //   path: [ [0, left], [bottom, 0] ],
+        //   move: {
+        //     x:      0,
+        //     y:      -1,
+        //     enter:  'top'
+        //   }
+        // };
+
+        cell.edges.top = {
+          path: [ [top, 1], [1, right] ],
           move: {
-            x:      0,
-            y:      1,
-            enter:  'bottom'
+            x:      1,
+            y:      0,
+            enter:  'left'
           }
         };
-        cell.edges.left = {
-          path: [ [0, left], [bottom, 0] ],
+        cell.edges.bottom = {
+          path: [ [bottom, 0], [0, left] ],
           move: {
-            x:      0,
-            y:      -1,
-            enter:  'top'
+            x:      -1,
+            y:      0,
+            enter:  'right'
           }
         };
       }
@@ -578,37 +707,71 @@ function prepareCell(grid, x, y, settings) {
 
     if (settings.polygons_full) {
       if (average < threshold) {
-        cell.edges.bottom = {
-          path: [ [bottom, 0], [0, left] ],
+        // cell.edges.bottom = {
+        //   path: [ [bottom, 0], [0, left] ],
+        //   move: {
+        //     x:      -1,
+        //     y:      0,
+        //     enter:  'right'
+        //   }
+        // };
+        // cell.edges.top = {
+        //   path: [ [top, 1], [1, right] ],
+        //   move: {
+        //     x:      1,
+        //     y:      0,
+        //     enter:  'left'
+        //   }
+        // };
+
+        cell.edges.left = {
+          path: [ [0, left], [bottom, 0] ],
           move: {
-            x:      -1,
-            y:      0,
-            enter:  'right'
+            x:      0,
+            y:      -1,
+            enter:  'top'
           }
         };
-        cell.edges.top = {
-          path: [ [top, 1], [1, right] ],
+        cell.edges.right = {
+          path: [ [1, right], [top, 1] ],
           move: {
-            x:      1,
-            y:      0,
-            enter:  'left'
+            x:      0,
+            y:      1,
+            enter:  'bottom'
           }
         };
       } else {
-        cell.edges.top = {
-          path: [ [top, 1], [0, left] ],
+        // cell.edges.top = {
+        //   path: [ [top, 1], [0, left] ],
+        //   move: {
+        //     x:      -1,
+        //     y:      0,
+        //     enter:  'right'
+        //   }
+        // };
+        // cell.edges.bottom = {
+        //   path: [ [bottom, 0], [1, right] ],
+        //   move: {
+        //     x:      1,
+        //     y:      0,
+        //     enter:  'left'
+        //   }
+        // };
+
+        cell.edges.left = {
+          path: [ [0, left], [top, 1] ],
           move: {
-            x:      -1,
-            y:      0,
-            enter:  'right'
+            x:      0,
+            y:      1,
+            enter:  'bottom'
           }
         };
-        cell.edges.bottom = {
-          path: [ [bottom, 0], [1, right] ],
+        cell.edges.right = {
+          path: [ [1, right], [bottom, 0] ],
           move: {
-            x:      1,
-            y:      0,
-            enter:  'left'
+            x:      0,
+            y:      -1,
+            enter:  'top'
           }
         };
       }
@@ -628,5 +791,4 @@ function prepareCell(grid, x, y, settings) {
 
   return cell;
 }
-
 

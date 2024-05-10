@@ -10,9 +10,6 @@
 <style scoped lang="scss">
 .fourCorners {
   padding: 10px;
-  width: 200px;
-  height: 275px;
-  position: relative;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;

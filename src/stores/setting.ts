@@ -12,6 +12,8 @@ export const useSettingStore = defineStore({
       showStation:true,
       showStream:true,
       satellite:true,
+      center:[0,0],
+      zoom:8
     },
     openlayers:{
       // zoom:5,
@@ -586,11 +588,11 @@ export const useSettingStore = defineStore({
         redirect: '/contain/synthesis',
         hide:true
       },
-      // {
-      //   path: ':catchAll(.*)*',
-      //   component: '/src/myComponents/404/index.vue',
-      //   hide:true
-      // },
+      {
+        path: ':catchAll(.*)*',
+        component: '/src/myComponents/404/index.vue',
+        hide:true
+      },
     ]
   }),
   getters:{
