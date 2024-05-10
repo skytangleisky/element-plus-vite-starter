@@ -374,18 +374,18 @@ export default {
 					visibility:'none'
 				}
 			},
-			{
-				'id': 'districtLayer',
-				'type': 'fill',
-				'source': 'district', // reference the data source
-				'layout': {
-					visibility:setting.district?'visible':'none'
-				},
-				'paint': {
-					'fill-color': '#000',
-					'fill-opacity': 0.2
-				}
-			},
+			// {
+			// 	'id': 'districtLayer',
+			// 	'type': 'fill',
+			// 	'source': 'district', // reference the data source
+			// 	'layout': {
+			// 		visibility:setting.district?'visible':'none'
+			// 	},
+			// 	'paint': {
+			// 		'fill-color': '#000',
+			// 		'fill-opacity': 0.2
+			// 	}
+			// },
 			{
 				'id': 'districtOutline',
 				'type': 'line',

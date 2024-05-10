@@ -143,7 +143,7 @@ const props = withDefaults(
     equidistantRing: false,
   }
 );
-import style from "./simple.js";
+import style from "./editMap.js";
 style.layers.map((v: any) => {
   if (v.id == "simple-tiles") {
     v.layout.visibility = props.loadmap ? "visible" : "none";
@@ -186,18 +186,6 @@ watch(
   },
   {
     immediate: true,
-  }
-);
-watch(
-  () => props.district,
-  (newVal) => {
-    if (newVal) {
-      map.setLayoutProperty("districtLayer", "visibility", "visible");
-      map.setLayoutProperty("districtOutline", "visibility", "visible");
-    } else {
-      map.setLayoutProperty("districtLayer", "visibility", "none");
-      map.setLayoutProperty("districtOutline", "visibility", "none");
-    }
   }
 );
 watch(
@@ -1382,7 +1370,7 @@ onMounted(() => {
             featureValue.geometry.coordinates.push(firstPoint);
           } else {
             featureValue.geometry.coordinates.push(firstPoint);
-            // featureValue.geometry.coordinates.push(lastPoint);
+            featureValue.geometry.coordinates.push(lastPoint);
           }
         }
         isolines.features.push(feature);
@@ -1402,7 +1390,7 @@ onMounted(() => {
         },
         paint: {
           "line-color": ["match", ["get", "threshold"], ...strokeColors, "transparent"],
-          "line-width": 1,
+          "line-width": 2,
           "line-opacity": 1,
         },
       });
@@ -1880,10 +1868,12 @@ watch(
   () => props.district,
   (newVal) => {
     if (newVal) {
-      map.setLayoutProperty("districtLayer", "visibility", "visible");
+      map.getLayer("districtLayer") &&
+        map.setLayoutProperty("districtLayer", "visibility", "visible");
       map.setLayoutProperty("districtOutline", "visibility", "visible");
     } else {
-      map.setLayoutProperty("districtLayer", "visibility", "none");
+      map.getLayer("districtLayer") &&
+        map.setLayoutProperty("districtLayer", "visibility", "none");
       map.setLayoutProperty("districtOutline", "visibility", "none");
     }
   }
