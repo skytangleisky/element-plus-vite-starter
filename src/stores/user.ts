@@ -1,16 +1,21 @@
 // @ts-check
 import { defineStore, acceptHMRUpdate } from "pinia"
 import { login, getInfo,logout } from '../api/login.js'
+import zhCn from '../languages/zh-cn.js'
+import en from '../languages/en.js'
 
 export const useUserStore = defineStore({
   id: 'user',
   state: () => ({
+    lang: 'zh-cn',
     username: '',
     isAdmin: true,
     token: '',
     avatar: '',
     logined: false,
-    roles:[]
+    roles:[],
+    defaultActive: 'a7ef7b88-5e6b-0c62-129b-00a18980cdce',
+    defaultOpends:['65e99b66-e340-4d4b-6b26-629f41dc63d9'],
   }),
 
   actions: {
@@ -54,6 +59,14 @@ export const useUserStore = defineStore({
           reject(e)
         })
       })
+    }
+  },
+  getters:{
+    locale: state => {
+      if(state.lang==='en'){
+        return en
+      }
+      return zhCn
     }
   },
   persist: true,

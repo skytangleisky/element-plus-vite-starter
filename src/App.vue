@@ -1,9 +1,5 @@
 <template>
-  <el-config-provider
-    namespace="ep"
-    :locale="setting.locale"
-    :message="{ max: undefined }"
-  >
+  <el-config-provider namespace="ep" :locale="user.locale" :message="{ max: Infinity }">
     <router-view v-slot="{ Component }">
       <keep-alive :exclude="exclude">
         <component :is="Component" />
@@ -14,8 +10,8 @@
 </template>
 <script lang="ts" setup>
 import websocket from "~/myComponents/websocket/index.vue";
-import { useSettingStore } from "./stores/setting";
-const setting = useSettingStore();
+import { useUserStore } from "./stores/user";
+const user = useUserStore();
 import { useExclude } from "./myComponents/bus";
 const exclude = useExclude();
 </script>

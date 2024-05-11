@@ -1,6 +1,4 @@
 import { defineStore, acceptHMRUpdate2 } from "pinia"
-import zhCn from '../languages/zh-cn.mjs'
-import en from '../languages/en.mjs'
 export const useSettingStore = defineStore({
   id: 'setting',
   state:()=>({
@@ -168,7 +166,6 @@ export const useSettingStore = defineStore({
       }
     },
     projection: 'globe',// mercator|globe
-    lang: 'zh-cn',
     webgpu:false,
     loadmap:true,
     district:true,
@@ -186,9 +183,9 @@ export const useSettingStore = defineStore({
     now: undefined,//时间轴的当前时间
     level:undefined,//时间轴的缩放等级
     playback:{
-    status: 'pause',//记录时间轴的播放状态
-    now: undefined,//时间轴的当前时间
-    level:undefined,//时间轴的缩放等级
+      status: 'pause',//记录时间轴的播放状态
+      now: undefined,//时间轴的当前时间
+      level:undefined,//时间轴的缩放等级
     },
     component:'/src/myComponents/menu/index.vue',
     factor:[
@@ -274,8 +271,6 @@ export const useSettingStore = defineStore({
         select: false
       },
     ],
-    defaultActive: 'a7ef7b88-5e6b-0c62-129b-00a18980cdce',
-    defaultOpends:['65e99b66-e340-4d4b-6b26-629f41dc63d9'],
     routes:[
       {
         path: 'contain',
@@ -324,7 +319,7 @@ export const useSettingStore = defineStore({
             name:'a7ef7b88-5e6b-0c62-129b-00a18980cdce',
             component:'/src/myComponents/menu/index.vue',
             label:'地图',
-            hide:true,
+            hide:false,
             svg:'8226ee256c6711ee8c80b025aa2c9ada',
           },
           {
@@ -595,21 +590,7 @@ export const useSettingStore = defineStore({
       },
     ]
   }),
-  getters:{
-    locale: state => {
-      if(state.lang==='en'){
-        return en
-      }
-      return zhCn
-    }
-  },
   actions: {
-    changeLanguage(lang: string) {
-      console.log(lang)
-      this.$patch({
-        lang
-      })
-    },
     setloadMap(bool:boolean){
       this.$patch({
         loadmap:bool

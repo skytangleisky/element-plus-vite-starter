@@ -12,8 +12,8 @@
         :active-text-color="isDark ? '#409eff' : '#ffd04b'"
         :collapse="isCollapse"
         class="el-menu-vertical-demo"
-        :default-openeds="setting.defaultOpends"
-        :default-active="setting.defaultActive"
+        :default-openeds="user.defaultOpends"
+        :default-active="user.defaultActive"
         @open="open"
         @close="close"
         @select="select"
@@ -39,8 +39,8 @@
         :active-text-color="isDark ? '#409eff' : '#ffd04b'"
         :collapse="isCollapse"
         class="el-menu-vertical-demo"
-        :default-openeds="setting.defaultOpends"
-        :default-active="setting.defaultActive"
+        :default-openeds="user.defaultOpends"
+        :default-active="user.defaultActive"
         @open="open"
         @close="close"
         @select="select"
@@ -55,19 +55,20 @@
         ></SubMenu>
       </el-menu>
     </el-scrollbar>
-    <!-- <el-select
+    <el-select
+      v-if="DEV"
       v-model="setting.component"
       filterable
       style="width: 100%"
       @change="change"
     >
       <el-option v-for="(k, v) in languages" :key="v" :label="v" :value="v" />
-    </el-select> -->
+    </el-select>
   </div>
 </template>
 <script lang="ts" setup>
 import { isDark } from "~/composables";
-import { ref, onMounted, watch, getCurrentInstance } from "vue";
+import { ref, onMounted, watch, getCurrentInstance, nextTick } from "vue";
 let instance = getCurrentInstance();
 import { useIconStore } from "~/stores/icon";
 const icon = useIconStore();
@@ -76,6 +77,8 @@ const languages = ref(modules);
 import { useRouter } from "vue-router";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
+import { useUserStore } from "~/stores/user";
+const user = useUserStore();
 let router = useRouter();
 import SubMenu from "./SubMenu.vue";
 import { array2components } from "~/tools";
@@ -97,6 +100,9 @@ const change = (v: any) => {
           name: "a7ef7b88-5e6b-0c62-129b-00a18980cdce",
           component: v,
           label: "地图",
+          meta: {
+            time: Date.now(),
+          },
         };
       }
     }
@@ -108,7 +114,9 @@ const change = (v: any) => {
   (array2components(setting.routes) as Array<any>).map((v: any) => {
     router.addRoute(v);
   });
-  router.push({ path: "/contain/map", replace: false });
+  nextTick(() => {
+    router.push({ path: "/contain/map", replace: true });
+  });
 };
 watch(
   () => setting.routes,
@@ -131,13 +139,13 @@ watch(
   }
 );
 const open = (id: string) => {
-  setting.defaultOpends.push(id);
+  user.defaultOpends.push(id);
 };
 const close = (id: string) => {
-  setting.defaultOpends = setting.defaultOpends.filter((item) => item != id);
+  user.defaultOpends = user.defaultOpends.filter((item) => item != id);
 };
 const select = (id: string) => {
-  setting.defaultActive = id;
+  user.defaultActive = id;
 };
 </script>
 <style lang="scss">

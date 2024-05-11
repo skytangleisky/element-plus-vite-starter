@@ -138,10 +138,8 @@ import {
 } from "@element-plus/icons-vue";
 import { useLocale } from "element-plus";
 const { t } = useLocale();
-import { useSettingStore } from "../stores/setting";
 import { useUserStore } from "../stores/user";
 import { useDataStore } from "../stores/data";
-const setting = useSettingStore();
 const user = useUserStore();
 const data = useDataStore();
 // user.info()
@@ -168,10 +166,7 @@ const list = reactive([
   "评论",
   "QQ表情",
 ]);
-let lang = ref("zh-cn");
-if (setting.locale.name === "en") {
-  lang = ref("en");
-}
+let lang = ref(user.lang);
 const languages = ref([
   { value: "zh-cn", label: "中文" },
   { value: "en", label: "English" },
@@ -211,7 +206,7 @@ watch(inputValue, (newVal) => {
   console.log(newVal);
 });
 const languageChange = (lang) => {
-  setting.changeLanguage(lang);
+  user.lang = lang;
 };
 let tmpWindow;
 const login = () => {
