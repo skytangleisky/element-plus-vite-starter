@@ -4,9 +4,13 @@ let options = ''
 let url = ''
 function setConfig(){
   let filename = location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
-  if(filename=='synthesis'||filename=='history'||filename=='simulate'||filename=='airspace'||filename=='networking'||filename=='ry'){
+  if(filename=='synthesis'||filename=='history'||filename=='simulate'||filename=='airspace'||filename=='networking'){
     tableName='enclosure'
     options = '?host=tanglei.top&port=3390&user=root&password=mysql&database=gis'
+    url = 'backend/db/'+tableName+options
+  }if(filename=='ry'){
+    tableName='zydpara'
+    options = '?host=tanglei.top&port=3390&user=root&password=mysql&database=ryplat_bjry'
     url = 'backend/db/'+tableName+options
   }else{
     tableName = filename

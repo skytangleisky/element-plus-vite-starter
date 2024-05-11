@@ -686,7 +686,7 @@ onMounted(() => {
       });
     });
     let airplanes = [];
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < 2000; i++) {
       airplanes.push({
         type: "Feature",
         properties: {
@@ -787,7 +787,7 @@ onMounted(() => {
     //     });
     //     source.setData(data);
     //   }
-    // }, 33);
+    // }, 4000);
 
     // getMicapsData(plotUrl).then(async(result: any) => {
     //   let pts = new Array<{lng:number;lat:number;value:number}>;
