@@ -220,19 +220,31 @@
 </template>
 
 <script lang="ts" setup>
+const props = withDefaults(
+  defineProps<{
+    database: string;
+    table: string;
+  }>(),
+  {
+    database: "",
+    table: "",
+  }
+);
 import { Search } from "@element-plus/icons-vue";
 import { CheckboxValueType, ElMessage, ElMessageBox } from "element-plus";
 import draggable from "./draggable.vue";
 import { reactive, watch, h, ref, onMounted, nextTick, computed } from "vue";
 import myInput from "./input.vue";
 import {
+  setConfig,
   getColumns,
   getAll,
   saveData,
   fetchList,
   fetchData,
   deleteData,
-} from "~/api/无人机/api";
+} from "~/api/人影/api";
+setConfig(props.database, props.table);
 const options = reactive({
   thData: new Array<any>(),
   tdData: new Array<any>(),

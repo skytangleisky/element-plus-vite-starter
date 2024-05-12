@@ -41,7 +41,7 @@ import { useBus } from "~/myComponents/bus";
 import { eventbus } from "~/eventbus";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.scss";
-import { 获取净空区, saveData, deleteData } from "~/api/无人机/api";
+import { 获取净空区, saveData, deleteData } from "~/api/enclosure.js";
 const bus = useBus();
 import theme from "./drawTheme/inactive.js";
 const props = withDefaults(

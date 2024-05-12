@@ -8,14 +8,7 @@
     >
       <router-view v-slot="{ Component }">
         <keep-alive>
-          <component
-            :key="
-              $route.meta?.time
-                ? $route.fullPath + '?time=' + $route.meta.time
-                : $route.fullPath
-            "
-            :is="Component"
-          />
+          <component :key="$route.identify" :is="Component" />
         </keep-alive>
       </router-view>
     </div>

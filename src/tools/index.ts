@@ -1,5 +1,6 @@
 
 const modules = import.meta.glob('~/**/*.vue')
+import {v4 as uuid} from 'uuid'
 import imageUrl from "~/assets/feather.svg?url";
 import planeUrl from "~/assets/plane.svg?url";
 import projectileUrl from "~/assets/projectile.svg?url";
@@ -52,6 +53,7 @@ export const array2components = array => {
   const arr = deepClone(array)
   arr.map((v,k)=>{
     v.path='/'+v.path
+    v.identify = uuid()
   })
   const fn = l => {
     l.map(v => {

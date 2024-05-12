@@ -7,6 +7,7 @@
       }`"
     >
       <el-menu
+        v-if="user.roles.includes('admin')"
         :background-color="isDark ? '#304156' : '#eee'"
         :text-color="isDark ? '#bfcbd9' : '#000'"
         :active-text-color="isDark ? '#409eff' : '#ffd04b'"
@@ -18,15 +19,7 @@
         @close="close"
         @select="select"
         style="border-right: 0"
-        v-permission="['admin']"
       >
-        <!-- <SubMenu
-          v-permission="['prod']"
-          v-for="route in setting.routes[0].children"
-          :key="route.name"
-          :item="route"
-          absoluteRootPath="/contain"
-        ></SubMenu> -->
         <SubMenu
           v-for="route in setting.routes"
           :key="route.name"
@@ -34,6 +27,7 @@
         ></SubMenu>
       </el-menu>
       <el-menu
+        v-else
         :background-color="isDark ? '#304156' : '#eee'"
         :text-color="isDark ? '#bfcbd9' : '#000'"
         :active-text-color="isDark ? '#409eff' : '#ffd04b'"
@@ -45,13 +39,12 @@
         @close="close"
         @select="select"
         style="border-right: 0"
-        v-permission="['prod']"
       >
         <SubMenu
           v-for="route in setting.routes[0].children"
           :key="route.name"
           :item="route"
-          absoluteRootPath="/contain"
+          absoluteRootPath="/ry"
         ></SubMenu>
       </el-menu>
     </el-scrollbar>
@@ -68,8 +61,7 @@
 </template>
 <script lang="ts" setup>
 import { isDark } from "~/composables";
-import { ref, onMounted, watch, getCurrentInstance, nextTick } from "vue";
-let instance = getCurrentInstance();
+import { ref, onMounted, watch, nextTick } from "vue";
 import { useIconStore } from "~/stores/icon";
 const icon = useIconStore();
 const modules = import.meta.glob("~/**/*.vue");
@@ -94,16 +86,9 @@ const change = (v: any) => {
         fn(list[i].children);
       }
       if (list[i].name === "a7ef7b88-5e6b-0c62-129b-00a18980cdce") {
-        list[i] = {
-          ...list[i],
-          path: "map",
-          name: "a7ef7b88-5e6b-0c62-129b-00a18980cdce",
+        list[i] = Object.assign(list[i], {
           component: v,
-          label: "地图",
-          meta: {
-            time: Date.now(),
-          },
-        };
+        });
       }
     }
   }
@@ -115,7 +100,7 @@ const change = (v: any) => {
     router.addRoute(v);
   });
   nextTick(() => {
-    router.push({ path: "/contain/map", replace: true });
+    router.push({ path: "/ry/map", replace: true });
   });
 };
 watch(

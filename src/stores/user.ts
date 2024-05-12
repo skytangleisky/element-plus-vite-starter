@@ -3,6 +3,7 @@ import { defineStore, acceptHMRUpdate } from "pinia"
 import { login, getInfo,logout } from '../api/login.js'
 import zhCn from '../languages/zh-cn.js'
 import en from '../languages/en.js'
+import { useSettingStore } from "./setting.js"
 
 export const useUserStore = defineStore({
   id: 'user',
@@ -13,7 +14,7 @@ export const useUserStore = defineStore({
     token: '',
     avatar: '',
     logined: false,
-    roles:[],
+    roles:new Array<string>(),
     defaultActive: 'a7ef7b88-5e6b-0c62-129b-00a18980cdce',
     defaultOpends:['65e99b66-e340-4d4b-6b26-629f41dc63d9'],
   }),
@@ -26,6 +27,11 @@ export const useUserStore = defineStore({
     info(){
       return new Promise((resolve,reject)=>{
         getInfo().then((infoRes:any)=>{
+          //当权限不一致时，需要重置路由
+          if(JSON.stringify(infoRes.data.data.roles)!==JSON.stringify(this.roles)){
+            const setting = useSettingStore()
+            setting.$resetFields('routes')
+          }
           this.$patch({
             logined: true,
             ...infoRes.data.data,

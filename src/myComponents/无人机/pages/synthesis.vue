@@ -36,7 +36,10 @@
         v-html="forkSvg"
         @click.stop="setting.无人机.监控.bottom_disappear = true"
       ></el-icon>
-      <datatable></datatable>
+      <datatable
+        :database="'host=tanglei.top&port=3390&user=root&password=mysql&database=ryplat_bjry'"
+        :table="'zydpara'"
+      ></datatable>
     </div>
     <div :class="`right-drawer ${setting.无人机.监控.disappear ? 'disappear' : ''}`">
       <div
