@@ -768,7 +768,7 @@ onMounted(() => {
     title: "base",
     // source: new OSM(),
     source: new XYZ({
-      url: "https://tanglei.site:3210/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
+      url: "https://tile.tanglei.site/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}",
     }),
     preload: Infinity,
   });

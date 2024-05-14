@@ -277,14 +277,14 @@ export default {
 		},
 		"composite": {
 				"url_origin": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2",
-				"tiles":["https://tanglei.site:3220?lyrs=v&x={x}&y={y}&z={z}"],
+				"tiles":["https://vector.tanglei.site?lyrs=v&x={x}&y={y}&z={z}"],
 				"type": "vector"
 		},
 		"raster-tiles": {
 			"type": "raster",
 			url,
 			// "tiles": [
-			// 	"https://tanglei.site:3210/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}"
+			// 	"https://tile.tanglei.site/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}"
 			// ],
 			"tileSize": 256
 		}

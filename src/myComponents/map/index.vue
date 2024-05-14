@@ -97,12 +97,12 @@ let webgpu = ref(null);
 // let POINT = {lng:113.42165142106768,lat:23.098844381632485}
 let POINT = { lng: 116.39139324235674, lat: 39.90723893689098 };
 const urls = ref([
-  { url: "https://tanglei.site:3240/maps/vt?lyrs=y&x={x}&y={y}&z={z}" },
-  { url: "https://tanglei.site:3240/maps/vt?lyrs=s&x={x}&y={y}&z={z}" },
-  { url: "https://tanglei.site:3240/maps/vt?lyrs=h&x={x}&y={y}&z={z}" },
-  { url: "https://tanglei.site:3240/maps/vt?lyrs=p&x={x}&y={y}&z={z}" },
-  { url: "https://tanglei.site:3240/maps/vt?lyrs=m&x={x}&y={y}&z={z}" },
-  { url: "https://tanglei.site:3240/maps/vt?lyrs=t&x={x}&y={y}&z={z}" },
+  { url: "https://tile.tanglei.site/maps/vt?lyrs=y&x={x}&y={y}&z={z}" },
+  { url: "https://tile.tanglei.site/maps/vt?lyrs=s&x={x}&y={y}&z={z}" },
+  { url: "https://tile.tanglei.site/maps/vt?lyrs=h&x={x}&y={y}&z={z}" },
+  { url: "https://tile.tanglei.site/maps/vt?lyrs=p&x={x}&y={y}&z={z}" },
+  { url: "https://tile.tanglei.site/maps/vt?lyrs=m&x={x}&y={y}&z={z}" },
+  { url: "https://tile.tanglei.site/maps/vt?lyrs=t&x={x}&y={y}&z={z}" },
 ]);
 if (setting.tileUrl == "") {
   setting.tileUrl = urls.value[3].url;

@@ -276,13 +276,13 @@ export default {
 		},
 		"composite": {
 				"url_origin": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2",
-				"tiles":["https://tanglei.site:3220?lyrs=v&x={x}&y={y}&z={z}"],
+				"tiles":["https://vector.tanglei.site?lyrs=v&x={x}&y={y}&z={z}"],
 				"type": "vector"
 		},
 		"mapbox-dem": {
 			"type": "raster-dem",
 			"url_origin": 'mapbox://mapbox.mapbox-terrain-dem-v1',
-			"tiles":["https://tanglei.site:3230?lyrs=terrain&x={x}&y={y}&z={z}"],
+			"tiles":["https://terrain.tanglei.site?lyrs=terrain&x={x}&y={y}&z={z}"],
 			"tileSize": 512,
 			"maxzoom": 14
 		},
@@ -290,7 +290,7 @@ export default {
 			"type": "raster",
 			url,
 			// "tiles": [
-			// 	"https://tanglei.site:3210/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}"
+			// 	"https://tile.tanglei.site/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}"
 			// ],
 			"tileSize": 256
 		}

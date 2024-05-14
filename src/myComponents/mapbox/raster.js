@@ -28,7 +28,7 @@ export default {
     "raster-tiles": {
       "type": "raster",
       "tiles": [
-        "https://tanglei.site:3210/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}"
+        "https://tile.tanglei.site/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}"
       ],
       "tileSize": 256
     }

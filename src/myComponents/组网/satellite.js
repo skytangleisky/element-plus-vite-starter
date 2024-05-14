@@ -25,7 +25,7 @@ export default {
   "scheme": "xyz",
   "tilejson": "2.2.0",
   "tiles": [
-    'https://tanglei.site:3240/maps/vt?lyrs=s&x={x}&y={y}&z={z}',
+    'https://tile.tanglei.site/maps/vt?lyrs=s&x={x}&y={y}&z={z}',
     // 'https://mt0.google.com/vt?lyrs=y&x={x}&y={y}&z={z}',
     // 'https://mt1.google.com/vt?lyrs=y&x={x}&y={y}&z={z}',
     // 'https://mt2.google.com/vt?lyrs=y&x={x}&y={y}&z={z}',

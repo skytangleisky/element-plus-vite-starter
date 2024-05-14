@@ -203,7 +203,7 @@ var isobands_options = {
 // 			"composite": {
 // 					"url_origin": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2",
 // 					"tiles": [
-// 						"https://tanglei.site:3220?lyrs=v&x={x}&y={y}&z={z}"
+// 						"https://vector.tanglei.site?lyrs=v&x={x}&y={y}&z={z}"
 // 					],
 // 					"type": "vector"
 // 			}
@@ -332,7 +332,7 @@ onMounted(() => {
     //   type: "raster",
     //   source: {
     //     type: "raster",
-    //     tiles: ["https://tanglei.site:3210/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}"],
+    //     tiles: ["https://tile.tanglei.site/maps/vt?lyrs=y&gl=CN&x={x}&y={y}&z={z}"],
     //     //zoomOffset:-1,
     //     tileSize: 256,
     //   },
