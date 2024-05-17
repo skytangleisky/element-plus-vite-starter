@@ -295,10 +295,10 @@ export default {
 		},
 		"raster-route": {
 			"type": "raster",
-			url:url2,
-			// "tiles": [
-			// 	window.location.origin+"/backend/image?x={x}&y={y}&z={z}"
-			// ],
+			// url:url2,
+			"tiles": [
+				window.location.origin+"/backend/image?x={x}&y={y}&z={z}"
+			],
 			"tileSize": 256
 		},
 		"raster-isoline": {

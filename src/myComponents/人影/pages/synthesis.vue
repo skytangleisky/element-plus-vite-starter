@@ -61,20 +61,50 @@
       <span style="font-size: 20px; margin-top: 20px">图层设置</span>
       <div style="display: flex; flex-direction: column">
         <el-checkbox
+          name="控制瓦片"
           v-model="setting.人影.监控.loadmap"
           label="显示瓦片地图"
         ></el-checkbox>
         <el-checkbox
+          name="控制区划"
           v-model="setting.人影.监控.district"
           label="显示行政区划"
         ></el-checkbox>
-        <el-checkbox v-model="setting.人影.监控.zyd" label="显示作业点"></el-checkbox>
-        <el-checkbox v-model="setting.人影.监控.routeLine" label="航路航线"></el-checkbox>
-        <el-checkbox v-model="setting.人影.监控.zdz" label="自动站"></el-checkbox>
-        <el-checkbox v-model="setting.人影.监控.isobands" label="等值带"></el-checkbox>
-        <el-checkbox v-model="setting.人影.监控.isolines" label="等值线"></el-checkbox>
-        <el-checkbox v-model="setting.人影.监控.gridPoint" label="网格点"></el-checkbox>
-        <el-checkbox v-model="setting.人影.监控.gridValue" label="网格值"></el-checkbox>
+        <el-checkbox
+          name="控制作业点"
+          v-model="setting.人影.监控.zyd"
+          label="显示作业点"
+        ></el-checkbox>
+        <el-checkbox
+          name="控制航线"
+          v-model="setting.人影.监控.routeLine"
+          label="航路航线"
+        ></el-checkbox>
+        <el-checkbox
+          name="控制自动站"
+          v-model="setting.人影.监控.zdz"
+          label="自动站"
+        ></el-checkbox>
+        <el-checkbox
+          name="控制等值带"
+          v-model="setting.人影.监控.isobands"
+          label="等值带"
+        ></el-checkbox>
+        <el-checkbox
+          name="控制等值线"
+          v-model="setting.人影.监控.isolines"
+          label="等值线"
+        ></el-checkbox>
+        <el-checkbox
+          name="控制网格点"
+          v-model="setting.人影.监控.gridPoint"
+          label="网格点"
+        ></el-checkbox>
+        <el-checkbox
+          name="控制网格值"
+          v-model="setting.人影.监控.gridValue"
+          label="网格值"
+        ></el-checkbox>
       </div>
     </div>
   </div>

@@ -3,6 +3,7 @@
     <div class="flex flex-row" style="align-items: center">
       <input
         @mousedown.stop
+        name="过滤条件"
         class="operation_filter flex-1"
         placeholder="请输入过滤条件"
         v-model="options.value"

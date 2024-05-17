@@ -1,6 +1,7 @@
 <template>
   <VueDraggable v-model="list" target=".sort-target" animation="150">
     <el-checkbox
+      name="控制全选"
       v-model="checkAll"
       :indeterminate="isIndeterminate"
       class="checkAll dark:bg-#2b2b2b bg-white"
@@ -15,6 +16,7 @@
         v-for="(item, k) in list"
         :key="k"
         :label="item"
+        :name="item.Field"
         >{{ item.Field }}</el-checkbox
       >
     </div>

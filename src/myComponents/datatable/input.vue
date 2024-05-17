@@ -2,6 +2,7 @@
   <input
     class="input"
     type="text"
+    :name="props.k"
     :value="props.item[props.k]"
     @input="inputValue"
     @focusin="focusin"
