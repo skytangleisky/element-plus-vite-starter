@@ -464,7 +464,7 @@ export const addFeatherImages = async( map:any ) => {
     for (let k in result) {
       map.addImage(k, result[k]);
     }
-    result = await loadImage(projectileUrl,32,32,{
+    result = await loadImage(projectileUrl,16,32,{
       projectile:{
         x1: 0,
         y1: 0,

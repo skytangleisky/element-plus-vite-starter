@@ -159,6 +159,7 @@ import satellite from "./satellite.js";
 let satelliteUrl = URL.createObjectURL(
   new File([JSON.stringify(satellite)], "satellite.json", { type: "application/json" })
 );
+import { setConfig, getAll } from "~/api/人影/api";
 const emit = defineEmits([
   "update:center",
   "update:zoom",
@@ -222,7 +223,7 @@ const moveFunc = () => {
 };
 const flyTo = (item: any) => {
   try {
-    let v = item.lngLat;
+    let v = item.strPos;
     let lng = v.substring(0, v.indexOf("E"));
     let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
     let pt = {
@@ -308,123 +309,80 @@ onMounted(() => {
         "fill-opacity": 0.4,
       },
     });
-    getDevice().then((res) => {
-      dialogOptions.menus = res.data;
+    setConfig(
+      "host=192.168.0.240&port=3306&user=root&password=mysql&database=ryplat_bjry",
+      "zydpara"
+    );
+    getAll().then((res) => {
+      dialogOptions.menus = res.data[0];
       let features: any = [];
-      dialogOptions.menus.map((item: any) => {
-        let v = item.lngLat;
-        let lng = v.substring(0, v.indexOf("E"));
-        let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
-        let pt = {
-          lng:
-            Number(lng.substring(0, 3)) +
-            Number(lng.substring(3, 5)) / 60 +
-            Number(lng.substring(5, 9)) / 100 / 3600,
-          lat:
-            Number(lat.substring(0, 2)) +
-            Number(lat.substring(2, 4)) / 60 +
-            Number(lat.substring(4, 8)) / 100 / 3600,
-        };
-        let position: [number, number] = (wgs84togcj02(pt.lng, pt.lat) as unknown) as [
-          number,
-          number
-        ];
-        features.push({
-          type: "Feature",
-          properties: {
-            type: "站点",
-            name: item.name,
-            color: item.color,
-          },
-          geometry: {
-            type: "Point",
-            coordinates: position,
-          },
-        });
-        // let offset = (getRandomPointBetweenR1R2(50, 100) as unknown) as [number, number];
-        // let div = document.createElement("div");
-        // div.id = "组网" + item.id;
-        // div.className = "deviceStation_人影";
-        // div.style.position = "absolute";
-        // $(div).data("id", item.id);
-        // let device = $(
-        //   `<div class="station" style="z-index:-1;left:50%;top:50%;transform:translate(-50%,-50%) translate(${-offset[0]}px,${-offset[1]}px)"><div class="projectile" style="filter: drop-shadow(${
-        //     item.color
-        //   } 0 -60px);transform:translateY(60px)"/></div>`
-        // );
-        // $(div).append(device);
-        // $(div).append(
-        //   $(
-        //     `<div class="connectingLine" style="pointer-events:none;background:white;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) translate(${
-        //       -offset[0] / 2
-        //     }px,${-offset[1] / 2}px) rotate(${Math.atan2(
-        //       offset[1],
-        //       offset[0]
-        //     )}rad);width:${Math.sqrt(offset[0] ** 2 + offset[1] ** 2)}px"></div>`
-        //   )
-        // );
-        // let label = $(`<div class="label">${item.name}</div>`);
-        // $(div).append(label);
-
-        // device.on("click", function click() {
-        //   station.组网界面被选中的设备 = $(this).parent().data("id");
-        //   $(`#组网-tr-${station.组网界面被选中的设备}`)[0].scrollIntoView({
-        //     block: "nearest",
-        //     behavior: "smooth",
-        //     inline: "center",
-        //   });
-        // });
-        // device.on("mousedown", (evt) => {
-        //   evt.preventDefault();
-        //   evt.stopPropagation();
-        // });
-        // var marker = new Marker(div, {
-        //   draggable: true,
-        //   pitchAlignment: "map",
-        //   rotationAlignment: "map",
-        //   anchor: "center",
-        // })
-        //   .setLngLat(position) // 设置标记的经纬度坐标
-        //   .addTo(map)
-        //   .setOffset(offset);
-        // let dragStartOffset: { x: number; y: number };
-        // marker.on("dragstart", () => {
-        //   dragStartOffset = marker.getOffset() as { x: number; y: number };
-        // });
-        // marker.on("drag", (e: any) => {
-        //   let dragEndPoint = marker.getLngLat();
-        //   let pt1 = map.project({ lng: position[0], lat: position[1] });
-        //   let pt2 = map.project(dragEndPoint);
-        //   let x = dragStartOffset.x + pt2.x - pt1.x;
-        //   let y = dragStartOffset.y + pt2.y - pt1.y;
-        //   marker.setOffset([x, y]);
-        //   let line = $("#组网" + item.id).find(".connectingLine")[0];
-        //   line.style.transform = `translate(-50%,-50%) translate(${-x / 2}px,${
-        //     -y / 2
-        //   }px) rotate(${Math.atan2(y, x)}rad)`;
-        //   line.style.width = `${Math.sqrt(x ** 2 + y ** 2)}px`;
-        //   let station = $("#组网" + item.id).find(".station")[0];
-        //   station.style.transform = `translate(-50%,-50%) translate(${-x}px,${-y}px)`;
-        //   marker.setLngLat(position);
-        // });
-        // marker.on("dragend", (e: any) => {
-        //   let dragEndPoint = e.target.getLngLat();
-        //   let pt1 = map.project({ lng: position[0], lat: position[1] });
-        //   let pt2 = map.project(dragEndPoint);
-        //   let offset = marker.getOffset() as { x: number; y: number };
-        //   let x = offset.x + pt2.x - pt1.x;
-        //   let y = offset.y + pt2.y - pt1.y;
-        //   marker.setOffset([x, y]);
-        //   let line = $("#组网" + item.id).find(".connectingLine")[0];
-        //   line.style.transform = `translate(-50%,-50%) translate(${-x / 2}px,${
-        //     -y / 2
-        //   }px) rotate(${Math.atan2(y, x)}rad)`;
-        //   line.style.width = `${Math.sqrt(x ** 2 + y ** 2)}px`;
-        //   let station = $("#组网" + item.id).find(".station")[0];
-        //   station.style.transform = `translate(-50%,-50%) translate(${-x}px,${-y}px)`;
-        //   marker.setLngLat(position);
-        // });
-      });
+      let circleFeatures: any = [];
+      res.data[0].map(
+        (item: {
+          strID: "110108082";
+          strCode: "110108082";
+          strName: "北马场作业站烟炉";
+          strRelayUnit: "110108000";
+          strMgrUnit: "990201000";
+          strPos: "116090001E39584800N";
+          strWeapon: 3;
+          iMaxShotHei: 8000;
+          iMaxShotRange: 10000;
+          strShotSector: "360";
+          strShotAngle: "90";
+          strIP: "NULL";
+          strSimNo: "NULL";
+          bAutoUpSend: 1;
+          bAutoDownSend: 1;
+          iVersion: 2;
+          listenPort: 15;
+          iShortAngelBegin: null;
+          iShortAngelEnd: 360;
+          iType: null;
+          connectType: 0;
+          dataver: 50;
+          iAltitude: 0;
+        }) => {
+          let v = item.strPos;
+          if (v) {
+            let lng = v.substring(0, v.indexOf("E"));
+            let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
+            let pt = {
+              lng:
+                Number(lng.substring(0, 3)) +
+                Number(lng.substring(3, 5)) / 60 +
+                Number(lng.substring(5, 9)) / 100 / 3600,
+              lat:
+                Number(lat.substring(0, 2)) +
+                Number(lat.substring(2, 4)) / 60 +
+                Number(lat.substring(4, 8)) / 100 / 3600,
+            };
+            let position: [number, number] = (wgs84togcj02(
+              pt.lng,
+              pt.lat
+            ) as unknown) as [number, number];
+            features.push({
+              type: "Feature",
+              properties: {
+                type: "站点",
+                name: item.strName,
+                color: "red",
+              },
+              geometry: {
+                type: "Point",
+                coordinates: position,
+              },
+            });
+            if (item.iMaxShotRange) {
+              let circle = Circle([pt.lng, pt.lat], item.iMaxShotRange, {
+                steps: 64,
+                units: "meters",
+              });
+              circleFeatures.push(circle);
+            }
+          }
+        }
+      );
       map.addLayer({
         id: "zydLayer",
         type: "symbol",
@@ -442,10 +400,11 @@ onMounted(() => {
           // the style in Mapbox Studio and click the "Images" tab.
           // To add a new image to the style at runtime see
           // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-          "icon-anchor": "left",
+          "icon-anchor": "center",
           "icon-image": "projectile",
           "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
           "icon-rotate": 0,
+          // "icon-offset": [10, 0],
           "icon-rotation-alignment": "map",
           "icon-allow-overlap": true,
           "icon-ignore-placement": true,
@@ -454,7 +413,7 @@ onMounted(() => {
           "text-size": 16,
           "text-transform": "uppercase",
           // "text-letter-spacing": 0.05,
-          "text-anchor": "center",
+          "text-anchor": "bottom",
           "text-line-height": 1,
           "text-justify": "center",
           "text-offset": [0, -1],
@@ -471,137 +430,8 @@ onMounted(() => {
         },
         filter: ["==", ["get", "type"], "站点"],
       });
-
-      let feathers = [];
-      for (let j = 0; j < 30; j++) {
-        for (let i = 0; i < 20; i++) {
-          const pt = turf.destination(
-            turf.point([101.91223724839354, 36.548604620850995]),
-            45 + 1000 * i,
-            j * 10,
-            {
-              units: "meters",
-            }
-          );
-          let speed = Math.random() * 60;
-          feathers.push({
-            type: "Feature",
-            geometry: {
-              type: "Point",
-              coordinates: pt.geometry?.coordinates,
-            },
-            properties: {
-              type: "风羽",
-              风速: speed,
-              image: "feather" + getFeather(speed),
-              风向: 45,
-            },
-          });
-        }
-      }
       map.addLayer({
-        id: "绘制风羽",
-        type: "symbol",
-        source: {
-          type: "geojson",
-          data: {
-            type: "FeatureCollection",
-            features: feathers,
-          },
-        },
-        layout: {
-          visibility: props.feather ? "visible" : "none",
-          // This icon is a part of the Mapbox Streets style.
-          // To view all images available in a Mapbox style, open
-          // the style in Mapbox Studio and click the "Images" tab.
-          // To add a new image to the style at runtime see
-          // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-          "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
-          "icon-image": ["get", "image"],
-          "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
-          "icon-rotate": ["get", "风向"],
-          "icon-rotation-alignment": "map",
-          "icon-allow-overlap": true,
-          "icon-ignore-placement": true,
-          // "text-field": ["get", "风速"],
-          // "text-font": ["simkai"],
-          // "text-size": 14,
-          // "text-transform": "uppercase",
-          // // "text-letter-spacing": 0.05,
-          // "text-anchor": "center",
-          // "text-line-height": 1,
-          // // "text-justify": "center",
-          // "text-offset": [0, 0],
-          // "text-ignore-placement": true,
-          // "text-allow-overlap": true,
-          // "text-rotation-alignment": "map",
-        },
-        paint: {
-          "icon-opacity": setting.feather ? 1 : 0,
-        },
-        filter: ["==", ["get", "type"], "风羽"],
-      });
-
-      let circleFeatures = [];
-      let pointFeatures = [];
-      for (let i = 1; i <= 10; i++) {
-        let circle = Circle([102.04150296221326, 36.530313361869744], i * 1000, {
-          steps: 64,
-          units: "meters",
-        });
-        circleFeatures.push(circle);
-
-        let pts: any = [];
-        const pt1 = turf.destination(
-          turf.point([102.04150296221326, 36.530313361869744]),
-          1000 * i,
-          0,
-          { units: "meters" }
-        );
-        const pt2 = turf.destination(
-          turf.point([102.04150296221326, 36.530313361869744]),
-          1000 * i,
-          90,
-          { units: "meters" }
-        );
-        const pt3 = turf.destination(
-          turf.point([102.04150296221326, 36.530313361869744]),
-          1000 * i,
-          180,
-          { units: "meters" }
-        );
-        const pt4 = turf.destination(
-          turf.point([102.04150296221326, 36.530313361869744]),
-          1000 * i,
-          270,
-          { units: "meters" }
-        );
-        pts.push(
-          pt1.geometry?.coordinates,
-          pt2.geometry?.coordinates,
-          pt3.geometry?.coordinates,
-          pt4.geometry?.coordinates
-        );
-        pointFeatures.push({
-          type: "Feature",
-          geometry: {
-            type: "MultiPoint",
-            coordinates: pts,
-          },
-          properties: {
-            units: i + "km",
-          },
-        });
-      }
-      let marker = new Marker({
-        draggable: false,
-        pitchAlignment: "map",
-        rotationAlignment: "map",
-      }).setLngLat([102.04150296221326, 36.530313361869744]);
-      marker.addTo(map);
-      marker.remove();
-      map.addLayer({
-        id: "等距环",
+        id: "最大射程",
         type: "line",
         source: {
           type: "geojson",
@@ -611,80 +441,392 @@ onMounted(() => {
           },
         },
         layout: {
-          visibility: props.equidistantRing ? "visible" : "none",
+          visibility: "visible",
         },
         paint: {
-          "line-color": "#000",
-          "line-width": 2,
-          "line-dasharray": [2, 2],
-        },
-      });
-      map.addLayer({
-        id: "等距环的单位",
-        type: "symbol",
-        source: {
-          type: "geojson",
-          data: {
-            type: "FeatureCollection",
-            features: pointFeatures,
-          },
-        },
-        layout: {
-          visibility: props.equidistantRing ? "visible" : "none",
-          "text-field": ["get", "units"],
-          "text-font": ["simkai"],
-          "text-size": 14,
-          "text-anchor": "bottom-left",
-          "text-allow-overlap": true,
-          "text-ignore-placement": true,
-          "text-rotation-alignment": "map",
-          "text-pitch-alignment": "map",
-        },
-        paint: {
-          "text-color": "white",
-          "text-halo-color": "black",
-          "text-halo-width": 1,
-        },
-      });
-      map.addLayer({
-        id: "绘制空域",
-        type: "line",
-        source: {
-          type: "geojson",
-          data: {
-            type: "Feature",
-            properties: {},
-            geometry: {
-              type: "LineString",
-              coordinates: [
-                [-122.48369693756104, 37.83381888486939],
-                [-122.48348236083984, 37.83317489144141],
-                [-122.48339653015138, 37.83270036637107],
-                [-122.48356819152832, 37.832056363179625],
-                [-122.48404026031496, 37.83114119107971],
-                [-122.48404026031496, 37.83049717427869],
-                [-122.48348236083984, 37.829920943955045],
-                [-122.48356819152832, 37.82954808664175],
-              ],
-            },
-          },
-        },
-        layout: {
-          "line-cap": "round",
-          "line-join": "round",
-        },
-        paint: {
-          "line-color": "#f00",
-          "line-width": {
-            base: 2,
-            stops: [
-              [4, 2], // 线宽为2像素
-              [22, 1000], // 线宽为10像素
-            ],
-          },
+          "line-color": "white",
+          "line-width": 1,
+          // "line-dasharray": [1, 1],
         },
       });
     });
+    // getDevice().then((res) => {
+    //   dialogOptions.menus = res.data;
+    //   let features: any = [];
+    //   dialogOptions.menus.map((item: any) => {
+    //     let v = item.lngLat;
+    //     let lng = v.substring(0, v.indexOf("E"));
+    //     let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
+    //     let pt = {
+    //       lng:
+    //         Number(lng.substring(0, 3)) +
+    //         Number(lng.substring(3, 5)) / 60 +
+    //         Number(lng.substring(5, 9)) / 100 / 3600,
+    //       lat:
+    //         Number(lat.substring(0, 2)) +
+    //         Number(lat.substring(2, 4)) / 60 +
+    //         Number(lat.substring(4, 8)) / 100 / 3600,
+    //     };
+    //     let position: [number, number] = (wgs84togcj02(pt.lng, pt.lat) as unknown) as [
+    //       number,
+    //       number
+    //     ];
+    //     features.push({
+    //       type: "Feature",
+    //       properties: {
+    //         type: "站点",
+    //         name: item.name,
+    //         color: item.color,
+    //       },
+    //       geometry: {
+    //         type: "Point",
+    //         coordinates: position,
+    //       },
+    //     });
+    //     // let offset = (getRandomPointBetweenR1R2(50, 100) as unknown) as [number, number];
+    //     // let div = document.createElement("div");
+    //     // div.id = "人影" + item.id;
+    //     // div.className = "deviceStation_人影";
+    //     // div.style.position = "absolute";
+    //     // $(div).data("id", item.id);
+    //     // let device = $(
+    //     //   `<div class="station" style="z-index:-1;left:50%;top:50%;transform:translate(-50%,-50%) translate(${-offset[0]}px,${-offset[1]}px)"><div class="projectile" style="filter: drop-shadow(${
+    //     //     item.color
+    //     //   } 0 -60px);transform:translateY(60px)"/></div>`
+    //     // );
+    //     // $(div).append(device);
+    //     // $(div).append(
+    //     //   $(
+    //     //     `<div class="connectingLine" style="pointer-events:none;background:white;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) translate(${
+    //     //       -offset[0] / 2
+    //     //     }px,${-offset[1] / 2}px) rotate(${Math.atan2(
+    //     //       offset[1],
+    //     //       offset[0]
+    //     //     )}rad);width:${Math.sqrt(offset[0] ** 2 + offset[1] ** 2)}px"></div>`
+    //     //   )
+    //     // );
+    //     // let label = $(`<div class="label">${item.name}</div>`);
+    //     // $(div).append(label);
+
+    //     // device.on("click", function click() {
+    //     //   station.人影界面被选中的设备 = $(this).parent().data("id");
+    //     //   $(`#人影-tr-${station.人影界面被选中的设备}`)[0].scrollIntoView({
+    //     //     block: "nearest",
+    //     //     behavior: "smooth",
+    //     //     inline: "center",
+    //     //   });
+    //     // });
+    //     // device.on("mousedown", (evt) => {
+    //     //   evt.preventDefault();
+    //     //   evt.stopPropagation();
+    //     // });
+    //     // var marker = new Marker(div, {
+    //     //   draggable: true,
+    //     //   pitchAlignment: "map",
+    //     //   rotationAlignment: "map",
+    //     //   anchor: "center",
+    //     // })
+    //     //   .setLngLat(position) // 设置标记的经纬度坐标
+    //     //   .addTo(map)
+    //     //   .setOffset(offset);
+    //     // let dragStartOffset: { x: number; y: number };
+    //     // marker.on("dragstart", () => {
+    //     //   dragStartOffset = marker.getOffset() as { x: number; y: number };
+    //     // });
+    //     // marker.on("drag", (e: any) => {
+    //     //   let dragEndPoint = marker.getLngLat();
+    //     //   let pt1 = map.project({ lng: position[0], lat: position[1] });
+    //     //   let pt2 = map.project(dragEndPoint);
+    //     //   let x = dragStartOffset.x + pt2.x - pt1.x;
+    //     //   let y = dragStartOffset.y + pt2.y - pt1.y;
+    //     //   marker.setOffset([x, y]);
+    //     //   let line = $("#人影" + item.id).find(".connectingLine")[0];
+    //     //   line.style.transform = `translate(-50%,-50%) translate(${-x / 2}px,${
+    //     //     -y / 2
+    //     //   }px) rotate(${Math.atan2(y, x)}rad)`;
+    //     //   line.style.width = `${Math.sqrt(x ** 2 + y ** 2)}px`;
+    //     //   let station = $("#人影" + item.id).find(".station")[0];
+    //     //   station.style.transform = `translate(-50%,-50%) translate(${-x}px,${-y}px)`;
+    //     //   marker.setLngLat(position);
+    //     // });
+    //     // marker.on("dragend", (e: any) => {
+    //     //   let dragEndPoint = e.target.getLngLat();
+    //     //   let pt1 = map.project({ lng: position[0], lat: position[1] });
+    //     //   let pt2 = map.project(dragEndPoint);
+    //     //   let offset = marker.getOffset() as { x: number; y: number };
+    //     //   let x = offset.x + pt2.x - pt1.x;
+    //     //   let y = offset.y + pt2.y - pt1.y;
+    //     //   marker.setOffset([x, y]);
+    //     //   let line = $("#人影" + item.id).find(".connectingLine")[0];
+    //     //   line.style.transform = `translate(-50%,-50%) translate(${-x / 2}px,${
+    //     //     -y / 2
+    //     //   }px) rotate(${Math.atan2(y, x)}rad)`;
+    //     //   line.style.width = `${Math.sqrt(x ** 2 + y ** 2)}px`;
+    //     //   let station = $("#人影" + item.id).find(".station")[0];
+    //     //   station.style.transform = `translate(-50%,-50%) translate(${-x}px,${-y}px)`;
+    //     //   marker.setLngLat(position);
+    //     // });
+    //   });
+    //   map.addLayer({
+    //     id: "zydLayer",
+    //     type: "symbol",
+    //     source: {
+    //       type: "geojson",
+    //       data: {
+    //         type: "FeatureCollection",
+    //         features: features,
+    //       },
+    //     },
+    //     layout: {
+    //       visibility: props.zyd ? "visible" : "none",
+    //       // This icon is a part of the Mapbox Streets style.
+    //       // To view all images available in a Mapbox style, open
+    //       // the style in Mapbox Studio and click the "Images" tab.
+    //       // To add a new image to the style at runtime see
+    //       // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+    //       "icon-anchor": "left",
+    //       "icon-image": "projectile",
+    //       "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
+    //       "icon-rotate": 0,
+    //       "icon-rotation-alignment": "map",
+    //       "icon-allow-overlap": true,
+    //       "icon-ignore-placement": true,
+    //       "text-field": ["get", "name"],
+    //       "text-font": ["simkai"],
+    //       "text-size": 16,
+    //       "text-transform": "uppercase",
+    //       // "text-letter-spacing": 0.05,
+    //       "text-anchor": "center",
+    //       "text-line-height": 1,
+    //       "text-justify": "center",
+    //       "text-offset": [0, -1],
+    //       "text-ignore-placement": true,
+    //       "text-allow-overlap": true,
+    //       "text-rotation-alignment": "map",
+    //       "text-max-width": 400,
+    //     },
+    //     paint: {
+    //       "icon-opacity": 1,
+    //       "text-color": "white",
+    //       "text-halo-color": "black",
+    //       "text-halo-width": 1,
+    //     },
+    //     filter: ["==", ["get", "type"], "站点"],
+    //   });
+
+    //   let feathers = [];
+    //   for (let j = 0; j < 30; j++) {
+    //     for (let i = 0; i < 20; i++) {
+    //       const pt = turf.destination(
+    //         turf.point([101.91223724839354, 36.548604620850995]),
+    //         45 + 1000 * i,
+    //         j * 10,
+    //         {
+    //           units: "meters",
+    //         }
+    //       );
+    //       let speed = Math.random() * 60;
+    //       feathers.push({
+    //         type: "Feature",
+    //         geometry: {
+    //           type: "Point",
+    //           coordinates: pt.geometry?.coordinates,
+    //         },
+    //         properties: {
+    //           type: "风羽",
+    //           风速: speed,
+    //           image: "feather" + getFeather(speed),
+    //           风向: 45,
+    //         },
+    //       });
+    //     }
+    //   }
+    //   map.addLayer({
+    //     id: "绘制风羽",
+    //     type: "symbol",
+    //     source: {
+    //       type: "geojson",
+    //       data: {
+    //         type: "FeatureCollection",
+    //         features: feathers,
+    //       },
+    //     },
+    //     layout: {
+    //       visibility: props.feather ? "visible" : "none",
+    //       // This icon is a part of the Mapbox Streets style.
+    //       // To view all images available in a Mapbox style, open
+    //       // the style in Mapbox Studio and click the "Images" tab.
+    //       // To add a new image to the style at runtime see
+    //       // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+    //       "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
+    //       "icon-image": ["get", "image"],
+    //       "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
+    //       "icon-rotate": ["get", "风向"],
+    //       "icon-rotation-alignment": "map",
+    //       "icon-allow-overlap": true,
+    //       "icon-ignore-placement": true,
+    //       // "text-field": ["get", "风速"],
+    //       // "text-font": ["simkai"],
+    //       // "text-size": 14,
+    //       // "text-transform": "uppercase",
+    //       // // "text-letter-spacing": 0.05,
+    //       // "text-anchor": "center",
+    //       // "text-line-height": 1,
+    //       // // "text-justify": "center",
+    //       // "text-offset": [0, 0],
+    //       // "text-ignore-placement": true,
+    //       // "text-allow-overlap": true,
+    //       // "text-rotation-alignment": "map",
+    //     },
+    //     paint: {
+    //       "icon-opacity": setting.feather ? 1 : 0,
+    //     },
+    //     filter: ["==", ["get", "type"], "风羽"],
+    //   });
+
+    //   let circleFeatures = [];
+    //   let pointFeatures = [];
+    //   for (let i = 1; i <= 10; i++) {
+    //     let circle = Circle([102.04150296221326, 36.530313361869744], i * 1000, {
+    //       steps: 64,
+    //       units: "meters",
+    //     });
+    //     circleFeatures.push(circle);
+
+    //     let pts: any = [];
+    //     const pt1 = turf.destination(
+    //       turf.point([102.04150296221326, 36.530313361869744]),
+    //       1000 * i,
+    //       0,
+    //       { units: "meters" }
+    //     );
+    //     const pt2 = turf.destination(
+    //       turf.point([102.04150296221326, 36.530313361869744]),
+    //       1000 * i,
+    //       90,
+    //       { units: "meters" }
+    //     );
+    //     const pt3 = turf.destination(
+    //       turf.point([102.04150296221326, 36.530313361869744]),
+    //       1000 * i,
+    //       180,
+    //       { units: "meters" }
+    //     );
+    //     const pt4 = turf.destination(
+    //       turf.point([102.04150296221326, 36.530313361869744]),
+    //       1000 * i,
+    //       270,
+    //       { units: "meters" }
+    //     );
+    //     pts.push(
+    //       pt1.geometry?.coordinates,
+    //       pt2.geometry?.coordinates,
+    //       pt3.geometry?.coordinates,
+    //       pt4.geometry?.coordinates
+    //     );
+    //     pointFeatures.push({
+    //       type: "Feature",
+    //       geometry: {
+    //         type: "MultiPoint",
+    //         coordinates: pts,
+    //       },
+    //       properties: {
+    //         units: i + "km",
+    //       },
+    //     });
+    //   }
+    //   let marker = new Marker({
+    //     draggable: false,
+    //     pitchAlignment: "map",
+    //     rotationAlignment: "map",
+    //   }).setLngLat([102.04150296221326, 36.530313361869744]);
+    //   marker.addTo(map);
+    //   marker.remove();
+    //   map.addLayer({
+    //     id: "等距环",
+    //     type: "line",
+    //     source: {
+    //       type: "geojson",
+    //       data: {
+    //         type: "FeatureCollection",
+    //         features: circleFeatures,
+    //       },
+    //     },
+    //     layout: {
+    //       visibility: props.equidistantRing ? "visible" : "none",
+    //     },
+    //     paint: {
+    //       "line-color": "#000",
+    //       "line-width": 2,
+    //       "line-dasharray": [2, 2],
+    //     },
+    //   });
+    //   map.addLayer({
+    //     id: "等距环的单位",
+    //     type: "symbol",
+    //     source: {
+    //       type: "geojson",
+    //       data: {
+    //         type: "FeatureCollection",
+    //         features: pointFeatures,
+    //       },
+    //     },
+    //     layout: {
+    //       visibility: props.equidistantRing ? "visible" : "none",
+    //       "text-field": ["get", "units"],
+    //       "text-font": ["simkai"],
+    //       "text-size": 14,
+    //       "text-anchor": "bottom-left",
+    //       "text-allow-overlap": true,
+    //       "text-ignore-placement": true,
+    //       "text-rotation-alignment": "map",
+    //       "text-pitch-alignment": "map",
+    //     },
+    //     paint: {
+    //       "text-color": "white",
+    //       "text-halo-color": "black",
+    //       "text-halo-width": 1,
+    //     },
+    //   });
+    //   map.addLayer({
+    //     id: "绘制空域",
+    //     type: "line",
+    //     source: {
+    //       type: "geojson",
+    //       data: {
+    //         type: "Feature",
+    //         properties: {},
+    //         geometry: {
+    //           type: "LineString",
+    //           coordinates: [
+    //             [-122.48369693756104, 37.83381888486939],
+    //             [-122.48348236083984, 37.83317489144141],
+    //             [-122.48339653015138, 37.83270036637107],
+    //             [-122.48356819152832, 37.832056363179625],
+    //             [-122.48404026031496, 37.83114119107971],
+    //             [-122.48404026031496, 37.83049717427869],
+    //             [-122.48348236083984, 37.829920943955045],
+    //             [-122.48356819152832, 37.82954808664175],
+    //           ],
+    //         },
+    //       },
+    //     },
+    //     layout: {
+    //       "line-cap": "round",
+    //       "line-join": "round",
+    //     },
+    //     paint: {
+    //       "line-color": "#f00",
+    //       "line-width": {
+    //         base: 2,
+    //         stops: [
+    //           [4, 2], // 线宽为2像素
+    //           [22, 1000], // 线宽为10像素
+    //         ],
+    //       },
+    //     },
+    //   });
+    // });
     let airplanes = [];
     for (let i = 0; i < 2000; i++) {
       airplanes.push({
@@ -1777,13 +1919,13 @@ onMounted(() => {
   map.on("pitch", pitchFunc);
   map.on("move", moveFunc);
   map.on("bearing", bearingFunc);
-  eventbus.on("组网-将站点移动到屏幕中心", flyTo);
+  eventbus.on("人影-将站点移动到屏幕中心", flyTo);
 });
 
 onBeforeUnmount(() => {
   clearInterval(timer);
   clearInterval(graphTimer);
-  eventbus.off("组网-将站点移动到屏幕中心", flyTo);
+  eventbus.off("人影-将站点移动到屏幕中心", flyTo);
   map.off("zoom", zoomFunc);
   map.off("move", moveFunc);
   map.off("pitch", pitchFunc);
@@ -1847,10 +1989,10 @@ watch(
 watch(
   () => props.zyd,
   (newVal) => {
-    if (newVal) {
-      map.setLayoutProperty("zydLayer", "visibility", "visible");
-    } else {
-      map.setLayoutProperty("zydLayer", "visibility", "none");
+    if (map.getLayer("zydLayer")) {
+      newVal
+        ? map.setLayoutProperty("zydLayer", "visibility", "visible")
+        : map.setLayoutProperty("zydLayer", "visibility", "none");
     }
   }
 );

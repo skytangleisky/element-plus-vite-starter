@@ -100,12 +100,14 @@ export default defineConfig({
     port:5173
   },
   server:{
-    host:true,
     https:{
       cert: fs.readFileSync('dev.tanglei.top.pem'),
       key: fs.readFileSync('dev.tanglei.top.key')
+      // cert: fs.readFileSync('tanglei.site.pem'),
+      // key: fs.readFileSync('tanglei.site.key')
     },
-    open:'https://dev.tanglei.top',
+    open:'https://dev.tanglei.site',
+    host:true,
     port:5173,
     strictPort:true,
     proxy:{
@@ -120,9 +122,11 @@ export default defineConfig({
         changeOrigin:true,//开启代理，允许跨域
       },
       '/backend':{
-        // target:'http://websocket.tanglei.top',//替换的服务端地址
+        // target:'https://websocket.tanglei.top',//替换的服务端地址
         target:'http://127.0.0.1:9988',//替换的服务端地址
-        changeOrigin:true,//开启代理，允许跨域
+        // target:'https://test.tanglei.site',//替换的服务端地址
+        secure:false,
+        changeOrigin:true,//允许跨域
         // rewrite:path=>path.replace(/^\/backend/,''), // 设置重写的路径
         ws:true,
       },

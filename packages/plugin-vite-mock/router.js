@@ -36,21 +36,7 @@ function parseQuery(queryString) {
   let arr = queryString.split("&");
   for(var i = 0; i < arr.length; i++) {
     let tmp = arr[i].split("=")
-    if(tmp[1]=='true'){
-      tmp[1] = true
-    }else if(tmp[1]=='false'){
-      tmp[1] = false
-    }else if(tmp[1]=='NaN'){
-      tmp[1] = NaN
-    }else if(tmp[1]=='-NaN'){
-      tmp[1] = -NaN
-    }else if(tmp[1]=='Infinity'){
-      tmp[1]=Infinity
-    }else if(tmp[1]=='-Infinity'){
-      tmp[1]=-Infinity
-    }else if(!isNaN(parseFloat(tmp[1])&&isFinite(tmp[1]))){
-      tmp[1] = Number(tmp[1]);
-    }else if(tmp[1]){
+    if(tmp[1]){
       tmp[1] = decodeURIComponent(tmp[1])
     }else{
       tmp[1] = undefined

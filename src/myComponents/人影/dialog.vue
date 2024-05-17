@@ -63,20 +63,20 @@
           </thead>
           <tbody style="position: relative">
             <tr
-              :id="'组网-tr-' + v.id"
+              :id="'人影-tr-' + v.strID"
               :class="`${
-                station.组网界面被选中的设备 == v.id ? 'bg-gray-5' : 'bg-transparent'
+                station.人影界面被选中的设备 == v.strID ? 'bg-gray-5' : 'bg-transparent'
               }`"
               v-for="(v, k) in options.list"
-              :key="v.name"
+              :key="v.strID"
               @contextmenu.prevent="contextmenu($event, v)"
               @click="flyTo($event, v)"
             >
               <td>{{ k + 1 }}</td>
-              <td>{{ v.name }}</td>
-              <td>{{ v.deviceType }}</td>
-              <td>{{ v.lngLat }}</td>
-              <td>{{ v.altitude }}</td>
+              <td>{{ v.strName }}</td>
+              <td>{{ v.strWeapon }}</td>
+              <td>{{ v.strPos }}</td>
+              <td>{{ v.iAltitude }}</td>
             </tr>
           </tbody>
         </table>
@@ -102,7 +102,7 @@
 import { reactive, onMounted, watch } from "vue";
 import { useStationStore } from "~/stores/station";
 import { eventbus } from "~/eventbus";
-const props = withDefaults(defineProps<{ menus: Array<any> }>(), {
+const props = withDefaults(defineProps<{ menus?: Array<any> }>(), {
   menus: () => [
     {
       id: 1,
@@ -140,7 +140,7 @@ const options = reactive({
 watch(
   [() => props.menus, () => options.value],
   ([result, value]) => {
-    options.list = result.filter((item) => item.name.indexOf(value) > -1);
+    options.list = result.filter((item) => item.strName.indexOf(value) > -1);
   },
   {
     immediate: true,
@@ -167,8 +167,8 @@ const click = (event: MouseEvent) => {
   $(".menuUl").trigger("blur");
 };
 const flyTo = (event: any, v: any) => {
-  station.组网界面被选中的设备 = v.id;
-  eventbus.emit("组网-将站点移动到屏幕中心", v);
+  station.人影界面被选中的设备 = v.strID;
+  eventbus.emit("人影-将站点移动到屏幕中心", v);
 };
 const toggleCollapse = () => {
   $(".dragDialog").toggleClass("collapse");
