@@ -368,9 +368,30 @@ export const useSettingStore = defineStore({
       },
       {
         path: '',
-        name: '99961e04-e574-0e1f-ae23-94f157b14a43',
+        name: '99961e04-e574-0e1f-1e23-94f157b14a41',
         redirect: '/ry/synthesis',
-        hide:true
+        hide:true,
+        meta:{
+          roles:['ry']
+        }
+      },
+      {
+        path: '',
+        name: '99961e04-e574-0e1f-2e23-94f157b14a42',
+        redirect: '/jx/synthesis',
+        hide:true,
+        meta:{
+          roles:['jx']
+        }
+      },
+      {
+        path: '',
+        name: '99961e04-e574-0e1f-3e23-94f157b14a43',
+        redirect: '/ry/synthesis',
+        hide:true,
+        meta:{
+          roles:['admin']
+        }
       },
       {
         path: ':catchAll(.*)*',

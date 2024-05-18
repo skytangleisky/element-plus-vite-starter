@@ -5,6 +5,9 @@ export default {
   name:'03fffeab-a3eb-6620-b5da-5ea30242ea16',
   label:'江西无人机',
   svg:'11960bb6f9c111eeb2f4b025aa2c9ada',
+  meta:{
+    roles:['admin','jx']
+  },
   children:[
     {
       path:'radar',

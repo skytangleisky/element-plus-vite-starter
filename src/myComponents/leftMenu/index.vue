@@ -21,30 +21,10 @@
         style="border-right: 0"
       >
         <SubMenu
-          v-for="route in setting.routes"
+          v-for="route in routes"
+          :absoluteRootPath="absoluteRootPath"
           :key="route.name"
           :item="route"
-        ></SubMenu>
-      </el-menu>
-      <el-menu
-        v-else
-        :background-color="isDark ? '#304156' : '#eee'"
-        :text-color="isDark ? '#bfcbd9' : '#000'"
-        :active-text-color="isDark ? '#409eff' : '#ffd04b'"
-        :collapse="isCollapse"
-        class="el-menu-vertical-demo"
-        :default-openeds="user.defaultOpends"
-        :default-active="user.defaultActive"
-        @open="open"
-        @close="close"
-        @select="select"
-        style="border-right: 0"
-      >
-        <SubMenu
-          v-for="route in setting.routes[0].children"
-          :key="route.name"
-          :item="route"
-          absoluteRootPath="/ry"
         ></SubMenu>
       </el-menu>
     </el-scrollbar>
@@ -61,7 +41,7 @@
 </template>
 <script lang="ts" setup>
 import { isDark } from "~/composables";
-import { ref, onMounted, watch, nextTick } from "vue";
+import { ref, onMounted, watch, nextTick, computed } from "vue";
 import { useIconStore } from "~/stores/icon";
 const icon = useIconStore();
 const modules = import.meta.glob("~/**/*.vue");
@@ -72,6 +52,23 @@ const setting = useSettingStore();
 import { useUserStore } from "~/stores/user";
 const user = useUserStore();
 let router = useRouter();
+const absoluteRootPath = ref("");
+import { intersection } from "~/tools";
+const routes = computed(() => {
+  let arr = new Array<any>();
+  setting.routes.map((item) => {
+    if (!item.meta || !item.meta.roles || intersection(user.roles, item.meta.roles)) {
+      arr.push(item);
+    }
+  });
+  if (arr.length == 1) {
+    absoluteRootPath.value = "/" + arr[0].path;
+    return arr[0].children;
+  } else {
+    absoluteRootPath.value = "";
+    return arr;
+  }
+});
 import SubMenu from "./SubMenu.vue";
 import { array2components } from "~/tools";
 let DEV = import.meta.env.DEV;
@@ -96,7 +93,7 @@ const change = (v: any) => {
   router.getRoutes().forEach((v) => {
     v.name && router.removeRoute(v.name);
   });
-  (array2components(setting.routes) as Array<any>).map((v: any) => {
+  array2components(setting.routes, user.roles).map((v: any) => {
     router.addRoute(v);
   });
   nextTick(() => {
@@ -109,15 +106,13 @@ watch(
     router.getRoutes().forEach((v) => {
       v.name && router.removeRoute(v.name);
     });
-    (array2components(routes) as Array<any>).map((v: any) => {
+    array2components(routes, user.roles).map((v: any) => {
       router.addRoute(v);
     });
-    try {
+    nextTick(() => {
       router.replace(router.currentRoute.value.fullPath);
       // router.replace({ ...router.currentRoute.value, force: true });
-    } catch (error) {
-      console.log(error);
-    }
+    });
   },
   {
     deep: true,

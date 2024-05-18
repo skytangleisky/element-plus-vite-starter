@@ -28,44 +28,83 @@ export const pointInPolygon = (point: [number, number], polygon: Array<[number, 
   return inside;
 }
 
-/**
- * This is just a simple version of deep copy
- * Has a lot of edge cases bug
- * If you want to use a perfect deep copy, use lodash's _.cloneDeep
- * @param {Object} source
- * @returns {Object}
- */
-export function deepClone(source) {
-  if (!source && typeof source !== 'object') {
-    throw new Error('error arguments')
+function deepClone<T>(obj: T): T {
+  // Check for null or undefined values
+  if (obj === null || obj === undefined) {
+    return obj;
   }
-  const targetObj = source.constructor === Array ? [] : {}
-  Object.keys(source).forEach(keys => {
-    if (source[keys] && typeof source[keys] === 'object') {
-      targetObj[keys] = deepClone(source[keys])
-    } else {
-      targetObj[keys] = source[keys]
+
+  // Handle Date objects
+  if (obj instanceof Date) {
+    return new Date(obj.getTime()) as any;
+  }
+
+  // Handle Array objects
+  if (Array.isArray(obj)) {
+    const arrCopy = [] as any[];
+    for (const item of obj) {
+      arrCopy.push(deepClone(item));
     }
-  })
-  return targetObj
+    return arrCopy as any;
+  }
+
+  // Handle Object literals
+  if (typeof obj === 'object') {
+    const objCopy = {} as { [key: string]: any };
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        objCopy[key] = deepClone((obj as { [key: string]: any })[key]);
+      }
+    }
+    return objCopy as T;
+  }
+
+  // Return the value if obj is not an object or array
+  return obj;
 }
-export const array2components = array => {
+export function intersection<T>(arr1: T[], arr2: T[]): boolean {
+  const set1 = new Set(arr1);
+  return arr2.some(item => set1.has(item));
+}
+export const array2components = (array:Array<{[key:string]:any}>, roles:Array<string>) => {
   const arr = deepClone(array)
   arr.map((v,k)=>{
-    v.path='/'+v.path
+    v.path='/' + v.path
     v.identify = uuid()
   })
-  const fn = l => {
-    l.map(v => {
-      if(v.children instanceof Array){
-        fn(v.children)
+  const fn = (list:Array<any>) => {
+    for(let i=0;i<list.length;i++){
+      let v = list[i]
+      if(!v.meta || !v.meta.roles || intersection(roles,v.meta.roles)){
+        if(v.children instanceof Array){
+          fn(v.children)
+        }
+        v.component = modules[v.component]
+      }else{
+        list.splice(i--,1)
       }
-      v.component = modules[v.component]
-    })
+    }
   }
   fn(arr)
   return arr
 }
+// export const array2components = (array:Array<{[key:string]:any}>, roles:Array<string>) => {
+//   const arr = deepClone(array)
+//   arr.map((v,k)=>{
+//     v.path='/' + v.path
+//     v.identify = uuid()
+//   })
+//   const fn = (list:Array<any>) => {
+//     for(let i=0;i<list.length;i++){
+//       if(list[i].children instanceof Array){
+//         fn(list[i].children)
+//       }
+//       list[i].component = modules[list[i].component]
+//     }
+//   }
+//   fn(arr)
+//   return arr
+// }
 Date.prototype.Format = function(format:any){
   let that = this;
   if(format==undefined) format = "yyyy-MM-dd HH:mm:ss";

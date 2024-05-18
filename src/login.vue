@@ -71,11 +71,12 @@
 </template>
 <script lang="ts" setup name="loginPage">
 import sliderCheck from "./sliderCheck.vue";
-import { reactive, ref, h } from "vue";
+import { reactive, ref, h, watch } from "vue";
 import type { FormInstance } from "element-plus";
 import { User, Lock, Hide, View } from "@element-plus/icons-vue";
 import { useUserStore } from "~/stores/user";
 import { useSettingStore } from "./stores/setting";
+import { array2components } from "./tools";
 const setting = useSettingStore();
 const user = useUserStore();
 import { ElMessage } from "element-plus";
@@ -103,21 +104,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
         .Login(numberValidateForm)
         .then((res: any) => {
           loading.value = false;
-          if (user.roles.includes("admin")) {
-            router.push({ path: "/", replace: true });
-          } else {
-            if (user.roles.includes("ry")) {
-              for (let i = 0; i < setting.routes.length; i++) {
-                let item: any = setting.routes[i];
-                if (item.children) {
-                  if (item.path !== "ry") {
-                    setting.routes.splice(i--, 1);
-                  }
-                }
-              }
-            }
-            router.push({ path: "/", replace: true });
-          }
+          router.push({ path: "/", replace: true });
           exclude.push("loginPage"); //标志此页面再次进入，不要复用已经缓存的页面，而是重新渲染
         })
         .catch((e) => {
@@ -156,6 +143,26 @@ const resetForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.resetFields();
 };
+watch(
+  () => user.roles,
+  (roles) => {
+    router.getRoutes().forEach((v) => {
+      v.name && router.removeRoute(v.name);
+    });
+    (array2components(setting.routes, roles) as Array<any>).map((v: any) => {
+      router.addRoute(v);
+    });
+    try {
+      router.replace(router.currentRoute.value.fullPath);
+      // router.replace({ ...router.currentRoute.value, force: true });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  {
+    deep: true,
+  }
+);
 </script>
 <style lang="scss">
 .login_dialog {
