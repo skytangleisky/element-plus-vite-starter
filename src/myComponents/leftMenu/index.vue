@@ -7,7 +7,6 @@
       }`"
     >
       <el-menu
-        v-if="user.roles.includes('admin')"
         :background-color="isDark ? '#304156' : '#eee'"
         :text-color="isDark ? '#bfcbd9' : '#000'"
         :active-text-color="isDark ? '#409eff' : '#ffd04b'"
@@ -56,9 +55,11 @@ const absoluteRootPath = ref("");
 import { intersection } from "~/tools";
 const routes = computed(() => {
   let arr = new Array<any>();
-  setting.routes.map((item) => {
-    if (!item.meta || !item.meta.roles || intersection(user.roles, item.meta.roles)) {
-      arr.push(item);
+  setting.routes.map((item: any) => {
+    if (item.children) {
+      if (!item.meta || !item.meta.roles || intersection(user.roles, item.meta.roles)) {
+        arr.push(item);
+      }
     }
   });
   if (arr.length == 1) {
