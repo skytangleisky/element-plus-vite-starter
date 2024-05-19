@@ -18,22 +18,6 @@ export default {
       svg:'45a839fb02a411efb1e8b025aa2c9ada',
     },
     {
-      path:'map',
-      name:'a7ef7b88-5e6b-0c62-129b-00a18980cdce',
-      component:'/src/myComponents/menu/index.vue',
-      label:'作业申请',
-      hide:false,
-      svg:'8226ee256c6711ee8c80b025aa2c9ada',
-    },
-    {
-      path:'edit',
-      name:'12254d40-71a3-8406-b0d8-cc9eb3aed11c',
-      component:'/src/myComponents/leftMenu/edit.vue',
-      label:'菜单',
-      hide:true,
-      svg:'887ba0af3b3511ee8077b025aa2c9ada',
-    },
-    {
       path: 'history',
       name: '961a22a1-f5da-9845-fc89-3519ed950610',
       // component:'/src/myComponents/openlayers/radarStatistic.vue'

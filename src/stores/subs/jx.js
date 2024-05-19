@@ -27,22 +27,6 @@ export default {
       svg:'4441a5b002a511efb1e8b025aa2c9ada',
     },
     {
-      path:'map',
-      name:'f5318f87-54bf-1f97-a2ce-ca432333e1b1',
-      component:'/src/myComponents/menu/index.vue',
-      label:'地图',
-      hide:false,
-      svg:'8226ee256c6711ee8c80b025aa2c9ada',
-    },
-    {
-      path:'edit',
-      name:'5cf4f06a-ff71-c646-40a4-1d4ea4159cdf',
-      component:'/src/myComponents/leftMenu/edit.vue',
-      label:'菜单',
-      hide:true,
-      svg:'887ba0af3b3511ee8077b025aa2c9ada',
-    },
-    {
       path: 'openlayers',
       name: 'fd505761-b842-b847-7592-3e9f2d416976',
       // component:'/src/myComponents/openlayers/radarStatistic.vue'

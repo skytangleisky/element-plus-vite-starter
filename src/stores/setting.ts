@@ -277,6 +277,28 @@ export const useSettingStore = defineStore({
       ry,
       jx,
       {
+        path:'edit',
+        name:'12254d40-71a3-8406-b0d8-cc9eb3aed11c',
+        component:'/src/myComponents/leftMenu/edit.vue',
+        label:'菜单',
+        svg:'887ba0af3b3511ee8077b025aa2c9ada',
+        replace:false,
+        meta:{
+          roles:["admin"],
+        }
+      },
+      {
+        path:'map',
+        name:'a7ef7b88-5e6b-0c62-129b-00a18980cdce',
+        component:'/src/myComponents/menu/index.vue',
+        label:'地图',
+        replace:false,
+        svg:'8226ee256c6711ee8c80b025aa2c9ada',
+        meta:{
+          roles:["admin"],
+        }
+      },
+      {
         path: 'qqlogin',
         name: '3c1f8a79-4fe6-2263-08fb-477f961fc946',
         component: '/src/qqlogin.vue', //最好是异步加载

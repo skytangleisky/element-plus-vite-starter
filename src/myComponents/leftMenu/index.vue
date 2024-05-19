@@ -56,10 +56,8 @@ import { intersection } from "~/tools";
 const routes = computed(() => {
   let arr = new Array<any>();
   setting.routes.map((item: any) => {
-    if (item.children) {
-      if (!item.meta || !item.meta.roles || intersection(user.roles, item.meta.roles)) {
-        arr.push(item);
-      }
+    if (!item.meta || !item.meta.roles || intersection(user.roles, item.meta.roles)) {
+      arr.push(item);
     }
   });
   if (arr.length == 1) {
@@ -98,7 +96,9 @@ const change = (v: any) => {
     router.addRoute(v);
   });
   nextTick(() => {
-    router.push({ path: "/ry/map", replace: true });
+    router.push({ path: "/map", replace: false }).catch((error) => {
+      console.log(error);
+    });
   });
 };
 watch(
@@ -110,10 +110,8 @@ watch(
     array2components(routes, user.roles).map((v: any) => {
       router.addRoute(v);
     });
-    nextTick(() => {
-      router.replace(router.currentRoute.value.fullPath);
-      // router.replace({ ...router.currentRoute.value, force: true });
-    });
+    router.replace(router.currentRoute.value.fullPath);
+    // router.replace({ ...router.currentRoute.value, force: true });
   },
   {
     deep: true,
