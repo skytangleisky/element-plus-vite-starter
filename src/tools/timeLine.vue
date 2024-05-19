@@ -58,7 +58,7 @@
     />
     <span @click="speed">x{{ Math.pow(2, options.times) }}</span>
     <graph
-      v-if="DEV"
+      v-permission="['admin']"
       :args="graphArgs"
       style="position: absolute; right: 30px; bottom: 100%"
     ></graph>
@@ -74,7 +74,6 @@ import graph from "./graph.vue";
 import { onMounted, onBeforeUnmount, ref, reactive, watch } from "vue";
 import { isDark } from "~/composables";
 const emit = defineEmits(["update:now", "update:status", "update:level"]);
-const DEV = ref(import.meta.env.DEV);
 const props = withDefaults(
   defineProps<{
     data?: Array<{ time: number; position: "left" | "right" | "middle" }>;

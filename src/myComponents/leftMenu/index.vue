@@ -28,7 +28,7 @@
       </el-menu>
     </el-scrollbar>
     <el-select
-      v-if="DEV"
+      v-permission="['admin']"
       v-model="setting.component"
       filterable
       style="width: 100%"
@@ -72,7 +72,6 @@ const routes = computed(() => {
 });
 import SubMenu from "./SubMenu.vue";
 import { array2components } from "~/tools";
-let DEV = import.meta.env.DEV;
 onMounted(() => {
   icon.FetchList();
 });

@@ -99,7 +99,7 @@ function connect() {
   };
 }
 onMounted(() => {
-  // connect();
+  connect();
 });
 onBeforeUnmount(() => {
   sleeper.abort();

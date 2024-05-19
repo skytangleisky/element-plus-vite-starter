@@ -35,7 +35,7 @@
       ></el-option>
     </el-select>
     <graph
-      v-if="DEV"
+      v-permission="['admin']"
       class="absolute left-0 bottom-50px"
       v-model:args="graphArgs"
     ></graph>
@@ -44,7 +44,6 @@
 <script setup lang="ts">
 import CustomLayer from "./webglLayer/CustomLayer.js";
 import graph from "~/tools/graph.vue";
-const DEV = import.meta.env.DEV;
 const graphArgs = reactive({
   fps: { value: 0, min: 0, max: 144, strokeStyle: "#ffffff88" },
   // memory: { value: 0, min: 0, max: 120, strokeStyle: "#0f0" },

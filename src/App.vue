@@ -6,7 +6,7 @@
       </keep-alive>
     </router-view>
   </el-config-provider>
-  <websocket></websocket>
+  <websocket v-permission="['admin']"></websocket>
 </template>
 <script lang="ts" setup>
 import websocket from "~/myComponents/websocket/index.vue";

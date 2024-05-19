@@ -107,7 +107,7 @@
       class="absolute bottom-0"
     ></time-line>
     <graph
-      v-if="DEV"
+      v-permission="['admin']"
       class="absolute left-0 bottom-30px"
       v-model:args="graphArgs"
     ></graph>
@@ -121,7 +121,6 @@ import { useBus } from "~/myComponents/bus";
 import Dialog from "../dialog.vue";
 import { eventbus } from "~/eventbus";
 const bus = useBus();
-const DEV = import.meta.env.DEV;
 const graphArgs = reactive({
   fps: { value: 0, min: 0, max: 144, strokeStyle: "#ffffff88" },
   // memory: { value: 0, min: 0, max: 120, strokeStyle: "#0f0" },
