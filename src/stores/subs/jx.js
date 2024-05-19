@@ -1,7 +1,7 @@
 export default {
   path: 'jx',
   component: '/src/container.vue',
-  // redirect: { path: '/jx/synthesis' },
+  redirect: { path: '/jx/synthesis' },
   name:'03fffeab-a3eb-6620-b5da-5ea30242ea16',
   label:'江西无人机',
   svg:'11960bb6f9c111eeb2f4b025aa2c9ada',

@@ -1,7 +1,7 @@
 export default {
   path: 'ry',
   component: '/src/container.vue',
-  // redirect: { path: '/ry/synthesis' },
+  redirect: { path: '/ry/synthesis' },
   name:'65e99b66-e340-4d4b-6b26-629f41dc63d9',
   label:'北京人影',
   svg:'cf769a7bf9c011eeb2f4b025aa2c9ada',
@@ -16,24 +16,6 @@ export default {
       label:'人影',
       hide:false,
       svg:'45a839fb02a411efb1e8b025aa2c9ada',
-    },
-    {
-      path: 'history',
-      name: '961a22a1-f5da-9845-fc89-3519ed950610',
-      // component:'/src/myComponents/openlayers/radarStatistic.vue'
-      // component:'/src/myComponents/menu/index.vue'
-      component:'/src/myComponents/无人机/pages/playback.vue',
-      label:'历史回放',
-      svg:'42a4578ed6cd11ee9aafb025aa2c9ada',
-    },
-    {
-      path: 'statistic',
-      name: '961a22a1-f5da-9845-fc89-3519ed950710',
-      // component:'/src/myComponents/openlayers/radarStatistic.vue'
-      // component:'/src/myComponents/menu/index.vue'
-      component: '/src/myComponents/datatable/index.vue',
-      label:'数据统计',
-      svg:'a2a749dfd6ca11ee9aafb025aa2c9ada',
     },
     {
       path: 'system',
