@@ -38,8 +38,7 @@
       v-permission="['admin']"
       class="absolute left-0 bottom-50px"
       v-model:args="graphArgs"
-    >
-    </graph>
+    ></graph>
     <dialog-prev-request v-model:show="prevRequestShow"></dialog-prev-request>
   </div>
 </template>
@@ -47,10 +46,6 @@
 import CustomLayer from "./webglLayer/CustomLayer.js";
 import graph from "~/tools/graph.vue";
 import DialogPrevRequest from "../dialog_prev_request.vue";
-const graphArgs = reactive({
-  fps: { value: 0, min: 0, max: 144, strokeStyle: "#ffffff88" },
-  // memory: { value: 0, min: 0, max: 120, strokeStyle: "#0f0" },
-});
 import { area, pointInPolygon } from "~/tools/index.ts";
 import { rgb2Hsl } from "~/myComponents/map/js/core";
 import palette from "../mapbox/data/温度/tempreture.xml?raw";
@@ -87,6 +82,10 @@ import * as turf from "@turf/turf";
 import Circle from "@turf/circle";
 import { wgs84togcj02 } from "~/myComponents/map/workers/mapUtil";
 import { watch, ref, onMounted, onBeforeUnmount, reactive } from "vue";
+let graphArgs = reactive({
+  fps: { value: 0, min: 0, max: 144, strokeStyle: "#ffffff88" },
+  // memory: { value: 0, min: 0, max: 120, strokeStyle: "#0f0" },
+});
 const prevRequestShow = ref(false);
 import Dialog from "./dialog.vue";
 const dialogOptions = reactive({ menus: [] });
@@ -274,7 +273,7 @@ onMounted(() => {
     // dragPitch: false,
     // bounds: turf.bbox(boundaries),
     // localIdeographFontFamily: "Microsoft YoHei",
-    localIdeographFontFamily: "",
+    localIdeographFontFamily: "Menlo,Consolas,Monaco",
     antialias: true,
     renderWorldCopies: true,
     // maxZoom: 17,
@@ -909,7 +908,7 @@ onMounted(() => {
     //   });
     // });
     let airplanes = [];
-    for (let i = 0; i < 2000; i++) {
+    for (let i = 0; i < 20; i++) {
       airplanes.push({
         type: "Feature",
         properties: {
@@ -995,22 +994,22 @@ onMounted(() => {
     //   },
     // });
 
-    timer = setInterval(() => {
-      let source = map.getSource("飞机原数据");
-      if (source) {
-        let data = source.serialize().data;
-        data.features.map((item: any) => {
-          let coordinates = item.geometry.coordinates;
-          let deg = item.properties.deg;
-          let speed = item.properties.speed;
-          const pt = turf.destination(turf.point(coordinates), speed, deg, {
-            units: "meters",
-          });
-          item.geometry.coordinates = pt.geometry?.coordinates;
-        });
-        source.setData(data);
-      }
-    }, 1000);
+    // timer = setInterval(() => {
+    //   let source = map.getSource("飞机原数据");
+    //   if (source) {
+    //     let data = source.serialize().data;
+    //     data.features.map((item: any) => {
+    //       let coordinates = item.geometry.coordinates;
+    //       let deg = item.properties.deg;
+    //       let speed = item.properties.speed;
+    //       const pt = turf.destination(turf.point(coordinates), speed, deg, {
+    //         units: "meters",
+    //       });
+    //       item.geometry.coordinates = pt.geometry?.coordinates;
+    //     });
+    //     source.setData(data);
+    //   }
+    // }, 1000);
 
     // getMicapsData(plotUrl).then(async(result: any) => {
     //   let pts = new Array<{lng:number;lat:number;value:number}>;

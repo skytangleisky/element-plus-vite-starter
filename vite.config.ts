@@ -10,6 +10,7 @@ import vueSetupExtend from 'unplugin-vue-setup-extend-plus/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Unocss from 'unocss/vite'
 import wasm from 'vite-plugin-wasm';
+import compression from 'vite-plugin-compression';
 
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import {
@@ -47,6 +48,14 @@ export default defineConfig({
   plugins: [
     wasm(),
     vue(),
+    compression({
+      verbose: true,
+      disable: true,
+      threshold: 0, // 压缩阈值，小于这个值的文件将不会被压缩（单位为字节）
+      algorithm: 'gzip', // 压缩算法
+      ext: '.gz', // 压缩文件后缀名
+      deleteOriginFile:false
+    }),
     createHtmlPlugin({
       minify:true,
       entry: '/src/main.ts',
