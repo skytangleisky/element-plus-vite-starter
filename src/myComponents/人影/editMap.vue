@@ -38,12 +38,15 @@
       v-permission="['admin']"
       class="absolute left-0 bottom-50px"
       v-model:args="graphArgs"
-    ></graph>
+    >
+    </graph>
+    <dialog-prev-request v-model:show="prevRequestShow"></dialog-prev-request>
   </div>
 </template>
 <script setup lang="ts">
 import CustomLayer from "./webglLayer/CustomLayer.js";
 import graph from "~/tools/graph.vue";
+import DialogPrevRequest from "../dialog_prev_request.vue";
 const graphArgs = reactive({
   fps: { value: 0, min: 0, max: 144, strokeStyle: "#ffffff88" },
   // memory: { value: 0, min: 0, max: 120, strokeStyle: "#0f0" },
@@ -84,6 +87,7 @@ import * as turf from "@turf/turf";
 import Circle from "@turf/circle";
 import { wgs84togcj02 } from "~/myComponents/map/workers/mapUtil";
 import { watch, ref, onMounted, onBeforeUnmount, reactive } from "vue";
+const prevRequestShow = ref(false);
 import Dialog from "./dialog.vue";
 const dialogOptions = reactive({ menus: [] });
 const color = ref("red");
@@ -222,6 +226,7 @@ const moveFunc = () => {
 };
 const flyTo = (item: any) => {
   try {
+    active();
     let v = item.strPos;
     let lng = v.substring(0, v.indexOf("E"));
     let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
@@ -254,6 +259,7 @@ const flyTo = (item: any) => {
 const resize = () => {
   map && map.resize();
 };
+let active = () => {};
 onMounted(() => {
   map = new Map({
     container: (mapRef.value as unknown) as HTMLCanvasElement,
@@ -261,7 +267,7 @@ onMounted(() => {
     // style: raster,
     performanceMetricsCollection: false,
     style,
-    fadeDuration: 0,
+    // fadeDuration: 0,
     // dragRotate: false,
     // touchRotate: false,
     // touchPitch: false,
@@ -363,9 +369,10 @@ onMounted(() => {
             features.push({
               type: "Feature",
               properties: {
+                id: item.strID,
                 type: "站点",
                 name: item.strName,
-                color: "red",
+                "icon-image": "projectile-white",
               },
               geometry: {
                 type: "Point",
@@ -373,25 +380,30 @@ onMounted(() => {
               },
             });
             if (item.iMaxShotRange) {
-              let circle = Circle([pt.lng, pt.lat], item.iMaxShotRange, {
+              let circle: any = Circle([pt.lng, pt.lat], item.iMaxShotRange, {
                 steps: 64,
                 units: "meters",
+                properties: {
+                  id: item.strID,
+                  color: "white",
+                },
               });
               circleFeatures.push(circle);
             }
           }
         }
       );
+      map.addSource("zydSource", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: features,
+        },
+      });
       map.addLayer({
         id: "zydLayer",
         type: "symbol",
-        source: {
-          type: "geojson",
-          data: {
-            type: "FeatureCollection",
-            features: features,
-          },
-        },
+        source: "zydSource",
         layout: {
           visibility: props.zyd ? "visible" : "none",
           // This icon is a part of the Mapbox Streets style.
@@ -400,7 +412,7 @@ onMounted(() => {
           // To add a new image to the style at runtime see
           // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
           "icon-anchor": "center",
-          "icon-image": "projectile",
+          "icon-image": ["get", "icon-image"],
           "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
           "icon-rotate": 0,
           // "icon-offset": [10, 0],
@@ -429,25 +441,95 @@ onMounted(() => {
         },
         filter: ["==", ["get", "type"], "站点"],
       });
+      map.addSource("最大射程source", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: circleFeatures,
+        },
+      });
       map.addLayer({
         id: "最大射程",
         type: "line",
-        source: {
-          type: "geojson",
-          data: {
-            type: "FeatureCollection",
-            features: circleFeatures,
-          },
-        },
+        source: "最大射程source",
         layout: {
-          visibility: "visible",
+          visibility: props.zyd ? "visible" : "none",
         },
         paint: {
-          "line-color": "white",
+          "line-color": ["get", "color"],
           "line-width": 1,
           // "line-dasharray": [1, 1],
         },
       });
+      map.on("contextmenu", "zydLayer", (e: any) => {
+        e.preventDefault();
+        const fs = map.queryRenderedFeatures(e.point, {
+          layers: ["zydLayer"],
+        });
+
+        if (!fs.length) {
+          return;
+        }
+
+        const feature = fs[0];
+
+        prevRequestShow.value = true;
+      });
+      map.on("click", "zydLayer", (e: any) => {
+        const fs = map.queryRenderedFeatures(e.point, {
+          layers: ["zydLayer"],
+        });
+
+        if (!fs.length) {
+          return;
+        }
+
+        const feature = fs[0];
+
+        // Display the popup
+        // new mapboxgl.Popup()
+        //   .setLngLat(feature.geometry.coordinates)
+        //   .setHTML(
+        //     `<h3>${feature.properties.title}</h3><p>${feature.properties.description}</p>`
+        //   )
+        //   .addTo(map);
+        station.人影界面被选中的设备 = feature.properties.id;
+        $(`#人影-${station.人影界面被选中的设备}`)[0].scrollIntoView({
+          block: "nearest",
+          behavior: "smooth",
+          inline: "center",
+        });
+        active();
+      });
+      active = () => {
+        features = features.map((item: any) => {
+          if (item.properties.id == station.人影界面被选中的设备) {
+            item.properties["icon-image"] = "projectile-red";
+          } else {
+            item.properties["icon-image"] = "projectile-white";
+          }
+          return item;
+        });
+        let source = map.getSource("zydSource");
+        source.setData({
+          type: "FeatureCollection",
+          features: features,
+        });
+
+        circleFeatures = circleFeatures.map((item: any) => {
+          if (item.properties.id == station.人影界面被选中的设备) {
+            item.properties.color = "red";
+          } else {
+            item.properties.color = "white";
+          }
+          return item;
+        });
+        source = map.getSource("最大射程source");
+        source.setData({
+          type: "FeatureCollection",
+          features: circleFeatures,
+        });
+      };
     });
     // getDevice().then((res) => {
     //   dialogOptions.menus = res.data;
@@ -509,7 +591,7 @@ onMounted(() => {
 
     //     // device.on("click", function click() {
     //     //   station.人影界面被选中的设备 = $(this).parent().data("id");
-    //     //   $(`#人影-tr-${station.人影界面被选中的设备}`)[0].scrollIntoView({
+    //     //   $(`#人影-${station.人影界面被选中的设备}`)[0].scrollIntoView({
     //     //     block: "nearest",
     //     //     behavior: "smooth",
     //     //     inline: "center",
@@ -913,22 +995,22 @@ onMounted(() => {
     //   },
     // });
 
-    // timer = setInterval(() => {
-    //   let source = map.getSource("飞机原数据");
-    //   if (source) {
-    //     let data = source.serialize().data;
-    //     data.features.map((item: any) => {
-    //       let coordinates = item.geometry.coordinates;
-    //       let deg = item.properties.deg;
-    //       let speed = item.properties.speed;
-    //       const pt = turf.destination(turf.point(coordinates), speed, deg, {
-    //         units: "meters",
-    //       });
-    //       item.geometry.coordinates = pt.geometry?.coordinates;
-    //     });
-    //     source.setData(data);
-    //   }
-    // }, 4000);
+    timer = setInterval(() => {
+      let source = map.getSource("飞机原数据");
+      if (source) {
+        let data = source.serialize().data;
+        data.features.map((item: any) => {
+          let coordinates = item.geometry.coordinates;
+          let deg = item.properties.deg;
+          let speed = item.properties.speed;
+          const pt = turf.destination(turf.point(coordinates), speed, deg, {
+            units: "meters",
+          });
+          item.geometry.coordinates = pt.geometry?.coordinates;
+        });
+        source.setData(data);
+      }
+    }, 1000);
 
     // getMicapsData(plotUrl).then(async(result: any) => {
     //   let pts = new Array<{lng:number;lat:number;value:number}>;
@@ -1992,6 +2074,11 @@ watch(
       newVal
         ? map.setLayoutProperty("zydLayer", "visibility", "visible")
         : map.setLayoutProperty("zydLayer", "visibility", "none");
+    }
+    if (map.getLayer("最大射程")) {
+      newVal
+        ? map.setLayoutProperty("最大射程", "visibility", "visible")
+        : map.setLayoutProperty("最大射程", "visibility", "none");
     }
   }
 );

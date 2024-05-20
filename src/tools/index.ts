@@ -504,7 +504,14 @@ export const addFeatherImages = async( map:any ) => {
       map.addImage(k, result[k]);
     }
     result = await loadImage(projectileUrl,16,32,{
-      projectile:{
+      'projectile-white':{
+        x1: 0,
+        y1: 0,
+        x2: 1,
+        y2: 1,
+        fill: 'white',
+      },
+      'projectile-red':{
         x1: 0,
         y1: 0,
         x2: 1,

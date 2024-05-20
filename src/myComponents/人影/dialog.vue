@@ -64,7 +64,7 @@
           </thead>
           <tbody style="position: relative">
             <tr
-              :id="'人影-tr-' + v.strID"
+              :id="'人影-' + v.strID"
               :class="`${
                 station.人影界面被选中的设备 == v.strID ? 'bg-gray-5' : 'bg-transparent'
               }`"
