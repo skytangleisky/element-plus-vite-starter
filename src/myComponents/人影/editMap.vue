@@ -90,7 +90,7 @@ let graphArgs = reactive({
   // memory: { value: 0, min: 0, max: 120, strokeStyle: "#0f0" },
 });
 const prevRequestShow = ref(false);
-const prevRequestData = reactive({
+let prevRequestData = reactive({
   id: "",
   strPos: "",
 });

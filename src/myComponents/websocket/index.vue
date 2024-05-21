@@ -9,6 +9,8 @@
 import { onMounted, onBeforeUnmount, ref, reactive } from "vue";
 import { useBus } from "../bus";
 import Sleeper from "../zrender/sleeper";
+import { useUserStore } from "~/stores/user";
+const user = useUserStore();
 let sleeper = new Sleeper();
 let bus = useBus();
 const infos = reactive({
@@ -100,14 +102,20 @@ function connect() {
   };
 }
 onMounted(() => {
-  connect();
+  window.addEventListener("beforeunload", dispose);
+  if (user.roles.includes("admin")) {
+    connect();
+  }
 });
-onBeforeUnmount(() => {
+function dispose() {
   sleeper.abort();
   if (ws) {
     ws.dead = true;
     ws.close();
   }
+}
+onBeforeUnmount(() => {
+  dispose();
 });
 </script>
 <style lang="scss">
