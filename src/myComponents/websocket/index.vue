@@ -52,7 +52,6 @@ function connect() {
   ws.onmessage = function (e) {
     var obj = JSON.parse(e.data);
     bus.wsData = obj;
-    infos.num = obj.content;
     switch (obj.type) {
       case "heart2": //客户端延时
         obj.type = "heart3";
@@ -68,10 +67,12 @@ function connect() {
           (performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(2) + "MB";
         break;
       case "handshake":
+        infos.num = obj.content;
         break;
       case "login":
         break;
       case "logout":
+        infos.num = obj.content;
         console.log(obj);
         break;
       case "目录信息":

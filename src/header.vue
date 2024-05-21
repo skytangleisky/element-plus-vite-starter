@@ -31,7 +31,7 @@
       </div>
     </div>
     <span class="title inline-block color-black p-0 m-0 dark:color-white md:block hidden"
-      >低空飞行安全监控系统</span
+      >北京人影演示系统</span
     >
     <div style="line-height: 40px" class="flex items-center">
       <el-icon style="font-size: 1.5rem; width: 2rem" @click="toggleDark()"

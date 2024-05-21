@@ -1,6 +1,6 @@
 <template>
   <div class="login_dialog">
-    <div class="leftImage">低空飞行安全监控系统</div>
+    <div class="leftImage">北京人影演示系统</div>
     <div class="rightPlane">
       <el-form
         ref="formEl"

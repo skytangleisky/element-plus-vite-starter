@@ -4,6 +4,7 @@
     class="dragDialog absolute w-550px"
     style="left: calc(50% - 275px); top: calc(50% - 155px)"
     v-show="show"
+    @mousedown.stop
   >
     <el-row>
       <el-col :span="12"
@@ -12,7 +13,7 @@
             @mousedown.stop
             class="operation_filter"
             style="width: 150px"
-            value="110229042"
+            :value="data.id"
           /></div
       ></el-col>
       <el-col :span="12"
@@ -21,7 +22,7 @@
             @mousedown.stop
             class="operation_filter"
             style="width: 150px"
-            value="116192700E40413500N"
+            :value="data.strPos"
           /></div
       ></el-col>
     </el-row>
@@ -48,11 +49,11 @@
     <el-row>
       <el-col :span="12"
         ><div class="flex justify-between items-center pl-10px">
-          作业类型<el-input-number v-model="num1" size="default" /></div
+          作业类型<el-input-number v-model="num1" size="default" @mousedown.stop /></div
       ></el-col>
       <el-col :span="12"
         ><div class="flex justify-between items-center pl-10px">
-          作业工具<el-input-number v-model="num2" size="default" /></div
+          作业工具<el-input-number v-model="num2" size="default" @mousedown.stop /></div
       ></el-col>
     </el-row>
     <el-row>
@@ -78,11 +79,11 @@
     <el-row>
       <el-col :span="12"
         ><div class="flex justify-between items-center pl-10px">
-          烟条用量<el-input-number v-model="num3" size="default" /></div
+          烟条用量<el-input-number v-model="num3" size="default" @mousedown.stop /></div
       ></el-col>
       <el-col :span="12"
         ><div class="flex justify-between items-center pl-10px">
-          其它用量<el-input-number v-model="num4" size="default" /></div
+          其它用量<el-input-number v-model="num4" size="default" @mousedown.stop /></div
       ></el-col>
     </el-row>
     <el-row>
@@ -117,7 +118,13 @@ const num1 = ref(10);
 const num2 = ref(8000);
 const num3 = ref(290);
 const num4 = ref(40);
-withDefaults(defineProps<{ show?: boolean }>(), { show: true });
+withDefaults(defineProps<{ show?: boolean; data?: { id: string; strPos?: string } }>(), {
+  show: true,
+  data: () => ({
+    id: "",
+    strPos: "",
+  }),
+});
 const emit = defineEmits(["update:show"]);
 const cancel = () => {
   emit("update:show", false);

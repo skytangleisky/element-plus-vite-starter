@@ -39,7 +39,10 @@
       class="absolute left-0 bottom-50px"
       v-model:args="graphArgs"
     ></graph>
-    <dialog-prev-request v-model:show="prevRequestShow"></dialog-prev-request>
+    <dialog-prev-request
+      v-model:show="prevRequestShow"
+      v-model:data="prevRequestData"
+    ></dialog-prev-request>
   </div>
 </template>
 <script setup lang="ts">
@@ -87,6 +90,10 @@ let graphArgs = reactive({
   // memory: { value: 0, min: 0, max: 120, strokeStyle: "#0f0" },
 });
 const prevRequestShow = ref(false);
+const prevRequestData = reactive({
+  id: "",
+  strPos: "",
+});
 import Dialog from "./dialog.vue";
 const dialogOptions = reactive({ menus: [] });
 const color = ref("red");
@@ -371,6 +378,7 @@ onMounted(() => {
                 id: item.strID,
                 type: "站点",
                 name: item.strName,
+                strPos: v,
                 "icon-image": "projectile-white",
               },
               geometry: {
@@ -473,6 +481,8 @@ onMounted(() => {
         const feature = fs[0];
 
         prevRequestShow.value = true;
+        prevRequestData.id = feature.properties.id;
+        prevRequestData.strPos = feature.properties.strPos;
       });
       map.on("click", "zydLayer", (e: any) => {
         const fs = map.queryRenderedFeatures(e.point, {
