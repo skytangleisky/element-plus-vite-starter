@@ -32,16 +32,30 @@ export default {
       svg:'7fad66a315db11efb644b025aa2c9ada'
     },
     {
-      path: ':catchAll(.*)*',
-      component: '/src/myComponents/404/index.vue',
-      hide:true
-    },
-    {
       path: 'zyd',
-      name: 'c4961e04-e574-0e1f-ae23-94f157b15a45',
+      name: 'b996f034-027d-839b-e572-c4f490a83b27',
       component: '/src/myComponents/人影/pages/作业点管理.vue',
       label: '作业点管理',
       svg:'5202c4ea15dd11efb644b025aa2c9ada'
+    },
+    {
+      path: 'zyddata',
+      name: '6449e08e-e597-153f-6c0c-5f9711fe365c',
+      component: '/src/myComponents/人影/pages/作业申请.vue',
+      label: '作业申请',
+      svg:'f103820918a311efb644b025aa2c9ada'
+    },
+    {
+      path: 'zydhisdata',
+      name: 'aa5334ee-05a4-e2c8-1568-45924ba46875',
+      component: '/src/myComponents/人影/pages/作业历史.vue',
+      label: '作业历史',
+      svg:'64ee8f0418a311efb644b025aa2c9ada'
+    },
+    {
+      path: ':catchAll(.*)*',
+      component: '/src/myComponents/404/index.vue',
+      hide:true
     },
   ]
 }

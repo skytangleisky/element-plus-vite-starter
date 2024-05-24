@@ -10,6 +10,7 @@
       <el-col :span="12"
         ><div class="flex justify-between items-center pl-10px">
           作业ID<input
+            name="作业ID"
             @mousedown.stop
             class="operation_filter"
             style="width: 150px"
@@ -19,6 +20,7 @@
       <el-col :span="12"
         ><div class="flex justify-between items-center pl-10px">
           作业点位置<input
+            name="作业点位置"
             @mousedown.stop
             class="operation_filter"
             style="width: 150px"
@@ -30,6 +32,7 @@
       <el-col :span="12"
         ><div class="flex justify-between items-center pl-10px">
           作业时间<input
+            name="作业时间"
             @mousedown.stop
             class="operation_filter"
             style="width: 150px"
@@ -39,6 +42,7 @@
       <el-col :span="12"
         ><div class="flex justify-between items-center pl-10px">
           作业时长<input
+            name="作业时长"
             @mousedown.stop
             class="operation_filter"
             style="width: 150px"
@@ -60,6 +64,7 @@
       <el-col :span="12"
         ><div class="flex justify-between items-center pl-10px">
           炮弹用量<input
+            name="炮弹用量"
             @mousedown.stop
             class="operation_filter"
             style="width: 150px"
@@ -69,6 +74,7 @@
       <el-col :span="12"
         ><div class="flex justify-between items-center pl-10px">
           火箭用量<input
+            name="火箭用量"
             @mousedown.stop
             class="operation_filter"
             style="width: 150px"
@@ -90,6 +96,7 @@
       <el-col :span="12"
         ><div class="flex justify-between items-center pl-10px">
           水平角<input
+            name="水平角"
             @mousedown.stop
             class="operation_filter"
             style="width: 150px"
@@ -99,6 +106,7 @@
       <el-col :span="12"
         ><div class="flex justify-between items-center pl-10px">
           俯仰角<input
+            name="俯仰角"
             @mousedown.stop
             class="operation_filter"
             style="width: 150px"

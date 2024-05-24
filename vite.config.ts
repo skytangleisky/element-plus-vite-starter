@@ -109,12 +109,12 @@ export default defineConfig({
     port:5173
   },
   server:{
-    https:{
-      cert: fs.readFileSync('dev.tanglei.top.pem'),
-      key: fs.readFileSync('dev.tanglei.top.key')
-      // cert: fs.readFileSync('tanglei.site.pem'),
-      // key: fs.readFileSync('tanglei.site.key')
-    },
+    // https:{
+    //   cert: fs.readFileSync('dev.tanglei.top.pem'),
+    //   key: fs.readFileSync('dev.tanglei.top.key')
+    //   // cert: fs.readFileSync('tanglei.site.pem'),
+    //   // key: fs.readFileSync('tanglei.site.key')
+    // },
     open:'https://dev.tanglei.site',
     host:true,
     port:5173,
