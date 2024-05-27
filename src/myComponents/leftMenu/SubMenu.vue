@@ -18,7 +18,10 @@
       style="text-decoration: none"
     >
       <el-menu-item :index="item.name">
-        <el-icon v-dompurify-html="format(item.svg)" />
+        <el-icon
+          :style="{ width: item.svg ? '' : '0px' }"
+          v-dompurify-html="format(item.svg)"
+        />
         <template #title>{{ item.label }}</template>
         <!-- <template #title>{{ `${absoluteRootPath}/${item.path}` }}</template> -->
       </el-menu-item>

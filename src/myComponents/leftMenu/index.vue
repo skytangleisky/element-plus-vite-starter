@@ -129,6 +129,9 @@ const select = (id: string) => {
 };
 </script>
 <style lang="scss">
+.ep-menu {
+  --ep-menu-icon-width: 20px;
+}
 .dark {
   .submenu-title-noDropdown,
   .ep-sub-menu__title {
