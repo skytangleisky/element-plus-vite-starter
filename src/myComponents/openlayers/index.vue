@@ -107,13 +107,14 @@
       class="absolute bottom-0"
     ></time-line>
     <graph
-      v-permission="['admin']"
+      v-if="checkPermission(['admin'])"
       class="absolute left-0 bottom-30px"
       v-model:args="graphArgs"
     ></graph>
   </div>
 </template>
 <script setup>
+import { checkPermission } from "~/tools";
 import { addFeatherImages, getFeather } from "~/tools";
 import { destinationPoint } from "~/myComponents/map/js/core.js";
 import { watch, ref, onMounted, onBeforeUnmount, reactive } from "vue";

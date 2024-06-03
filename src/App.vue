@@ -6,9 +6,10 @@
       </keep-alive>
     </router-view>
   </el-config-provider>
-  <websocket v-if="user.roles.includes('admin')"></websocket>
+  <websocket v-if="checkPermission(['admin', 'zh'])"></websocket>
 </template>
 <script lang="ts" setup>
+import { checkPermission } from "./tools";
 import websocket from "~/myComponents/websocket/index.vue";
 import { useUserStore } from "./stores/user";
 const user = useUserStore();

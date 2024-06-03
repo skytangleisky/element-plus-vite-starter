@@ -5,7 +5,8 @@
         src="/src/assets/eagle.png"
         style="width: 60px; height: 60px; margin-right: 10px"
       />
-      <div class="title">北京人影演示系统</div>
+      <!-- <div class="title">北京人影演示系统</div> -->
+      <div class="title">珠海低空飞行监控系统</div>
     </div>
     <div class="rightPlane fourCorners">
       <el-form

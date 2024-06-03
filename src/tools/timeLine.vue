@@ -58,13 +58,14 @@
     />
     <span @click="speed">x{{ Math.pow(2, options.times) }}</span>
     <graph
-      v-permission="['admin']"
+      v-if="checkPermission(['admin'])"
       :args="graphArgs"
       style="position: absolute; right: 30px; bottom: 100%"
     ></graph>
   </div>
 </template>
 <script lang="ts" setup>
+import { checkPermission } from "./index.js";
 import { gsap } from "gsap";
 import stopSvg from "~/assets/stop.svg?raw";
 import playSvg from "~/assets/play.svg?raw";

@@ -1,7 +1,12 @@
-import request from '../utils/request'
-let tableName='enclosure'
-let options = '?host=tanglei.top&port=3390&user=root&password=mysql&database=gis'
-let url = 'backend/db/'+tableName+options
+import request from '../../utils/request'
+let tableName=''
+let options = ''
+let url = ''
+export function setConfig(database,table){
+  tableName = table;
+  options = '?' + database
+  url = 'backend/db/'+tableName+options
+}
 export function getColumns(){
   return request({
     url: '/backend/transaction'+options,
@@ -78,32 +83,26 @@ export function 获取净空区() {
           "relation":"AND",
           "field":"enclosure_type",
           "relationship":"=",
-          "condition":"02"
-        },
-        {
-          "relation":"AND",
-          "field":"standby1",
-          "relationship":"=",
-          "condition":"S"//S净空区(糖果图) P禁飞区  D危险区 M可飞区   R限飞区  O计划空域  L	航线  F	航路 A	走廊
+          "condition":"02"//S净空区(糖果图) P禁飞区  D危险区 M可飞区   R限飞区  O计划空域  L	航线  F	航路 A	走廊
         },
         {
           "relation":"OR",
-          "field":"standby1",
+          "field":"enclosure_type",
           "relationship":"=",
-          "condition":"O"//S净空区(糖果图) P禁飞区  D危险区 M可飞区   R限飞区  O计划空域  L	航线  F	航路 A	走廊
+          "condition":"03"
         },
         {
           "relation":"OR",
-          "field":"standby1",
+          "field":"enclosure_type",
           "relationship":"=",
-          "condition":"R"
+          "condition":"00"
         },
-        // {
-        //   "relation":"OR",
-        //   "field":"enclosure_type",
-        //   "relationship":"=",
-        //   "condition":"06"
-        // }
+        {
+          "relation":"OR",
+          "field":"enclosure_type",
+          "relationship":"=",
+          "condition":"06"
+        }
       ],
       "groupby":[], // 分组，传参类似"select"
       "having":[], // 分组后的条件，传参类似"where"

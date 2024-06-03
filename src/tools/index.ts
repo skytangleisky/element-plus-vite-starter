@@ -4,6 +4,12 @@ import {v4 as uuid} from 'uuid'
 import imageUrl from "~/assets/feather.svg?url";
 import planeUrl from "~/assets/plane.svg?url";
 import projectileUrl from "~/assets/projectile.svg?url";
+import droneUrl from "~/assets/aircraft.svg?url";
+import { useUserStore } from '~/stores/user';
+export function checkPermission(roles:string[]) {
+  const user = useUserStore()
+  return intersection(user.roles,roles)
+}
 export const area = (vertices: Array<[number, number]>) => {
   let area = 0;
   for (let i = 0; i < vertices.length; i++) {
@@ -63,8 +69,7 @@ function deepClone<T>(obj: T): T {
   return obj;
 }
 export function intersection<T>(arr1: T[], arr2: T[]): boolean {
-  const set1 = new Set(arr1);
-  return arr2.some(item => set1.has(item));
+  return arr2.some(item => arr1.includes(item));
 }
 export const array2components = (array:Array<{[key:string]:any}>, roles:Array<string>) => {
   const arr = deepClone(array)
@@ -488,6 +493,18 @@ export const addFeatherImages = async( map:any ) => {
       feather58: getCoord(0, 3, 58),
       feather60: getCoord(1, 3, 60),
     }) as unknown as {[key:string]:any};
+    for (let k in result) {
+      map.addImage(k, result[k]);
+    }
+    result = await loadImage(droneUrl,32,32,{
+      drone:{
+        x1: 0,
+        y1: 0,
+        x2: 1,
+        y2: 1,
+        fill: 'yellow',
+      }
+    }) as unknown as {[key:string]:any}
     for (let k in result) {
       map.addImage(k, result[k]);
     }

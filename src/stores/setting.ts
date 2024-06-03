@@ -1,6 +1,8 @@
 import { defineStore, acceptHMRUpdate2 } from "pinia"
 import ry from "./subs/ry.js";
 import jx from "./subs/jx.js";
+import dev from "./subs/dev.js";
+import zh from "./subs/zh.js";
 export const useSettingStore = defineStore({
   id: 'setting',
   state:()=>({
@@ -167,6 +169,59 @@ export const useSettingStore = defineStore({
         tile:'街道地图',
       }
     },
+    珠海:{
+      监控:{
+        "zoom": 8.882777980661407,
+        "center": [
+            117.04212403858509,
+            28.1994655756006
+        ],
+        gridValue:true,
+        gridPoint:true,
+        isobands:true,
+        isolines:true,
+        zdz:true,
+        bearing:0,
+        pitch:0,
+        routeLine:true,
+        zyd:true,
+        district:true,
+        loadmap:true,
+        disappear:false,
+        bottom_disappear:true,
+        tile:'卫星地图',
+      },
+      回放:{
+        "zoom": 8.882777980661407,
+        "center": [
+            117.04212403858509,
+            28.1994655756006
+        ],
+        district:true,
+        loadmap:true,
+        tile:'街道地图',
+      },
+      编辑:{
+        "zoom": 8.882777980661407,
+        "center": [
+            117.04212403858509,
+            28.1994655756006
+        ],
+        district:true,
+        loadmap:true,
+        tile:'街道地图',
+      },
+      模拟:{
+        "zoom": 8.882777980661407,
+        "center": [
+            117.04212403858509,
+            28.1994655756006
+        ],
+        district:true,
+        loadmap:true,
+        tile:'街道地图',
+      }
+    },
     projection: 'globe',// mercator|globe
     webgpu:false,
     loadmap:true,
@@ -273,31 +328,16 @@ export const useSettingStore = defineStore({
         select: false
       },
     ],
+    aaa:[
+      {
+        testFunc:()=>{},
+      }
+    ],
     routes:[
+      dev,
+      zh,
       ry,
       jx,
-      {
-        path:'edit',
-        name:'12254d40-71a3-8406-b0d8-cc9eb3aed11c',
-        component:'/src/myComponents/leftMenu/edit.vue',
-        label:'菜单',
-        svg:'887ba0af3b3511ee8077b025aa2c9ada',
-        replace:false,
-        meta:{
-          roles:["admin"],
-        }
-      },
-      {
-        path:'map',
-        name:'a7ef7b88-5e6b-0c62-129b-00a18980cdce',
-        component:'/src/myComponents/menu/index.vue',
-        label:'地图',
-        replace:false,
-        svg:'8226ee256c6711ee8c80b025aa2c9ada',
-        meta:{
-          roles:["admin"],
-        }
-      },
       {
         path: 'qqlogin',
         name: '3c1f8a79-4fe6-2263-08fb-477f961fc946',
@@ -404,6 +444,15 @@ export const useSettingStore = defineStore({
         hide:true,
         meta:{
           roles:['jx']
+        }
+      },
+      {
+        path: '',
+        name: '99961e04-e574-0e1f-2e23-94f157b14b42',
+        redirect: '/zh/synthesis/monitor',
+        hide:true,
+        meta:{
+          roles:['zh']
         }
       },
       {

@@ -26,6 +26,8 @@ router.afterEach((to,from)=>{
   const user = useUserStore()
   if(router.currentRoute.value.name){
     user.defaultActive = router.currentRoute.value.name.toString()
+  }else{
+    user.defaultActive = ''
   }
   NProgress.done()
 })
@@ -33,5 +35,7 @@ router.onError(e=>{
   const user = useUserStore()
   if(router.currentRoute.value.name){
     user.defaultActive = router.currentRoute.value.name.toString()
+  }else{
+    user.defaultActive = ''
   }
 })

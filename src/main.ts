@@ -18,11 +18,9 @@ import router from './router'
 import dragable from './directive/dialogDrag'
 import resize from './directive/resize'
 import VueDOMPurifyHTML from 'vue-dompurify-html'
-import permissionDirective from './directive/permission'
 app.use(router)
 import './permission'
 app.directive('dialogDrag',dragable)
 app.directive('resize',resize)
-app.directive('permission',permissionDirective)
 app.use(VueDOMPurifyHTML)
 router.isReady().then(()=>app.mount("#app"))

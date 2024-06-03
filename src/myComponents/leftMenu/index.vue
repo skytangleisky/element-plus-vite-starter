@@ -28,7 +28,7 @@
       </el-menu>
     </el-scrollbar>
     <el-select
-      v-permission="['admin']"
+      v-if="checkPermission(['admin'])"
       v-model="setting.component"
       filterable
       style="width: 100%"
@@ -39,6 +39,7 @@
   </div>
 </template>
 <script lang="ts" setup>
+import { checkPermission } from "~/tools";
 import { isDark } from "~/composables";
 import { ref, onMounted, watch, nextTick, computed } from "vue";
 import { useIconStore } from "~/stores/icon";
@@ -97,7 +98,7 @@ const change = (v: any) => {
     router.addRoute(v);
   });
   nextTick(() => {
-    router.push({ path: "/map", replace: false }).catch((error) => {
+    router.push({ path: "/dev/map", replace: true }).catch((error) => {
       console.log(error);
     });
   });

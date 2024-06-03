@@ -46,8 +46,8 @@
   </div>
 </template>
 <script setup lang="ts">
-import { checkPermission } from "~/tools/index.ts";
 import CustomLayer from "./webglLayer/CustomLayer.js";
+import { checkPermission } from "~/tools/index.js";
 import graph from "~/tools/graph.vue";
 import DialogPrevRequest from "../dialog_prev_request.vue";
 import { area, pointInPolygon } from "~/tools/index.ts";
@@ -109,7 +109,7 @@ import { eventbus } from "~/eventbus";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.scss";
 import { 获取净空区, saveData, deleteData } from "~/api/enclosure.js";
-import { getDevice } from "~/api/人影/device.js";
+import { getDevice } from "~/api/珠海/device.js";
 import { addFeatherImages, getFeather } from "~/tools";
 const bus = useBus();
 import theme from "./drawTheme/inactive.js";
@@ -169,7 +169,7 @@ import satellite from "./satellite.js";
 let satelliteUrl = URL.createObjectURL(
   new File([JSON.stringify(satellite)], "satellite.json", { type: "application/json" })
 );
-import { setConfig, getAll } from "~/api/人影/api";
+import { setConfig, getAll } from "~/api/珠海/api";
 const emit = defineEmits([
   "update:center",
   "update:zoom",
@@ -267,6 +267,7 @@ const resize = () => {
   map && map.resize();
 };
 let active = () => {};
+let uav: any = [];
 onMounted(() => {
   map = new Map({
     container: (mapRef.value as unknown) as HTMLCanvasElement,
@@ -299,7 +300,33 @@ onMounted(() => {
   });
   map.on("load", async () => {
     await addFeatherImages(map);
-    map.addLayer(new CustomLayer());
+    // map.addLayer(new CustomLayer());
+    map.addSource("uav原数据", {
+      type: "geojson",
+      data: {
+        type: "FeatureCollection",
+        features: uav,
+      },
+    });
+    map.addLayer({
+      id: "无人机数据",
+      type: "symbol",
+      source: "uav原数据",
+      layout: {
+        "icon-image": "drone",
+        "icon-size": {
+          base: 1,
+          stops: [
+            [0, 0.5],
+            [22, 1],
+          ],
+        },
+        "icon-rotate": ["get", "deg"],
+        "icon-rotation-alignment": "map",
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+      },
+    });
     map.addLayer({
       id: "maine",
       type: "fill",
@@ -503,8 +530,8 @@ onMounted(() => {
         //     `<h3>${feature.properties.title}</h3><p>${feature.properties.description}</p>`
         //   )
         //   .addTo(map);
-        station.人影界面被选中的设备 = feature.properties.id;
-        $(`#人影-${station.人影界面被选中的设备}`)[0].scrollIntoView({
+        station.珠海界面被选中的设备 = feature.properties.id;
+        $(`#珠海-${station.珠海界面被选中的设备}`)[0].scrollIntoView({
           block: "nearest",
           behavior: "smooth",
           inline: "center",
@@ -513,7 +540,7 @@ onMounted(() => {
       });
       active = () => {
         features = features.map((item: any) => {
-          if (item.properties.id == station.人影界面被选中的设备) {
+          if (item.properties.id == station.珠海界面被选中的设备) {
             item.properties["icon-image"] = "projectile-red";
           } else {
             item.properties["icon-image"] = "projectile-white";
@@ -527,7 +554,7 @@ onMounted(() => {
         });
 
         circleFeatures = circleFeatures.map((item: any) => {
-          if (item.properties.id == station.人影界面被选中的设备) {
+          if (item.properties.id == station.珠海界面被选中的设备) {
             item.properties.color = "red";
           } else {
             item.properties.color = "white";
@@ -576,8 +603,8 @@ onMounted(() => {
     //     });
     //     // let offset = (getRandomPointBetweenR1R2(50, 100) as unknown) as [number, number];
     //     // let div = document.createElement("div");
-    //     // div.id = "人影" + item.id;
-    //     // div.className = "deviceStation_人影";
+    //     // div.id = "珠海" + item.id;
+    //     // div.className = "deviceStation_珠海";
     //     // div.style.position = "absolute";
     //     // $(div).data("id", item.id);
     //     // let device = $(
@@ -600,8 +627,8 @@ onMounted(() => {
     //     // $(div).append(label);
 
     //     // device.on("click", function click() {
-    //     //   station.人影界面被选中的设备 = $(this).parent().data("id");
-    //     //   $(`#人影-${station.人影界面被选中的设备}`)[0].scrollIntoView({
+    //     //   station.珠海界面被选中的设备 = $(this).parent().data("id");
+    //     //   $(`#珠海-${station.珠海界面被选中的设备}`)[0].scrollIntoView({
     //     //     block: "nearest",
     //     //     behavior: "smooth",
     //     //     inline: "center",
@@ -631,12 +658,12 @@ onMounted(() => {
     //     //   let x = dragStartOffset.x + pt2.x - pt1.x;
     //     //   let y = dragStartOffset.y + pt2.y - pt1.y;
     //     //   marker.setOffset([x, y]);
-    //     //   let line = $("#人影" + item.id).find(".connectingLine")[0];
+    //     //   let line = $("#珠海" + item.id).find(".connectingLine")[0];
     //     //   line.style.transform = `translate(-50%,-50%) translate(${-x / 2}px,${
     //     //     -y / 2
     //     //   }px) rotate(${Math.atan2(y, x)}rad)`;
     //     //   line.style.width = `${Math.sqrt(x ** 2 + y ** 2)}px`;
-    //     //   let station = $("#人影" + item.id).find(".station")[0];
+    //     //   let station = $("#珠海" + item.id).find(".station")[0];
     //     //   station.style.transform = `translate(-50%,-50%) translate(${-x}px,${-y}px)`;
     //     //   marker.setLngLat(position);
     //     // });
@@ -648,12 +675,12 @@ onMounted(() => {
     //     //   let x = offset.x + pt2.x - pt1.x;
     //     //   let y = offset.y + pt2.y - pt1.y;
     //     //   marker.setOffset([x, y]);
-    //     //   let line = $("#人影" + item.id).find(".connectingLine")[0];
+    //     //   let line = $("#珠海" + item.id).find(".connectingLine")[0];
     //     //   line.style.transform = `translate(-50%,-50%) translate(${-x / 2}px,${
     //     //     -y / 2
     //     //   }px) rotate(${Math.atan2(y, x)}rad)`;
     //     //   line.style.width = `${Math.sqrt(x ** 2 + y ** 2)}px`;
-    //     //   let station = $("#人影" + item.id).find(".station")[0];
+    //     //   let station = $("#珠海" + item.id).find(".station")[0];
     //     //   station.style.transform = `translate(-50%,-50%) translate(${-x}px,${-y}px)`;
     //     //   marker.setLngLat(position);
     //     // });
@@ -1963,11 +1990,17 @@ onMounted(() => {
         } as never);
       } else if (v.enclosure_type == "02") {
         if (list.length > 2) {
+          let color = "red";
+          if (v.standby1 == "S") {
+            color = "red";
+          } else if (v.standby1 == "O") {
+            color = "blue";
+          }
           a.features.push({
             id: v.id,
             type: "Feature",
             properties: {
-              color: v.standby2,
+              color, //v.standby2
             },
             geometry: {
               type: "Polygon",
@@ -1975,7 +2008,9 @@ onMounted(() => {
             },
           } as never);
         } else {
-          console.error("v.enclosure_type == 02," + "list.length=" + list.length);
+          console.error(
+            "v.enclosure_type == " + v.enclosure_type + ",list.length=" + list.length
+          );
         }
       } else if (v.enclosure_type == "03") {
         if (v.circle_center) {
@@ -2010,13 +2045,13 @@ onMounted(() => {
   map.on("pitch", pitchFunc);
   map.on("move", moveFunc);
   map.on("bearing", bearingFunc);
-  eventbus.on("人影-将站点移动到屏幕中心", flyTo);
+  eventbus.on("珠海-将站点移动到屏幕中心", flyTo);
 });
 
 onBeforeUnmount(() => {
   clearInterval(timer);
   clearInterval(graphTimer);
-  eventbus.off("人影-将站点移动到屏幕中心", flyTo);
+  eventbus.off("珠海-将站点移动到屏幕中心", flyTo);
   map.off("zoom", zoomFunc);
   map.off("move", moveFunc);
   map.off("pitch", pitchFunc);
@@ -2126,6 +2161,54 @@ watch(
     }
   }
 );
+for (let i = 0; i < 20; i++) {
+  uav.push({
+    type: "Feature",
+    properties: {
+      name: "Example Point",
+      terminalID: Number(Math.random().toFixed(8)) * 10e7,
+      deg: 360 * Math.random(),
+      speed: ((800 + 200 * Math.random()) / 3.6 / 1000) * 33,
+    },
+    geometry: {
+      type: "Point",
+      coordinates: [105 + 3 * Math.random(), 30 + 3 * Math.random()],
+    },
+  });
+}
+watch(
+  () => bus.uavData,
+  ({ data: uavData }: any) => {
+    let has = false;
+    for (let i = 0; i < uav.length; i++) {
+      if (uav[i].properties.terminalID == uavData.terminalID) {
+        has = true;
+        uav[i].properties.speed = uavData.speed;
+        uav[i].properties.deg = uavData.direction;
+        uav[i].geometry.coordinates = wgs84togcj02(uavData.lng, uavData.lat);
+      }
+    }
+    if (!has) {
+      uav.push({
+        type: "Feature",
+        properties: {
+          name: "Example Point",
+          terminalID: uavData.terminalID,
+          deg: uavData.direction,
+          speed: uavData.speed,
+        },
+        geometry: {
+          type: "Point",
+          coordinates: wgs84togcj02(uavData.lng, uavData.lat),
+        },
+      });
+    }
+    map?.getSource("uav原数据")?.setData({
+      type: "FeatureCollection",
+      features: uav,
+    });
+  }
+);
 </script>
 <style lang="scss">
 .mapboxgl-ctrl-bottom-left {
@@ -2136,7 +2219,7 @@ watch(
 .dark .select .ep-select__wrapper {
   background-color: #2b2b2b;
 }
-.deviceStation_人影 {
+.deviceStation_珠海 {
   box-sizing: border-box;
   position: absolute;
   font-size: 14px;

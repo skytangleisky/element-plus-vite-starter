@@ -6,11 +6,9 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, onBeforeUnmount, ref, reactive } from "vue";
+import { onMounted, onBeforeUnmount, watch, reactive } from "vue";
 import { useBus } from "../bus";
 import Sleeper from "../zrender/sleeper";
-import { useUserStore } from "~/stores/user";
-const user = useUserStore();
 let sleeper = new Sleeper();
 let bus = useBus();
 const infos = reactive({
@@ -53,20 +51,16 @@ function connect() {
   };
   ws.onmessage = function (e) {
     var obj = JSON.parse(e.data);
-    bus.wsData = obj;
     switch (obj.type) {
       case "heart2": //客户端延时
-        obj.type = "heart3";
         obj.clientTime2 = performance.now();
-        // console.log((obj.clientTime2 - obj.clientTime1).toFixed(2), "ms");
-        ws.readyState === WebSocket.OPEN && ws.send(JSON.stringify(obj));
-        break;
-      case "heart4": //服务端延时
-        let cDelay = (obj.clientTime2 - obj.clientTime1).toFixed(2);
-        let sDelay = (obj.serverTime2 - obj.serverTime1).toFixed(2);
-        infos.delay = sDelay + "ms";
+        infos.delay = (obj.clientTime2 - obj.clientTime1).toFixed(2) + "ms";
         infos.usedJSHeapSize =
           (performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(2) + "MB";
+        break;
+      case "heart4": //服务端延时
+        // obj.type = "heart3";
+        // ws.readyState === WebSocket.OPEN && ws.send(JSON.stringify(obj));
         break;
       case "handshake":
         infos.num = obj.content;
@@ -82,6 +76,12 @@ function connect() {
         break;
       case "目录信息改变":
         console.log(obj.event, obj.file);
+        break;
+      case "808定位数据":
+        bus.uavData = obj;
+        break;
+      case "rhi":
+        bus.wsData = obj;
         break;
     }
     infos.usedJSHeapSize =
@@ -102,10 +102,8 @@ function connect() {
   };
 }
 onMounted(() => {
+  connect();
   window.addEventListener("beforeunload", dispose);
-  if (user.roles.includes("admin")) {
-    connect();
-  }
 });
 function dispose() {
   sleeper.abort();
@@ -115,6 +113,9 @@ function dispose() {
   }
 }
 onBeforeUnmount(() => {
+  infos.num = "";
+  infos.delay = "";
+  infos.usedJSHeapSize = "";
   dispose();
 });
 </script>
