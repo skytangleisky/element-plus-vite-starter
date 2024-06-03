@@ -3,9 +3,9 @@ export default {
   component: '/src/container.vue',
   redirect: { path: '/dev/synthesis' },
   name:'940a453a-4a04-62ac-1186-f271d5641885',
-  label:'珠海低空飞行监控系统',
   svg:'a14c6c671b6611efa02ab025aa2c9ada',
   meta:{
+    label:'珠海低空飞行监控系统',
     roles:['admin','zh']
   },
   children:[
@@ -13,259 +13,329 @@ export default {
       path:'home',
       name:'e760d61f-874b-790a-768c-a770169b6108',
       component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-      label:'首页',
       svg:'46f809531b7e11efa02ab025aa2c9ada',
       replace:true,
+      meta:{
+        label:'首页',
+      }
     },
     {
       path:'synthesis',
       name:'2d53f22e-6626-c141-e3f6-36af958f76c9',
-      label:'综合监控',
       svg:'745cb9d21b7e11efa02ab025aa2c9ada',
       replace:true,
+      meta:{
+        label:'综合监控',
+      },
       children:[
         {
           path:'monitor',
           name:'17f6a36a-8fb7-bc01-98ec-627486c00b96',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/synthesis.vue',
-          label:'实时动态监视',
           replace:true,
+          meta:{
+            label:'实时动态监视',
+          }
         },
         {
           path:'playback',
           name:'0a9fc977-5ff1-30fd-4884-c05e77ffd81b',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'历史航迹查询',
           replace:true,
+          meta:{
+            label:'历史航迹查询',
+          }
         },
       ]
     },
     {
       path:'flightMission',
       name:'f627c231-68e0-a68e-f15f-64bdb9945faf',
-      label:'飞行计划',
       svg:'b937cf301b7e11efa02ab025aa2c9ada',
       replace:true,
+      meta:{
+        label:'飞行计划',
+      },
       children:[
         {
           path:'airspace_audit',
           name:'1063669e-e972-68db-7d4e-8af62062ccde',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'空域审批',
           replace:true,
+          meta:{
+            label:'空域审批',
+          }
         },
         {
           path:'plan_audit',
           name:'e9c14dc8-9480-dcb5-8d9a-475814a0d73b',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'计划审批',
           replace:true,
+          meta:{
+            label:'计划审批',
+          }
         },
       ]
     },
     {
       path:'alarm',
       name:'1a9d7d4c-2d4e-3163-83e5-42e04283a87b',
-      label:'告警管理',
       svg:'e90c79241b7e11efa02ab025aa2c9ada',
       replace:true,
+      meta:{
+        label:'告警管理',
+      },
       children:[
         {
           path:'realtime_alarm',
           name:'de4d1e20-e24d-bfce-9523-3eeb2b386e3b',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'实时告警',
           replace:true,
+          meta:{
+            label:'实时告警',
+          }
         },
         {
           path:'history_alarm',
           name:'4ffb2369-9c80-072e-2eef-6f0416e178d1',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'历史告警',
           replace:true,
+          meta:{
+            label:'历史告警',
+          }
         },
       ]
     },
     {
       path:'information_service',
       name:'0de21e82-c3ab-7205-f446-49105a649b71',
-      label:'情报服务',
       svg:'14370cb81b7f11efa02ab025aa2c9ada',
       replace:true,
+      meta:{
+        label:'情报服务',
+      },
       children:[
         {
           path:'weather_data',
           name:'7ff84cc2-5c64-698b-31a9-d714429e30b2',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'气象数据',
           replace:true,
+          meta:{
+            label:'气象数据',
+          }
         },
         {
           path:'weather_info',
           name:'b37f1a49-b88b-10e1-5665-b7c75cef823b',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'气象信息',
           replace:true,
+          meta:{
+            label:'气象信息',
+          }
         },
         {
           path:'navigation_info',
           name:'66d15c34-528b-5df4-1d53-ce075a78d33a',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'航行情报',
           replace:true,
+          meta:{
+            label:'航行情报',
+          }
         },
       ]
     },
     {
       path:'statistical_statement',
       name:'7dec880e-04d5-899a-9db2-5a528d339aad',
-      label:'统计报表',
       svg:'911c0d251b7f11efa02ab025aa2c9ada',
       replace:true,
+      meta:{
+        label:'统计报表',
+      },
       children:[
         {
           path:'synthesis_statistics',
           name:'7ccb7498-d269-3374-7bcc-beda35584dbb',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'综合统计',
           replace:true,
+          meta:{
+            label:'综合统计',
+          }
         },
         {
           path:'regional_statistics',
           name:'50488a6b-e90d-2303-5457-af023a60913d',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'区域统计',
           replace:true,
+          meta:{
+            label:'区域统计',
+          }
         },
         {
           path:'pilot_statistics',
           name:'41429ad3-7a7c-0e88-c106-963d4af738b4',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'驾驶员统计',
           replace:true,
+          meta:{
+            label:'驾驶员统计',
+          }
         },
         {
           path:'alarm_statistics',
           name:'997d1b34-32f4-233d-9642-95b790ae0279',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'告警统计',
           replace:true,
+          meta:{
+            label:'告警统计',
+          }
         },
         {
           path:'aircraft_statistics',
           name:'234be470-8e1e-e8e5-ffc6-79fa4dc14d12',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'航空器统计',
           replace:true,
+          meta:{
+            label:'航空器统计',
+          }
         },
       ]
     },
     {
       path:'archives_management',
       name:'bc93be80-324f-430d-f59f-31e15d31acab',
-      label:'档案管理',
       svg:'cc8373f81b7f11efa02ab025aa2c9ada',
       replace:true,
+      meta:{
+        label:'档案管理',
+      },
       children:[
         {
           path:'aircraft_archives',
           name:'239d7622-1590-8a93-1a37-b426a970d588',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'航空器档案',
           replace:true,
+          meta:{
+            label:'航空器档案',
+          }
         },
         {
           path:'regional_archives',
           name:'79acf20b-e831-c8ee-e27f-be3bbad6707d',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'区域档案',
           replace:true,
+          meta:{
+            label:'区域档案',
+          }
         },
         {
           path:'enterprise_archives',
           name:'ccdcbc8c-1616-7061-d212-01f75867e3a8',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'企业档案',
           replace:true,
+          meta:{
+            label:'企业档案',
+          }
         },
         {
           path:'polit_archives',
           name:'4ea1f12d-0bdf-72f6-6c7b-e9abcfdf37dd',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'飞手档案',
           replace:true,
+          meta:{
+            label:'飞手档案',
+          }
         },
         {
           path:'organization_archives',
           name:'513076e5-df59-7f1f-3707-cbd9293c2487',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'运营单位档案',
           replace:true,
+          meta:{
+            label:'运营单位档案',
+          }
         },
       ]
     },
     {
       path:'system_management',
       name:'9f9dd6c5-f0c5-f566-cb8c-9ebb394b0507',
-      label:'系统管理',
       svg:'289d13771b8011efa02ab025aa2c9ada',
       replace:true,
+      meta:{
+        label:'系统管理',
+      },
       children:[
         {
           path:'account',
           name:'8e79684a-6ae6-76bf-7c3e-49baf625afda',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'账号管理',
           replace:true,
+          meta:{
+            label:'账号管理',
+          }
         },
         {
           path:'authentication',
           name:'bcd63f7c-355d-9bab-083c-db16a76d99ca',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'用户认证',
           replace:true,
+          meta:{
+            label:'用户认证',
+          }
         },
         {
           path:'role',
           name:'48090c29-d98e-128e-1602-2cdf3ae8cde9',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'用户角色管理',
           replace:true,
+          meta:{
+            label:'用户角色管理',
+          }
         },
         {
           path:'menu',
           name:'4be836e6-2ff9-0aa1-3890-adcc5e02101e',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'菜单管理',
           replace:true,
+          meta:{
+            label:'菜单管理',
+          }
         },
         {
           path:'audit_template',
           name:'b70b7cf3-7ca1-4d56-84e6-5a945ab355eb',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'审批模板',
           replace:true,
+          meta:{
+            label:'审批模板',
+          }
         },
         {
           path:'operation_log',
           name:'749e538f-f81f-88e1-d286-a2fd34af0d46',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'操作日志',
           replace:true,
+          meta:{
+            label:'操作日志',
+          }
         },
         {
           path:'obligation',
           name:'8309ae34-80cf-66e8-3ee7-f58c631c646c',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'履行义务设置',
           replace:true,
+          meta:{
+            label:'履行义务设置',
+          }
         },
         {
           path:'performance',
           name:'80aaed3b-c847-434b-add1-18c44e6c941d',
           component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-          label:'性能监控',
           replace:true,
+          meta:{
+            label:'性能监控',
+          }
         },
       ]
     },

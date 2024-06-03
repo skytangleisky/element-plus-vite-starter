@@ -3,7 +3,7 @@
     <el-sub-menu v-if="item.children" :index="item.name">
       <template #title>
         <el-icon v-dompurify-html="format(item.svg)"></el-icon>
-        <span>{{ item.label }}</span>
+        <span>{{ item.meta.label }}</span>
       </template>
       <SubMenu
         v-for="route in item.children"
@@ -22,7 +22,7 @@
           :style="{ width: item.svg ? '' : '0px' }"
           v-dompurify-html="format(item.svg)"
         />
-        <template #title>{{ item.label }}</template>
+        <template #title>{{ item.meta.label }}</template>
         <!-- <template #title>{{ `${absoluteRootPath}/${item.path}` }}</template> -->
       </el-menu-item>
     </div>
@@ -60,7 +60,7 @@ const icon = useIconStore();
 const { item } = defineProps({
   item: {
     type: Object,
-    default: { hide: true, name: "name", label: "label" },
+    default: { hide: true, name: "name", meta: { label: "label" } },
   },
   absoluteRootPath: {
     type: String,

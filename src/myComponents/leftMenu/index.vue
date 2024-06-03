@@ -3,14 +3,15 @@
     <el-scrollbar
       class="flex-1"
       :style="`height: 100%; background-color: ${isDark ? '#304156' : '#eee'};${
-        isCollapse ? '' : 'min-width:210px'
+        setting.isCollapse ? '' : 'min-width:210px'
       }`"
     >
       <el-menu
+        :collapse-transition="false"
         :background-color="isDark ? '#304156' : '#eee'"
         :text-color="isDark ? '#bfcbd9' : '#000'"
         :active-text-color="isDark ? '#409eff' : '#ffd04b'"
-        :collapse="isCollapse"
+        :collapse="setting.isCollapse"
         class="el-menu-vertical-demo"
         :default-openeds="user.defaultOpends"
         :default-active="user.defaultActive"
@@ -76,7 +77,6 @@ import { array2components } from "~/tools";
 onMounted(() => {
   icon.FetchList();
 });
-const isCollapse = ref(false);
 const change = (v: any) => {
   function fn(list: any[]) {
     for (let i = 0; i < list.length; i++) {

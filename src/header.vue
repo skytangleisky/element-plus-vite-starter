@@ -1,11 +1,23 @@
 <template>
   <div class="nav">
+    <div style="line-height: 40px" class="flex items-center">
+      <el-icon
+        v-html="openSvg"
+        :class="setting.isCollapse ? '' : 'rotate-180deg'"
+        style="font-size: 25px; padding: 0 10px"
+        @click="setting.isCollapse = !setting.isCollapse"
+      ></el-icon>
+      <breadcrumb></breadcrumb>
+    </div>
+    <!-- <span class="title inline-block color-black p-0 m-0 dark:color-white md:block hidden">北京人影演示系统</span> -->
     <div class="items-center flex">
       <div
         v-if="user.logined"
         class="color-black dark:color-white"
         style="display: flex; align-items: center"
       >
+        <!-- <div v-else @click="login" class="QQ_Login_Button"></div> -->
+        {{ user.username }}，欢迎您！
         <el-dropdown v-if="user.logined" trigger="click" size="small">
           <el-avatar :size="32" :src="user.avatar" style="margin: 0 8px">
             <!-- <span class="el-dropdown-link"><User style="width:24px;height:24px;"></User></span> -->
@@ -15,6 +27,9 @@
             <el-dropdown-menu>
               <!-- <el-dropdown-item @click="login" :icon="Select">登陆</el-dropdown-item> -->
               <!-- <el-dropdown-item :icon="ColdDrink">捐赠</el-dropdown-item> -->
+              <el-dropdown-item @click="toggleDark()" :icon="isDark ? Moon : Sunny"
+                >主题</el-dropdown-item
+              >
               <el-dropdown-item :icon="Switch" @click="Reset">重置</el-dropdown-item>
               <el-dropdown-item
                 v-if="user.logined"
@@ -26,27 +41,13 @@
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-        <!-- <div v-else @click="login" class="QQ_Login_Button"></div> -->
-        {{ user.username }}，欢迎您！
       </div>
-    </div>
-    <!-- <span class="title inline-block color-black p-0 m-0 dark:color-white md:block hidden"
-      >北京人影演示系统</span
-    > -->
-    <div style="line-height: 40px" class="flex items-center">
-      <el-icon style="font-size: 1.5rem; width: 2rem" @click="toggleDark()"
-        ><Moon v-if="isDark" /><Sunny v-else
-      /></el-icon>
-      <el-icon style="font-size: 1.5rem; width: 2rem" @click="click"><Setting /></el-icon>
-      <el-icon
-        style="font-size: 1.5rem; width: 2rem"
-        @click="logout"
-        v-html="logoutRaw"
-      ></el-icon>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
+import openSvg from "~/assets/open.svg?raw";
+import breadcrumb from "./myComponents/breadcrumb.vue";
 import logoutRaw from "~/assets/logout.svg?raw";
 import {
   Select,

@@ -6,6 +6,7 @@ import zh from "./subs/zh.js";
 export const useSettingStore = defineStore({
   id: 'setting',
   state:()=>({
+    isCollapse:false,
     catalogue:{
       dirs:[],
       files:[],
@@ -342,17 +343,21 @@ export const useSettingStore = defineStore({
         path: 'qqlogin',
         name: '3c1f8a79-4fe6-2263-08fb-477f961fc946',
         component: '/src/qqlogin.vue', //最好是异步加载
-        label:'扣扣登录',
         svg:'92210ef73b4111ee8077b025aa2c9ada',
         hide:true,
+        meta:{
+          label:'扣扣登录',
+        }
       },
       {
         path: 'login',
         name: '97f11ef1-f3aa-9b9f-3e77-a131a9278a08',
         component: '/src/login.vue',
-        label:'登录',
         svg:'97d8a6d93ab711ee8077b025aa2c9ada',
         hide:true,
+        meta:{
+          label:'登录',
+        }
       },
       {
         path: 'openlayers',
@@ -360,73 +365,91 @@ export const useSettingStore = defineStore({
         // component:'/src/myComponents/openlayers/radarStatistic.vue'
         // component:'/src/myComponents/menu/index.vue'
         component:'/src/myComponents/openlayers/index.vue',
-        label:'openlayers',
         svg:'4db7562c3aa011ee8077b025aa2c9ada',
-        hide:true
+        hide:true,
+        meta:{
+          label:'openlayers',
+        }
       },
       {
         path: 'deck',
         name: 'e4961e04-e574-0e1f-ae23-94f157b14a36',
         component: '/src/myComponents/deck/index.vue',
-        label: 'openlayers',
         svg:'a69daeed81e611ee98afb025aa2c9ada',
-        hide:true
+        hide:true,
+        meta:{
+          label: 'openlayers',
+        }
       },
       {
         path: 'deck2',
         name: 'e4961e04-e574-0e1f-ae23-94f157b14a37',
         component: '/src/myComponents/deck/index2.vue',
-        label: 'openlayers2',
         svg:'a69daeed81e611ee98afb025aa2c9ada',
-        hide:true
+        hide:true,
+        meta:{
+          label: 'openlayers2',
+        }
       },
       {
         path: 'mapbox',
         name: 'e4961e04-e574-0e1f-ae23-94f157b14a38',
         component: '/src/myComponents/mapbox/index.vue',
-        label: 'mapbox',
         svg:'11b6b95281e711ee98afb025aa2c9ada',
-        hide:true
+        hide:true,
+        meta:{
+          label: 'mapbox',
+        }
       },
       {
         path: 'fabric',
         name: 'e4961e04-e574-0e1f-ae23-94f157b14a39',
         component: '/src/myComponents/fabric/index.vue',
-        label: 'fabric',
         svg:'ef5f059d9cb611ee9b6cb025aa2c9ada',
-        hide:true
+        hide:true,
+        meta:{
+          label: 'fabric',
+        }
       },
       {
         path: 'timeline',
         name: 'e4961e04-e574-0e1f-ae23-94f157b14a40',
         component: '/src/tools/timeLine.vue',
-        label: 'timeline',
         svg:'8fc8736b9cb611ee9b6cb025aa2c9ada',
-        hide:true
+        hide:true,
+        meta:{
+          label: 'timeline',
+        }
       },
       {
         path: 'graph',
         name: 'e4961e04-e574-0e1f-ae23-94f157b14a41',
         component: '/src/tools/graph.vue',
-        label: 'graph',
         svg:'5e38a2e3aaf011eeb80bb025aa2c9ada',
-        hide:true
+        hide:true,
+        meta:{
+          label: 'graph',
+        }
       },
       {
         path: 'test',
         name: 'c4961e04-e574-0e1f-ae23-94f157b14a44',
         component: '/src/myComponents/zrender/test.vue',
-        label: 'test',
         svg:'5e38a2e3aaf011eeb80bb025aa2c9ada',
-        hide:true
+        hide:true,
+        meta:{
+          label: 'test',
+        }
       },
       {
         path: 'calibration',
         name: 'c4961e04-e574-0e1f-ae23-94f157b14a43',
         component: '/src/myComponents/calibration/index.vue',
-        label: 'calibration',
         svg:'5e38a2e3aaf011eeb80bb025aa2c9ada',
-        hide:true
+        hide:true,
+        meta:{
+          label: 'calibration',
+        }
       },
       {
         path: '',
