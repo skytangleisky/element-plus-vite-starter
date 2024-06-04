@@ -1,12 +1,12 @@
 <template>
-  <div class="infos absolute bottom-0 z-5 right-0">
+  <div class="absolute bottom-0 z-5 right-0">
     <div>{{ infos.num }}</div>
     <div>{{ infos.delay }}</div>
     <div>{{ infos.usedJSHeapSize }}</div>
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, onBeforeUnmount, watch, reactive } from "vue";
+import { onMounted, onBeforeUnmount, reactive } from "vue";
 import { useBus } from "../bus";
 import Sleeper from "../zrender/sleeper";
 let sleeper = new Sleeper();
@@ -119,11 +119,3 @@ onBeforeUnmount(() => {
   dispose();
 });
 </script>
-<style lang="scss">
-.infos {
-  div {
-    min-height: 1em;
-    line-height: 1em;
-  }
-}
-</style>
