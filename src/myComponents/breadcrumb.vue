@@ -21,14 +21,18 @@ const breadcrumbs = computed(() => {
 const click = (crumb: any) => {
   router.push({
     path: crumb.path,
+    force: true,
+    replace: true,
   });
 };
 </script>
 
 <style lang="scss" scoped>
 .breadcrumb {
+  flex-shrink: 1;
   display: flex;
-  flex-wrap: wrap;
+  white-space: nowrap;
+  overflow: auto;
   list-style: none;
   font-size: 16px;
   line-height: 40px;

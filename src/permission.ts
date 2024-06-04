@@ -2,6 +2,7 @@ import router from '~/router'
 import NProgress from 'nprogress'
 import { useUserStore } from './stores/user'
 import "nprogress/nprogress.css"
+import "./styles/nprogress.scss"
 NProgress.configure({ showSpinner: false })
 const whiteList=['/login','/qqlogin','/register','/404','/401', '/openlayers','/mapbox','/calibration']
 router.beforeEach((to,from,next)=>{

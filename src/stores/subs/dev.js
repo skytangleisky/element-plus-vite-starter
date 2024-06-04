@@ -1,7 +1,7 @@
 export default {
   path: 'dev',
   component: '/src/container.vue',
-  redirect: { path: '/dev/synthesis' },
+  redirect: { path: '/dev/edit' },
   name:'a0475728-f57d-ef3d-bdd2-78b93b0fb075',
   svg:'7d5f698c1b6511efa02ab025aa2c9ada',
   meta:{

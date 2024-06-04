@@ -98,6 +98,7 @@ export default {
       path: 'system',
       name:'aa4619cf-ca3d-ffb1-9781-9fcf73cfa67d',
       svg:'7809a650d6c811ee9aafb025aa2c9ada',
+      redirect:'/jx/system/device',
       meta:{
         label:'系统管理',
       },
@@ -144,6 +145,7 @@ export default {
       path: 'user',
       name:'8c9f0073-882c-4582-77b2-98ca8c7f77f6',
       svg:'b9cef812d6c711ee9aafb025aa2c9ada',
+      redirect:'/jx/user/person',
       meta:{
         label:'用户管理',
       },
@@ -172,6 +174,7 @@ export default {
       path: 'permission',
       name:'1fb3cbd6-7945-716a-efc6-6169ed171a4f',
       svg:'3c94a7e5d6c611ee9aafb025aa2c9ada',
+      redirect:'/jx/permission/administrator',
       meta:{
         label:'权限管理',
       },

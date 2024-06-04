@@ -1,7 +1,7 @@
 export default {
   path: 'zh',
   component: '/src/container.vue',
-  redirect: { path: '/dev/synthesis' },
+  redirect: { path: '/zh/synthesis' },
   name:'940a453a-4a04-62ac-1186-f271d5641885',
   svg:'a14c6c671b6611efa02ab025aa2c9ada',
   meta:{
@@ -23,6 +23,7 @@ export default {
       path:'synthesis',
       name:'2d53f22e-6626-c141-e3f6-36af958f76c9',
       svg:'745cb9d21b7e11efa02ab025aa2c9ada',
+      redirect:"/zh/synthesis/monitor",
       replace:true,
       meta:{
         label:'综合监控',
@@ -52,6 +53,7 @@ export default {
       path:'flightMission',
       name:'f627c231-68e0-a68e-f15f-64bdb9945faf',
       svg:'b937cf301b7e11efa02ab025aa2c9ada',
+      redirect:"/zh/flightMission/airspace_audit",
       replace:true,
       meta:{
         label:'飞行计划',
@@ -81,6 +83,7 @@ export default {
       path:'alarm',
       name:'1a9d7d4c-2d4e-3163-83e5-42e04283a87b',
       svg:'e90c79241b7e11efa02ab025aa2c9ada',
+      redirect:'/zh/alarm/realtime_alarm',
       replace:true,
       meta:{
         label:'告警管理',
@@ -110,6 +113,7 @@ export default {
       path:'information_service',
       name:'0de21e82-c3ab-7205-f446-49105a649b71',
       svg:'14370cb81b7f11efa02ab025aa2c9ada',
+      redirect:'/zh/information_service/weather_data',
       replace:true,
       meta:{
         label:'情报服务',
@@ -148,6 +152,7 @@ export default {
       path:'statistical_statement',
       name:'7dec880e-04d5-899a-9db2-5a528d339aad',
       svg:'911c0d251b7f11efa02ab025aa2c9ada',
+      redirect:'/zh/statistical_statement/synthesis_statistics',
       replace:true,
       meta:{
         label:'统计报表',
@@ -204,6 +209,7 @@ export default {
       path:'archives_management',
       name:'bc93be80-324f-430d-f59f-31e15d31acab',
       svg:'cc8373f81b7f11efa02ab025aa2c9ada',
+      redirect:'/zh/archives_management/aircraft_archives',
       replace:true,
       meta:{
         label:'档案管理',
@@ -260,6 +266,7 @@ export default {
       path:'system_management',
       name:'9f9dd6c5-f0c5-f566-cb8c-9ebb394b0507',
       svg:'289d13771b8011efa02ab025aa2c9ada',
+      redirect:'/zh/system_management/account',
       replace:true,
       meta:{
         label:'系统管理',
