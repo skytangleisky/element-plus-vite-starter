@@ -7,7 +7,7 @@ NProgress.configure({ showSpinner: false })
 const whiteList=['/login','/qqlogin','/register','/404','/401', '/openlayers','/mapbox','/calibration']
 router.beforeEach((to,from,next)=>{
   NProgress.start()
-  // document.title = 'abcdef'
+  document.title = to.meta.label as string
   const user = useUserStore()
   if(user.logined){
     if(to.path === '/login'||to.path === '/register'){
