@@ -1,11 +1,4 @@
 import city from './省界.json?url'
-// import url from "./street.json?url"
-import data from "./street.js"
-let url = URL.createObjectURL(new File([JSON.stringify(data)],"satellite.json",{type:"application/json"}))
-import data2 from "./satellite2.js"
-let url2 = URL.createObjectURL(new File([JSON.stringify(data2)],"satellite.json",{type:"application/json"}))
-import data3 from "./satellite3.js"
-let url3 = URL.createObjectURL(new File([JSON.stringify(data3)],"satellite.json",{type:"application/json"}))
 import { useSettingStore } from '~/stores/setting';
 const setting = useSettingStore()
 export default {
@@ -287,7 +280,7 @@ export default {
 		},
 		"raster-tiles": {
 			"type": "raster",
-			url,
+			url:null,//代码中设置
 			// "tiles": [
 			// 	"https://tile.tanglei.site/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}"
 			// ],
@@ -299,14 +292,6 @@ export default {
 			"tiles": [
 				window.location.origin+"/backend/image?x={x}&y={y}&z={z}"
 			],
-			"tileSize": 256
-		},
-		"raster-isoline": {
-			"type": "raster",
-			url:url3,
-			// "tiles": [
-			// 	window.location.origin+"/backend/image?x={x}&y={y}&z={z}"
-			// ],
 			"tileSize": 256
 		},
 		"mapbox-dem": {
@@ -362,16 +347,6 @@ export default {
 				"maxzoom": 22,
 				layout:{
 					visibility:setting.人影.监控.routeLine?'visible':'none'
-				}
-			},
-			{
-				"id": "isolines-satellite",
-				"type": "raster",
-				"source": "raster-isoline",
-				"minzoom": 0,
-				"maxzoom": 22,
-				layout:{
-					visibility:'none'
 				}
 			},
 			// {

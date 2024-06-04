@@ -12,10 +12,10 @@
       v-model:pitch="setting.人影.监控.pitch"
       v-model:bearing="setting.人影.监控.bearing"
       v-model:zdz="setting.人影.监控.zdz"
-      v-model:isolines="setting.人影.监控.isolines"
-      v-model:isobands="setting.人影.监控.isobands"
       v-model:gridPoint="setting.人影.监控.gridPoint"
       v-model:gridValue="setting.人影.监控.gridValue"
+      v-model:isolines="setting.人影.监控.isolines"
+      v-model:isobands="setting.人影.监控.isobands"
     ></edit-map>
     <div
       class="absolute left-10px top-10px b-solid b-1px dark:b-gray-5 b-gray dark:bg-#2b2b2b bg-white dark:color-white color-black w-150px h-80px flex flex-col justify-between p-10px"
@@ -24,6 +24,63 @@
       <span>反制设备 10台</span>
       <span>合作无人机 0架</span>
       <span>黑飞无人机 0架</span>
+    </div>
+    <div :class="`right-drawer ${setting.人影.监控.disappear ? 'disappear' : ''}`">
+      <div
+        class="handle"
+        @click.native="setting.人影.监控.disappear = !setting.人影.监控.disappear"
+      >
+        <el-icon v-html="rightSvg"></el-icon>
+      </div>
+      <selectTile v-model:list="tileList"></selectTile>
+      <span style="font-size: 20px; margin-top: 20px">图层设置</span>
+      <div style="display: flex; flex-direction: column">
+        <el-checkbox
+          name="控制瓦片"
+          v-model="setting.人影.监控.loadmap"
+          label="显示瓦片地图"
+        ></el-checkbox>
+        <el-checkbox
+          name="控制区划"
+          v-model="setting.人影.监控.district"
+          label="显示行政区划"
+        ></el-checkbox>
+        <el-checkbox
+          name="控制航线"
+          v-model="setting.人影.监控.routeLine"
+          label="航路航线"
+        ></el-checkbox>
+        <el-checkbox
+          name="控制作业点"
+          v-model="setting.人影.监控.zyd"
+          label="显示作业点"
+        ></el-checkbox>
+        <el-checkbox
+          name="控制自动站"
+          v-model="setting.人影.监控.zdz"
+          label="自动站"
+        ></el-checkbox>
+        <el-checkbox
+          name="控制网格点"
+          v-model="setting.人影.监控.gridPoint"
+          label="网格点"
+        ></el-checkbox>
+        <el-checkbox
+          name="控制网格值"
+          v-model="setting.人影.监控.gridValue"
+          label="网格值"
+        ></el-checkbox>
+        <el-checkbox
+          name="控制等值线"
+          v-model="setting.人影.监控.isolines"
+          label="等值线"
+        ></el-checkbox>
+        <el-checkbox
+          name="控制等值带"
+          v-model="setting.人影.监控.isobands"
+          label="等值带"
+        ></el-checkbox>
+      </div>
     </div>
     <div
       :class="`bottom-drawer ${setting.人影.监控.bottom_disappear ? 'disappear' : ''}`"
@@ -50,66 +107,9 @@
         :table="'zydpara'"
       ></datatable>
     </div>
-    <div :class="`right-drawer ${setting.人影.监控.disappear ? 'disappear' : ''}`">
-      <div
-        class="handle"
-        @click.native="setting.人影.监控.disappear = !setting.人影.监控.disappear"
-      >
-        <el-icon v-html="rightSvg"></el-icon>
-      </div>
-      <selectTile v-model:list="tileList"></selectTile>
-      <span style="font-size: 20px; margin-top: 20px">图层设置</span>
-      <div style="display: flex; flex-direction: column">
-        <el-checkbox
-          name="控制瓦片"
-          v-model="setting.人影.监控.loadmap"
-          label="显示瓦片地图"
-        ></el-checkbox>
-        <el-checkbox
-          name="控制区划"
-          v-model="setting.人影.监控.district"
-          label="显示行政区划"
-        ></el-checkbox>
-        <el-checkbox
-          name="控制作业点"
-          v-model="setting.人影.监控.zyd"
-          label="显示作业点"
-        ></el-checkbox>
-        <el-checkbox
-          name="控制航线"
-          v-model="setting.人影.监控.routeLine"
-          label="航路航线"
-        ></el-checkbox>
-        <el-checkbox
-          name="控制自动站"
-          v-model="setting.人影.监控.zdz"
-          label="自动站"
-        ></el-checkbox>
-        <el-checkbox
-          name="控制等值带"
-          v-model="setting.人影.监控.isobands"
-          label="等值带"
-        ></el-checkbox>
-        <el-checkbox
-          name="控制等值线"
-          v-model="setting.人影.监控.isolines"
-          label="等值线"
-        ></el-checkbox>
-        <el-checkbox
-          name="控制网格点"
-          v-model="setting.人影.监控.gridPoint"
-          label="网格点"
-        ></el-checkbox>
-        <el-checkbox
-          name="控制网格值"
-          v-model="setting.人影.监控.gridValue"
-          label="网格值"
-        ></el-checkbox>
-      </div>
-    </div>
   </div>
 </template>
-<script setup>
+<script lang="ts" setup>
 import editMap from "../editMap.vue";
 import forkSvg from "~/assets/fork.svg?raw";
 import rightSvg from "~/assets/right.svg?raw";
@@ -123,8 +123,6 @@ import selectTile from "../selectTile.vue";
 import { watch, ref, reactive } from "vue";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
-import url1 from "~/assets/street.png?url";
-import url2 from "~/assets/satellite.png?url";
 import datatable from "~/myComponents/datatable/index.vue";
 const menus = reactive([
   { value: 12, type: "warning", svg: warnSvg, active: true },
@@ -143,13 +141,58 @@ const click = (v) => {
       item.active = false;
     });
 };
+const formatUrl = (url) => {
+  return url.replace("{x}", "105").replace("{y}", "48").replace("{z}", "7");
+};
 const tileList = ref([
-  { name: "街道地图", url: url1 },
-  { name: "卫星地图", url: url2 },
+  {
+    name: "高德街道地图",
+    url: formatUrl(
+      "https://wprd01.is.autonavi.com/appmaptile?style=10&x={x}&y={y}&z={z}"
+    ),
+    tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=10&x={x}&y={y}&z={z}"],
+  },
+  {
+    name: "高德卫星地图",
+    url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
+    tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
+  },
+  {
+    name: "谷歌卫星地图",
+    url: formatUrl("https://tile.tanglei.site/maps/vt?lyrs=y&x={x}&y={y}&z={z}"),
+    tileData: ["https://tile.tanglei.site/maps/vt?lyrs=y&x={x}&y={y}&z={z}"],
+  },
+  {
+    name: "谷歌卫星地图",
+    url: formatUrl("https://tile.tanglei.site/maps/vt?lyrs=s&x={x}&y={y}&z={z}"),
+    tileData: ["https://tile.tanglei.site/maps/vt?lyrs=s&x={x}&y={y}&z={z}"],
+  },
+  {
+    name: "谷歌卫星地图",
+    url: formatUrl("https://tile.tanglei.site/maps/vt?lyrs=h&x={x}&y={y}&z={z}"),
+    tileData: ["https://tile.tanglei.site/maps/vt?lyrs=h&x={x}&y={y}&z={z}"],
+  },
+  {
+    name: "谷歌地形地图",
+    url: formatUrl("https://tile.tanglei.site/maps/vt?lyrs=t&x={x}&y={y}&z={z}"),
+    tileData: ["https://tile.tanglei.site/maps/vt?lyrs=t&x={x}&y={y}&z={z}"],
+  },
+  {
+    name: "谷歌地形地图",
+    url: formatUrl("https://tile.tanglei.site/maps/vt?lyrs=p&x={x}&y={y}&z={z}"),
+    tileData: ["https://tile.tanglei.site/maps/vt?lyrs=p&x={x}&y={y}&z={z}"],
+  },
+  {
+    name: "谷歌地形地图",
+    url: formatUrl("https://tile.tanglei.site/maps/vt?lyrs=m&x={x}&y={y}&z={z}"),
+    tileData: ["https://tile.tanglei.site/maps/vt?lyrs=m&x={x}&y={y}&z={z}"],
+  },
 ]);
-tileList.value.map((item, k) => {
-  if (item.name == setting.人影.监控.tile) {
+let selected = false;
+tileList.value.map((item: any, k) => {
+  if (item.name == setting.人影.监控.tile.name && selected == false) {
     item.selected = true;
+    selected = true;
   } else {
     item.selected = false;
   }
@@ -158,8 +201,8 @@ watch(
   () => setting.人影.监控.tile,
   (v) => {
     // 容易造成死循环
-    tileList.value.map((item) => {
-      if (item.name == v) {
+    tileList.value.map((item: any) => {
+      if (item.name == v.name) {
         item.selected = true;
       } else {
         item.selected = false;
@@ -170,18 +213,20 @@ watch(
 watch(
   tileList,
   (list) => {
-    list.map((item) => {
+    list.map((item: any) => {
       if (item.selected) {
-        setting.人影.监控.tile = item.name;
+        setting.人影.监控.tile.name = item.name;
+        setting.人影.监控.tile.tileData = item.tileData;
       }
     });
   },
-  { deep: true }
+  { immediate: true, deep: true }
 );
 </script>
 <style scoped lang="scss">
 $time: 1s;
 .bottom-drawer {
+  z-index: 1;
   white-space: nowrap;
   position: absolute;
   height: 240px;
@@ -222,7 +267,7 @@ $time: 1s;
   }
 }
 .right-drawer {
-  z-index: 4;
+  overflow: auto;
   position: absolute;
   right: 0;
   width: 240px;

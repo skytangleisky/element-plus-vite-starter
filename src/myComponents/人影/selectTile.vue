@@ -17,10 +17,16 @@
         "
       />
       <el-icon
-        class="checkColor"
+        class="checkColor dark:bg-#fff b-solid bg-#000"
         v-if="v.selected"
         v-html="checkSvg"
-        style="position: absolute; font-size: 1.5rem; right: 5px; top: 5px"
+        style="
+          position: absolute;
+          font-size: 1.5rem;
+          right: 5px;
+          top: 5px;
+          border-radius: 50%;
+        "
       ></el-icon>
       <span>{{ v.name }}</span>
     </div>

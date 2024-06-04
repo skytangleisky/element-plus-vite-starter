@@ -57,7 +57,6 @@ import plotUrl from "../mapbox/data/plot/06040802.000?url";
 import palette2 from "../mapbox/data/highTemperature/850hPaTemp.xml?raw";
 import plotUrl2 from "../mapbox/data/highTemperature/06040808.000?url";
 import { getMicapsData } from "../mapbox/data/plot/micaps";
-let LAT = (Math.atan(Math.sinh(Math.PI)) * 180) / Math.PI;
 import interpolate from "./idw.js";
 import { isoLines, isoBands } from "marchingsquares";
 const getHue = (min: number, v: number, max: number) => {
@@ -121,7 +120,7 @@ const props = withDefaults(
     loadmap?: boolean;
     district?: boolean;
     zyd?: boolean;
-    tile?: string;
+    tile?: { name: string; tileData: Array<string> };
     center?: object;
     zoom?: number;
     pitch?: number;
@@ -139,7 +138,7 @@ const props = withDefaults(
     zyd: true,
     loadmap: true,
     district: true,
-    tile: "街道地图",
+    tile: () => ({ name: "街道地图", tileData: new Array<string>() }),
     center: () => [0, 0],
     zoom: 4,
     pitch: 0,
@@ -161,14 +160,6 @@ style.layers.map((v: any) => {
     v.layout.visibility = props.district ? "visible" : "none";
   }
 });
-import street from "./street.js";
-let streetUrl = URL.createObjectURL(
-  new File([JSON.stringify(street)], "street.json", { type: "application/json" })
-);
-import satellite from "./satellite.js";
-let satelliteUrl = URL.createObjectURL(
-  new File([JSON.stringify(satellite)], "satellite.json", { type: "application/json" })
-);
 import { setConfig, getAll } from "~/api/人影/api";
 const emit = defineEmits([
   "update:center",
@@ -176,16 +167,43 @@ const emit = defineEmits([
   "update:pitch",
   "update:bearing",
 ]);
+
+let LAT = (Math.atan(Math.sinh(Math.PI)) * 180) / Math.PI;
+const baseTileData = {
+  attribution: null,
+  attribution2:
+    '<a href="https://www.mapbox.com/about/maps/" target="_blank" title="Mapbox" aria-label="Mapbox">&copy; Mapbox</a> <a href="https://www.openstreetmap.org/about/" target="_blank" title="OpenStreetMap" aria-label="OpenStreetMap">&copy; OpenStreetMap</a> <a class="mapbox-improve-map" href="https://www.mapbox.com/contribute/" target="_blank" title="Improve this map" aria-label="Improve this map">Improve this map</a> <a href="https://www.maxar.com/" target="_blank" title="Maxar" aria-label="Maxar">&copy; Maxar</a>',
+  autoscale: true,
+  bounds: [-180, -LAT, 180, LAT],
+  cacheControl: "max-age=43200,s-maxage=2592000",
+  center: [0, 0, 3],
+  created: 1358310600000,
+  id: "mapbox.satellite",
+  mapbox_logo: false,
+  maxzoom: 22,
+  minzoom: 0,
+  modified: 1614877124000,
+  name: "Mapbox Satellite",
+  private: false,
+  scheme: "xyz",
+  tilejson: "2.2.0",
+  tiles: new Array<string>(),
+  webpage: "https://dev-studio.tilestream.net/tilesets/mapbox.satellite",
+};
+function processTileData(tiles = new Array<string>()) {
+  baseTileData.tiles = tiles;
+  return URL.createObjectURL(
+    new File([JSON.stringify(baseTileData)], Math.random() + ".json", {
+      type: "application/json",
+    })
+  );
+}
 let map: any;
 watch(
   () => props.tile,
   (tile) => {
     let s = map ? map.getStyle() : style;
-    if (tile == "街道地图") {
-      s.sources["raster-tiles"].url = streetUrl;
-    } else if (tile == "卫星地图") {
-      s.sources["raster-tiles"].url = satelliteUrl;
-    }
+    s.sources["raster-tiles"].url = processTileData(tile.tileData);
     s.layers.map((v: any) => {
       if (v.id == "simple-tiles") {
         v.layout.visibility = props.loadmap ? "visible" : "none";
@@ -195,9 +213,7 @@ watch(
     });
     map && map.setStyle(s);
   },
-  {
-    immediate: true,
-  }
+  { deep: true, immediate: true }
 );
 watch(
   () => props.loadmap,
@@ -1022,719 +1038,719 @@ onMounted(() => {
     //   }
     // }, 1000);
 
-    // getMicapsData(plotUrl).then(async(result: any) => {
-    //   let pts = new Array<{lng:number;lat:number;value:number}>;
-    //   // for (let i = 0; i < 100; i++) {
-    //   //   pts.push({
-    //   //     lng: Math.random() * 70 + 70,
-    //   //     lat: Math.random() * 40 + 15,
-    //   //     value: Number((Math.random() * 72-36).toFixed(2)),
-    //   //   });
-    //   // }
+    getMicapsData(plotUrl).then(async(result: any) => {
+      let pts = new Array<{lng:number;lat:number;value:number}>;
+      // for (let i = 0; i < 100; i++) {
+      //   pts.push({
+      //     lng: Math.random() * 70 + 70,
+      //     lat: Math.random() * 40 + 15,
+      //     value: Number((Math.random() * 72-36).toFixed(2)),
+      //   });
+      // }
 
-    //   result.data.map((item: any) => {
-    //     // if(item.温度!==9999&&item.经度>70&&item.经度<140&&15<item.纬度&&item.纬度<55){
-    //     if(item.温度!==9999){
-    //       pts.push({
-    //         lng: item.经度,
-    //         lat: item.纬度,
-    //         value: Math.round(item.温度),
-    //       });
-    //     }
-    //   });
+      result.data.map((item: any) => {
+        // if(item.温度!==9999&&item.经度>70&&item.经度<140&&15<item.纬度&&item.纬度<55){
+        if(item.温度!==9999){
+          pts.push({
+            lng: item.经度,
+            lat: item.纬度,
+            value: Math.round(item.温度),
+          });
+        }
+      });
 
-    //   let breaks = new Array<number>();
-    //   var Color: { [key: string]: any } = {};
-    //   let xmlDoc = new DOMParser().parseFromString(palette, "text/xml");
-    //   let collections = xmlDoc.getElementsByTagName("entry");
-    //   for (let i = 0; i < collections.length; i++) {
-    //     let value = parseInt(Number(collections[i].getAttribute("value")).toFixed());
-    //     breaks.push(value)
-    //     let strPalette = collections[i].getAttribute("rgba");
-    //     if (strPalette) {
-    //       let rgba: [number,number,number,number] = strPalette.split(",").map((v) => Number(v)) as unknown as [number,number,number,number];
-    //       let hsl = rgb2Hsl(rgba[0],rgba[1],rgba[2])
-    //       // Color[value.toFixed()] = `hsl(${hsl[0]},${hsl[1]}%,${hsl[2]}%)`;
-    //       Color[value.toFixed()] = '#' + ((1 << 24) + (rgba[0] << 16) + (rgba[1] << 8) + rgba[2]).toString(16).slice(1);
-    //     }
-    //   }
-
-    //   let fillColors = [];
-    //   let strokeColors = [];
-    //   breaks=[]
-    //   for(let i=-36;i<36;i++){
-    //     breaks.push(i);
-    //   }
-    //   for (let i = 0; i < breaks.length; i++) {
-    //     strokeColors.push(breaks[i]);
-    //     strokeColors.push(`hsl(${getHue(-36, breaks[i], 36)},100%,50%)`);
-    //     // strokeColors.push(Color[breaks[i].toFixed()]);
-    //   }
-
-    //   // for (let i = 0; i < breaks.length; i++) {
-    //   //   strokeColors.push(breaks[i]);
-    //   //   // strokeColors.push(`hsl(${getHue(-36, breaks[i], 36)},100%,50%)`);
-    //   //   strokeColors.push(Color[breaks[i].toFixed()]);
-    //   // }
-    //   for (let i = 0; i < breaks.length - 1; i++) {
-    //     fillColors.push(`${breaks[i]}-${breaks[i + 1]}`);
-    //     fillColors.push(strokeColors[2*i+1]);
-    //     // fillColors.push(strokeColors[2*(i+1)+1]);
-    //   }
-    //   let interpolateOptions = {
-    //     sizeU: 140,
-    //     sizeV: 80,
-    //     boundary: {
-    //       lng: 70,
-    //       lat: 15,
-    //       width: 70,
-    //       height: 40,
-    //     },
-    //     power: 6,
-    //   };
-    //   console.time()
-    //   let grid = interpolate(pts, interpolateOptions)
-    //   console.timeEnd()
-    //     var bandWidths = breaks.reduce(function (bw, upperBand, i, intervals) {
-    //       if (i > 0) {
-    //         var lowerBand = intervals[i - 1];
-    //         bw.push(upperBand - lowerBand);
-    //       }
-    //       return bw;
-    //     }, new Array<number>());
-    //     var multiBands = isoBands(grid, breaks.slice(0, -1), bandWidths, {
-    //       verbose: false,
-    //       polygons: false,
-    //       linearRing: false,
-    //       noFrame: true,
-    //       noQuadTree: false,
-    //       polygons_full: false,
-    //       successCallback: () => {},
-    //     });
-    //     let isobands = {
-    //       type: "FeatureCollection",
-    //       features: new Array<any>(),
-    //     };
-    //     for (let j = 0; j < multiBands.length; j++) {
-    //       let feature = {
-    //         type: "Feature",
-    //         properties: { threshold: breaks[j] + "-" + breaks[j + 1] },
-    //         geometry: {
-    //           type: "MultiPolygon",
-    //           coordinates: new Array<any>(),
-    //         },
-    //       };
-    //       let polygons = [];
-    //       let holes = [];
-    //       for (let i = 0; i < multiBands[j].length; i++) {
-    //         let points = new Array<[number, number]>();
-    //         multiBands[j][i].map((point: [number, number]) => {
-    //           points.push([
-    //             (point[0] / (interpolateOptions.sizeU - 1)) *
-    //               interpolateOptions.boundary.width +
-    //               interpolateOptions.boundary.lng,
-    //             (point[1] / (interpolateOptions.sizeV - 1)) *
-    //               interpolateOptions.boundary.height +
-    //               interpolateOptions.boundary.lat,
-    //           ]);
-    //         });
-    //         if (interpolateOptions.boundary.width * interpolateOptions.boundary.height * area(points) < 0) {
-    //           polygons.push(points);
-    //         } else {
-    //           holes.push(points);
-    //         }
-    //       }
-    //       for (let k = 0; k < polygons.length; k++) {
-    //         let polygon = polygons.splice(k--, 1)[0];
-    //         let tmp = [polygon];
-    //         for (let m = 0; m < holes.length; m++) {
-    //           if (
-    //             pointInPolygon(holes[m][0], polygon) &&
-    //             polygons.every((item: any) => !pointInPolygon(holes[m][0], item))
-    //           ) {
-    //             let hole = holes.splice(m--, 1)[0];
-    //             tmp.push(hole);
-    //           }
-    //         }
-    //         feature.geometry.coordinates.push(tmp);
-    //       }
-    //       isobands.features.push(feature);
-    //     }
-    //     map.addLayer({
-    //       id: "等值带",
-    //       type: "fill",
-    //       source: {
-    //         type: "geojson",
-    //         data: isobands,
-    //       },
-    //       layout: {
-    //         visibility:props.isobands?"visible":"none"
-    //       },
-    //       paint: {
-    //         "fill-color": ["match", ["get", "threshold"], ...fillColors, "transparent"],
-    //         "fill-opacity": 0.5,
-    //       },
-    //     });
-
-    //     var multiLines = isoLines(grid, breaks, {
-    //       noFrame: true,
-    //       polygons: false,
-    //       polygons_full: false,
-    //       noQuadTree: false,
-    //       linearRing: false,
-    //       verbose: false,
-    //       successCallback: (multiLines: any, threshold: number) => {},
-    //     });
-    //     let isolines = {
-    //       type: "FeatureCollection",
-    //       features: new Array<any>(),
-    //     };
-    //     let isolineValues = {
-    //       type: "FeatureCollection",
-    //       features: new Array<any>(),
-    //     };
-    //     for (let j = 0; j < multiLines.length; j++) {
-    //       let feature = {
-    //         type: "Feature",
-    //         properties: { threshold: breaks[j] },
-    //         geometry: {
-    //           type: "MultiLineString",
-    //           coordinates: new Array<any>(),
-    //         },
-    //       };
-    //       let featureValue = {
-    //         type: "Feature",
-    //         properties: { threshold: breaks[j] },
-    //         geometry: {
-    //           type: "MultiPoint",
-    //           coordinates: new Array<any>(),
-    //         },
-    //       };
-    //       // console.log(multiLines[j])
-    //       for (let i = 0; i < multiLines[j].length; i++) {
-    //         let line = multiLines[j][i];
-    //         let points = new Array<any>();
-    //         for(let k=0;k<line.length;k++){
-    //           let point = [
-    //             (line[k][0] / (interpolateOptions.sizeU - 1)) *
-    //               interpolateOptions.boundary.width +
-    //               interpolateOptions.boundary.lng,
-    //             (line[k][1] / (interpolateOptions.sizeV - 1)) *
-    //               interpolateOptions.boundary.height +
-    //               interpolateOptions.boundary.lat,
-    //           ]
-    //           points.push(point);
-    //         }
-    //         feature.geometry.coordinates.push(points);
-    //         let firstPoint = points[0]
-    //         let lastPoint = points.slice(-1)[0]
-    //         if(JSON.stringify(firstPoint)===JSON.stringify(lastPoint)){
-    //           featureValue.geometry.coordinates.push(firstPoint)
-    //         }else{
-    //           featureValue.geometry.coordinates.push(firstPoint)
-    //           featureValue.geometry.coordinates.push(lastPoint)
-    //         }
-    //       }
-    //       isolines.features.push(feature);
-    //       isolineValues.features.push(featureValue);
-    //     }
-    //     map.addLayer({
-    //       id: "等值线",
-    //       type: "line",
-    //       source: {
-    //         type: "geojson",
-    //         data: isolines,
-    //       },
-    //       layout: {
-    //         visibility:props.isolines?'visible':'none'
-    //       },
-    //       paint: {
-    //         "line-color": ["match", ["get", "threshold"], ...strokeColors, "transparent"],
-    //         "line-width": 1,
-    //         "line-opacity": 1,
-    //       },
-    //     });
-    //     map.addLayer({
-    //       id: "等值线值",
-    //       type: "symbol",
-    //       source: {
-    //         type: "geojson",
-    //         data: isolineValues,
-    //       },
-    //       layout: {
-    //         "visibility":props.isolines?'visible':'none',
-    //         "text-field": ["get", "threshold"],
-    //         "text-size":16,
-    //         "text-font": ["simkai"],
-    //         "text-offset": [0, 0.2],
-    //         "text-anchor": "bottom",
-    //         "text-ignore-placement": true,
-    //         "text-rotation-alignment": "map",
-    //       },
-    //       paint: {
-    //         "text-color":  ["match", ["get", "threshold"], ...strokeColors, "transparent"],
-    //         "text-halo-width": 1,
-    //         "text-halo-color": "black",
-    //       },
-    //     });
-
-    //     let discretePoints = {
-    //       type: "FeatureCollection",
-    //       features: new Array<any>(),
-    //     };
-
-    //     pts.map(item=>{
-    //       discretePoints.features.push({
-    //         type: "Feature",
-    //         properties: {
-    //           threshold: item.value,
-    //           color: "red" ,
-    //         },
-    //         geometry: {
-    //           type: "Point",
-    //           coordinates: [item.lng, item.lat],
-    //         },
-    //       });
-    //     })
-    //     map.addLayer({
-    //       id: "离散值",
-    //       type: "symbol",
-    //       source: { type: "geojson", data: discretePoints },
-    //       layout: {
-    //         "visibility":props.zdz?"visible":"none",
-    //         "text-field": ["get", "threshold"],
-    //         "text-size":24,
-    //         "text-font": ["simkai"],
-    //         "text-offset": [0, 0.2],
-    //         "text-anchor": "bottom",
-    //         "text-ignore-placement": true,
-    //         "text-rotation-alignment": "map",
-    //       },
-    //       paint: {
-    //         "text-color": ["get", "color"],
-    //         "text-halo-width": 1,
-    //         "text-halo-color": "black",
-    //       },
-    //     });
-    //     map.addLayer({
-    //       id: "离散点",
-    //       type: "circle",
-    //       source: { type: "geojson", data: discretePoints },
-    //       layout:{
-    //         "visibility":props.zdz?"visible":"none",
-    //       },
-    //       paint: { "circle-radius": 3, "circle-color": "white", "circle-stroke-width": 1,"circle-stroke-color":'black' },
-    //     });
-
-    //     let gridPoints = {
-    //       type: "FeatureCollection",
-    //       features: new Array<any>(),
-    //     };
-    //     for (let j = 0; j < grid.length; j++) {
-    //       for (let i = 0; i < grid[j].length; i++) {
-    //         let x =
-    //           (i / (interpolateOptions.sizeU - 1)) * interpolateOptions.boundary.width +
-    //           interpolateOptions.boundary.lng;
-    //         let y =
-    //           (j / (interpolateOptions.sizeV - 1)) * interpolateOptions.boundary.height +
-    //           interpolateOptions.boundary.lat;
-    //         gridPoints.features.push({
-    //           type: "Feature",
-    //           properties: {
-    //             threshold: grid[j][i].toFixed(2),
-    //             color: "white",
-    //           },
-    //           geometry: {
-    //             type: "Point",
-    //             coordinates: [x, y],
-    //           },
-    //         });
-    //       }
-    //     }
-    //     map.addLayer({
-    //       id: "网格值",
-    //       type: "symbol",
-    //       source: { type: "geojson", data: gridPoints },
-    //       layout: {
-    //         "visibility":props.gridValue?'visible':'none',
-    //         "text-field": ["get", "threshold"],
-    //         "text-font": ["simkai"],
-    //         "text-offset": [0, 0.2],
-    //         "text-anchor": "bottom",
-    //         "text-ignore-placement": true,
-    //         "text-rotation-alignment": "map",
-    //       },
-    //       paint: {
-    //         "text-color": ["get", "color"],
-    //         "text-halo-width": 1,
-    //         "text-halo-color": "black",
-    //       },
-    //     });
-    //     map.addLayer({
-    //       id: "网格点",
-    //       type: "circle",
-    //       source: { type: "geojson", data: gridPoints },
-    //       layout:{
-    //         "visibility":props.gridPoint?'visible':'none',
-    //       },
-    //       paint: { "circle-radius": 3, "circle-color": "white", "circle-stroke-width": 1 },
-    //     });
-
-    //   /*
-    // map.addLayer({
-    //   id: "等值线边界",
-    //   type: "fill",
-    //   source: {
-    //     type: "geojson",
-    //     data: {
-    //       type: "Feature",
-    //       geometry: {
-    //         type: "Polygon",
-    //         coordinates: [
-    //           [
-    //             [-180, -50],
-    //             [180, -50],
-    //             [180, 50],
-    //             [-180, 50],
-    //             [-180, -50],
-    //           ],
-    //         ],
-    //       },
-    //     },
-    //   },
-    //   layout: {},
-    //   paint: {
-    //     "line-color": "yellow",
-    //     "line-opacity": 1,
-    //     "line-width": 1,
-    //     "fill-color": "cyan",
-    //     "fill-opacity": 0.5,
-    //   },
-    // });*/
-
-    // });
-
-    getMicapsData(plotUrl2).then(async (result: any) => {
       let breaks = new Array<number>();
       var Color: { [key: string]: any } = {};
-      let xmlDoc = new DOMParser().parseFromString(palette2, "text/xml");
+      let xmlDoc = new DOMParser().parseFromString(palette, "text/xml");
       let collections = xmlDoc.getElementsByTagName("entry");
       for (let i = 0; i < collections.length; i++) {
         let value = parseInt(Number(collections[i].getAttribute("value")).toFixed());
-        breaks.push(value);
+        breaks.push(value)
         let strPalette = collections[i].getAttribute("rgba");
         if (strPalette) {
-          let rgba: [number, number, number, number] = (strPalette
-            .split(",")
-            .map((v) => Number(v)) as unknown) as [number, number, number, number];
-          let hsl = rgb2Hsl(rgba[0], rgba[1], rgba[2]);
+          let rgba: [number,number,number,number] = strPalette.split(",").map((v) => Number(v)) as unknown as [number,number,number,number];
+          let hsl = rgb2Hsl(rgba[0],rgba[1],rgba[2])
           // Color[value.toFixed()] = `hsl(${hsl[0]},${hsl[1]}%,${hsl[2]}%)`;
-          Color[value.toFixed()] =
-            "#" +
-            ((1 << 24) + (rgba[0] << 16) + (rgba[1] << 8) + rgba[2])
-              .toString(16)
-              .slice(1);
+          Color[value.toFixed()] = '#' + ((1 << 24) + (rgba[0] << 16) + (rgba[1] << 8) + rgba[2]).toString(16).slice(1);
         }
       }
 
       let fillColors = [];
       let strokeColors = [];
+      breaks=[]
+      for(let i=-36;i<36;i++){
+        breaks.push(i);
+      }
       for (let i = 0; i < breaks.length; i++) {
         strokeColors.push(breaks[i]);
-        // strokeColors.push(`hsl(${getHue(-36, breaks[i], 36)},100%,50%)`);
-        strokeColors.push(Color[breaks[i].toFixed()]);
+        strokeColors.push(`hsl(${getHue(-36, breaks[i], 36)},100%,50%)`);
+        // strokeColors.push(Color[breaks[i].toFixed()]);
       }
+
+      // for (let i = 0; i < breaks.length; i++) {
+      //   strokeColors.push(breaks[i]);
+      //   // strokeColors.push(`hsl(${getHue(-36, breaks[i], 36)},100%,50%)`);
+      //   strokeColors.push(Color[breaks[i].toFixed()]);
+      // }
       for (let i = 0; i < breaks.length - 1; i++) {
         fillColors.push(`${breaks[i]}-${breaks[i + 1]}`);
-        fillColors.push(strokeColors[2 * i + 1]);
+        fillColors.push(strokeColors[2*i+1]);
         // fillColors.push(strokeColors[2*(i+1)+1]);
       }
       let interpolateOptions = {
-        sizeU: 33,
-        sizeV: 18,
+        sizeU: 140,
+        sizeV: 80,
         boundary: {
-          lng: result.beginLng,
-          lat: result.beginLat,
-          width: result.endLng - result.beginLng,
-          height: result.endLat - result.beginLat,
+          lng: 70,
+          lat: 15,
+          width: 70,
+          height: 40,
         },
         power: 6,
       };
-      let grid = result.data;
-      var bandWidths = breaks.reduce(function (bw, upperBand, i, intervals) {
-        if (i > 0) {
-          var lowerBand = intervals[i - 1];
-          bw.push(upperBand - lowerBand);
-        }
-        return bw;
-      }, new Array<number>());
-      var multiBands = isoBands(grid, breaks.slice(0, -1), bandWidths, {
-        verbose: false,
-        polygons: false,
-        linearRing: false,
-        noFrame: true,
-        noQuadTree: false,
-        polygons_full: false,
-        successCallback: () => {},
-      });
-      let isobands = {
-        type: "FeatureCollection",
-        features: new Array<any>(),
-      };
-      for (let j = 0; j < multiBands.length; j++) {
-        let feature = {
-          type: "Feature",
-          properties: { threshold: breaks[j] + "-" + breaks[j + 1] },
-          geometry: {
-            type: "MultiPolygon",
-            coordinates: new Array<any>(),
-          },
-        };
-        let polygons = [];
-        let holes = [];
-        for (let i = 0; i < multiBands[j].length; i++) {
-          let points = new Array<[number, number]>();
-          multiBands[j][i].map((point: [number, number]) => {
-            points.push([
-              (point[0] / (interpolateOptions.sizeU - 1)) *
-                interpolateOptions.boundary.width +
-                interpolateOptions.boundary.lng,
-              (point[1] / (interpolateOptions.sizeV - 1)) *
-                interpolateOptions.boundary.height +
-                interpolateOptions.boundary.lat,
-            ]);
-          });
-          if (
-            interpolateOptions.boundary.width *
-              interpolateOptions.boundary.height *
-              area(points) <
-            0
-          ) {
-            polygons.push(points);
-          } else {
-            holes.push(points);
+      console.time()
+      let grid = interpolate(pts, interpolateOptions)
+      console.timeEnd()
+        var bandWidths = breaks.reduce(function (bw, upperBand, i, intervals) {
+          if (i > 0) {
+            var lowerBand = intervals[i - 1];
+            bw.push(upperBand - lowerBand);
           }
-        }
-        for (let k = 0; k < polygons.length; k++) {
-          let polygon = polygons.splice(k--, 1)[0];
-          let tmp = [polygon];
-          for (let m = 0; m < holes.length; m++) {
-            if (
-              pointInPolygon(holes[m][0], polygon) &&
-              polygons.every((item: any) => !pointInPolygon(holes[m][0], item))
-            ) {
-              let hole = holes.splice(m--, 1)[0];
-              tmp.push(hole);
+          return bw;
+        }, new Array<number>());
+        var multiBands = isoBands(grid, breaks.slice(0, -1), bandWidths, {
+          verbose: false,
+          polygons: false,
+          linearRing: false,
+          noFrame: true,
+          noQuadTree: false,
+          polygons_full: false,
+          successCallback: () => {},
+        });
+        let isobands = {
+          type: "FeatureCollection",
+          features: new Array<any>(),
+        };
+        for (let j = 0; j < multiBands.length; j++) {
+          let feature = {
+            type: "Feature",
+            properties: { threshold: breaks[j] + "-" + breaks[j + 1] },
+            geometry: {
+              type: "MultiPolygon",
+              coordinates: new Array<any>(),
+            },
+          };
+          let polygons = [];
+          let holes = [];
+          for (let i = 0; i < multiBands[j].length; i++) {
+            let points = new Array<[number, number]>();
+            multiBands[j][i].map((point: [number, number]) => {
+              points.push([
+                (point[0] / (interpolateOptions.sizeU - 1)) *
+                  interpolateOptions.boundary.width +
+                  interpolateOptions.boundary.lng,
+                (point[1] / (interpolateOptions.sizeV - 1)) *
+                  interpolateOptions.boundary.height +
+                  interpolateOptions.boundary.lat,
+              ]);
+            });
+            if (interpolateOptions.boundary.width * interpolateOptions.boundary.height * area(points) < 0) {
+              polygons.push(points);
+            } else {
+              holes.push(points);
             }
           }
-          feature.geometry.coordinates.push(tmp);
+          for (let k = 0; k < polygons.length; k++) {
+            let polygon = polygons.splice(k--, 1)[0];
+            let tmp = [polygon];
+            for (let m = 0; m < holes.length; m++) {
+              if (
+                pointInPolygon(holes[m][0], polygon) &&
+                polygons.every((item: any) => !pointInPolygon(holes[m][0], item))
+              ) {
+                let hole = holes.splice(m--, 1)[0];
+                tmp.push(hole);
+              }
+            }
+            feature.geometry.coordinates.push(tmp);
+          }
+          isobands.features.push(feature);
         }
-        isobands.features.push(feature);
-      }
-      map.addLayer({
-        id: "等值带",
-        type: "fill",
-        source: {
-          type: "geojson",
-          data: isobands,
-        },
-        layout: {
-          visibility: props.isobands ? "visible" : "none",
-        },
-        paint: {
-          "fill-color": ["match", ["get", "threshold"], ...fillColors, "transparent"],
-          "fill-opacity": 0.5,
-        },
-      });
+        map.addLayer({
+          id: "等值带",
+          type: "fill",
+          source: {
+            type: "geojson",
+            data: isobands,
+          },
+          layout: {
+            visibility:props.isobands?"visible":"none"
+          },
+          paint: {
+            "fill-color": ["match", ["get", "threshold"], ...fillColors, "transparent"],
+            "fill-opacity": 0.5,
+          },
+        });
 
-      var multiLines = isoLines(grid, breaks, {
-        noFrame: true,
-        polygons: false,
-        polygons_full: false,
-        noQuadTree: false,
-        linearRing: false,
-        verbose: false,
-        successCallback: (multiLines: any, threshold: number) => {},
-      });
-      let isolines = {
-        type: "FeatureCollection",
-        features: new Array<any>(),
-      };
-      let isolineValues = {
-        type: "FeatureCollection",
-        features: new Array<any>(),
-      };
-      for (let j = 0; j < multiLines.length; j++) {
-        let feature = {
-          type: "Feature",
-          properties: { threshold: breaks[j] },
-          geometry: {
-            type: "MultiLineString",
-            coordinates: new Array<any>(),
-          },
+        var multiLines = isoLines(grid, breaks, {
+          noFrame: true,
+          polygons: false,
+          polygons_full: false,
+          noQuadTree: false,
+          linearRing: false,
+          verbose: false,
+          successCallback: (multiLines: any, threshold: number) => {},
+        });
+        let isolines = {
+          type: "FeatureCollection",
+          features: new Array<any>(),
         };
-        let featureValue = {
-          type: "Feature",
-          properties: { threshold: breaks[j] },
-          geometry: {
-            type: "MultiPoint",
-            coordinates: new Array<any>(),
-          },
+        let isolineValues = {
+          type: "FeatureCollection",
+          features: new Array<any>(),
         };
-        // console.log(multiLines[j])
-        for (let i = 0; i < multiLines[j].length; i++) {
-          let line = multiLines[j][i];
-          let points = new Array<any>();
-          for (let k = 0; k < line.length; k++) {
-            let point = [
-              (line[k][0] / (interpolateOptions.sizeU - 1)) *
-                interpolateOptions.boundary.width +
-                interpolateOptions.boundary.lng,
-              (line[k][1] / (interpolateOptions.sizeV - 1)) *
-                interpolateOptions.boundary.height +
-                interpolateOptions.boundary.lat,
-            ];
-            points.push(point);
+        for (let j = 0; j < multiLines.length; j++) {
+          let feature = {
+            type: "Feature",
+            properties: { threshold: breaks[j] },
+            geometry: {
+              type: "MultiLineString",
+              coordinates: new Array<any>(),
+            },
+          };
+          let featureValue = {
+            type: "Feature",
+            properties: { threshold: breaks[j] },
+            geometry: {
+              type: "MultiPoint",
+              coordinates: new Array<any>(),
+            },
+          };
+          // console.log(multiLines[j])
+          for (let i = 0; i < multiLines[j].length; i++) {
+            let line = multiLines[j][i];
+            let points = new Array<any>();
+            for(let k=0;k<line.length;k++){
+              let point = [
+                (line[k][0] / (interpolateOptions.sizeU - 1)) *
+                  interpolateOptions.boundary.width +
+                  interpolateOptions.boundary.lng,
+                (line[k][1] / (interpolateOptions.sizeV - 1)) *
+                  interpolateOptions.boundary.height +
+                  interpolateOptions.boundary.lat,
+              ]
+              points.push(point);
+            }
+            feature.geometry.coordinates.push(points);
+            let firstPoint = points[0]
+            let lastPoint = points.slice(-1)[0]
+            if(JSON.stringify(firstPoint)===JSON.stringify(lastPoint)){
+              featureValue.geometry.coordinates.push(firstPoint)
+            }else{
+              featureValue.geometry.coordinates.push(firstPoint)
+              featureValue.geometry.coordinates.push(lastPoint)
+            }
           }
-          feature.geometry.coordinates.push(points);
-          let firstPoint = points[0];
-          let lastPoint = points.slice(-1)[0];
-          if (JSON.stringify(firstPoint) === JSON.stringify(lastPoint)) {
-            featureValue.geometry.coordinates.push(firstPoint);
-          } else {
-            featureValue.geometry.coordinates.push(firstPoint);
-            featureValue.geometry.coordinates.push(lastPoint);
-          }
+          isolines.features.push(feature);
+          isolineValues.features.push(featureValue);
         }
-        isolines.features.push(feature);
-        isolineValues.features.push(featureValue);
-      }
-      map.addLayer({
-        id: "等值线",
-        type: "line",
-        source: {
-          type: "geojson",
-          data: isolines,
-        },
-        layout: {
-          visibility: props.isolines ? "visible" : "none",
-          "line-join": "round",
-          "line-cap": "round",
-        },
-        paint: {
-          "line-color": ["match", ["get", "threshold"], ...strokeColors, "transparent"],
-          "line-width": 2,
-          "line-opacity": 1,
-        },
-      });
-      map.addLayer({
-        id: "等值线值",
-        type: "symbol",
-        source: {
-          type: "geojson",
-          data: isolineValues,
-        },
-        layout: {
-          visibility: props.isolines ? "visible" : "none",
-          "text-field": ["get", "threshold"],
-          "text-size": 16,
-          "text-font": ["simkai"],
-          "text-offset": [0, 0.2],
-          "text-anchor": "bottom",
-          "text-ignore-placement": true,
-          "text-rotation-alignment": "map",
-        },
-        paint: {
-          "text-color": "yellow",
-          "text-halo-width": 1,
-          "text-halo-color": "black",
-        },
-      });
-      let gridPoints = {
-        type: "FeatureCollection",
-        features: new Array<any>(),
-      };
-      for (let j = 0; j < grid.length; j++) {
-        for (let i = 0; i < grid[j].length; i++) {
-          let x =
-            (i / (interpolateOptions.sizeU - 1)) * interpolateOptions.boundary.width +
-            interpolateOptions.boundary.lng;
-          let y =
-            (j / (interpolateOptions.sizeV - 1)) * interpolateOptions.boundary.height +
-            interpolateOptions.boundary.lat;
-          gridPoints.features.push({
+        map.addLayer({
+          id: "等值线",
+          type: "line",
+          source: {
+            type: "geojson",
+            data: isolines,
+          },
+          layout: {
+            visibility:props.isolines?'visible':'none'
+          },
+          paint: {
+            "line-color": ["match", ["get", "threshold"], ...strokeColors, "transparent"],
+            "line-width": 1,
+            "line-opacity": 1,
+          },
+        });
+        map.addLayer({
+          id: "等值线值",
+          type: "symbol",
+          source: {
+            type: "geojson",
+            data: isolineValues,
+          },
+          layout: {
+            "visibility":props.isolines?'visible':'none',
+            "text-field": ["get", "threshold"],
+            "text-size":16,
+            "text-font": ["simkai"],
+            "text-offset": [0, 0.2],
+            "text-anchor": "bottom",
+            "text-ignore-placement": true,
+            "text-rotation-alignment": "map",
+          },
+          paint: {
+            "text-color":  ["match", ["get", "threshold"], ...strokeColors, "transparent"],
+            "text-halo-width": 1,
+            "text-halo-color": "black",
+          },
+        });
+
+        let discretePoints = {
+          type: "FeatureCollection",
+          features: new Array<any>(),
+        };
+
+        pts.map(item=>{
+          discretePoints.features.push({
             type: "Feature",
             properties: {
-              threshold: grid[j][i].toFixed(2),
-              color: "white",
+              threshold: item.value,
+              color: "red" ,
             },
             geometry: {
               type: "Point",
-              coordinates: [x, y],
+              coordinates: [item.lng, item.lat],
             },
           });
+        })
+        map.addLayer({
+          id: "离散值",
+          type: "symbol",
+          source: { type: "geojson", data: discretePoints },
+          layout: {
+            "visibility":props.zdz?"visible":"none",
+            "text-field": ["get", "threshold"],
+            "text-size":24,
+            "text-font": ["simkai"],
+            "text-offset": [0, 0.2],
+            "text-anchor": "bottom",
+            "text-ignore-placement": true,
+            "text-rotation-alignment": "map",
+          },
+          paint: {
+            "text-color": ["get", "color"],
+            "text-halo-width": 1,
+            "text-halo-color": "black",
+          },
+        });
+        map.addLayer({
+          id: "离散点",
+          type: "circle",
+          source: { type: "geojson", data: discretePoints },
+          layout:{
+            "visibility":props.zdz?"visible":"none",
+          },
+          paint: { "circle-radius": 3, "circle-color": "white", "circle-stroke-width": 1,"circle-stroke-color":'black' },
+        });
+
+        let gridPoints = {
+          type: "FeatureCollection",
+          features: new Array<any>(),
+        };
+        for (let j = 0; j < grid.length; j++) {
+          for (let i = 0; i < grid[j].length; i++) {
+            let x =
+              (i / (interpolateOptions.sizeU - 1)) * interpolateOptions.boundary.width +
+              interpolateOptions.boundary.lng;
+            let y =
+              (j / (interpolateOptions.sizeV - 1)) * interpolateOptions.boundary.height +
+              interpolateOptions.boundary.lat;
+            gridPoints.features.push({
+              type: "Feature",
+              properties: {
+                threshold: grid[j][i].toFixed(2),
+                color: "white",
+              },
+              geometry: {
+                type: "Point",
+                coordinates: [x, y],
+              },
+            });
+          }
         }
-      }
-      map.addLayer({
-        id: "网格值",
-        type: "symbol",
-        source: { type: "geojson", data: gridPoints },
-        layout: {
-          visibility: props.gridValue ? "visible" : "none",
-          "text-field": ["get", "threshold"],
-          "text-font": ["simkai"],
-          "text-offset": [0, 0.2],
-          "text-anchor": "bottom",
-          "text-ignore-placement": true,
-          "text-rotation-alignment": "map",
-        },
-        paint: {
-          "text-color": ["get", "color"],
-          "text-halo-width": 1,
-          "text-halo-color": "black",
-        },
-      });
-      map.addLayer({
-        id: "网格点",
-        type: "circle",
-        source: { type: "geojson", data: gridPoints },
-        layout: {
-          visibility: props.gridPoint ? "visible" : "none",
-        },
-        paint: { "circle-radius": 3, "circle-color": "white", "circle-stroke-width": 1 },
-      });
+        map.addLayer({
+          id: "网格值",
+          type: "symbol",
+          source: { type: "geojson", data: gridPoints },
+          layout: {
+            "visibility":props.gridValue?'visible':'none',
+            "text-field": ["get", "threshold"],
+            "text-font": ["simkai"],
+            "text-offset": [0, 0.2],
+            "text-anchor": "bottom",
+            "text-ignore-placement": true,
+            "text-rotation-alignment": "map",
+          },
+          paint: {
+            "text-color": ["get", "color"],
+            "text-halo-width": 1,
+            "text-halo-color": "black",
+          },
+        });
+        map.addLayer({
+          id: "网格点",
+          type: "circle",
+          source: { type: "geojson", data: gridPoints },
+          layout:{
+            "visibility":props.gridPoint?'visible':'none',
+          },
+          paint: { "circle-radius": 3, "circle-color": "white", "circle-stroke-width": 1 },
+        });
+
       /*
-      map.addLayer({
-        id: "等值线边界",
-        type: "fill",
-        source: {
-          type: "geojson",
-          data: {
-            type: "Feature",
-            geometry: {
-              type: "Polygon",
-              coordinates: [
-                [
-                  [-180, -50],
-                  [180, -50],
-                  [180, 50],
-                  [-180, 50],
-                  [-180, -50],
-                ],
+    map.addLayer({
+      id: "等值线边界",
+      type: "fill",
+      source: {
+        type: "geojson",
+        data: {
+          type: "Feature",
+          geometry: {
+            type: "Polygon",
+            coordinates: [
+              [
+                [-180, -50],
+                [180, -50],
+                [180, 50],
+                [-180, 50],
+                [-180, -50],
               ],
-            },
+            ],
           },
         },
-        layout: {},
-        paint: {
-          "line-color": "yellow",
-          "line-opacity": 1,
-          "line-width": 1,
-          "fill-color": "cyan",
-          "fill-opacity": 0.5,
-        },
-      });*/
+      },
+      layout: {},
+      paint: {
+        "line-color": "yellow",
+        "line-opacity": 1,
+        "line-width": 1,
+        "fill-color": "cyan",
+        "fill-opacity": 0.5,
+      },
+    });*/
+
     });
+
+    // getMicapsData(plotUrl2).then(async (result: any) => {
+    //   let breaks = new Array<number>();
+    //   var Color: { [key: string]: any } = {};
+    //   let xmlDoc = new DOMParser().parseFromString(palette2, "text/xml");
+    //   let collections = xmlDoc.getElementsByTagName("entry");
+    //   for (let i = 0; i < collections.length; i++) {
+    //     let value = parseInt(Number(collections[i].getAttribute("value")).toFixed());
+    //     breaks.push(value);
+    //     let strPalette = collections[i].getAttribute("rgba");
+    //     if (strPalette) {
+    //       let rgba: [number, number, number, number] = (strPalette
+    //         .split(",")
+    //         .map((v) => Number(v)) as unknown) as [number, number, number, number];
+    //       let hsl = rgb2Hsl(rgba[0], rgba[1], rgba[2]);
+    //       // Color[value.toFixed()] = `hsl(${hsl[0]},${hsl[1]}%,${hsl[2]}%)`;
+    //       Color[value.toFixed()] =
+    //         "#" +
+    //         ((1 << 24) + (rgba[0] << 16) + (rgba[1] << 8) + rgba[2])
+    //           .toString(16)
+    //           .slice(1);
+    //     }
+    //   }
+
+    //   let fillColors = [];
+    //   let strokeColors = [];
+    //   for (let i = 0; i < breaks.length; i++) {
+    //     strokeColors.push(breaks[i]);
+    //     // strokeColors.push(`hsl(${getHue(-36, breaks[i], 36)},100%,50%)`);
+    //     strokeColors.push(Color[breaks[i].toFixed()]);
+    //   }
+    //   for (let i = 0; i < breaks.length - 1; i++) {
+    //     fillColors.push(`${breaks[i]}-${breaks[i + 1]}`);
+    //     fillColors.push(strokeColors[2 * i + 1]);
+    //     // fillColors.push(strokeColors[2*(i+1)+1]);
+    //   }
+    //   let interpolateOptions = {
+    //     sizeU: 33,
+    //     sizeV: 18,
+    //     boundary: {
+    //       lng: result.beginLng,
+    //       lat: result.beginLat,
+    //       width: result.endLng - result.beginLng,
+    //       height: result.endLat - result.beginLat,
+    //     },
+    //     power: 6,
+    //   };
+    //   let grid = result.data;
+    //   var bandWidths = breaks.reduce(function (bw, upperBand, i, intervals) {
+    //     if (i > 0) {
+    //       var lowerBand = intervals[i - 1];
+    //       bw.push(upperBand - lowerBand);
+    //     }
+    //     return bw;
+    //   }, new Array<number>());
+    //   var multiBands = isoBands(grid, breaks.slice(0, -1), bandWidths, {
+    //     verbose: false,
+    //     polygons: false,
+    //     linearRing: false,
+    //     noFrame: true,
+    //     noQuadTree: false,
+    //     polygons_full: false,
+    //     successCallback: () => {},
+    //   });
+    //   let isobands = {
+    //     type: "FeatureCollection",
+    //     features: new Array<any>(),
+    //   };
+    //   for (let j = 0; j < multiBands.length; j++) {
+    //     let feature = {
+    //       type: "Feature",
+    //       properties: { threshold: breaks[j] + "-" + breaks[j + 1] },
+    //       geometry: {
+    //         type: "MultiPolygon",
+    //         coordinates: new Array<any>(),
+    //       },
+    //     };
+    //     let polygons = [];
+    //     let holes = [];
+    //     for (let i = 0; i < multiBands[j].length; i++) {
+    //       let points = new Array<[number, number]>();
+    //       multiBands[j][i].map((point: [number, number]) => {
+    //         points.push([
+    //           (point[0] / (interpolateOptions.sizeU - 1)) *
+    //             interpolateOptions.boundary.width +
+    //             interpolateOptions.boundary.lng,
+    //           (point[1] / (interpolateOptions.sizeV - 1)) *
+    //             interpolateOptions.boundary.height +
+    //             interpolateOptions.boundary.lat,
+    //         ]);
+    //       });
+    //       if (
+    //         interpolateOptions.boundary.width *
+    //           interpolateOptions.boundary.height *
+    //           area(points) <
+    //         0
+    //       ) {
+    //         polygons.push(points);
+    //       } else {
+    //         holes.push(points);
+    //       }
+    //     }
+    //     for (let k = 0; k < polygons.length; k++) {
+    //       let polygon = polygons.splice(k--, 1)[0];
+    //       let tmp = [polygon];
+    //       for (let m = 0; m < holes.length; m++) {
+    //         if (
+    //           pointInPolygon(holes[m][0], polygon) &&
+    //           polygons.every((item: any) => !pointInPolygon(holes[m][0], item))
+    //         ) {
+    //           let hole = holes.splice(m--, 1)[0];
+    //           tmp.push(hole);
+    //         }
+    //       }
+    //       feature.geometry.coordinates.push(tmp);
+    //     }
+    //     isobands.features.push(feature);
+    //   }
+    //   map.addLayer({
+    //     id: "等值带",
+    //     type: "fill",
+    //     source: {
+    //       type: "geojson",
+    //       data: isobands,
+    //     },
+    //     layout: {
+    //       visibility: props.isobands ? "visible" : "none",
+    //     },
+    //     paint: {
+    //       "fill-color": ["match", ["get", "threshold"], ...fillColors, "transparent"],
+    //       "fill-opacity": 0.5,
+    //     },
+    //   });
+
+    //   var multiLines = isoLines(grid, breaks, {
+    //     noFrame: true,
+    //     polygons: false,
+    //     polygons_full: false,
+    //     noQuadTree: false,
+    //     linearRing: false,
+    //     verbose: false,
+    //     successCallback: (multiLines: any, threshold: number) => {},
+    //   });
+    //   let isolines = {
+    //     type: "FeatureCollection",
+    //     features: new Array<any>(),
+    //   };
+    //   let isolineValues = {
+    //     type: "FeatureCollection",
+    //     features: new Array<any>(),
+    //   };
+    //   for (let j = 0; j < multiLines.length; j++) {
+    //     let feature = {
+    //       type: "Feature",
+    //       properties: { threshold: breaks[j] },
+    //       geometry: {
+    //         type: "MultiLineString",
+    //         coordinates: new Array<any>(),
+    //       },
+    //     };
+    //     let featureValue = {
+    //       type: "Feature",
+    //       properties: { threshold: breaks[j] },
+    //       geometry: {
+    //         type: "MultiPoint",
+    //         coordinates: new Array<any>(),
+    //       },
+    //     };
+    //     // console.log(multiLines[j])
+    //     for (let i = 0; i < multiLines[j].length; i++) {
+    //       let line = multiLines[j][i];
+    //       let points = new Array<any>();
+    //       for (let k = 0; k < line.length; k++) {
+    //         let point = [
+    //           (line[k][0] / (interpolateOptions.sizeU - 1)) *
+    //             interpolateOptions.boundary.width +
+    //             interpolateOptions.boundary.lng,
+    //           (line[k][1] / (interpolateOptions.sizeV - 1)) *
+    //             interpolateOptions.boundary.height +
+    //             interpolateOptions.boundary.lat,
+    //         ];
+    //         points.push(point);
+    //       }
+    //       feature.geometry.coordinates.push(points);
+    //       let firstPoint = points[0];
+    //       let lastPoint = points.slice(-1)[0];
+    //       if (JSON.stringify(firstPoint) === JSON.stringify(lastPoint)) {
+    //         featureValue.geometry.coordinates.push(firstPoint);
+    //       } else {
+    //         featureValue.geometry.coordinates.push(firstPoint);
+    //         featureValue.geometry.coordinates.push(lastPoint);
+    //       }
+    //     }
+    //     isolines.features.push(feature);
+    //     isolineValues.features.push(featureValue);
+    //   }
+    //   map.addLayer({
+    //     id: "等值线",
+    //     type: "line",
+    //     source: {
+    //       type: "geojson",
+    //       data: isolines,
+    //     },
+    //     layout: {
+    //       visibility: props.isolines ? "visible" : "none",
+    //       "line-join": "round",
+    //       "line-cap": "round",
+    //     },
+    //     paint: {
+    //       "line-color": ["match", ["get", "threshold"], ...strokeColors, "transparent"],
+    //       "line-width": 2,
+    //       "line-opacity": 1,
+    //     },
+    //   });
+    //   map.addLayer({
+    //     id: "等值线值",
+    //     type: "symbol",
+    //     source: {
+    //       type: "geojson",
+    //       data: isolineValues,
+    //     },
+    //     layout: {
+    //       visibility: props.isolines ? "visible" : "none",
+    //       "text-field": ["get", "threshold"],
+    //       "text-size": 16,
+    //       "text-font": ["simkai"],
+    //       "text-offset": [0, 0.2],
+    //       "text-anchor": "bottom",
+    //       "text-ignore-placement": true,
+    //       "text-rotation-alignment": "map",
+    //     },
+    //     paint: {
+    //       "text-color": "yellow",
+    //       "text-halo-width": 1,
+    //       "text-halo-color": "black",
+    //     },
+    //   });
+    //   let gridPoints = {
+    //     type: "FeatureCollection",
+    //     features: new Array<any>(),
+    //   };
+    //   for (let j = 0; j < grid.length; j++) {
+    //     for (let i = 0; i < grid[j].length; i++) {
+    //       let x =
+    //         (i / (interpolateOptions.sizeU - 1)) * interpolateOptions.boundary.width +
+    //         interpolateOptions.boundary.lng;
+    //       let y =
+    //         (j / (interpolateOptions.sizeV - 1)) * interpolateOptions.boundary.height +
+    //         interpolateOptions.boundary.lat;
+    //       gridPoints.features.push({
+    //         type: "Feature",
+    //         properties: {
+    //           threshold: grid[j][i].toFixed(2),
+    //           color: "white",
+    //         },
+    //         geometry: {
+    //           type: "Point",
+    //           coordinates: [x, y],
+    //         },
+    //       });
+    //     }
+    //   }
+    //   map.addLayer({
+    //     id: "网格值",
+    //     type: "symbol",
+    //     source: { type: "geojson", data: gridPoints },
+    //     layout: {
+    //       visibility: props.gridValue ? "visible" : "none",
+    //       "text-field": ["get", "threshold"],
+    //       "text-font": ["simkai"],
+    //       "text-offset": [0, 0.2],
+    //       "text-anchor": "bottom",
+    //       "text-ignore-placement": true,
+    //       "text-rotation-alignment": "map",
+    //     },
+    //     paint: {
+    //       "text-color": ["get", "color"],
+    //       "text-halo-width": 1,
+    //       "text-halo-color": "black",
+    //     },
+    //   });
+    //   map.addLayer({
+    //     id: "网格点",
+    //     type: "circle",
+    //     source: { type: "geojson", data: gridPoints },
+    //     layout: {
+    //       visibility: props.gridPoint ? "visible" : "none",
+    //     },
+    //     paint: { "circle-radius": 3, "circle-color": "white", "circle-stroke-width": 1 },
+    //   });
+    //   /*
+    //   map.addLayer({
+    //     id: "等值线边界",
+    //     type: "fill",
+    //     source: {
+    //       type: "geojson",
+    //       data: {
+    //         type: "Feature",
+    //         geometry: {
+    //           type: "Polygon",
+    //           coordinates: [
+    //             [
+    //               [-180, -50],
+    //               [180, -50],
+    //               [180, 50],
+    //               [-180, 50],
+    //               [-180, -50],
+    //             ],
+    //           ],
+    //         },
+    //       },
+    //     },
+    //     layout: {},
+    //     paint: {
+    //       "line-color": "yellow",
+    //       "line-opacity": 1,
+    //       "line-width": 1,
+    //       "fill-color": "cyan",
+    //       "fill-opacity": 0.5,
+    //     },
+    //   });*/
+    // });
   });
   map.addControl(
     new NavigationControl({
@@ -1967,7 +1983,7 @@ onMounted(() => {
             id: v.id,
             type: "Feature",
             properties: {
-              color: v.standby2,
+              color: "red" || v.standby2,
             },
             geometry: {
               type: "Polygon",
