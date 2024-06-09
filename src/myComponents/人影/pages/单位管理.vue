@@ -1,7 +1,7 @@
 <template>
   <datatable
     style="padding: 10px"
-    database="host=tanglei.top&port=3390&user=root&password=mysql&database=ryplat_bjry"
+    database="host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry"
     table="units"
   ></datatable>
 </template>

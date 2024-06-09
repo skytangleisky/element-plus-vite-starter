@@ -103,7 +103,7 @@
         @click.stop="setting.人影.监控.bottom_disappear = true"
       ></el-icon>
       <datatable
-        :database="'host=tanglei.top&port=3390&user=root&password=mysql&database=ryplat_bjry'"
+        :database="'host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry'"
         :table="'zydpara'"
       ></datatable>
     </div>

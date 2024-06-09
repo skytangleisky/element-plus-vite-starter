@@ -76,10 +76,10 @@ const getHue = (min: number, v: number, max: number) => {
   //hsl(60,100%,50%)～hsl(0,100%,50%)
   // return (1 - percent) * 60;
 };
-import Map = mapboxgl.Map;
-import Marker = mapboxgl.Marker;
-import NavigationControl = mapboxgl.NavigationControl;
-import FullscreenControl = mapboxgl.FullscreenControl;
+const Map = mapboxgl.Map;
+const Marker = mapboxgl.Marker;
+const NavigationControl = mapboxgl.NavigationControl;
+const FullscreenControl = mapboxgl.FullscreenControl;
 import { getRandomPointBetweenR1R2 } from "~/tools/index.js";
 import * as turf from "@turf/turf";
 import Circle from "@turf/circle";
@@ -338,7 +338,7 @@ onMounted(() => {
       },
     });
     setConfig(
-      "host=tanglei.top&port=3390&user=root&password=mysql&database=ryplat_bjry",
+      "host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
       "zydpara"
     );
     getAll().then((res) => {
@@ -404,15 +404,75 @@ onMounted(() => {
               },
             });
             if (item.iMaxShotRange) {
-              let circle: any = Circle([pt.lng, pt.lat], item.iMaxShotRange, {
-                steps: 64,
-                units: "meters",
-                properties: {
+              // 有问题
+              // let circle: any = Circle([pt.lng, pt.lat], item.iMaxShotRange, {
+              //   steps: 64,
+              //   units: "meters",
+              //   properties: {
+              //     id: item.strID,
+              //     color: "white",
+              //   },
+              // });
+              // circleFeatures.push(circle);
+
+
+              // 为了和扇形绘制算法保持一致
+              // {
+              //   const center: [number, number] = wgs84togcj02(pt.lng,pt.lat) as [number,number]; // 圆心点的经纬度
+              //   const radius: number = item.iMaxShotRange; // 半径（单位：米
+              //   const steps: number = 64; // 用于生成圆弧的步数，越大越平滑
+              //   const units: turf.Units = 'meters'; // 半径的单位
+              //   function calculateSectorPoints(center: [number, number], radius: number, steps: number, units: turf.Units): [number, number][] {
+              //       const points: [number, number][] = [];
+              //       const angleStep = 360 / steps;
+              //       let angle = 0
+              //       for (; angle < 360; angle += angleStep) {
+              //         const point = turf.destination(center, radius, angle, { units: units }) as any;
+              //         points.push(point.geometry.coordinates);
+              //       }
+              //       const point = turf.destination(center, radius, 360, { units: units }) as any;
+              //       points.push(point.geometry.coordinates);
+              //       return points;
+              //   }
+              //   const sectorPoints: [number, number][] = calculateSectorPoints(center, radius, steps, units);
+              //   const sectorPolygon = turf.polygon([sectorPoints],{
+              //     id: item.strID,
+              //     color: "white",
+              //   });
+              //   circleFeatures.push(sectorPolygon);
+              // }
+
+
+
+
+              {
+                const center: [number, number] = wgs84togcj02(pt.lng,pt.lat) as [number,number]; // 圆心点的经纬度
+                const radius: number = item.iMaxShotRange; // 半径（单位：米）
+                const startAngle: number = 0; // 起始角度（单位：度）
+                const endAngle: number = 90; // 终止角度（单位：度）
+                const steps: number = 64; // 用于生成圆弧的步数，越大越平滑
+                const units: turf.Units = 'meters'; // 半径的单位
+                function calculateSectorPoints(center: [number, number], radius: number, startAngle: number, endAngle: number, steps: number, units: turf.Units): [number, number][] {
+                    const points: [number, number][] = [center];
+                    const angleStep = 360 / steps;
+                    let angle = startAngle
+                    for (; angle < endAngle; angle += angleStep) {
+                      const point = turf.destination(center, radius, angle, { units: units }) as any;
+                      points.push(point.geometry.coordinates);
+                    }
+                    const point = turf.destination(center, radius, endAngle, { units: units }) as any;
+                    points.push(point.geometry.coordinates);
+                    points.push(center); // 返回到圆心以关闭多边形
+                    return points;
+                }
+                const sectorPoints: [number, number][] = calculateSectorPoints(center, radius, startAngle, endAngle, steps, units);
+                const sectorPolygon = turf.polygon([sectorPoints],{
                   id: item.strID,
-                  color: "white",
-                },
-              });
-              circleFeatures.push(circle);
+                  color:"white",
+                  fillColor: "transparent",
+                });
+                circleFeatures.push(sectorPolygon);
+              }
             }
           }
         }
@@ -473,7 +533,19 @@ onMounted(() => {
         },
       });
       map.addLayer({
-        id: "最大射程",
+        id: "最大射程-fill",
+        type: "fill",
+        source: "最大射程source",
+        layout: {
+          visibility: props.zyd ? "visible" : "none",
+        },
+        paint: {
+          "fill-color": ["get", "fillColor"],
+          "fill-opacity":0.5
+        },
+      });
+      map.addLayer({
+        id: "最大射程-line",
         type: "line",
         source: "最大射程source",
         layout: {
@@ -513,7 +585,7 @@ onMounted(() => {
         const feature = fs[0];
 
         // Display the popup
-        // new mapboxgl.Popup()
+        // new Popup()
         //   .setLngLat(feature.geometry.coordinates)
         //   .setHTML(
         //     `<h3>${feature.properties.title}</h3><p>${feature.properties.description}</p>`
@@ -530,7 +602,7 @@ onMounted(() => {
       active = () => {
         features = features.map((item: any) => {
           if (item.properties.id == station.人影界面被选中的设备) {
-            item.properties["icon-image"] = "projectile-red";
+            item.properties["icon-image"] = "projectile-white";
           } else {
             item.properties["icon-image"] = "projectile-white";
           }
@@ -544,9 +616,11 @@ onMounted(() => {
 
         circleFeatures = circleFeatures.map((item: any) => {
           if (item.properties.id == station.人影界面被选中的设备) {
-            item.properties.color = "red";
+            item.properties.color = "white";
+            item.properties.fillColor = "white";
           } else {
             item.properties.color = "white";
+            item.properties.fillColor = "transparent";
           }
           return item;
         });
@@ -1097,14 +1171,25 @@ onMounted(() => {
         fillColors.push(strokeColors[2*i+1]);
         // fillColors.push(strokeColors[2*(i+1)+1]);
       }
+      // let interpolateOptions = {
+      //   sizeU: 140,
+      //   sizeV: 80,
+      //   boundary: {
+      //     lng: 70,
+      //     lat: 15,
+      //     width: 70,
+      //     height: 40,
+      //   },
+      //   power: 6,
+      // };
       let interpolateOptions = {
         sizeU: 140,
         sizeV: 80,
         boundary: {
-          lng: 70,
-          lat: 15,
-          width: 70,
-          height: 40,
+          lng: -180,
+          lat: -LAT,
+          width: 360,
+          height: 2*LAT,
         },
         power: 6,
       };
@@ -2101,10 +2186,15 @@ watch(
         ? map.setLayoutProperty("zydLayer", "visibility", "visible")
         : map.setLayoutProperty("zydLayer", "visibility", "none");
     }
-    if (map.getLayer("最大射程")) {
+    if (map.getLayer("最大射程-line")) {
       newVal
-        ? map.setLayoutProperty("最大射程", "visibility", "visible")
-        : map.setLayoutProperty("最大射程", "visibility", "none");
+        ? map.setLayoutProperty("最大射程-line", "visibility", "visible")
+        : map.setLayoutProperty("最大射程-line", "visibility", "none");
+    }
+    if (map.getLayer("最大射程-fill")) {
+      newVal
+        ? map.setLayoutProperty("最大射程-fill", "visibility", "visible")
+        : map.setLayoutProperty("最大射程-fill", "visibility", "none");
     }
   }
 );

@@ -3,7 +3,6 @@ import vue from '@vitejs/plugin-vue'
 import inject from '@rollup/plugin-inject'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { mock } from './packages/plugin-vite-mock'
-import { createHtmlPlugin } from 'vite-plugin-html'
 import fs from 'fs'
 import Components from 'unplugin-vue-components/vite'
 import vueSetupExtend from 'unplugin-vue-setup-extend-plus/vite'
@@ -28,7 +27,8 @@ export default defineConfig({
     __TEST__: true,
     __BROWSER__: true,
     __USE_DEVTOOLS__: false,
-    __VUE_PROD_HYDRATION_MISMATCH_DETAILS__:true
+    __VUE_PROD_HYDRATION_MISMATCH_DETAILS__:true,
+    global:"globalThis"
   },
   resolve: {
     alias: {
@@ -55,16 +55,6 @@ export default defineConfig({
       algorithm: 'gzip', // 压缩算法
       ext: '.gz', // 压缩文件后缀名
       deleteOriginFile:false
-    }),
-    createHtmlPlugin({
-      minify:true,
-      entry: '/src/main.ts',
-      template: 'index.html',
-      inject:{
-        data:{
-          project:'光恒'
-        }
-      }
     }),
     mock(),
     vueJsx(),

@@ -1,7 +1,7 @@
 <template>
   <datatable
     style="padding: 10px"
-    database="host=tanglei.top&port=3390&user=root&password=mysql&database=gis"
+    database="host=tanglei.top&port=3308&user=root&password=mysql&database=gis"
     table="enclosure"
   ></datatable>
 </template>

@@ -1,6 +1,6 @@
 import request from '../utils/request'
 let tableName='enclosure'
-let options = '?host=tanglei.top&port=3390&user=root&password=mysql&database=gis'
+let options = '?host=tanglei.top&port=3308&user=root&password=mysql&database=gis'
 let url = 'backend/db/'+tableName+options
 export function getColumns(){
   return request({
