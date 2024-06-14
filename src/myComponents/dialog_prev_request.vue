@@ -4,7 +4,6 @@
     class="dragDialog absolute w-550px"
     style="left: calc(50% - 275px); top: calc(50% - 155px)"
     v-show="show"
-    @mousedown.stop
   >
     <el-row>
       <el-col :span="12"

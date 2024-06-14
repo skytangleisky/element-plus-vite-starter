@@ -236,15 +236,13 @@ import draggable from "./draggable.vue";
 import { reactive, watch, h, ref, onMounted, nextTick, computed } from "vue";
 import myInput from "./input.vue";
 import {
-  setConfig,
   getColumns,
   getAll,
   saveData,
   fetchList,
   fetchData,
   deleteData,
-} from "~/api/人影/api";
-setConfig(props.database, props.table);
+} from "~/api/人影/api2";
 const options = reactive({
   thData: new Array<any>(),
   tdData: new Array<any>(),
@@ -308,7 +306,9 @@ watch(addRow, () => {
 });
 function getData() {
   return new Promise((resolve, reject) => {
-    getColumns()
+    getColumns({
+      ...props,
+    })
       .then((res) => {
         // console.log(res.data);
         options.thData.length = 0;
@@ -353,9 +353,12 @@ function getData() {
         let pageSize = paginationOptions.pageSize;
 
         fetchList({
-          limit: pageSize,
-          offset: (currentPage - 1) * pageSize,
-          where,
+          ...props,
+          query: {
+            limit: pageSize,
+            offset: (currentPage - 1) * pageSize,
+            where,
+          },
         })
           .then((res) => {
             sqlStr.value = res.data.$pagingSql;
@@ -395,7 +398,7 @@ const change = (item: any, k: string, oldVal: any) => {
       }
     });
     tmp[k] = item[k]; //改变数据
-    saveData([tmp])
+    saveData({ ...props, query: [tmp] })
       .then((res) => {
         console.log(res.data);
       })
@@ -420,8 +423,11 @@ watch(
   [() => paginationOptions.currentPage, () => paginationOptions.pageSize],
   ([currentPage, pageSize]) => {
     fetchList({
-      limit: pageSize,
-      offset: (currentPage - 1) * pageSize,
+      ...props,
+      query: {
+        limit: pageSize,
+        offset: (currentPage - 1) * pageSize,
+      },
     })
       .then((res) => {
         sqlStr.value = res.data.$pagingSql;
@@ -510,7 +516,7 @@ const subtractSvgClick = () => {
                 instance.confirmButtonLoading = true;
                 instance.confirmButtonText = "Deleting...";
                 setTimeout(() => {
-                  deleteData(list).then((res) => {
+                  deleteData({ ...props, query: list }).then((res) => {
                     console.log(res);
                     instance.confirmButtonLoading = false;
                     done();
@@ -558,7 +564,10 @@ const tickSvgClick = async () => {
       //判断是否已经存在
       if (v.Key === "PRI" || v.Key == "UNI") {
         keys.push(v.Field);
-        let { data } = await fetchData(v.Field, v.Value);
+        let { data } = await fetchData({
+          ...props,
+          query: { key: v.Field, value: v.Value },
+        });
         if (data.total > 0) {
           ElMessage({
             message: `add failed, ${v.Field}=${v.Value} already exist!`,
@@ -575,7 +584,7 @@ const tickSvgClick = async () => {
       }
       Object.assign(tmp, { [item.Field]: item.Value });
     }
-    saveData([tmp])
+    saveData({ ...props, query: [tmp] })
       .then((res) => {
         ElMessage({
           message: "添加数据完成",

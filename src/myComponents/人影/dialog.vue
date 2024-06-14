@@ -75,7 +75,7 @@
             >
               <td>{{ k + 1 }}</td>
               <td>{{ v.strName }}</td>
-              <td>{{ v.strWeapon }}</td>
+              <td>{{ formatWeapon(v.strWeapon) }}</td>
               <td>{{ v.strPos }}</td>
               <td>{{ v.iAltitude }}</td>
             </tr>
@@ -100,9 +100,13 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { reactive, onMounted, watch } from "vue";
+import { reactive, onMounted, watch, computed } from "vue";
 import { useStationStore } from "~/stores/station";
 import { eventbus } from "~/eventbus";
+const formatWeapon = (weapon: number) =>
+  ["火箭", "高炮", "火箭+高炮", "烟炉", "火箭+烟炉", "高炮+烟炉", "火箭+高炮+烟炉"][
+    weapon
+  ];
 const props = withDefaults(defineProps<{ menus?: Array<any> }>(), {
   menus: () => [
     {

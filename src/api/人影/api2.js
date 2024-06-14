@@ -1,19 +1,16 @@
 import request from '../../utils/request'
-let tableName=''
-let options = ''
-let url = ''
-export function setConfig(database,table){
-  tableName = table;
-  options = '?' + database
-  url = 'backend/db/'+tableName+options
-}
-export function getColumns(){
+// export function setConfig(database,table){
+//   tableName = table;
+//   options = '?' + database
+//   url = 'backend/db/'+tableName+options
+// }
+export function getColumns({database,table}){
   return request({
-    url: '/backend/transaction'+options,
+    url: '/backend/transaction?'+database,
     method: 'post',
     data:{
       "sqls":[
-        "SHOW FULL COLUMNS FROM `"+tableName+"`"
+        "SHOW FULL COLUMNS FROM `"+table+"`"
       ],
       "vals":[
         []
@@ -21,13 +18,13 @@ export function getColumns(){
     }
   })
 }
-export function getAll(){
+export function getAll({database,table}){
   return request({
-    url: '/backend/transaction'+options,
+    url: '/backend/transaction?'+database,
     method: 'post',
     data:{
       "sqls":[
-        "SELECT * FROM `"+tableName+"`"
+        "SELECT * FROM `"+table+"`"
       ],
       "vals":[
         []
@@ -35,9 +32,9 @@ export function getAll(){
     }
   })
 }
-export function fetchList(query) {
+export function fetchList({database,table,query}) {
   return request({
-    url,
+    url:'backend/db/'+table+'?'+database,
     method: 'post',
     data: {
       "select":["*"], // 需要获取的字段，"*"代表所有字段
@@ -71,9 +68,9 @@ export function fetchList(query) {
   })
 }
 
-export function 获取净空区() {
+export function 获取净空区({database,table,query}) {
   return request({
-    url,
+    url:'backend/db/'+table+'?'+database,
     method: 'post',
     data: {
       "select":["*"], // 需要获取的字段，"*"代表所有字段
@@ -118,9 +115,9 @@ export function 获取净空区() {
   })
 }
 
-export function fetchData(key,value) {
+export function fetchData({database,table,query:{key,value}}) {
   return request({
-    url,
+    url:'backend/db/'+table+'?'+database,
     method: 'post',
     data: {
       "where":[
@@ -135,18 +132,18 @@ export function fetchData(key,value) {
   })
 }
 
-export function saveData(data) {
+export function saveData({database,table,query}) {
   return request({
-    url,
+    url:'backend/db/'+table+'?'+database,
     method: 'put',
-    data
+    data:query
   })
 }
 
-export function deleteData(data) {
+export function deleteData({database,table,query}) {
   return request({
-    url,
+    url:'backend/db/'+table+'?'+database,
     method: 'delete',
-    data
+    data:query
   })
 }
