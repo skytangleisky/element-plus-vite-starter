@@ -1,3 +1,6 @@
+Object.defineProperty(window,'global',{
+  value:window
+})
 // import "~/styles/element/index.scss";
 
 // import ElementPlus from "element-plus";
