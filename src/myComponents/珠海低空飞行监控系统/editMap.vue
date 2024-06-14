@@ -267,7 +267,10 @@ const resize = () => {
   map && map.resize();
 };
 let active = () => {};
-let uav: any = [];
+let uav: any = {
+  type: "FeatureCollection",
+  features: [],
+};
 onMounted(() => {
   map = new Map({
     container: (mapRef.value as unknown) as HTMLCanvasElement,
@@ -303,10 +306,7 @@ onMounted(() => {
     // map.addLayer(new CustomLayer());
     map.addSource("uav原数据", {
       type: "geojson",
-      data: {
-        type: "FeatureCollection",
-        features: uav,
-      },
+      data: uav,
     });
     map.addLayer({
       id: "无人机数据",
@@ -2161,35 +2161,36 @@ watch(
     }
   }
 );
-for (let i = 0; i < 20; i++) {
-  uav.push({
-    type: "Feature",
-    properties: {
-      name: "Example Point",
-      terminalID: Number(Math.random().toFixed(8)) * 10e7,
-      deg: 360 * Math.random(),
-      speed: ((800 + 200 * Math.random()) / 3.6 / 1000) * 33,
-    },
-    geometry: {
-      type: "Point",
-      coordinates: [105 + 3 * Math.random(), 30 + 3 * Math.random()],
-    },
-  });
-}
+// for (let i = 0; i < 100; i++) {
+//   uav.features.push({
+//     type: "Feature",
+//     properties: {
+//       name: "Example Point",
+//       terminalID: Number(Math.random().toFixed(8)) * 10e7,
+//       deg: 360 * Math.random(),
+//       speed: ((800 + 200 * Math.random()) / 3.6 / 1000) * 33,
+//     },
+//     geometry: {
+//       type: "Point",
+//       coordinates: [105 + 3 * Math.random(), 30 + 3 * Math.random()],
+//     },
+//   });
+// }
 watch(
   () => bus.uavData,
   ({ data: uavData }: any) => {
     let has = false;
-    for (let i = 0; i < uav.length; i++) {
-      if (uav[i].properties.terminalID == uavData.terminalID) {
+    for (let i = 0; i < uav.features.length; i++) {
+      let feature = uav.features[i];
+      if (feature.properties.terminalID == uavData.terminalID) {
         has = true;
-        uav[i].properties.speed = uavData.speed;
-        uav[i].properties.deg = uavData.direction;
-        uav[i].geometry.coordinates = wgs84togcj02(uavData.lng, uavData.lat);
+        feature.properties.speed = uavData.speed;
+        feature.properties.deg = uavData.direction;
+        feature.geometry.coordinates = wgs84togcj02(uavData.lng, uavData.lat);
       }
     }
     if (!has) {
-      uav.push({
+      uav.features.push({
         type: "Feature",
         properties: {
           name: "Example Point",
@@ -2203,9 +2204,19 @@ watch(
         },
       });
     }
-    map?.getSource("uav原数据")?.setData({
-      type: "FeatureCollection",
-      features: uav,
+    map?.getSource("uav原数据")?.setData(uav);
+  }
+);
+watch(
+  () => bus.uavOffline,
+  (uavOffline: any) => {
+    console.log(uavOffline);
+    uav.features = uav.features.filter(
+      (item: any) => item.properties.terminalID !== uavOffline.data.terminalID
+    );
+    map?.getSource("uav原数据")?.setData(uav);
+    map.once("sourcedata", () => {
+      map.triggerRepaint();
     });
   }
 );

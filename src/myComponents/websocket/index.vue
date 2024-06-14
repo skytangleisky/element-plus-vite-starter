@@ -80,6 +80,9 @@ function connect() {
       case "808定位数据":
         bus.uavData = obj;
         break;
+      case "808终端离线":
+        bus.uavOffline = obj;
+        break;
       case "rhi":
         bus.wsData = obj;
         break;
@@ -97,7 +100,7 @@ function connect() {
       setTimeout(() => {
         sleeper = new Sleeper();
         connect();
-      }, 5000);
+      }, 4000);
     }
   };
 }

@@ -67,6 +67,7 @@ const obj = reactive({
   result:new Array<Station>(),
   wsData:new Object(),
   uavData:new Object(),
+  uavOffline:new Object(),
   listData:new Object(),
 })
 export const useBus = () => {

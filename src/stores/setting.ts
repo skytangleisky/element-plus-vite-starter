@@ -138,7 +138,7 @@ export const useSettingStore = defineStore({
         disappear:false,
         bottom_disappear:true,
         tile:{
-          name:"谷歌卫星地图",
+          index:0,
           tileData:new Array<string>()
         },
       },
