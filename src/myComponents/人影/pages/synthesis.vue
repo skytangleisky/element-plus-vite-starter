@@ -132,7 +132,7 @@ const menus = reactive([
   { value: 12, type: "info", svg: whitelistSvg, active: false },
   { value: 0, svg: statisticSvg, active: false },
 ]);
-const click = (v) => {
+const click = (v: any) => {
   setting.人影.监控.bottom_disappear = false;
   v.active = true;
   menus
@@ -141,11 +141,12 @@ const click = (v) => {
       item.active = false;
     });
 };
-const formatUrl = (url) => {
+const formatUrl = (url: string) => {
   return url.replace("{x}", "105").replace("{y}", "48").replace("{z}", "7");
 };
 const tileList = ref([
   {
+    selected: false,
     name: "高德街道地图",
     url: formatUrl(
       "https://wprd01.is.autonavi.com/appmaptile?style=10&x={x}&y={y}&z={z}"
@@ -188,11 +189,9 @@ const tileList = ref([
     tileData: ["https://tile.tanglei.site/maps/vt?lyrs=m&x={x}&y={y}&z={z}"],
   },
 ]);
-let selected = false;
-tileList.value.map((item: any, k) => {
-  if (item.name == setting.人影.监控.tile.name && selected == false) {
+tileList.value.map((item: any, k: number) => {
+  if (k == setting.人影.监控.tile.index) {
     item.selected = true;
-    selected = true;
   } else {
     item.selected = false;
   }
@@ -200,22 +199,19 @@ tileList.value.map((item: any, k) => {
 watch(
   () => setting.人影.监控.tile,
   (v) => {
-    // 容易造成死循环
-    tileList.value.map((item: any) => {
-      if (item.name == v.name) {
-        item.selected = true;
-      } else {
-        item.selected = false;
-      }
-    });
+    if (tileList.value[v.index]) {
+      tileList.value[v.index].selected = true;
+    } else {
+      tileList.value[0].selected = true;
+    }
   }
 );
 watch(
   tileList,
   (list) => {
-    list.map((item: any) => {
+    list.map((item: any, k: number) => {
       if (item.selected) {
-        setting.人影.监控.tile.name = item.name;
+        setting.人影.监控.tile.index = k;
         setting.人影.监控.tile.tileData = item.tileData;
       }
     });
