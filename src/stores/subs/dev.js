@@ -93,6 +93,15 @@ export default {
       }
     },
     {
+      path: 'audio',
+      name: 'c4961e04-e574-0e1f-ae23-94f157b14aae',
+      component: '/src/myComponents/audio/index.vue',
+      svg:'72ec159c279a11efaeedb025aa2c9ada',
+      meta:{
+        label: 'audio',
+      }
+    },
+    {
       path: ':catchAll(.*)*',
       component: '/src/myComponents/404/index.vue',
       hide:true
