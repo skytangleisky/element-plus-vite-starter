@@ -349,6 +349,7 @@ onMounted(() => {
     getAll(datasource_zydpara).then((res) => {
       dialogOptions.menus = res.data[0];
       let features: any = [];
+      let circleFeatures: any = [];
       res.data[0].map(
         (item: {
           strID: "110108082";
@@ -407,6 +408,111 @@ onMounted(() => {
                 coordinates: position,
               },
             });
+            if (item.iMaxShotRange) {
+              // 有问题
+              // let circle: any = Circle([pt.lng, pt.lat], item.iMaxShotRange, {
+              //   steps: 64,
+              //   units: "meters",
+              //   properties: {
+              //     id: item.strID,
+              //     color: "white",
+              //   },
+              // });
+              // circleFeatures.push(circle);
+
+              //圆形
+              {
+                const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
+                  number,
+                  number
+                ]; // 圆心点的经纬度
+                const radius: number = item.iMaxShotRange; // 半径（单位：米
+                const steps: number = 64; // 用于生成圆弧的步数，越大越平滑
+                const units: turf.Units = "meters"; // 半径的单位
+                function calculateSectorPoints(
+                  center: [number, number],
+                  radius: number,
+                  steps: number,
+                  units: turf.Units
+                ): [number, number][] {
+                  const points: [number, number][] = [];
+                  const angleStep = 360 / steps;
+                  let angle = 0;
+                  for (; angle < 360; angle += angleStep) {
+                    const point = turf.destination(center, radius, angle, {
+                      units: units,
+                    }) as any;
+                    points.push(point.geometry.coordinates);
+                  }
+                  const point = turf.destination(center, radius, 360, {
+                    units: units,
+                  }) as any;
+                  points.push(point.geometry.coordinates);
+                  return points;
+                }
+                const sectorPoints: [number, number][] = calculateSectorPoints(
+                  center,
+                  radius,
+                  steps,
+                  units
+                );
+                const sectorPolygon = turf.polygon([sectorPoints], {
+                  id: item.strID,
+                  color: "white",
+                });
+                circleFeatures.push(sectorPolygon);
+              }
+
+              // {
+              //   const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
+              //     number,
+              //     number
+              //   ]; // 圆心点的经纬度
+              //   const radius: number = item.iMaxShotRange; // 半径（单位：米）
+              //   const startAngle: number = 0; // 起始角度（单位：度）
+              //   const endAngle: number = 90; // 终止角度（单位：度）
+              //   const steps: number = 64; // 用于生成圆弧的步数，越大越平滑
+              //   const units: turf.Units = "meters"; // 半径的单位
+              //   function calculateSectorPoints(
+              //     center: [number, number],
+              //     radius: number,
+              //     startAngle: number,
+              //     endAngle: number,
+              //     steps: number,
+              //     units: turf.Units
+              //   ): [number, number][] {
+              //     const points: [number, number][] = [center];
+              //     const angleStep = 360 / steps;
+              //     let angle = startAngle;
+              //     for (; angle < endAngle; angle += angleStep) {
+              //       const point = turf.destination(center, radius, angle, {
+              //         units: units,
+              //       }) as any;
+              //       points.push(point.geometry.coordinates);
+              //     }
+              //     const point = turf.destination(center, radius, endAngle, {
+              //       units: units,
+              //     }) as any;
+              //     points.push(point.geometry.coordinates);
+              //     points.push(center); // 返回到圆心以关闭多边形
+              //     return points;
+              //   }
+              //   const sectorPoints: [number, number][] = calculateSectorPoints(
+              //     center,
+              //     radius,
+              //     startAngle,
+              //     endAngle,
+              //     steps,
+              //     units
+              //   );
+              //   const sectorPolygon = turf.polygon([sectorPoints], {
+              //     id: item.strID,
+              //     color: "white",
+              //     fillColor: "transparent",
+              //   });
+              //   circleFeatures.push(sectorPolygon);
+              // }
+            }
           }
         }
       );
@@ -457,6 +563,38 @@ onMounted(() => {
           "text-halo-width": 1,
         },
         filter: ["==", ["get", "type"], "站点"],
+      });
+      map.addSource("最大射程source", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: circleFeatures,
+        },
+      });
+      map.addLayer({
+        id: "最大射程-fill",
+        type: "fill",
+        source: "最大射程source",
+        layout: {
+          visibility: props.zyd ? "visible" : "none",
+        },
+        paint: {
+          "fill-color": ["get", "fillColor"],
+          "fill-opacity": 0.5,
+        },
+      });
+      map.addLayer({
+        id: "最大射程-line",
+        type: "line",
+        source: "最大射程source",
+        layout: {
+          visibility: props.zyd ? "visible" : "none",
+        },
+        paint: {
+          "line-color": ["get", "color"],
+          "line-width": 1,
+          // "line-dasharray": [1, 1],
+        },
       });
       map.on("contextmenu", "zydLayer", (e: any) => {
         e.preventDefault();
@@ -515,6 +653,22 @@ onMounted(() => {
           type: "FeatureCollection",
           features: features,
         });
+
+        circleFeatures = circleFeatures.map((item: any) => {
+          if (item.properties.id == station.人影界面被选中的设备) {
+            item.properties.color = "white";
+            item.properties.fillColor = "white";
+          } else {
+            item.properties.color = "white";
+            item.properties.fillColor = "transparent";
+          }
+          return item;
+        });
+        source = map.getSource("最大射程source");
+        source.setData({
+          type: "FeatureCollection",
+          features: circleFeatures,
+        });
       };
     });
     const datasource_zyddata = {
@@ -522,321 +676,7 @@ onMounted(() => {
         "host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
       table: "zyddata",
     };
-    getAll(datasource_zyddata).then((res) => {
-      dialogOptions.menus = res.data[0];
-      let features: any = [];
-      let circleFeatures: any = [];
-      res.data[0].map(
-        (item: {
-          strWorkID: "RW110000000202406120000000001752";
-          strZydID: "110114091";
-          ubyStatus: 100;
-          ubySendStatus: 0;
-          ubyProcStatus: 3;
-          strCode: "真顺";
-          strName: "真顺";
-          strWeapon: "火箭";
-          strCurPos: "116195600E40133600N";
-          iRange: 10000;
-          iMaxShotHei: 8000;
-          strApplyUnit: "110114091";
-          tmBeginApply: "2024-06-15 11:50:00";
-          iApplyTimeLen: 3;
-          tmApplyRev: "2014-12-30 11:47:06";
-          tmApplySend: null;
-          tmApplyCreate: "2014-12-30 11:47:06";
-          strApplyMark: "";
-          tmBeginAnswer: "2014-12-30 11:47:14";
-          iAnswerTimeLen: 3;
-          strAnswerUnit: "110000000";
-          tmAnswerRev: "2014-12-30 11:47:15";
-          tmAnswerSend: null;
-          tmAnswerCreate: "2014-12-30 11:47:15";
-          strAnswerMark: "";
-          tmUpdate: "2014-12-30 11:47:16";
-          strATCUnitID: "110000000";
-          vecProcess: ";11:47:06,本地作业申请(电话);11:47:15,电话下发批准;11:47:16,作业自动开始";
-          strUpApplyUnit: "110000000";
-          tmBeginActing: "2014-12-30 11:47:16";
-          iActingTimeLen: 0;
-          strEndUnit: "";
-          tmEndRev: null;
-          tmEndSend: null;
-          tmEndCreate: null;
-          strEndMark: "";
-          iEndType: 0;
-          bApplyValid: 0;
-          bAnswerValid: 1;
-          bEndValid: 0;
-          iAngleBegin: 0;
-          iAngleEnd: 360;
-          bAnswerAccept: 1;
-          tmEnd: null;
-          bRevOver: null;
-          ubyWorkCat: 0;
-        }) => {
-          console.log(item);
-          let v = item.strCurPos;
-          if (v) {
-            let lng = v.substring(0, v.indexOf("E"));
-            let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
-            let pt = {
-              lng:
-                Number(lng.substring(0, 3)) +
-                Number(lng.substring(3, 5)) / 60 +
-                Number(lng.substring(5, 9)) / 100 / 3600,
-              lat:
-                Number(lat.substring(0, 2)) +
-                Number(lat.substring(2, 4)) / 60 +
-                Number(lat.substring(4, 8)) / 100 / 3600,
-            };
-            let position: [number, number] = (wgs84togcj02(
-              pt.lng,
-              pt.lat
-            ) as unknown) as [number, number];
-            features.push({
-              type: "Feature",
-              properties: {
-                id: item.strZydID,
-                type: "射界",
-                name: item.strName,
-                strPos: v,
-                "icon-image": "projectile-white",
-              },
-              geometry: {
-                type: "Point",
-                coordinates: position,
-              },
-            });
-            const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
-              number,
-              number
-            ]; // 圆心点的经纬度
-            const radius: number = item.iRange; // 半径（单位：米）
-            const startAngle: number = item.iAngleBegin; // 起始角度（单位：度）
-            const endAngle: number = item.iAngleEnd; // 终止角度（单位：度）
-            const steps: number = 64; // 用于生成圆弧的步数，越大越平滑
-            const units: turf.Units = "meters"; // 半径的单位
-            function calculateCirclePoints(
-              center: [number, number],
-              radius: number,
-              steps: number,
-              units: turf.Units
-            ): [number, number][] {
-              const points: [number, number][] = [];
-              const angleStep = 360 / steps;
-              let angle = 0;
-              for (; angle < 360; angle += angleStep) {
-                const point = turf.destination(center, radius, angle, {
-                  units: units,
-                }) as any;
-                points.push(point.geometry.coordinates);
-              }
-              const point = turf.destination(center, radius, 360, {
-                units: units,
-              }) as any;
-              points.push(point.geometry.coordinates);
-              return points;
-            }
-            function calculateSectorPoints(
-              center: [number, number],
-              radius: number,
-              startAngle: number,
-              endAngle: number,
-              steps: number,
-              units: turf.Units
-            ): [number, number][] {
-              const points: [number, number][] = [center];
-              const angleStep = 360 / steps;
-              let angle = startAngle;
-              for (; angle < endAngle; angle += angleStep) {
-                const point = turf.destination(center, radius, angle, {
-                  units: units,
-                }) as any;
-                points.push(point.geometry.coordinates);
-              }
-              const point = turf.destination(center, radius, endAngle, {
-                units: units,
-              }) as any;
-              points.push(point.geometry.coordinates);
-              points.push(center); // 返回到圆心以关闭多边形
-              return points;
-            }
-            const sectorPoints: [number, number][] =
-              endAngle - startAngle >= 360
-                ? calculateCirclePoints(center, radius, steps, units)
-                : calculateSectorPoints(
-                    center,
-                    radius,
-                    startAngle,
-                    endAngle,
-                    steps,
-                    units
-                  );
-            const sectorPolygon = turf.polygon([sectorPoints], {
-              id: item.strZydID,
-              color: "white",
-              fillColor: "transparent",
-            });
-            circleFeatures.push(sectorPolygon);
-          }
-        }
-      );
-      // map.addSource("zydSource", {
-      //   type: "geojson",
-      //   data: {
-      //     type: "FeatureCollection",
-      //     features: features,
-      //   },
-      // });
-      // map.addLayer({
-      //   id: "zydLayer",
-      //   type: "symbol",
-      //   source: "zydSource",
-      //   layout: {
-      //     visibility: props.zyd ? "visible" : "none",
-      //     // This icon is a part of the Mapbox Streets style.
-      //     // To view all images available in a Mapbox style, open
-      //     // the style in Mapbox Studio and click the "Images" tab.
-      //     // To add a new image to the style at runtime see
-      //     // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-      //     "icon-anchor": "center",
-      //     "icon-image": ["get", "icon-image"],
-      //     "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
-      //     "icon-rotate": 0,
-      //     // "icon-offset": [10, 0],
-      //     "icon-rotation-alignment": "map",
-      //     "icon-allow-overlap": true,
-      //     "icon-ignore-placement": true,
-      //     "text-field": ["get", "name"],
-      //     "text-font": ["simkai"],
-      //     "text-size": 16,
-      //     "text-transform": "uppercase",
-      //     // "text-letter-spacing": 0.05,
-      //     "text-anchor": "bottom",
-      //     "text-line-height": 1,
-      //     "text-justify": "center",
-      //     "text-offset": [0, -1],
-      //     "text-ignore-placement": true,
-      //     "text-allow-overlap": true,
-      //     "text-rotation-alignment": "map",
-      //     "text-max-width": 400,
-      //   },
-      //   paint: {
-      //     "icon-opacity": 1,
-      //     "text-color": "white",
-      //     "text-halo-color": "black",
-      //     "text-halo-width": 1,
-      //   },
-      //   filter: ["==", ["get", "type"], "站点"],
-      // });
-      map.addSource("最大射程source", {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: circleFeatures,
-        },
-      });
-      map.addLayer({
-        id: "最大射程-fill",
-        type: "fill",
-        source: "最大射程source",
-        layout: {
-          visibility: props.zyd ? "visible" : "none",
-        },
-        paint: {
-          "fill-color": ["get", "fillColor"],
-          "fill-opacity": 0.5,
-        },
-      });
-      map.addLayer({
-        id: "最大射程-line",
-        type: "line",
-        source: "最大射程source",
-        layout: {
-          visibility: props.zyd ? "visible" : "none",
-        },
-        paint: {
-          "line-color": ["get", "color"],
-          "line-width": 1,
-          // "line-dasharray": [1, 1],
-        },
-      });
-      // map.on("contextmenu", "zydLayer", (e: any) => {
-      //   e.preventDefault();
-      //   const fs = map.queryRenderedFeatures(e.point, {
-      //     layers: ["zydLayer"],
-      //   });
 
-      //   if (!fs.length) {
-      //     return;
-      //   }
-
-      //   const feature = fs[0];
-
-      //   prevRequestShow.value = true;
-      //   prevRequestData.id = feature.properties.id;
-      //   prevRequestData.strPos = feature.properties.strPos;
-      //   prevRequestData.name = feature.properties.name;
-      // });
-      // map.on("click", "zydLayer", (e: any) => {
-      //   const fs = map.queryRenderedFeatures(e.point, {
-      //     layers: ["zydLayer"],
-      //   });
-
-      //   if (!fs.length) {
-      //     return;
-      //   }
-
-      //   const feature = fs[0];
-
-      //   // Display the popup
-      //   // new Popup()
-      //   //   .setLngLat(feature.geometry.coordinates)
-      //   //   .setHTML(
-      //   //     `<h3>${feature.properties.title}</h3><p>${feature.properties.description}</p>`
-      //   //   )
-      //   //   .addTo(map);
-      //   station.人影界面被选中的设备 = feature.properties.id;
-      //   $(`#人影-${station.人影界面被选中的设备}`)[0].scrollIntoView({
-      //     block: "nearest",
-      //     behavior: "smooth",
-      //     inline: "center",
-      //   });
-      //   active();
-      // });
-      // active = () => {
-      //   features = features.map((item: any) => {
-      //     if (item.properties.id == station.人影界面被选中的设备) {
-      //       item.properties["icon-image"] = "projectile-white";
-      //     } else {
-      //       item.properties["icon-image"] = "projectile-white";
-      //     }
-      //     return item;
-      //   });
-      //   let source = map.getSource("zydSource");
-      //   source.setData({
-      //     type: "FeatureCollection",
-      //     features: features,
-      //   });
-
-      //   circleFeatures = circleFeatures.map((item: any) => {
-      //     if (item.properties.id == station.人影界面被选中的设备) {
-      //       item.properties.color = "white";
-      //       item.properties.fillColor = "white";
-      //     } else {
-      //       item.properties.color = "white";
-      //       item.properties.fillColor = "transparent";
-      //     }
-      //     return item;
-      //   });
-      //   source = map.getSource("最大射程source");
-      //   source.setData({
-      //     type: "FeatureCollection",
-      //     features: circleFeatures,
-      //   });
-      // };
-    });
     // getDevice().then((res) => {
     //   dialogOptions.menus = res.data;
     //   let features: any = [];
@@ -2392,16 +2232,16 @@ watch(
         ? map.setLayoutProperty("zydLayer", "visibility", "visible")
         : map.setLayoutProperty("zydLayer", "visibility", "none");
     }
-    // if (map.getLayer("最大射程-line")) {
-    //   newVal
-    //     ? map.setLayoutProperty("最大射程-line", "visibility", "visible")
-    //     : map.setLayoutProperty("最大射程-line", "visibility", "none");
-    // }
-    // if (map.getLayer("最大射程-fill")) {
-    //   newVal
-    //     ? map.setLayoutProperty("最大射程-fill", "visibility", "visible")
-    //     : map.setLayoutProperty("最大射程-fill", "visibility", "none");
-    // }
+    if (map.getLayer("最大射程-line")) {
+      newVal
+        ? map.setLayoutProperty("最大射程-line", "visibility", "visible")
+        : map.setLayoutProperty("最大射程-line", "visibility", "none");
+    }
+    if (map.getLayer("最大射程-fill")) {
+      newVal
+        ? map.setLayoutProperty("最大射程-fill", "visibility", "visible")
+        : map.setLayoutProperty("最大射程-fill", "visibility", "none");
+    }
   }
 );
 watch(
