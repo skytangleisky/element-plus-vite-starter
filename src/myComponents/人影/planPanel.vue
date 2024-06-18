@@ -78,7 +78,7 @@
   position: absolute;
   width: 500px;
   height: 400px;
-  background: #304156;
+  background-color: white;
   left: 10px;
   border-radius: 10px;
   padding: 7px;
@@ -89,5 +89,8 @@
     display: flex;
     flex-direction: row;
   }
+}
+.dark .planPanel {
+  background: #304156;
 }
 </style>

@@ -1,159 +1,197 @@
 <template>
-  <div
-    v-dialogDrag
-    class="dragDialog absolute w-550px"
-    left
-    style="left: calc(50% - 275px); top: calc(50% - 155px)"
-    v-show="show"
-  >
-    <el-row>
-      <el-col :span="12"
-        ><div class="flex justify-between items-center pl-10px">
-          代码<input
-            name="代码"
-            class="operation_filter"
-            style="width: 150px"
-            :value="data.id"
-            @mousedown.stop
-          /></div
-      ></el-col>
-      <el-col :span="12"
-        ><div class="flex justify-between items-center pl-10px">
-          名称<input
-            name="名称"
-            class="operation_filter"
-            style="width: 150px"
-            :value="data.name"
-            @mousedown.stop
-          /></div
-      ></el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="12"
-        ><div class="flex justify-between items-center pl-10px">
-          位置<input
-            name="位置"
-            class="operation_filter"
-            style="width: 150px"
-            :value="data.strPos"
-            @mousedown.stop
-          /></div
-      ></el-col>
-      <el-col :span="12"
-        ><div class="flex justify-between items-center pl-10px">
-          审批单位<input
-            name="审批单位"
-            class="operation_filter"
-            style="width: 150px"
-            value="北空"
-            @mousedown.stop
-          /></div
-      ></el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="12"
-        ><div class="flex justify-between items-center pl-10px">
-          最大射程(千米)<el-input-number
-            v-model="num1"
-            size="default"
-            @mousedown.stop
-          /></div
-      ></el-col>
-      <el-col :span="12"
-        ><div class="flex justify-between items-center pl-10px">
-          最大射高(米)<el-input-number
-            v-model="num2"
-            size="default"
-            @mousedown.stop
-          /></div
-      ></el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="12"
-        ><div class="flex justify-between items-center pl-10px">
-          射击装备<input
-            name="射击装备"
-            class="operation_filter"
-            style="width: 150px"
-            value="火箭"
-            @mousedown.stop
-          /></div
-      ></el-col>
-      <el-col :span="12"
-        ><div class="flex justify-between items-center pl-10px">
-          作业目的<input
-            name="作业目的"
-            class="operation_filter"
-            style="width: 150px"
-            value="增雨"
-            @mousedown.stop
-          /></div
-      ></el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="12"
-        ><div class="flex justify-between items-center pl-10px">
-          射向开始角(度)<el-input-number
-            v-model="num3"
-            size="default"
-            @mousedown.stop
-          /></div
-      ></el-col>
-      <el-col :span="12"
-        ><div class="flex justify-between items-center pl-10px">
-          射向终止角(度)<el-input-number
-            v-model="num4"
-            size="default"
-            @mousedown.stop
-          /></div
-      ></el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="12"
-        ><div class="flex justify-between items-center pl-10px">
-          开始时间<input
-            name="开始时间"
-            class="operation_filter"
-            style="width: 150px"
-            value="17:11"
-            @mousedown.stop
-          /></div
-      ></el-col>
-      <el-col :span="12"
-        ><div class="flex justify-between items-center pl-10px">
-          作业时长<input
-            name="作业时长"
-            class="operation_filter"
-            style="width: 150px"
-            value="1分钟"
-            @mousedown.stop
-          /></div
-      ></el-col>
-    </el-row>
-    <div class="flex flex-row justify-between items-center pl-10px mt-0.5rem mb-0.5rem">
-      <el-button type="default" @mousedown.stop>网络上报</el-button>
-      <el-button type="default" @mousedown.stop>电话上报</el-button>
-      <el-button @click="cancel" type="default" @mousedown.stop>取消</el-button>
+  <div class="modal absolute w-full h-full left-0 top-0" v-show="show">
+    <div
+      v-dialogDrag
+      class="dragDialog absolute w-550px"
+      left
+      style="left: calc(50% - 275px); top: calc(50% - 155px)"
+    >
+      <el-row>
+        <el-col :span="12"
+          ><div class="flex justify-between items-center pl-10px">
+            代码<input
+              name="代码"
+              class="operation_filter"
+              style="width: 150px"
+              :value="data.strCode"
+              @mousedown.stop
+            /></div
+        ></el-col>
+        <el-col :span="12"
+          ><div class="flex justify-between items-center pl-10px">
+            名称<input
+              name="名称"
+              class="operation_filter"
+              style="width: 150px"
+              :value="data.strName"
+              @mousedown.stop
+            /></div
+        ></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12"
+          ><div class="flex justify-between items-center pl-10px">
+            位置<input
+              name="位置"
+              class="operation_filter"
+              style="width: 150px"
+              :value="data.strPos"
+              @mousedown.stop
+            /></div
+        ></el-col>
+        <el-col :span="12"
+          ><div class="flex justify-between items-center pl-10px">
+            审批单位<input
+              name="审批单位"
+              class="operation_filter"
+              style="width: 150px"
+              value="北空"
+              @mousedown.stop
+            /></div
+        ></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12"
+          ><div class="flex justify-between items-center pl-10px">
+            最大射程(米)<el-input-number
+              :min="0"
+              :max="10000"
+              v-model="data.iMaxShotRange"
+              size="default"
+              @mousedown.stop
+            /></div
+        ></el-col>
+        <el-col :span="12"
+          ><div class="flex justify-between items-center pl-10px">
+            最大射高(米)<el-input-number
+              :min="0"
+              :max="10000"
+              v-model="data.iMaxShotHei"
+              size="default"
+              @mousedown.stop
+            /></div
+        ></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <div class="flex justify-between items-center pl-10px">
+            射击装备<el-select
+              v-model="data.strWeapon"
+              placeholder="射击装备"
+              style="width: 150px"
+            >
+              <el-option
+                v-for="(item, k) in weaponOptions"
+                :key="k"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select></div
+        ></el-col>
+        <el-col :span="12"
+          ><div class="flex justify-between items-center pl-10px">
+            作业目的<input
+              name="作业目的"
+              class="operation_filter"
+              style="width: 150px"
+              value="增雨"
+              @mousedown.stop
+            /></div
+        ></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12"
+          ><div class="flex justify-between items-center pl-10px">
+            射向开始角(度)<el-input-number
+              :min="0"
+              :max="360"
+              v-model="data.iShotRangeBegin"
+              size="default"
+              @mousedown.stop
+            /></div
+        ></el-col>
+        <el-col :span="12"
+          ><div class="flex justify-between items-center pl-10px">
+            射向终止角(度)<el-input-number
+              :min="0"
+              :max="360"
+              v-model="data.iShotRangeEnd"
+              size="default"
+              @mousedown.stop
+            /></div
+        ></el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12"
+          ><div class="flex justify-between items-center pl-10px">
+            开始时间<el-time-picker
+              value-format="HH:mm:ss"
+              v-model="data.beginTime"
+              placeholder="请输入开始时间"
+              style="width: 150px"
+            /></div
+        ></el-col>
+        <el-col :span="12"
+          ><div class="flex justify-between items-center pl-10px">
+            作业时长(分钟)<el-input-number
+              :min="0"
+              :max="120"
+              v-model="data.duration"
+              size="default"
+              @mousedown.stop
+            /></div
+        ></el-col>
+      </el-row>
+      <div class="flex flex-row justify-between items-center pl-10px mt-0.5rem mb-0.5rem">
+        <el-button type="default" @mousedown.stop>网络上报</el-button>
+        <el-button type="default" @mousedown.stop>电话上报</el-button>
+        <el-button @click="cancel" type="default" @mousedown.stop>取消</el-button>
+      </div>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from "vue";
-const num1 = ref(10);
-const num2 = ref(8000);
-const num3 = ref(290);
-const num4 = ref(40);
+import { ref, reactive } from "vue";
+const weaponOptions = reactive([
+  { value: 0, label: "火箭" },
+  { value: 1, label: "高炮" },
+  { value: 2, label: "火箭+高炮" },
+  { value: 3, label: "烟炉" },
+  { value: 4, label: "火箭+烟炉" },
+  { value: 5, label: "高炮+烟炉" },
+  { value: 6, label: "火箭+高炮+烟炉" },
+]);
 withDefaults(
   defineProps<{
     show?: boolean;
-    data?: { id: string; strPos?: string; name?: string };
+    data?: {
+      strID: string;
+      strCode: string;
+      strName: string;
+      strPos: string;
+      iMaxShotRange: number;
+      iMaxShotHei: number;
+      strWeapon: string;
+      iShotRangeBegin: number;
+      iShotRangeEnd: number;
+      beginTime: string;
+      duration: number;
+    };
   }>(),
   {
     show: true,
     data: () => ({
-      id: "",
+      strID: "",
+      strCode: "",
+      strName: "",
       strPos: "",
-      name: "",
+      iMaxShotRange: 10,
+      iMaxShotHei: 8000,
+      strWeapon: "",
+      iShotRangeBegin: 0,
+      iShotRangeEnd: 1000,
+      beginTime: "",
+      duration: 1,
     }),
   }
 );
@@ -163,9 +201,13 @@ const cancel = () => {
 };
 </script>
 <style lang="scss">
-.dragDialog {
-  .ep-row {
-    padding: 5px;
+.modal {
+  z-index: 4;
+  background: #00000088;
+  .dragDialog {
+    .ep-row {
+      padding: 5px;
+    }
   }
 }
 </style>

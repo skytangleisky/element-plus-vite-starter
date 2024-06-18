@@ -1,4 +1,5 @@
 import { defineStore, acceptHMRUpdate2 } from "pinia"
+import moment from 'moment'
 import ry from "./subs/ry.js";
 import jx from "./subs/jx.js";
 import dev from "./subs/dev.js";
@@ -124,10 +125,10 @@ export const useSettingStore = defineStore({
             117.04212403858509,
             28.1994655756006
         ],
-        gridValue:true,
-        gridPoint:true,
-        isobands:true,
-        isolines:true,
+        gridValue:false,
+        gridPoint:false,
+        isobands:false,
+        isolines:false,
         zdz:true,
         bearing:0,
         pitch:0,
@@ -135,7 +136,21 @@ export const useSettingStore = defineStore({
         zyd:true,
         district:true,
         loadmap:true,
-        disappear:false,
+        disappear:false,//右侧菜单
+        prevPlanRequestShow:false,
+        prevPlanRequestData:{
+          strID: "",
+          strCode: "",
+          strName: "",
+          strPos: "",
+          iMaxShotRange: 0,
+          iMaxShotHei: 0,
+          strWeapon: "",
+          iShotRangeBegin: 0,
+          iShotRangeEnd: 0,
+          beginTime: moment().format("HH:mm:ss"),
+          duration: 1,
+        },
         bottom_disappear:true,
         tile:{
           index:0,

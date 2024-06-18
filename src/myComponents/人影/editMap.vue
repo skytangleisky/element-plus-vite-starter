@@ -40,18 +40,13 @@
       class="absolute left-0 bottom-50px"
       v-model:args="graphArgs"
     ></graph>
-    <dialog-plan-request
-      v-model:show="prevRequestShow"
-      v-model:data="prevRequestData"
-    ></dialog-plan-request>
   </div>
 </template>
 <script setup lang="ts">
+import moment from "moment";
 import { checkPermission } from "~/tools/index.ts";
 import CustomLayer from "./webglLayer/CustomLayer.js";
 import graph from "~/tools/graph.vue";
-import DialogPrevRequest from "../dialog_prev_request.vue";
-import DialogPlanRequest from "../dialog_plan_request.vue";
 import PlanPanel from "./planPanel.vue";
 import { area, pointInPolygon } from "~/tools/index.ts";
 import { rgb2Hsl } from "~/myComponents/map/js/core";
@@ -92,12 +87,6 @@ let graphArgs = reactive({
   fps: { value: 0, min: 0, max: 144, strokeStyle: "#ffffff88" },
   // memory: { value: 0, min: 0, max: 120, strokeStyle: "#0f0" },
 });
-const prevRequestShow = ref(false);
-let prevRequestData = reactive({
-  id: "",
-  strPos: "",
-  name: "",
-});
 import Dialog from "./dialog.vue";
 const dialogOptions = reactive({ menus: [] });
 const color = ref("red");
@@ -120,11 +109,25 @@ let timer = 0;
 let graphTimer = 0;
 const props = withDefaults(
   defineProps<{
+    prevRequestShow?: boolean;
+    prevRequestData?: {
+      strID: string;
+      strCode: string;
+      strName: string;
+      strPos: string;
+      iMaxShotRange: number;
+      iMaxShotHei: number;
+      strWeapon: string;
+      iShotRangeBegin: number;
+      iShotRangeEnd: number;
+      beginTime: string;
+      duration: number;
+    };
     routeLine?: boolean;
     loadmap?: boolean;
     district?: boolean;
     zyd?: boolean;
-    tile?: { name: string; tileData: Array<string> };
+    tile?: { index: number; tileData: Array<string> };
     center?: object;
     zoom?: number;
     pitch?: number;
@@ -165,11 +168,13 @@ style.layers.map((v: any) => {
   }
 });
 import { getAll } from "~/api/人影/api2";
-const emit = defineEmits([
+const emits = defineEmits([
   "update:center",
   "update:zoom",
   "update:pitch",
   "update:bearing",
+  "update:prevRequestShow",
+  "update:prevRequestData",
 ]);
 
 let LAT = (Math.atan(Math.sinh(Math.PI)) * 180) / Math.PI;
@@ -239,17 +244,17 @@ let enclosureList = new Array<any>();
 const station = useStationStore();
 const mapRef = ref(null);
 const zoomFunc = () => {
-  emit("update:zoom", map.getZoom());
+  emits("update:zoom", map.getZoom());
 };
 const pitchFunc = () => {
-  emit("update:pitch", map.getPitch());
+  emits("update:pitch", map.getPitch());
 };
 const bearingFunc = () => {
   console.log(map.getBearing());
-  emit("update:bearing", map.getBearing());
+  emits("update:bearing", map.getBearing());
 };
 const moveFunc = () => {
-  emit("update:center", map.getCenter());
+  emits("update:center", map.getCenter());
 };
 const flyTo = (item: any) => {
   try {
@@ -397,10 +402,18 @@ onMounted(() => {
             features.push({
               type: "Feature",
               properties: {
-                id: item.strID,
+                strID: item.strID,
                 type: "站点",
-                name: item.strName,
+                strCode: item.strCode,
+                strName: item.strName,
                 strPos: v,
+                iMaxShotRange: item.iMaxShotRange,
+                iMaxShotHei: item.iMaxShotHei,
+                strWeapon: item.strWeapon,
+                iShotRangeBegin: item.iShortAngelBegin,
+                iShotRangeEnd: item.iShortAngelEnd,
+                beginTime: moment().format("HH:mm:ss"),
+                duration: 1,
                 "icon-image": "projectile-white",
               },
               geometry: {
@@ -459,6 +472,7 @@ onMounted(() => {
                 const sectorPolygon = turf.polygon([sectorPoints], {
                   id: item.strID,
                   color: "white",
+                  fillColor: "transparent",
                 });
                 circleFeatures.push(sectorPolygon);
               }
@@ -607,11 +621,15 @@ onMounted(() => {
         }
 
         const feature = fs[0];
-
-        prevRequestShow.value = true;
-        prevRequestData.id = feature.properties.id;
-        prevRequestData.strPos = feature.properties.strPos;
-        prevRequestData.name = feature.properties.name;
+        emits("update:prevRequestShow", true);
+        emits("update:prevRequestData", feature.properties);
+        station.人影界面被选中的设备 = feature.properties.strID;
+        $(`#人影-${station.人影界面被选中的设备}`)[0].scrollIntoView({
+          block: "nearest",
+          behavior: "smooth",
+          inline: "center",
+        });
+        active();
       });
       map.on("click", "zydLayer", (e: any) => {
         const fs = map.queryRenderedFeatures(e.point, {
@@ -631,7 +649,7 @@ onMounted(() => {
         //     `<h3>${feature.properties.title}</h3><p>${feature.properties.description}</p>`
         //   )
         //   .addTo(map);
-        station.人影界面被选中的设备 = feature.properties.id;
+        station.人影界面被选中的设备 = feature.properties.strID;
         $(`#人影-${station.人影界面被选中的设备}`)[0].scrollIntoView({
           block: "nearest",
           behavior: "smooth",
@@ -2330,38 +2348,6 @@ watch(
 }
 </style>
 <style scoped lang="scss">
-.right-drawer {
-  z-index: 1;
-  position: absolute;
-  right: 0;
-  width: 600px;
-  box-sizing: border-box;
-  height: 100%;
-  background-color: white;
-  display: flex;
-  flex-direction: column;
-  transition: all 250ms;
-  & > div > div {
-    padding: 20px 10px;
-    box-sizing: border-box;
-  }
-  & > div > div:nth-child(odd) {
-    background: #eee;
-  }
-}
-.dark .right-drawer {
-  background-color: black;
-  & > div > div:nth-child(odd) {
-    background: #304156;
-  }
-  & > div > div:nth-child(even) {
-    background: #252948;
-  }
-}
-.disappear.right-drawer {
-  transform: translateX(calc(100% + 28px));
-  transition: all 250ms;
-}
 .mapboxgl-canvas:focus-visible {
   outline: none;
 }

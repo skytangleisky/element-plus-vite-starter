@@ -1,6 +1,8 @@
 <template>
   <div style="width: 100%; height: 100%; overflow: hidden; position: absolute">
     <edit-map
+      v-model:prevRequestShow="setting.人影.监控.prevPlanRequestShow"
+      v-model:prevRequestData="setting.人影.监控.prevPlanRequestData"
       style="backdrop-filter: blur(25px)"
       v-model:routeLine="setting.人影.监控.routeLine"
       v-model:loadmap="setting.人影.监控.loadmap"
@@ -34,7 +36,7 @@
       </div>
       <selectTile v-model:list="tileList"></selectTile>
       <span style="font-size: 20px; margin-top: 20px">图层设置</span>
-      <div style="display: flex; flex-direction: column">
+      <div style="display: flex; flex-direction: column; padding: 0 4px">
         <el-checkbox
           name="控制瓦片"
           v-model="setting.人影.监控.loadmap"
@@ -55,31 +57,33 @@
           v-model="setting.人影.监控.zyd"
           label="显示作业点"
         ></el-checkbox>
-        <el-checkbox
-          name="控制自动站"
-          v-model="setting.人影.监控.zdz"
-          label="自动站"
-        ></el-checkbox>
-        <el-checkbox
-          name="控制网格点"
-          v-model="setting.人影.监控.gridPoint"
-          label="网格点"
-        ></el-checkbox>
-        <el-checkbox
-          name="控制网格值"
-          v-model="setting.人影.监控.gridValue"
-          label="网格值"
-        ></el-checkbox>
-        <el-checkbox
-          name="控制等值线"
-          v-model="setting.人影.监控.isolines"
-          label="等值线"
-        ></el-checkbox>
-        <el-checkbox
-          name="控制等值带"
-          v-model="setting.人影.监控.isobands"
-          label="等值带"
-        ></el-checkbox>
+        <template v-if="checkPermission(['admin'])">
+          <el-checkbox
+            name="控制自动站"
+            v-model="setting.人影.监控.zdz"
+            label="自动站"
+          ></el-checkbox>
+          <el-checkbox
+            name="控制网格点"
+            v-model="setting.人影.监控.gridPoint"
+            label="网格点"
+          ></el-checkbox>
+          <el-checkbox
+            name="控制网格值"
+            v-model="setting.人影.监控.gridValue"
+            label="网格值"
+          ></el-checkbox>
+          <el-checkbox
+            name="控制等值线"
+            v-model="setting.人影.监控.isolines"
+            label="等值线"
+          ></el-checkbox>
+          <el-checkbox
+            name="控制等值带"
+            v-model="setting.人影.监控.isobands"
+            label="等值带"
+          ></el-checkbox>
+        </template>
       </div>
     </div>
     <div
@@ -108,6 +112,10 @@
       ></datatable>
     </div>
   </div>
+  <dialog-plan-request
+    v-model:show="setting.人影.监控.prevPlanRequestShow"
+    v-model:data="setting.人影.监控.prevPlanRequestData"
+  ></dialog-plan-request>
 </template>
 <script lang="ts" setup>
 import editMap from "../editMap.vue";
@@ -121,6 +129,8 @@ import whitelistSvg from "~/assets/whitelist.svg?raw";
 import statisticSvg from "~/assets/statistic.svg?raw";
 import selectTile from "../selectTile.vue";
 import { watch, ref, reactive } from "vue";
+import DialogPrevRequest from "../../dialog_prev_request.vue";
+import DialogPlanRequest from "../../dialog_plan_request.vue";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
 import datatable from "~/myComponents/datatable/index.vue";
@@ -132,6 +142,7 @@ const menus = reactive([
   { value: 12, type: "info", svg: whitelistSvg, active: false },
   { value: 0, svg: statisticSvg, active: false },
 ]);
+import { checkPermission } from "~/tools";
 const click = (v: any) => {
   setting.人影.监控.bottom_disappear = false;
   v.active = true;
@@ -263,7 +274,7 @@ $time: 1s;
   }
 }
 .right-drawer {
-  overflow: auto;
+  z-index: 4;
   position: absolute;
   right: 0;
   width: 240px;
@@ -275,6 +286,7 @@ $time: 1s;
   transition: transform $time;
   border-left: 1px solid #ddd;
   box-sizing: border-box;
+  overflow: auto;
   & > .handle {
     display: flex;
     justify-content: start;
