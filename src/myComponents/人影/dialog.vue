@@ -1,5 +1,5 @@
 <template>
-  <div class="!collapse dragDialog absolute w-500px" style="left: 20px; top: 20px">
+  <div class="!collapse dragDialog absolute w-530px" style="left: 20px; top: 20px">
     <div class="flex flex-row" style="align-items: center">
       <input
         @mousedown.stop

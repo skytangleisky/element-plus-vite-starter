@@ -1,76 +1,92 @@
 <template>
   <div v-dialogDrag class="planPanel z-1">
-    <div class="item m-t-4px m-b-4px" v-for="(item, key) in props.list" :key="key">
-      <div
-        class="h-full w-90px flex items-center justify-left"
-        style="border: 1px solid grey; box-sizing: border-box"
-      >
-        <div class="flex flex-col">
-          <span>13073009</span><span class="font-size-20px">狼山</span>
+    <div
+      style="margin: 7px; overflow: auto; width: 530px; height: -webkit-fill-available"
+    >
+      <div class="item" v-for="(item, key) in props.list" :key="key">
+        <div
+          class="h-full w-90px flex items-center justify-left"
+          style="
+            border: 1px solid grey;
+            box-sizing: border-box;
+            border-radius: 10px 0 0 10px;
+          "
+        >
+          <div class="flex flex-col">
+            <span>13073009</span><span class="font-size-20px">狼山</span>
+          </div>
         </div>
-      </div>
-      <div class="flex flex-col w-full">
-        <div class="flex">
-          <div class="flex flex-col" style="border: 1px solid grey">
-            <div>作业状态</div>
-            <div style="font-weight: bolder; font-size: 16px">
-              {{ 工作状态格式化(item.ubyStatus) }}
+        <div class="flex flex-col w-full">
+          <div class="flex">
+            <div class="flex flex-col" style="border: 1px solid grey">
+              <div>作业状态</div>
+              <div style="font-weight: bolder; font-size: 16px">
+                {{ 工作状态格式化(item.ubyStatus) }}
+              </div>
+            </div>
+            <div class="flex flex-col" style="border: 1px solid grey">
+              <div>发送状态</div>
+              <div style="font-weight: bolder; font-size: 16px">发送成功</div>
+            </div>
+            <div class="flex flex-col" style="border: 1px solid grey">
+              <div>作业点代码</div>
+              <div style="font-weight: bolder; font-size: 16px">915</div>
+            </div>
+            <div class="flex flex-col" style="border: 1px solid grey">
+              <div>申请时间</div>
+              <div style="font-weight: bolder; font-size: 16px">17:59</div>
+            </div>
+            <div class="flex flex-col" style="border: 1px solid grey">
+              <div>申请时长</div>
+              <div style="font-weight: bolder; font-size: 16px">60秒</div>
+            </div>
+            <div
+              class="flex-1 flex flex-col"
+              style="
+                border: 1px solid grey;
+                white-space: nowrap;
+                border-radius: 0 10px 0 0;
+              "
+            >
+              <div>上报单位</div>
+              <div style="font-weight: bolder; font-size: 16px">北京气象局</div>
             </div>
           </div>
-          <div class="flex flex-col" style="border: 1px solid grey">
-            <div>发送状态</div>
-            <div style="font-weight: bolder; font-size: 16px">发送成功</div>
-          </div>
-          <div class="flex flex-col" style="border: 1px solid grey">
-            <div>作业点代码</div>
-            <div style="font-weight: bolder; font-size: 16px">915</div>
-          </div>
-          <div class="flex flex-col" style="border: 1px solid grey">
-            <div>申请时间</div>
-            <div style="font-weight: bolder; font-size: 16px">17:59</div>
-          </div>
-          <div class="flex flex-col" style="border: 1px solid grey">
-            <div>申请时长</div>
-            <div style="font-weight: bolder; font-size: 16px">60秒</div>
-          </div>
-          <div
-            class="flex-1 flex flex-col"
-            style="border: 1px solid grey; white-space: nowrap"
-          >
-            <div>上报单位</div>
-            <div style="font-weight: bolder; font-size: 16px">北京气象局</div>
-          </div>
-        </div>
-        <div class="flex h-full">
-          <div
-            class="flex-1 flex justify-center items-center bg-green-7"
-            style="border: 1px solid grey; font-weight: bolder"
-          >
-            申请(17:50)
-          </div>
-          <div
-            class="flex-1 flex justify-center items-center"
-            style="border: 1px solid grey; font-weight: bolder"
-          >
-            批复
-          </div>
-          <div
-            class="flex-1 flex justify-center items-center"
-            style="border: 1px solid grey; font-weight: bolder"
-          >
-            开始
-          </div>
-          <div
-            class="flex-1 flex justify-center items-center"
-            style="border: 1px solid grey; font-weight: bolder"
-          >
-            结束
-          </div>
-          <div
-            class="flex-1 flex justify-center items-center"
-            style="border: 1px solid grey; font-weight: bolder"
-          >
-            完成
+          <div class="flex h-full">
+            <div
+              class="flex-1 flex justify-center items-center bg-green-7"
+              style="border: 1px solid grey; font-weight: bolder"
+            >
+              申请(17:50)
+            </div>
+            <div
+              class="flex-1 flex justify-center items-center"
+              style="border: 1px solid grey; font-weight: bolder"
+            >
+              批复
+            </div>
+            <div
+              class="flex-1 flex justify-center items-center"
+              style="border: 1px solid grey; font-weight: bolder"
+            >
+              开始
+            </div>
+            <div
+              class="flex-1 flex justify-center items-center"
+              style="border: 1px solid grey; font-weight: bolder"
+            >
+              结束
+            </div>
+            <div
+              class="flex-1 flex justify-center items-center"
+              style="
+                border: 1px solid grey;
+                font-weight: bolder;
+                border-radius: 0 0 10px 0;
+              "
+            >
+              完成
+            </div>
           </div>
         </div>
       </div>
@@ -151,23 +167,31 @@ const 工作状态格式化 = (key: number) => {
 </script>
 <style scoped lang="scss">
 .planPanel {
-  overflow: auto;
   position: absolute;
-  width: 530px;
   height: 400px;
   background-color: white;
   left: 10px;
   border-radius: 10px;
-  padding: 7px;
   top: 240px;
   .item {
+    background: #00000022;
     border: 1px solid grey;
     height: 80px;
     display: flex;
     flex-direction: row;
+    border-radius: 10px;
+    &:not(:first-child) {
+      margin-top: 2px;
+    }
+    &:not(:last-child) {
+      margin-bottom: 2px;
+    }
   }
 }
 .dark .planPanel {
   background: #304156;
+  .item {
+    background: #ffffff22;
+  }
 }
 </style>

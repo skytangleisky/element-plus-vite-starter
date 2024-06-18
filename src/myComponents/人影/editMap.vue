@@ -23,7 +23,7 @@
     <plan-panel :list="planProps.list"></plan-panel>
     <el-select
       class="select"
-      style="position: absolute; width: 100px; left: 530px; top: 10px"
+      style="position: absolute; width: 100px; left: 554px; top: 10px"
       size="small"
       v-model="color"
       placeholder="请选择颜色"
@@ -693,14 +693,14 @@ onMounted(() => {
           features: circleFeatures,
         });
       };
-    });
-    const datasource_zyddata = {
-      database:
-        "host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
-      table: "zyddata",
-    };
-    getAll(datasource_zyddata).then((res) => {
-      planProps.list = res.data[0];
+      const datasource_zyddata = {
+        database:
+          "host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
+        table: "zyddata",
+      };
+      getAll(datasource_zyddata).then((res) => {
+        planProps.list = res.data[0];
+      });
     });
     // getDevice().then((res) => {
     //   dialogOptions.menus = res.data;
