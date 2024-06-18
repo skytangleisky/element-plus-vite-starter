@@ -1,4 +1,4 @@
-import request from '../../utils/request'
+import request from '../utils/request'
 // export function setConfig(database,table){
 //   tableName = table;
 //   options = '?' + database

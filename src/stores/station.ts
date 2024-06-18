@@ -72,6 +72,7 @@ export const useStationStore = defineStore({
     secondWindData: new Array<Wind>(),//平均风数据
     radialWindData: new Array(),
     active:"",
+    风雷达组网界面被选中的设备:'',
     人影界面被选中的设备:'',
     珠海界面被选中的设备:'',
   }),

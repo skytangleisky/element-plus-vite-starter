@@ -156,7 +156,7 @@
                   @change="allChange"
                 ></el-checkbox>
                 <div style="display: flex; flex-direction: column; padding: 3px 4px">
-                  {{ item.Field }}
+                  {{ props.headerOption[item.Field]?.label || item.Field }}
                   <span
                     style="
                       font-size: 10px;
@@ -224,12 +224,15 @@ const props = withDefaults(
   defineProps<{
     database: string;
     table: string;
+    headerOption: { [key: string]: { label?: string; hide?: boolean } };
   }>(),
   {
     database: "",
     table: "",
+    headerOption: () => ({}),
   }
 );
+console.log(props.headerOption);
 import { Search } from "@element-plus/icons-vue";
 import { CheckboxValueType, ElMessage, ElMessageBox } from "element-plus";
 import draggable from "./draggable.vue";
@@ -242,7 +245,7 @@ import {
   fetchList,
   fetchData,
   deleteData,
-} from "~/api/人影/api2";
+} from "~/api/index.js";
 const options = reactive({
   thData: new Array<any>(),
   tdData: new Array<any>(),

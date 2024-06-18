@@ -20,9 +20,10 @@
       v-model:menus="dialogOptions.menus"
       style="left: 10px; top: 10px"
     ></Dialog>
+    <plan-panel :list="planProps.list"></plan-panel>
     <el-select
       class="select"
-      style="position: absolute; width: 100px; left: 530px; top: 10px"
+      style="position: absolute; width: 100px; left: 554px; top: 10px"
       size="small"
       v-model="color"
       placeholder="请选择颜色"
@@ -39,17 +40,14 @@
       class="absolute left-0 bottom-50px"
       v-model:args="graphArgs"
     ></graph>
-    <dialog-prev-request
-      v-model:show="prevRequestShow"
-      v-model:data="prevRequestData"
-    ></dialog-prev-request>
   </div>
 </template>
 <script setup lang="ts">
+import moment from "moment";
+import { checkPermission } from "~/tools/index.ts";
 import CustomLayer from "./webglLayer/CustomLayer.js";
-import { checkPermission } from "~/tools/index.js";
 import graph from "~/tools/graph.vue";
-import DialogPrevRequest from "../dialog_prev_request.vue";
+import PlanPanel from "./planPanel.vue";
 import { area, pointInPolygon } from "~/tools/index.ts";
 import { rgb2Hsl } from "~/myComponents/map/js/core";
 import palette from "../mapbox/data/温度/tempreture.xml?raw";
@@ -57,7 +55,6 @@ import plotUrl from "../mapbox/data/plot/06040802.000?url";
 import palette2 from "../mapbox/data/highTemperature/850hPaTemp.xml?raw";
 import plotUrl2 from "../mapbox/data/highTemperature/06040808.000?url";
 import { getMicapsData } from "../mapbox/data/plot/micaps";
-let LAT = (Math.atan(Math.sinh(Math.PI)) * 180) / Math.PI;
 import interpolate from "./idw.js";
 import { isoLines, isoBands } from "marchingsquares";
 const getHue = (min: number, v: number, max: number) => {
@@ -77,23 +74,21 @@ const getHue = (min: number, v: number, max: number) => {
   //hsl(60,100%,50%)～hsl(0,100%,50%)
   // return (1 - percent) * 60;
 };
-import Map = mapboxgl.Map;
-import Marker = mapboxgl.Marker;
-import NavigationControl = mapboxgl.NavigationControl;
-import FullscreenControl = mapboxgl.FullscreenControl;
+const Map = mapboxgl.Map;
+const Marker = mapboxgl.Marker;
+const NavigationControl = mapboxgl.NavigationControl;
+const FullscreenControl = mapboxgl.FullscreenControl;
 import { getRandomPointBetweenR1R2 } from "~/tools/index.js";
 import * as turf from "@turf/turf";
 import Circle from "@turf/circle";
 import { wgs84togcj02 } from "~/myComponents/map/workers/mapUtil";
 import { watch, ref, onMounted, onBeforeUnmount, reactive } from "vue";
+const planProps = reactive({
+  list: [],
+});
 let graphArgs = reactive({
   fps: { value: 0, min: 0, max: 144, strokeStyle: "#ffffff88" },
   // memory: { value: 0, min: 0, max: 120, strokeStyle: "#0f0" },
-});
-const prevRequestShow = ref(false);
-let prevRequestData = reactive({
-  id: "",
-  strPos: "",
 });
 import Dialog from "./dialog.vue";
 const dialogOptions = reactive({ menus: [] });
@@ -116,16 +111,31 @@ let timer = 0;
 let graphTimer = 0;
 const props = withDefaults(
   defineProps<{
+    prevRequestShow?: boolean;
+    prevRequestData?: {
+      strID: string;
+      strCode: string;
+      strName: string;
+      strPos: string;
+      iMaxShotRange: number;
+      iMaxShotHei: number;
+      strWeapon: string;
+      iShotRangeBegin: number;
+      iShotRangeEnd: number;
+      beginTime: string;
+      duration: number;
+    };
     routeLine?: boolean;
     loadmap?: boolean;
     district?: boolean;
     zyd?: boolean;
-    tile?: string;
+    tile?: { index: number; tileData: Array<string> };
     center?: object;
     zoom?: number;
     pitch?: number;
     bearing?: number;
     zdz?: boolean;
+    plane?: boolean;
     isolines?: boolean;
     isobands?: boolean;
     gridPoint?: boolean;
@@ -138,12 +148,13 @@ const props = withDefaults(
     zyd: true,
     loadmap: true,
     district: true,
-    tile: "街道地图",
+    tile: () => ({ name: "街道地图", tileData: new Array<string>() }),
     center: () => [0, 0],
     zoom: 4,
     pitch: 0,
     bearing: 0,
     zdz: true,
+    plane: true,
     isolines: true,
     isobands: true,
     gridPoint: true,
@@ -160,31 +171,52 @@ style.layers.map((v: any) => {
     v.layout.visibility = props.district ? "visible" : "none";
   }
 });
-import street from "./street.js";
-let streetUrl = URL.createObjectURL(
-  new File([JSON.stringify(street)], "street.json", { type: "application/json" })
-);
-import satellite from "./satellite.js";
-let satelliteUrl = URL.createObjectURL(
-  new File([JSON.stringify(satellite)], "satellite.json", { type: "application/json" })
-);
-import { setConfig, getAll } from "~/api/珠海/api";
-const emit = defineEmits([
+import { getAll } from "~/api/index.js";
+const emits = defineEmits([
   "update:center",
   "update:zoom",
   "update:pitch",
   "update:bearing",
+  "update:prevRequestShow",
+  "update:prevRequestData",
 ]);
+
+let LAT = (Math.atan(Math.sinh(Math.PI)) * 180) / Math.PI;
+const baseTileData = {
+  attribution: null,
+  attribution2:
+    '<a href="https://www.mapbox.com/about/maps/" target="_blank" title="Mapbox" aria-label="Mapbox">&copy; Mapbox</a> <a href="https://www.openstreetmap.org/about/" target="_blank" title="OpenStreetMap" aria-label="OpenStreetMap">&copy; OpenStreetMap</a> <a class="mapbox-improve-map" href="https://www.mapbox.com/contribute/" target="_blank" title="Improve this map" aria-label="Improve this map">Improve this map</a> <a href="https://www.maxar.com/" target="_blank" title="Maxar" aria-label="Maxar">&copy; Maxar</a>',
+  autoscale: true,
+  bounds: [-180, -LAT, 180, LAT],
+  cacheControl: "max-age=43200,s-maxage=2592000",
+  center: [0, 0, 3],
+  created: 1358310600000,
+  id: "mapbox.satellite",
+  mapbox_logo: false,
+  maxzoom: 22,
+  minzoom: 0,
+  modified: 1614877124000,
+  name: "Mapbox Satellite",
+  private: false,
+  scheme: "xyz",
+  tilejson: "2.2.0",
+  tiles: new Array<string>(),
+  webpage: "https://dev-studio.tilestream.net/tilesets/mapbox.satellite",
+};
+function processTileData(tiles = new Array<string>()) {
+  baseTileData.tiles = tiles;
+  return URL.createObjectURL(
+    new File([JSON.stringify(baseTileData)], Math.random() + ".json", {
+      type: "application/json",
+    })
+  );
+}
 let map: any;
 watch(
   () => props.tile,
   (tile) => {
     let s = map ? map.getStyle() : style;
-    if (tile == "街道地图") {
-      s.sources["raster-tiles"].url = streetUrl;
-    } else if (tile == "卫星地图") {
-      s.sources["raster-tiles"].url = satelliteUrl;
-    }
+    s.sources["raster-tiles"].url = processTileData(tile.tileData);
     s.layers.map((v: any) => {
       if (v.id == "simple-tiles") {
         v.layout.visibility = props.loadmap ? "visible" : "none";
@@ -194,9 +226,7 @@ watch(
     });
     map && map.setStyle(s);
   },
-  {
-    immediate: true,
-  }
+  { deep: true, immediate: true }
 );
 watch(
   () => props.loadmap,
@@ -218,17 +248,17 @@ let enclosureList = new Array<any>();
 const station = useStationStore();
 const mapRef = ref(null);
 const zoomFunc = () => {
-  emit("update:zoom", map.getZoom());
+  emits("update:zoom", map.getZoom());
 };
 const pitchFunc = () => {
-  emit("update:pitch", map.getPitch());
+  emits("update:pitch", map.getPitch());
 };
 const bearingFunc = () => {
   console.log(map.getBearing());
-  emit("update:bearing", map.getBearing());
+  emits("update:bearing", map.getBearing());
 };
 const moveFunc = () => {
-  emit("update:center", map.getCenter());
+  emits("update:center", map.getCenter());
 };
 const flyTo = (item: any) => {
   try {
@@ -266,10 +296,6 @@ const resize = () => {
   map && map.resize();
 };
 let active = () => {};
-let uav: any = {
-  type: "FeatureCollection",
-  features: [],
-};
 onMounted(() => {
   map = new Map({
     container: (mapRef.value as unknown) as HTMLCanvasElement,
@@ -302,30 +328,7 @@ onMounted(() => {
   });
   map.on("load", async () => {
     await addFeatherImages(map);
-    // map.addLayer(new CustomLayer());
-    map.addSource("uav原数据", {
-      type: "geojson",
-      data: uav,
-    });
-    map.addLayer({
-      id: "无人机数据",
-      type: "symbol",
-      source: "uav原数据",
-      layout: {
-        "icon-image": "drone",
-        "icon-size": {
-          base: 1,
-          stops: [
-            [0, 0.5],
-            [22, 1],
-          ],
-        },
-        "icon-rotate": ["get", "deg"],
-        "icon-rotation-alignment": "map",
-        "icon-allow-overlap": true,
-        "icon-ignore-placement": true,
-      },
-    });
+    map.addLayer(new CustomLayer());
     map.addLayer({
       id: "maine",
       type: "fill",
@@ -347,11 +350,12 @@ onMounted(() => {
         "fill-opacity": 0.4,
       },
     });
-    setConfig(
-      "host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
-      "zydpara"
-    );
-    getAll().then((res) => {
+    const datasource_zydpara = {
+      database:
+        "host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
+      table: "zydpara",
+    };
+    getAll(datasource_zydpara).then((res) => {
       dialogOptions.menus = res.data[0];
       let features: any = [];
       let circleFeatures: any = [];
@@ -402,10 +406,18 @@ onMounted(() => {
             features.push({
               type: "Feature",
               properties: {
-                id: item.strID,
+                strID: item.strID,
                 type: "站点",
-                name: item.strName,
+                strCode: item.strCode,
+                strName: item.strName,
                 strPos: v,
+                iMaxShotRange: item.iMaxShotRange,
+                iMaxShotHei: item.iMaxShotHei,
+                strWeapon: item.strWeapon,
+                iShotRangeBegin: item.iShortAngelBegin,
+                iShotRangeEnd: item.iShortAngelEnd,
+                beginTime: moment().format("HH:mm:ss"),
+                duration: 1,
                 "icon-image": "projectile-white",
               },
               geometry: {
@@ -414,15 +426,110 @@ onMounted(() => {
               },
             });
             if (item.iMaxShotRange) {
-              let circle: any = Circle([pt.lng, pt.lat], item.iMaxShotRange, {
-                steps: 64,
-                units: "meters",
-                properties: {
+              // 有问题
+              // let circle: any = Circle([pt.lng, pt.lat], item.iMaxShotRange, {
+              //   steps: 64,
+              //   units: "meters",
+              //   properties: {
+              //     id: item.strID,
+              //     color: "white",
+              //   },
+              // });
+              // circleFeatures.push(circle);
+
+              //圆形
+              {
+                const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
+                  number,
+                  number
+                ]; // 圆心点的经纬度
+                const radius: number = item.iMaxShotRange; // 半径（单位：米
+                const steps: number = 64; // 用于生成圆弧的步数，越大越平滑
+                const units: turf.Units = "meters"; // 半径的单位
+                function calculateSectorPoints(
+                  center: [number, number],
+                  radius: number,
+                  steps: number,
+                  units: turf.Units
+                ): [number, number][] {
+                  const points: [number, number][] = [];
+                  const angleStep = 360 / steps;
+                  let angle = 0;
+                  for (; angle < 360; angle += angleStep) {
+                    const point = turf.destination(center, radius, angle, {
+                      units: units,
+                    }) as any;
+                    points.push(point.geometry.coordinates);
+                  }
+                  const point = turf.destination(center, radius, 360, {
+                    units: units,
+                  }) as any;
+                  points.push(point.geometry.coordinates);
+                  return points;
+                }
+                const sectorPoints: [number, number][] = calculateSectorPoints(
+                  center,
+                  radius,
+                  steps,
+                  units
+                );
+                const sectorPolygon = turf.polygon([sectorPoints], {
                   id: item.strID,
                   color: "white",
-                },
-              });
-              circleFeatures.push(circle);
+                  fillColor: "transparent",
+                });
+                circleFeatures.push(sectorPolygon);
+              }
+
+              // {
+              //   const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
+              //     number,
+              //     number
+              //   ]; // 圆心点的经纬度
+              //   const radius: number = item.iMaxShotRange; // 半径（单位：米）
+              //   const startAngle: number = 0; // 起始角度（单位：度）
+              //   const endAngle: number = 90; // 终止角度（单位：度）
+              //   const steps: number = 64; // 用于生成圆弧的步数，越大越平滑
+              //   const units: turf.Units = "meters"; // 半径的单位
+              //   function calculateSectorPoints(
+              //     center: [number, number],
+              //     radius: number,
+              //     startAngle: number,
+              //     endAngle: number,
+              //     steps: number,
+              //     units: turf.Units
+              //   ): [number, number][] {
+              //     const points: [number, number][] = [center];
+              //     const angleStep = 360 / steps;
+              //     let angle = startAngle;
+              //     for (; angle < endAngle; angle += angleStep) {
+              //       const point = turf.destination(center, radius, angle, {
+              //         units: units,
+              //       }) as any;
+              //       points.push(point.geometry.coordinates);
+              //     }
+              //     const point = turf.destination(center, radius, endAngle, {
+              //       units: units,
+              //     }) as any;
+              //     points.push(point.geometry.coordinates);
+              //     points.push(center); // 返回到圆心以关闭多边形
+              //     return points;
+              //   }
+              //   const sectorPoints: [number, number][] = calculateSectorPoints(
+              //     center,
+              //     radius,
+              //     startAngle,
+              //     endAngle,
+              //     steps,
+              //     units
+              //   );
+              //   const sectorPolygon = turf.polygon([sectorPoints], {
+              //     id: item.strID,
+              //     color: "white",
+              //     fillColor: "transparent",
+              //   });
+              //   circleFeatures.push(sectorPolygon);
+              // }
             }
           }
         }
@@ -483,7 +590,19 @@ onMounted(() => {
         },
       });
       map.addLayer({
-        id: "最大射程",
+        id: "最大射程-fill",
+        type: "fill",
+        source: "最大射程source",
+        layout: {
+          visibility: props.zyd ? "visible" : "none",
+        },
+        paint: {
+          "fill-color": ["get", "fillColor"],
+          "fill-opacity": 0.5,
+        },
+      });
+      map.addLayer({
+        id: "最大射程-line",
         type: "line",
         source: "最大射程source",
         layout: {
@@ -506,10 +625,15 @@ onMounted(() => {
         }
 
         const feature = fs[0];
-
-        prevRequestShow.value = true;
-        prevRequestData.id = feature.properties.id;
-        prevRequestData.strPos = feature.properties.strPos;
+        emits("update:prevRequestShow", true);
+        emits("update:prevRequestData", feature.properties);
+        station.风雷达组网界面被选中的设备 = feature.properties.strID;
+        $(`#风雷达组网-${station.风雷达组网界面被选中的设备}`)[0].scrollIntoView({
+          block: "nearest",
+          behavior: "smooth",
+          inline: "center",
+        });
+        active();
       });
       map.on("click", "zydLayer", (e: any) => {
         const fs = map.queryRenderedFeatures(e.point, {
@@ -523,14 +647,14 @@ onMounted(() => {
         const feature = fs[0];
 
         // Display the popup
-        // new mapboxgl.Popup()
+        // new Popup()
         //   .setLngLat(feature.geometry.coordinates)
         //   .setHTML(
         //     `<h3>${feature.properties.title}</h3><p>${feature.properties.description}</p>`
         //   )
         //   .addTo(map);
-        station.珠海界面被选中的设备 = feature.properties.id;
-        $(`#珠海-${station.珠海界面被选中的设备}`)[0].scrollIntoView({
+        station.风雷达组网界面被选中的设备 = feature.properties.strID;
+        $(`#风雷达组网-${station.风雷达组网界面被选中的设备}`)[0].scrollIntoView({
           block: "nearest",
           behavior: "smooth",
           inline: "center",
@@ -539,8 +663,8 @@ onMounted(() => {
       });
       active = () => {
         features = features.map((item: any) => {
-          if (item.properties.id == station.珠海界面被选中的设备) {
-            item.properties["icon-image"] = "projectile-red";
+          if (item.properties.id == station.风雷达组网界面被选中的设备) {
+            item.properties["icon-image"] = "projectile-white";
           } else {
             item.properties["icon-image"] = "projectile-white";
           }
@@ -553,10 +677,12 @@ onMounted(() => {
         });
 
         circleFeatures = circleFeatures.map((item: any) => {
-          if (item.properties.id == station.珠海界面被选中的设备) {
-            item.properties.color = "red";
+          if (item.properties.id == station.风雷达组网界面被选中的设备) {
+            item.properties.color = "white";
+            item.properties.fillColor = "white";
           } else {
             item.properties.color = "white";
+            item.properties.fillColor = "transparent";
           }
           return item;
         });
@@ -566,6 +692,14 @@ onMounted(() => {
           features: circleFeatures,
         });
       };
+      const datasource_zyddata = {
+        database:
+          "host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
+        table: "zyddata",
+      };
+      getAll(datasource_zyddata).then((res) => {
+        planProps.list = res.data[0];
+      });
     });
     // getDevice().then((res) => {
     //   dialogOptions.menus = res.data;
@@ -602,8 +736,8 @@ onMounted(() => {
     //     });
     //     // let offset = (getRandomPointBetweenR1R2(50, 100) as unknown) as [number, number];
     //     // let div = document.createElement("div");
-    //     // div.id = "珠海" + item.id;
-    //     // div.className = "deviceStation_珠海";
+    //     // div.id = "风雷达组网" + item.id;
+    //     // div.className = "deviceStation_风雷达组网";
     //     // div.style.position = "absolute";
     //     // $(div).data("id", item.id);
     //     // let device = $(
@@ -626,8 +760,8 @@ onMounted(() => {
     //     // $(div).append(label);
 
     //     // device.on("click", function click() {
-    //     //   station.珠海界面被选中的设备 = $(this).parent().data("id");
-    //     //   $(`#珠海-${station.珠海界面被选中的设备}`)[0].scrollIntoView({
+    //     //   station.风雷达组网界面被选中的设备 = $(this).parent().data("id");
+    //     //   $(`#风雷达组网-${station.风雷达组网界面被选中的设备}`)[0].scrollIntoView({
     //     //     block: "nearest",
     //     //     behavior: "smooth",
     //     //     inline: "center",
@@ -657,12 +791,12 @@ onMounted(() => {
     //     //   let x = dragStartOffset.x + pt2.x - pt1.x;
     //     //   let y = dragStartOffset.y + pt2.y - pt1.y;
     //     //   marker.setOffset([x, y]);
-    //     //   let line = $("#珠海" + item.id).find(".connectingLine")[0];
+    //     //   let line = $("#风雷达组网" + item.id).find(".connectingLine")[0];
     //     //   line.style.transform = `translate(-50%,-50%) translate(${-x / 2}px,${
     //     //     -y / 2
     //     //   }px) rotate(${Math.atan2(y, x)}rad)`;
     //     //   line.style.width = `${Math.sqrt(x ** 2 + y ** 2)}px`;
-    //     //   let station = $("#珠海" + item.id).find(".station")[0];
+    //     //   let station = $("#风雷达组网" + item.id).find(".station")[0];
     //     //   station.style.transform = `translate(-50%,-50%) translate(${-x}px,${-y}px)`;
     //     //   marker.setLngLat(position);
     //     // });
@@ -674,12 +808,12 @@ onMounted(() => {
     //     //   let x = offset.x + pt2.x - pt1.x;
     //     //   let y = offset.y + pt2.y - pt1.y;
     //     //   marker.setOffset([x, y]);
-    //     //   let line = $("#珠海" + item.id).find(".connectingLine")[0];
+    //     //   let line = $("#风雷达组网" + item.id).find(".connectingLine")[0];
     //     //   line.style.transform = `translate(-50%,-50%) translate(${-x / 2}px,${
     //     //     -y / 2
     //     //   }px) rotate(${Math.atan2(y, x)}rad)`;
     //     //   line.style.width = `${Math.sqrt(x ** 2 + y ** 2)}px`;
-    //     //   let station = $("#珠海" + item.id).find(".station")[0];
+    //     //   let station = $("#风雷达组网" + item.id).find(".station")[0];
     //     //   station.style.transform = `translate(-50%,-50%) translate(${-x}px,${-y}px)`;
     //     //   marker.setLngLat(position);
     //     // });
@@ -984,6 +1118,7 @@ onMounted(() => {
         "icon-rotation-alignment": "map",
         "icon-allow-overlap": true,
         "icon-ignore-placement": true,
+        visibility: props.plane ? "visible" : "none",
       },
     });
     // const points = turf.randomPoint(50, { bbox: [100, 35, 103, 38] });
@@ -1107,14 +1242,25 @@ onMounted(() => {
     //     fillColors.push(strokeColors[2*i+1]);
     //     // fillColors.push(strokeColors[2*(i+1)+1]);
     //   }
+    //   // let interpolateOptions = {
+    //   //   sizeU: 140,
+    //   //   sizeV: 80,
+    //   //   boundary: {
+    //   //     lng: 70,
+    //   //     lat: 15,
+    //   //     width: 70,
+    //   //     height: 40,
+    //   //   },
+    //   //   power: 6,
+    //   // };
     //   let interpolateOptions = {
     //     sizeU: 140,
     //     sizeV: 80,
     //     boundary: {
-    //       lng: 70,
-    //       lat: 15,
-    //       width: 70,
-    //       height: 40,
+    //       lng: -180,
+    //       lat: -LAT,
+    //       width: 360,
+    //       height: 2*LAT,
     //     },
     //     power: 6,
     //   };
@@ -1947,110 +2093,102 @@ onMounted(() => {
   map.on("draw.uncombine", function (e: any) {
     console.log(e);
   });
-  获取净空区().then((res) => {
-    let a = {
-      type: "FeatureCollection",
-      features: [],
-    };
-    enclosureList = res.data.results;
-    for (let i = 0; i < res.data.results.length; i++) {
-      let v = res.data.results[i];
-      let strLngLatList = v.points.match(
-        RegExp(/(\-|\+)?\d+(\.\d+)?,(\-|\+)?\d+(\.\d+)?/g)
-      );
-      let list = strLngLatList.map((item: any) => [
-        Number(item.match(RegExp(/(\-|\+)?\d+(\.\d+)?(?=,)/))[0]),
-        Number(item.match(RegExp(/(?<=,)(\-|\+)?\d+(\.\d+)?/))[0]),
-      ]);
-      // console.log(JSON.stringify(list));
-      if (v.enclosure_type == "06") {
-        a.features.push({
-          id: v.id,
-          type: "Feature",
-          properties: {
-            color: v.standby2,
-          },
-          geometry: {
-            type: "Point",
-            coordinates: list[0],
-          },
-        } as never);
-      } else if (v.enclosure_type == "00") {
-        a.features.push({
-          id: v.id,
-          type: "Feature",
-          properties: {
-            color: v.standby2,
-          },
-          geometry: {
-            type: "LineString",
-            coordinates: list,
-          },
-        } as never);
-      } else if (v.enclosure_type == "02") {
-        if (list.length > 2) {
-          let color = "red";
-          if (v.standby1 == "S") {
-            color = "red";
-          } else if (v.standby1 == "O") {
-            color = "blue";
-          }
-          a.features.push({
-            id: v.id,
-            type: "Feature",
-            properties: {
-              color, //v.standby2
-            },
-            geometry: {
-              type: "Polygon",
-              coordinates: [list],
-            },
-          } as never);
-        } else {
-          console.error(
-            "v.enclosure_type == " + v.enclosure_type + ",list.length=" + list.length
-          );
-        }
-      } else if (v.enclosure_type == "03") {
-        if (v.circle_center) {
-          let center = v.circle_center
-            .match(RegExp(/(\-|\+)?\d+(\.\d+)?,(\-|\+)?\d+(\.\d+)?/g))[0]
-            .split(",")
-            .map((v: any) => Number(v));
-          a.features.push({
-            id: v.id,
-            type: "Feature",
-            properties: {
-              isCircle: true,
-              center,
-              radiusInKm: v.radius / 1000,
-              color: v.standby2,
-            },
-            geometry: {
-              type: "Polygon",
-              coordinates: [list],
-            },
-          } as never);
-        } else {
-          console.error("v.circle_center=" + v.circle_center);
-        }
-      }
-    }
-    Draw.add(a as never);
-  });
+  // 获取净空区().then((res) => {
+  //   let a = {
+  //     type: "FeatureCollection",
+  //     features: [],
+  //   };
+  //   enclosureList = res.data.results;
+  //   for (let i = 0; i < res.data.results.length; i++) {
+  //     let v = res.data.results[i];
+  //     let strLngLatList = v.points.match(
+  //       RegExp(/(\-|\+)?\d+(\.\d+)?,(\-|\+)?\d+(\.\d+)?/g)
+  //     );
+  //     let list = strLngLatList.map((item: any) => [
+  //       Number(item.match(RegExp(/(\-|\+)?\d+(\.\d+)?(?=,)/))[0]),
+  //       Number(item.match(RegExp(/(?<=,)(\-|\+)?\d+(\.\d+)?/))[0]),
+  //     ]);
+  //     // console.log(JSON.stringify(list));
+  //     if (v.enclosure_type == "06") {
+  //       a.features.push({
+  //         id: v.id,
+  //         type: "Feature",
+  //         properties: {
+  //           color: v.standby2,
+  //         },
+  //         geometry: {
+  //           type: "Point",
+  //           coordinates: list[0],
+  //         },
+  //       } as never);
+  //     } else if (v.enclosure_type == "00") {
+  //       a.features.push({
+  //         id: v.id,
+  //         type: "Feature",
+  //         properties: {
+  //           color: v.standby2,
+  //         },
+  //         geometry: {
+  //           type: "LineString",
+  //           coordinates: list,
+  //         },
+  //       } as never);
+  //     } else if (v.enclosure_type == "02") {
+  //       if (list.length > 2) {
+  //         a.features.push({
+  //           id: v.id,
+  //           type: "Feature",
+  //           properties: {
+  //             color: "red" || v.standby2,
+  //           },
+  //           geometry: {
+  //             type: "Polygon",
+  //             coordinates: [list],
+  //           },
+  //         } as never);
+  //       } else {
+  //         console.error("v.enclosure_type == 02," + "list.length=" + list.length);
+  //       }
+  //     } else if (v.enclosure_type == "03") {
+  //       if (v.circle_center) {
+  //         let center = v.circle_center
+  //           .match(RegExp(/(\-|\+)?\d+(\.\d+)?,(\-|\+)?\d+(\.\d+)?/g))[0]
+  //           .split(",")
+  //           .map((v: any) => Number(v));
+  //         a.features.push({
+  //           id: v.id,
+  //           type: "Feature",
+  //           properties: {
+  //             isCircle: true,
+  //             center,
+  //             radiusInKm: v.radius / 1000,
+  //             color: v.standby2,
+  //           },
+  //           geometry: {
+  //             type: "Polygon",
+  //             coordinates: [list],
+  //           },
+  //         } as never);
+  //       } else {
+  //         console.error("v.circle_center=" + v.circle_center);
+  //       }
+  //     }
+  //   }
+  //   Draw.add(a as never);
+  // });
 
   map.repaint = false;
   map.on("zoom", zoomFunc);
   map.on("pitch", pitchFunc);
   map.on("move", moveFunc);
   map.on("bearing", bearingFunc);
-  eventbus.on("珠海-将站点移动到屏幕中心", flyTo);
+  eventbus.on("风雷达组网-将站点移动到屏幕中心", flyTo);
 });
 
 onBeforeUnmount(() => {
   clearInterval(timer);
   clearInterval(graphTimer);
-  eventbus.off("珠海-将站点移动到屏幕中心", flyTo);
+  eventbus.off("风雷达组网-将站点移动到屏幕中心", flyTo);
   map.off("zoom", zoomFunc);
   map.off("move", moveFunc);
   map.off("pitch", pitchFunc);
@@ -2119,10 +2257,25 @@ watch(
         ? map.setLayoutProperty("zydLayer", "visibility", "visible")
         : map.setLayoutProperty("zydLayer", "visibility", "none");
     }
-    if (map.getLayer("最大射程")) {
+    if (map.getLayer("最大射程-line")) {
       newVal
-        ? map.setLayoutProperty("最大射程", "visibility", "visible")
-        : map.setLayoutProperty("最大射程", "visibility", "none");
+        ? map.setLayoutProperty("最大射程-line", "visibility", "visible")
+        : map.setLayoutProperty("最大射程-line", "visibility", "none");
+    }
+    if (map.getLayer("最大射程-fill")) {
+      newVal
+        ? map.setLayoutProperty("最大射程-fill", "visibility", "visible")
+        : map.setLayoutProperty("最大射程-fill", "visibility", "none");
+    }
+  }
+);
+watch(
+  () => props.plane,
+  (newVal) => {
+    if (newVal) {
+      map.setLayoutProperty("飞机", "visibility", "visible");
+    } else {
+      map.setLayoutProperty("飞机", "visibility", "none");
     }
   }
 );
@@ -2160,65 +2313,6 @@ watch(
     }
   }
 );
-// for (let i = 0; i < 100; i++) {
-//   uav.features.push({
-//     type: "Feature",
-//     properties: {
-//       name: "Example Point",
-//       terminalID: Number(Math.random().toFixed(8)) * 10e7,
-//       deg: 360 * Math.random(),
-//       speed: ((800 + 200 * Math.random()) / 3.6 / 1000) * 33,
-//     },
-//     geometry: {
-//       type: "Point",
-//       coordinates: [105 + 3 * Math.random(), 30 + 3 * Math.random()],
-//     },
-//   });
-// }
-watch(
-  () => bus.uavData,
-  ({ data: uavData }: any) => {
-    let has = false;
-    for (let i = 0; i < uav.features.length; i++) {
-      let feature = uav.features[i];
-      if (feature.properties.terminalID == uavData.terminalID) {
-        has = true;
-        feature.properties.speed = uavData.speed;
-        feature.properties.deg = uavData.direction;
-        feature.geometry.coordinates = wgs84togcj02(uavData.lng, uavData.lat);
-      }
-    }
-    if (!has) {
-      uav.features.push({
-        type: "Feature",
-        properties: {
-          name: "Example Point",
-          terminalID: uavData.terminalID,
-          deg: uavData.direction,
-          speed: uavData.speed,
-        },
-        geometry: {
-          type: "Point",
-          coordinates: wgs84togcj02(uavData.lng, uavData.lat),
-        },
-      });
-    }
-    map?.getSource("uav原数据")?.setData(uav);
-  }
-);
-watch(
-  () => bus.uavOffline,
-  (uavOffline: any) => {
-    console.log(uavOffline);
-    uav.features = uav.features.filter(
-      (item: any) => item.properties.terminalID !== uavOffline.data.terminalID
-    );
-    map?.getSource("uav原数据")?.setData(uav);
-    map.once("sourcedata", () => {
-      map.triggerRepaint();
-    });
-  }
-);
 </script>
 <style lang="scss">
 .mapboxgl-ctrl-bottom-left {
@@ -2229,7 +2323,7 @@ watch(
 .dark .select .ep-select__wrapper {
   background-color: #2b2b2b;
 }
-.deviceStation_珠海 {
+.deviceStation_风雷达组网 {
   box-sizing: border-box;
   position: absolute;
   font-size: 14px;
@@ -2271,38 +2365,6 @@ watch(
 }
 </style>
 <style scoped lang="scss">
-.right-drawer {
-  z-index: 1;
-  position: absolute;
-  right: 0;
-  width: 600px;
-  box-sizing: border-box;
-  height: 100%;
-  background-color: white;
-  display: flex;
-  flex-direction: column;
-  transition: all 250ms;
-  & > div > div {
-    padding: 20px 10px;
-    box-sizing: border-box;
-  }
-  & > div > div:nth-child(odd) {
-    background: #eee;
-  }
-}
-.dark .right-drawer {
-  background-color: black;
-  & > div > div:nth-child(odd) {
-    background: #304156;
-  }
-  & > div > div:nth-child(even) {
-    background: #252948;
-  }
-}
-.disappear.right-drawer {
-  transform: translateX(calc(100% + 28px));
-  transition: all 250ms;
-}
 .mapboxgl-canvas:focus-visible {
   outline: none;
 }

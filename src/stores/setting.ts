@@ -4,6 +4,7 @@ import ry from "./subs/ry.js";
 import jx from "./subs/jx.js";
 import dev from "./subs/dev.js";
 import zh from "./subs/zh.js";
+import gz from "./subs/gz.js";
 export const useSettingStore = defineStore({
   id: 'setting',
   state:()=>({
@@ -86,6 +87,77 @@ export const useSettingStore = defineStore({
         disappear:false,
         bottom_disappear:true,
         tile:'卫星地图',
+      },
+      回放:{
+        "zoom": 8.882777980661407,
+        "center": [
+            117.04212403858509,
+            28.1994655756006
+        ],
+        district:true,
+        loadmap:true,
+        tile:'街道地图',
+      },
+      编辑:{
+        "zoom": 8.882777980661407,
+        "center": [
+            117.04212403858509,
+            28.1994655756006
+        ],
+        district:true,
+        loadmap:true,
+        tile:'街道地图',
+      },
+      模拟:{
+        "zoom": 8.882777980661407,
+        "center": [
+            117.04212403858509,
+            28.1994655756006
+        ],
+        district:true,
+        loadmap:true,
+        tile:'街道地图',
+      }
+    },
+    风雷达组网:{
+      监控:{
+        "zoom": 8.882777980661407,
+        "center": [
+            117.04212403858509,
+            28.1994655756006
+        ],
+        gridValue:false,
+        gridPoint:false,
+        isobands:false,
+        isolines:false,
+        zdz:true,
+        bearing:0,
+        pitch:0,
+        routeLine:true,
+        zyd:true,
+        plane:true,
+        district:true,
+        loadmap:true,
+        disappear:false,//右侧菜单
+        prevPlanRequestShow:false,
+        prevPlanRequestData:{
+          strID: "",
+          strCode: "",
+          strName: "",
+          strPos: "",
+          iMaxShotRange: 0,
+          iMaxShotHei: 0,
+          strWeapon: "",
+          iShotRangeBegin: 0,
+          iShotRangeEnd: 0,
+          beginTime: moment().format("HH:mm:ss"),
+          duration: 1,
+        },
+        bottom_disappear:true,
+        tile:{
+          index:0,
+          tileData:new Array<string>()
+        },
       },
       回放:{
         "zoom": 8.882777980661407,
@@ -358,6 +430,7 @@ export const useSettingStore = defineStore({
       zh,
       ry,
       jx,
+      gz,
       {
         path: 'qqlogin',
         name: '3c1f8a79-4fe6-2263-08fb-477f961fc946',
@@ -425,6 +498,15 @@ export const useSettingStore = defineStore({
         hide:true,
         meta:{
           roles:['zh']
+        }
+      },
+      {
+        path: '',
+        name: '99961e04-e574-0e1f-2e23-94f157b14b55',
+        redirect: '/gz/synthesis',
+        hide:true,
+        meta:{
+          roles:['gz']
         }
       },
       {

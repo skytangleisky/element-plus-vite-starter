@@ -104,7 +104,6 @@ import { eventbus } from "~/eventbus";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.scss";
 import { 获取净空区, saveData, deleteData } from "~/api/enclosure.js";
-import { getDevice } from "~/api/人影/device.js";
 import { addFeatherImages, getFeather } from "~/tools";
 const bus = useBus();
 import theme from "./drawTheme/inactive.js";
@@ -172,7 +171,7 @@ style.layers.map((v: any) => {
     v.layout.visibility = props.district ? "visible" : "none";
   }
 });
-import { getAll } from "~/api/人影/api2";
+import { getAll } from "~/api/index.js";
 const emits = defineEmits([
   "update:center",
   "update:zoom",
