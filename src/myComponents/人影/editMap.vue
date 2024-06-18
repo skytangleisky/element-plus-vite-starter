@@ -20,7 +20,7 @@
       v-model:menus="dialogOptions.menus"
       style="left: 10px; top: 10px"
     ></Dialog>
-    <plan-panel></plan-panel>
+    <plan-panel :list="planProps.list"></plan-panel>
     <el-select
       class="select"
       style="position: absolute; width: 100px; left: 530px; top: 10px"
@@ -83,6 +83,9 @@ import * as turf from "@turf/turf";
 import Circle from "@turf/circle";
 import { wgs84togcj02 } from "~/myComponents/map/workers/mapUtil";
 import { watch, ref, onMounted, onBeforeUnmount, reactive } from "vue";
+const planProps = reactive({
+  list: [],
+});
 let graphArgs = reactive({
   fps: { value: 0, min: 0, max: 144, strokeStyle: "#ffffff88" },
   // memory: { value: 0, min: 0, max: 120, strokeStyle: "#0f0" },
@@ -133,6 +136,7 @@ const props = withDefaults(
     pitch?: number;
     bearing?: number;
     zdz?: boolean;
+    plane?: boolean;
     isolines?: boolean;
     isobands?: boolean;
     gridPoint?: boolean;
@@ -151,6 +155,7 @@ const props = withDefaults(
     pitch: 0,
     bearing: 0,
     zdz: true,
+    plane: true,
     isolines: true,
     isobands: true,
     gridPoint: true,
@@ -694,7 +699,9 @@ onMounted(() => {
         "host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
       table: "zyddata",
     };
-
+    getAll(datasource_zyddata).then((res) => {
+      planProps.list = res.data[0];
+    });
     // getDevice().then((res) => {
     //   dialogOptions.menus = res.data;
     //   let features: any = [];
@@ -1112,6 +1119,7 @@ onMounted(() => {
         "icon-rotation-alignment": "map",
         "icon-allow-overlap": true,
         "icon-ignore-placement": true,
+        visibility: props.plane ? "visible" : "none",
       },
     });
     // const points = turf.randomPoint(50, { bbox: [100, 35, 103, 38] });
@@ -2259,6 +2267,16 @@ watch(
       newVal
         ? map.setLayoutProperty("最大射程-fill", "visibility", "visible")
         : map.setLayoutProperty("最大射程-fill", "visibility", "none");
+    }
+  }
+);
+watch(
+  () => props.plane,
+  (newVal) => {
+    if (newVal) {
+      map.setLayoutProperty("飞机", "visibility", "visible");
+    } else {
+      map.setLayoutProperty("飞机", "visibility", "none");
     }
   }
 );

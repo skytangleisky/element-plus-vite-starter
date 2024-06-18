@@ -134,6 +134,7 @@ export const useSettingStore = defineStore({
         pitch:0,
         routeLine:true,
         zyd:true,
+        plane:true,
         district:true,
         loadmap:true,
         disappear:false,//右侧菜单

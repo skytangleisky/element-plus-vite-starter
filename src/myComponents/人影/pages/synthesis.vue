@@ -14,6 +14,7 @@
       v-model:pitch="setting.人影.监控.pitch"
       v-model:bearing="setting.人影.监控.bearing"
       v-model:zdz="setting.人影.监控.zdz"
+      v-model:plane="setting.人影.监控.plane"
       v-model:gridPoint="setting.人影.监控.gridPoint"
       v-model:gridValue="setting.人影.监控.gridValue"
       v-model:isolines="setting.人影.监控.isolines"
@@ -34,56 +35,63 @@
       >
         <el-icon v-html="rightSvg"></el-icon>
       </div>
-      <selectTile v-model:list="tileList"></selectTile>
-      <span style="font-size: 20px; margin-top: 20px">图层设置</span>
-      <div style="display: flex; flex-direction: column; padding: 0 4px">
-        <el-checkbox
-          name="控制瓦片"
-          v-model="setting.人影.监控.loadmap"
-          label="显示瓦片地图"
-        ></el-checkbox>
-        <el-checkbox
-          name="控制区划"
-          v-model="setting.人影.监控.district"
-          label="显示行政区划"
-        ></el-checkbox>
-        <el-checkbox
-          name="控制航线"
-          v-model="setting.人影.监控.routeLine"
-          label="航路航线"
-        ></el-checkbox>
-        <el-checkbox
-          name="控制作业点"
-          v-model="setting.人影.监控.zyd"
-          label="显示作业点"
-        ></el-checkbox>
-        <template v-if="checkPermission(['admin'])">
+      <div style="overflow: auto">
+        <selectTile v-model:list="tileList"></selectTile>
+        <span style="font-size: 20px; margin-top: 20px">图层设置</span>
+        <div style="display: flex; flex-direction: column; padding: 0 4px">
           <el-checkbox
-            name="控制自动站"
-            v-model="setting.人影.监控.zdz"
-            label="自动站"
+            name="控制瓦片"
+            v-model="setting.人影.监控.loadmap"
+            label="显示瓦片地图"
           ></el-checkbox>
           <el-checkbox
-            name="控制网格点"
-            v-model="setting.人影.监控.gridPoint"
-            label="网格点"
+            name="控制区划"
+            v-model="setting.人影.监控.district"
+            label="显示行政区划"
           ></el-checkbox>
           <el-checkbox
-            name="控制网格值"
-            v-model="setting.人影.监控.gridValue"
-            label="网格值"
+            name="控制航线"
+            v-model="setting.人影.监控.routeLine"
+            label="航路航线"
           ></el-checkbox>
           <el-checkbox
-            name="控制等值线"
-            v-model="setting.人影.监控.isolines"
-            label="等值线"
+            name="控制作业点"
+            v-model="setting.人影.监控.zyd"
+            label="显示作业点"
           ></el-checkbox>
           <el-checkbox
-            name="控制等值带"
-            v-model="setting.人影.监控.isobands"
-            label="等值带"
+            name="飞机"
+            v-model="setting.人影.监控.plane"
+            label="显示飞机"
           ></el-checkbox>
-        </template>
+          <template v-if="checkPermission(['admin'])">
+            <el-checkbox
+              name="控制自动站"
+              v-model="setting.人影.监控.zdz"
+              label="自动站"
+            ></el-checkbox>
+            <el-checkbox
+              name="控制网格点"
+              v-model="setting.人影.监控.gridPoint"
+              label="网格点"
+            ></el-checkbox>
+            <el-checkbox
+              name="控制网格值"
+              v-model="setting.人影.监控.gridValue"
+              label="网格值"
+            ></el-checkbox>
+            <el-checkbox
+              name="控制等值线"
+              v-model="setting.人影.监控.isolines"
+              label="等值线"
+            ></el-checkbox>
+            <el-checkbox
+              name="控制等值带"
+              v-model="setting.人影.监控.isobands"
+              label="等值带"
+            ></el-checkbox>
+          </template>
+        </div>
       </div>
     </div>
     <div
@@ -286,7 +294,6 @@ $time: 1s;
   transition: transform $time;
   border-left: 1px solid #ddd;
   box-sizing: border-box;
-  overflow: auto;
   & > .handle {
     display: flex;
     justify-content: start;
