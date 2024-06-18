@@ -1,6 +1,14 @@
 <template>
   <div class="login_dialog">
-    <div style="display: flex; align-items: center">
+    <div
+      style="
+        display: flex;
+        align-items: center;
+        position: absolute;
+        bottom: 100%;
+        transform: translateY(-40px);
+      "
+    >
       <img
         src="/src/assets/eagle.png"
         style="width: 60px; height: 60px; margin-right: 10px"
@@ -192,7 +200,6 @@ watch(
   }
   .rightPlane {
     position: relative;
-    margin-top: 40px;
     padding: 40px;
     display: flex;
     flex-direction: colum;
