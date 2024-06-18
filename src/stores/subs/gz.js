@@ -23,7 +23,7 @@ export default {
       path: 'system',
       name:'aa4619cf-ca3d-ffb1-9781-9fcf73cfa623',
       svg:'7809a650d6c811ee9aafb025aa2c9ada',
-      redirect:'/jx/system/device',
+      redirect:'/gz/system/person',
       meta:{
         label:'系统管理',
       },
