@@ -560,7 +560,7 @@ onMounted(() => {
           "icon-rotation-alignment": "map",
           "icon-allow-overlap": true,
           "icon-ignore-placement": true,
-          "text-field": ["get", "name"],
+          "text-field": ["get", "strName"],
           "text-font": ["simkai"],
           "text-size": 16,
           "text-transform": "uppercase",
