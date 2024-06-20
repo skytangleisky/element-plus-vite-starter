@@ -75,7 +75,7 @@ import { useBus } from "~/myComponents/bus";
 import { eventbus } from "~/eventbus";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.scss";
-import { 获取净空区, saveData, deleteData } from "~/api/无人机/api";
+import { 获取净空区, saveData, deleteData } from "~/api/enclosure.js";
 import { getDevice } from "~/api/组网/device.js";
 import { addFeatherImages, getFeather } from "~/tools";
 const bus = useBus();
@@ -244,6 +244,14 @@ onMounted(() => {
     pitch: props.pitch,
   });
   map.on("load", async () => {
+    //用于确定天气雷达位置是否正确
+    new Marker({
+      draggable: false,
+      pitchAlignment: "map",
+      rotationAlignment: "map",
+    })
+      .setLngLat([120.95777893066406, 31.075000762939453])
+      .addTo(map);
     await addFeatherImages(map);
     map.addLayer({
       id: "maine",
@@ -285,6 +293,7 @@ onMounted(() => {
           number,
           number
         ];
+        console.log(position, item.name);
         features.push({
           type: "Feature",
           properties: {
@@ -633,6 +642,7 @@ onMounted(() => {
         "icon-ignore-placement": true,
       },
     });
+    /*
     let breaks = [];
     for (let i = 1; i < 20; i++) {
       breaks.push(i * 50);
@@ -655,28 +665,28 @@ onMounted(() => {
     points.features.forEach(
       (pt: any) => (pt.properties.elevation = Math.random() * 1000)
     );
-    const grid = turf.interpolate(points, 0.01, {
+    const grid = turf.interpolate(points, 0.1, {
       gridType: "point", // 以点为基础进行插值
       property: "elevation", // 从点的属性中提取值
       units: "degrees", // 单位
       weight: 5, // 使用反距离加权进行插值
     });
-    // const isobands = turf.isobands(grid, [NaN, ...breaks], {
-    //   zProperty: "elevation",
-    // });
-    // map.addLayer({
-    //   id: "isobands-layer",
-    //   type: "fill",
-    //   source: {
-    //     type: "geojson",
-    //     data: isobands,
-    //   },
-    //   layout: {},
-    //   paint: {
-    //     "fill-color": ["match", ["get", "elevation"], ...fillColors, "transparent"],
-    //     "fill-opacity": 0.5,
-    //   },
-    // });
+    const isobands = turf.isobands(grid, [NaN, ...breaks], {
+      zProperty: "elevation",
+    });
+    map.addLayer({
+      id: "isobands-layer",
+      type: "fill",
+      source: {
+        type: "geojson",
+        data: isobands,
+      },
+      layout: {},
+      paint: {
+        "fill-color": ["match", ["get", "elevation"], ...fillColors, "transparent"],
+        "fill-opacity": 0.5,
+      },
+    });
     const isolines = turf.isolines(grid, [NaN, ...breaks], {
       zProperty: "elevation",
     });
@@ -694,6 +704,7 @@ onMounted(() => {
         "line-opacity": 1,
       },
     });
+    */
     // timer = setInterval(() => {
     //   let source = map.getSource("飞机原数据");
     //   if (source) {
@@ -889,6 +900,7 @@ onMounted(() => {
   map.on("draw.uncombine", function (e: any) {
     console.log(e);
   });
+  /*
   获取净空区().then((res) => {
     let a = {
       type: "FeatureCollection",
@@ -904,7 +916,6 @@ onMounted(() => {
         Number(item.match(RegExp(/(\-|\+)?\d+(\.\d+)?(?=,)/))[0]),
         Number(item.match(RegExp(/(?<=,)(\-|\+)?\d+(\.\d+)?/))[0]),
       ]);
-      console.log(JSON.stringify(list));
       if (v.enclosure_type == "06") {
         a.features.push({
           id: v.id,
@@ -972,7 +983,7 @@ onMounted(() => {
     }
     Draw.add(a as never);
   });
-
+  */
   map.repaint = false;
   map.on("zoom", zoomFunc);
   map.on("pitch", pitchFunc);

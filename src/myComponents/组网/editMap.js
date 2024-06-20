@@ -8,6 +8,22 @@ import data3 from "./satellite3.js"
 let url3 = URL.createObjectURL(new File([JSON.stringify(data3)],"satellite.json",{type:"application/json"}))
 import { useSettingStore } from '~/stores/setting';
 const setting = useSettingStore()
+
+import { lngLat2XY,XY2LngLat } from '../map/js/core.js'
+const result = {
+	minLng:116.13101482393752,
+	minLat:26.938309297788578,
+	cenLng:120.95777893066406,
+	cenLat:31.075000762939453,
+}
+let minLng = result.minLng;
+let minLat = result.minLat;
+let cenPos = lngLat2XY(result.cenLng, result.cenLat);
+let minPos = lngLat2XY(minLng, minLat);
+let maxPos = { x: 2 * cenPos.x - minPos.x, y: 2 * cenPos.y - minPos.y };
+let maxLngLat = XY2LngLat(maxPos.x, maxPos.y);
+let maxLng = maxLngLat.lng;
+let maxLat = maxLngLat.lat;
 export default {
 	"version": 8,
 	"name": "Streets",
@@ -276,6 +292,17 @@ export default {
 	// 		]
 	// },
 	"sources": {
+		"irSource":{
+			type: "image",
+			url: 'https://dev.tanglei.top/backend/radar',
+
+			coordinates: [
+				[minLng, maxLat],
+				[maxLng, maxLat],
+				[maxLng, minLat],
+				[minLng, minLat],
+			],
+		},
 		"district":{
 			"type":"geojson",
 			"data": city
@@ -374,18 +401,18 @@ export default {
 					visibility:'none'
 				}
 			},
-			{
-				'id': 'districtLayer',
-				'type': 'fill',
-				'source': 'district', // reference the data source
-				'layout': {
-					visibility:setting.district?'visible':'none'
-				},
-				'paint': {
-					'fill-color': '#000',
-					'fill-opacity': 0.2
-				}
-			},
+			// {
+			// 	'id': 'districtLayer',
+			// 	'type': 'fill',
+			// 	'source': 'district', // reference the data source
+			// 	'layout': {
+			// 		visibility:setting.district?'visible':'none'
+			// 	},
+			// 	'paint': {
+			// 		'fill-color': '#000',
+			// 		'fill-opacity': 0.2
+			// 	}
+			// },
 			{
 				'id': 'districtOutline',
 				'type': 'line',
@@ -398,6 +425,20 @@ export default {
 					'line-width': 1
 				}
 			},
+			{
+				id: "irLayer",
+				type: "raster",
+				source: "irSource",
+				"maxzoom": 21,
+				paint: {
+					"raster-fade-duration": 0,
+					"raster-opacity": 1,
+					"raster-resampling": "nearest",
+				},
+				layout: {
+					visibility: "visible",
+				},
+			}
 	],
 	"created": "2023-11-07T03:38:34.435Z",
 	"modified": "2023-11-14T11:53:57.549Z",

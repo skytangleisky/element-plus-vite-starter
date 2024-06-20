@@ -84,14 +84,13 @@ module.exports.init = async(resolvedConfig,opts)=>{
 }
 async function matchRoute(req,res,next,routes){
   for(let i=0;i<routes.length;i++){
-    let match = routes[i].path.match(/(?<=\/)[\w:\u4e00-\u9fa5][\w\u4e00-\u9fa5]*(\.[\w\u4e00-\u9fa5]*)*(?<!=\/)/g)
-    if(!routes[i].disable&&match.length
-      &&(routes[i].method!=undefined&&routes[i].method!=null)
+    let match = routes[i].path.split('/')
+    if(!routes[i].disable&&(routes[i].method!=undefined&&routes[i].method!=null)
       &&(req.method.toUpperCase() == routes[i].method.toUpperCase()||(routes[i].method instanceof Array && routes[i].method.slice().map(item=>item.toUpperCase()).indexOf(req.method.toUpperCase())>=0))){
-      let reqMatch = req.path.match(/(?<=\/)[\w\u4e00-\u9fa5]*(\.[\w\u4e00-\u9fa5]*)*(?<!=\/)/g)
+      let reqMatch = req.path.split('/')
       if(reqMatch.length == match.length){
         let bool = match.every((value,index,arr)=>{
-          let tmp = value.match(/(?<=^:)[\w\u4e00-\u9fa5]*$/g)
+          let tmp = value.match(/(?<=^:).*$/g)
           if(tmp){
             req.params[tmp[0]] = reqMatch[index]
             return true;
@@ -106,12 +105,13 @@ async function matchRoute(req,res,next,routes){
           await raw(req,res)
           await multipart(req,res)
           let delay = Object.prototype.toString.call(routes[i].delay)==='[object Function]'?routes[i].delay():routes[i].delay
-          loggerOutput('request invoke', req.method.padEnd(10,' ') + req.url + ' ' + (routes[i].delay?(delay+'ms'):''))
+          let beginTime = performance.now()
           await sleep(delay)
           if(Object.prototype.toString.call(routes[i].response)==='[object Object]'){
             res.setHeader('Content-Type','application/json')
             res.write(JSON.stringify(routes[i].response))
             res.end()
+            loggerOutput('request invoke', req.method.padEnd(10,' ') + ((performance.now()-beginTime).toFixed(2)+'ms').padEnd(10,' ') + req.url)
             return true
           }else if(Object.prototype.toString.call(routes[i].response)==='[object Function]'){
             let tmp = routes[i].response(req, res,next)
@@ -120,6 +120,7 @@ async function matchRoute(req,res,next,routes){
               res.write(JSON.stringify(tmp))
               res.end()
             }
+            loggerOutput('request invoke', req.method.padEnd(10,' ') + ((performance.now()-beginTime).toFixed(2)+'ms').padEnd(10,' ') + req.url)
             return true
           } else if(Object.prototype.toString.call(routes[i].response)==='[object AsyncFunction]'){
             let tmp = await routes[i].response(req,res,next)
@@ -128,6 +129,7 @@ async function matchRoute(req,res,next,routes){
               res.write(JSON.stringify(tmp))
               res.end()
             }
+            loggerOutput('request invoke', req.method.padEnd(10,' ') + ((performance.now()-beginTime).toFixed(2)+'ms').padEnd(10,' ') + req.url)
             return true
           }else throw Error(`${Object.prototype.toString.call(routes[i].response)} not support!!!`)
         }

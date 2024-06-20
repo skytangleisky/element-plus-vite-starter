@@ -37,7 +37,10 @@
         v-html="forkSvg"
         @click.stop="setting.组网.监控.bottom_disappear = true"
       ></el-icon>
-      <datatable></datatable>
+      <datatable
+        :database="'host=tanglei.top&port=3308&user=root&password=mysql&database=gis'"
+        :table="'enclosure'"
+      ></datatable>
     </div>
     <div :class="`right-drawer ${setting.组网.监控.disappear ? 'disappear' : ''}`">
       <div

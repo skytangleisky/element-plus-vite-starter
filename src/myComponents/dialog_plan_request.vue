@@ -205,6 +205,7 @@ const cancel = () => {
   z-index: 4;
   background: #00000088;
   .dragDialog {
+    box-shadow: 0 0 0 1px #757575, 0 0 0 2px #010201;
     .ep-row {
       padding: 5px;
     }

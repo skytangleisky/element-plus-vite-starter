@@ -16,7 +16,7 @@ export default {
       hide:false,
       svg:'16bb869bfba411eeb1e8b025aa2c9ada',
       meta:{
-        label:'首页'
+        label:'组网观测'
       }
     },
     {

@@ -224,7 +224,7 @@ const props = withDefaults(
   defineProps<{
     database: string;
     table: string;
-    headerOption: { [key: string]: { label?: string; hide?: boolean } };
+    headerOption?: { [key: string]: { label?: string; hide?: boolean } };
   }>(),
   {
     database: "",
@@ -232,7 +232,6 @@ const props = withDefaults(
     headerOption: () => ({}),
   }
 );
-console.log(props.headerOption);
 import { Search } from "@element-plus/icons-vue";
 import { CheckboxValueType, ElMessage, ElMessageBox } from "element-plus";
 import draggable from "./draggable.vue";

@@ -131,7 +131,7 @@ export default {
         {
           path:'weather_info',
           name:'b37f1a49-b88b-10e1-5665-b7c75cef823b',
-          component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
+          component:'/src/myComponents/珠海低空飞行监控系统/pages/气象信息.vue',
           replace:true,
           meta:{
             label:'气象信息',

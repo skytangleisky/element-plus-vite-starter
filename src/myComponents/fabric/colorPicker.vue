@@ -1,11 +1,13 @@
 <template>
-  <div v-resize="resize" class="canvasContainer">
-    <canvas id="gradient" class="w-full h-full"></canvas>
+  <div v-dialogDrag v-resize="resize" class="canvasContainer">
     <div class="title">拾色器</div>
-    <div class="button confirm" @click.native="confirm">确认</div>
-    <div class="button cancel" @click.native="cancel">取消</div>
-    <div class="button palette">添加到色板</div>
-    <div class="button colorLib">颜色库</div>
+    <div class="absolute m-t-30px" tabindex="-1" @mousedown.stop>
+      <canvas id="gradient" class="w-full h-full"></canvas>
+      <div class="button confirm" @click.native="confirm">确认</div>
+      <div class="button cancel" @click.native="cancel">取消</div>
+      <div class="button palette">添加到色板</div>
+      <div class="button colorLib">颜色库</div>
+    </div>
   </div>
 </template>
 <script lang="js" setup>
@@ -84,7 +86,7 @@ let group = new fabric.Group(
     hasBorders: false,
     selectable: false,
     left: 11,
-    top: 61,
+    top: 31,
     strokeWidth:0,
     moveCursor: "auto",
     hoverCursor: `auto`,
@@ -108,7 +110,7 @@ let circle = new fabric.Circle({
 });
 //渐变条
 let gradient = new fabric.Rect({
-  top: 61,
+  top: 31,
   left: 11 + size + 12,
   width: 19,
   height: size,
@@ -178,7 +180,7 @@ let slider = new fabric.Group(
 );
 let destination = new fabric.Rect({ // 当前
   left: 311,
-  top: 112,
+  top: 82,
   width: 59,
   height: 33,
   fill: "#261717",
@@ -191,7 +193,7 @@ let destination = new fabric.Rect({ // 当前
 });
 let source = new fabric.Rect({ // 新的
   left: 311,
-  top: 78,
+  top: 48,
   width: 59,
   height: 34,
   hasControls: false,
@@ -385,7 +387,7 @@ let HueText = new fabric.Textbox("360", {
   //   1: {},
   // },
   left: 358,
-  top: 202,
+  top: 172,
 });
 HueText.on("modified", () => {
   presentColorRef.H = Number(HueText.text);
@@ -406,7 +408,7 @@ let SaturationText = new fabric.Textbox("100", {
   hoverCursor: "auto",
   textAlign: "left",
   left: 358,
-  top: 225,
+  top: 195,
 });
 SaturationText.on("modified", () => {
   presentColorRef.S = Number(SaturationText.text);
@@ -427,7 +429,7 @@ let BrightnessText = new fabric.Textbox("100", {
   hoverCursor: "auto",
   textAlign: "left",
   left: 358,
-  top: 248,
+  top: 218,
 });
 BrightnessText.on("modified", () => {
   presentColorRef.B = Number(BrightnessText.text);
@@ -448,7 +450,7 @@ let RedText = new fabric.Textbox("255", {
   hoverCursor: "auto",
   textAlign: "left",
   left: 358,
-  top: 275,
+  top: 245,
 });
 RedText.on("modified", () => {
   let rgb = HSBtoRGB(presentColorRef.H, presentColorRef.S, presentColorRef.B);
@@ -474,7 +476,7 @@ let GreenText = new fabric.Textbox("255", {
   hoverCursor: "auto",
   textAlign: "left",
   left: 358,
-  top: 298,
+  top: 268,
 });
 GreenText.on("modified", () => {
   let rgb = HSBtoRGB(presentColorRef.H, presentColorRef.S, presentColorRef.B);
@@ -500,7 +502,7 @@ let BlueText = new fabric.Textbox("255", {
   hoverCursor: "auto",
   textAlign: "left",
   left: 358,
-  top: 321,
+  top: 291,
 });
 BlueText.on("modified", () => {
   let rgb = HSBtoRGB(presentColorRef.H, presentColorRef.S, presentColorRef.B);
@@ -526,7 +528,7 @@ let HexText = new fabric.Textbox("FFFFFF", {
   hoverCursor: "auto",
   textAlign: "left",
   left: 325,
-  top: 348,
+  top: 318,
 });
 HexText.on("modified", () => {
   let rgb = new fabric.Color("#" + HexText.text).getSource();
@@ -551,7 +553,7 @@ let LightnessText = new fabric.Textbox("50", {
   hoverCursor: "auto",
   textAlign: "left",
   left: 462,
-  top: 202,
+  top: 172,
 });
 LightnessText.on("modified", () => {
   console.log(`hsl(${presentColorRef.H},${presentColorRef.S}%,${LightnessText.text})%`)
@@ -646,7 +648,7 @@ watch(
     align-items: center;
     &.confirm {
       border: 1px solid #dadada;
-      top: 40px;
+      top: 10px;
       &:active {
         background-color: #dadada;
         color: #393939;
@@ -654,7 +656,7 @@ watch(
     }
     &.cancel {
       border: 1px solid #686868;
-      top: 75px;
+      top: 45px;
       &:active {
         background-color: #686868;
         color: #393939;
@@ -662,7 +664,7 @@ watch(
     }
     &.palette {
       border: 1px solid #686868;
-      top: 117px;
+      top: 77px;
       &:active {
         background-color: #686868;
         color: #393939;
@@ -670,7 +672,7 @@ watch(
     }
     &.colorLib {
       border: 1px solid #686868;
-      top: 159px;
+      top: 119px;
       &:active {
         background-color: #686868;
         color: #393939;

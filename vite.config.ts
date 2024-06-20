@@ -115,9 +115,10 @@ export default defineConfig({
       //   rewrite:path=>path.replace(/^\/guangheng/,''), // 设置重写的路径
       // },
       '/api':{
-        target:'https://main.emgo-tech.com',//替换的服务端地址
-        // target:'http://192.168.101.93:8000',//替换的服务端地址
-        changeOrigin:true,//开启代理，允许跨域
+        // target:'https://main.emgo-tech.com',//替换的服务端地址
+        // target:'http://192.168.101.93:8000',
+        target:'http://127.0.0.1:3000',//替换的服务端地址
+        // changeOrigin:true,//开启代理，允许跨域
       },
       '/backend':{
         // target:'https://websocket.tanglei.top',//替换的服务端地址

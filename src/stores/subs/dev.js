@@ -59,7 +59,7 @@ export default {
     {
       path: 'fabric',
       name: 'e4961e04-e574-0e1f-ae23-94f157b14a39',
-      component: '/src/myComponents/fabric/index.vue',
+      component: '/src/myComponents/fabric/colorPicker.vue',
       svg:'ef5f059d9cb611ee9b6cb025aa2c9ada',
       meta:{
         label: 'fabric',
@@ -99,6 +99,15 @@ export default {
       svg:'72ec159c279a11efaeedb025aa2c9ada',
       meta:{
         label: 'audio',
+      }
+    },
+    {
+      path: 'zw',
+      name: 'c4961e04-e574-0e1f-ae23-94f157b15aae',
+      component: '/src/myComponents/组网/pages/synthesis.vue',
+      svg:'16bb869bfba411eeb1e8b025aa2c9ada',
+      meta:{
+        label: '组网',
       }
     },
     {
