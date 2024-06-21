@@ -31,7 +31,9 @@
     <div :class="`right-drawer ${setting.风雷达组网.监控.disappear ? 'disappear' : ''}`">
       <div
         class="handle"
-        @click.native="setting.风雷达组网.监控.disappear = !setting.风雷达组网.监控.disappear"
+        @click.native="
+          setting.风雷达组网.监控.disappear = !setting.风雷达组网.监控.disappear
+        "
       >
         <el-icon v-html="rightSvg"></el-icon>
       </div>
@@ -95,7 +97,9 @@
       </div>
     </div>
     <div
-      :class="`bottom-drawer ${setting.风雷达组网.监控.bottom_disappear ? 'disappear' : ''}`"
+      :class="`bottom-drawer ${
+        setting.风雷达组网.监控.bottom_disappear ? 'disappear' : ''
+      }`"
     >
       <div class="handle p-8px">
         <el-badge
@@ -120,10 +124,6 @@
       ></datatable>
     </div>
   </div>
-  <dialog-plan-request
-    v-model:show="setting.风雷达组网.监控.prevPlanRequestShow"
-    v-model:data="setting.风雷达组网.监控.prevPlanRequestData"
-  ></dialog-plan-request>
 </template>
 <script lang="ts" setup>
 import editMap from "../editMap.vue";
@@ -137,8 +137,6 @@ import whitelistSvg from "~/assets/whitelist.svg?raw";
 import statisticSvg from "~/assets/statistic.svg?raw";
 import selectTile from "../selectTile.vue";
 import { watch, ref, reactive } from "vue";
-import DialogPrevRequest from "../../dialog_prev_request.vue";
-import DialogPlanRequest from "../../dialog_plan_request.vue";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
 import datatable from "~/myComponents/datatable/index.vue";

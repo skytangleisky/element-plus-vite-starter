@@ -33,9 +33,27 @@
         :key="k"
       ></el-option>
     </el-select>
+    <chromatography
+      ref="chromatographyRef"
+      :arr="chromatographyArr"
+      style="
+        left: 0;
+        color: white;
+        top: 50%;
+        transform: translateY(-50%);
+        bottom: 0;
+        height: 300px;
+        position: absolute;
+      "
+    ></chromatography>
   </div>
 </template>
 <script setup lang="ts">
+// import rhiData from "./AWL20221001072447_RHI_003.RADV?url";
+import ppiData from "./AWL20220922220258_PPI_003.RADV?url";
+// import ppiData from "./AWL20220922235325_PPI_003.RADV?url";
+import chromatography from "../激光测风尾涡/chromatography.vue";
+import { View } from "~/tools/index.js";
 const getHue = (min: number, v: number, max: number) => {
   let value;
   if (v < min) {
@@ -62,6 +80,25 @@ import * as turf from "@turf/turf";
 import Circle from "@turf/circle";
 import { wgs84togcj02 } from "~/myComponents/map/workers/mapUtil";
 import { watch, ref, onMounted, onBeforeUnmount, reactive } from "vue";
+const chromatographyRef = ref<any>();
+const chromatographyArr = [
+  -20,
+  -14,
+  -12,
+  -10,
+  -8,
+  -6,
+  -4,
+  -2,
+  2,
+  4,
+  6,
+  8,
+  10,
+  12,
+  16,
+  20,
+];
 import Dialog from "./dialog.vue";
 const dialogOptions = reactive({ menus: [] });
 const color = ref("red");
@@ -83,6 +120,7 @@ import theme from "./drawTheme/inactive.js";
 let timer = 0;
 const props = withDefaults(
   defineProps<{
+    radar?: boolean;
     loadmap?: boolean;
     district?: boolean;
     tile?: string;
@@ -91,6 +129,7 @@ const props = withDefaults(
     pitch?: number;
   }>(),
   {
+    radar: true,
     loadmap: true,
     district: true,
     tile: "街道地图",
@@ -148,6 +187,16 @@ watch(
     } else {
       map.setLayoutProperty("districtLayer", "visibility", "none");
       map.setLayoutProperty("districtOutline", "visibility", "none");
+    }
+  }
+);
+watch(
+  () => props.radar,
+  (newVal) => {
+    if (newVal) {
+      map.setLayoutProperty("irLayer", "visibility", "visible");
+    } else {
+      map.setLayoutProperty("irLayer", "visibility", "none");
     }
   }
 );
@@ -252,6 +301,14 @@ onMounted(() => {
     })
       .setLngLat([120.95777893066406, 31.075000762939453])
       .addTo(map);
+    //用于确定PPI位置是否正确
+    new Marker({
+      draggable: false,
+      pitchAlignment: "map",
+      rotationAlignment: "map",
+    })
+      .setLngLat([113.32015514, 23.00731838])
+      .addTo(map);
     await addFeatherImages(map);
     map.addLayer({
       id: "maine",
@@ -293,7 +350,6 @@ onMounted(() => {
           number,
           number
         ];
-        console.log(position, item.name);
         features.push({
           type: "Feature",
           properties: {
@@ -642,6 +698,279 @@ onMounted(() => {
         "icon-ignore-placement": true,
       },
     });
+
+    var xhr = new XMLHttpRequest();
+    xhr.addEventListener("load", function () {
+      const d = new TextDecoder("gbk");
+      let v = new View(this.response),
+        result: { [key: string]: any } = {};
+      result.FileFlag = {};
+      result.FileFlag.FileID = d.decode(v.getBytes(8));
+      result.FileFlag.VersionNo = d.decode(v.getBytes(5));
+      result.FileFlag.FileHeaderLength = v.getInt32();
+      result.FileFlag.Temp = d.decode(v.getBytes(56));
+      // console.log(result.FileFlag)
+      result.PerformanceInfo = {};
+      result.PerformanceInfo.WaveLength = v.getFloat32();
+      result.PerformanceInfo.Prf = v.getInt32();
+      result.PerformanceInfo.PulseW = v.getInt32();
+      result.PerformanceInfo.PulseE = v.getInt32();
+      result.PerformanceInfo.AccuPluse = v.getInt32();
+      result.PerformanceInfo.ADSample = v.getInt32();
+      result.PerformanceInfo.ZeroVFP = v.getFloat32();
+      result.PerformanceInfo.StrVFP = v.getFloat32();
+      result.PerformanceInfo.StpVFP = v.getFloat32();
+      result.PerformanceInfo.Temp = d.decode(v.getBytes(3));
+      result.PerformanceInfo.observNum = d.decode(v.getBytes(1));
+      // console.log(result.PerformanceInfo)
+      result.ObservationInfo = {};
+      result.ObservationInfo.SYear = d.decode(v.getBytes(4));
+      result.ObservationInfo.SMonth = d.decode(v.getBytes(2));
+      result.ObservationInfo.SDay = d.decode(v.getBytes(2));
+      result.ObservationInfo.SHour = d.decode(v.getBytes(2));
+      result.ObservationInfo.SMinute = d.decode(v.getBytes(2));
+      result.ObservationInfo.SSecond = d.decode(v.getBytes(2));
+      result.ObservationInfo.EYear = d.decode(v.getBytes(4));
+      result.ObservationInfo.EMonth = d.decode(v.getBytes(2));
+      result.ObservationInfo.EDay = d.decode(v.getBytes(2));
+      result.ObservationInfo.EHour = d.decode(v.getBytes(2));
+      result.ObservationInfo.EMinute = d.decode(v.getBytes(2));
+      result.ObservationInfo.ESecond = d.decode(v.getBytes(2));
+      result.ObservationInfo.ObsvMode = d
+        .decode(v.getBytes(6))
+        .replace(/\0[\s\S]*$/g, "");
+      result.ObservationInfo.AzStart = v.getFloat32();
+      result.ObservationInfo.AzEnd = v.getFloat32();
+      result.ObservationInfo.AzStep = v.getFloat32();
+      result.ObservationInfo.ElStart = v.getFloat32();
+      result.ObservationInfo.ElEnd = v.getFloat32();
+      result.ObservationInfo.ElStep = v.getFloat32();
+      result.ObservationInfo.ScanNum = v.getInt32();
+      result.ObservationInfo.StartBin = v.getInt32();
+      result.ObservationInfo.EndBin = v.getInt32();
+      result.ObservationInfo.BinLength = v.getInt32();
+      result.ObservationInfo.BinNum = v.getInt32();
+      result.ObservationInfo.Fft = v.getInt32();
+      result.ObservationInfo.RcdNum = v.getInt32(); //探测次数
+      result.ObservationInfo.ModelNum = v.getInt16();
+      result.ObservationInfo.ModelNo = v.getInt16();
+      result.ObservationInfo.xpoint = v.getInt32();
+      result.ObservationInfo.ypoint = v.getInt32();
+      result.ObservationInfo.XAngle = v.getInt32();
+      result.ObservationInfo.YAngle = v.getInt32();
+      result.ObservationInfo.Temp = d.decode(v.getBytes(6));
+      // console.log(ObservationInfo)
+      result.data = [];
+      for (let j = 0; j < result.ObservationInfo.RcdNum; j++) {
+        const RadVr: { [key: string]: any } = {};
+        RadVr.ModelNo = v.getBytes(1)[0];
+        RadVr.SHour = d.decode(v.getBytes(2));
+        RadVr.SMinute = d.decode(v.getBytes(2));
+        RadVr.SSecond = d.decode(v.getBytes(2));
+        RadVr.BeamAz = v.getFloat32();
+        RadVr.BeamEl = v.getFloat32();
+        RadVr.flatBeamAz = v.getFloat32();
+        RadVr.flatBeamEl = v.getFloat32();
+        RadVr.longtitude = v.getFloat32();
+        RadVr.latitude = v.getFloat32();
+        RadVr.Altitude = v.getFloat32();
+        RadVr.V = v.getFloat32();
+        RadVr.VEAST = v.getFloat32();
+        RadVr.VNORTH = v.getFloat32();
+        RadVr.ZAixV = v.getFloat32();
+        RadVr.StemAngle = v.getFloat32();
+        RadVr.VerticalAngle = v.getFloat32();
+        RadVr.TransverseAngle = v.getFloat32();
+        RadVr.ScanNo = v.getInt32();
+        RadVr.BinNum = v.getInt32();
+        RadVr.j = j;
+        RadVr.n = result.ObservationInfo.RcdNum;
+        RadVr.RadVrData = [];
+        for (let i = 0; i < RadVr.BinNum; i++) {
+          RadVr.RadVrData.push({
+            径向速度: Number(v.getFloat32().toFixed(2)),
+            谱宽: Number(v.getFloat32().toFixed(2)),
+            信噪比: Number(v.getFloat32().toFixed()),
+            频谱强度: Number(v.getFloat32().toFixed(2)),
+            距离: v.getFloat32(),
+          });
+        }
+        result.data.push(RadVr);
+      }
+      processData(result);
+    });
+    xhr.responseType = "arraybuffer";
+    xhr.open("GET", ppiData);
+    xhr.send();
+    function processData(result: any) {
+      let polygons: any[] = [];
+
+      //测试
+      // for (let i = 0; i < 100; i++) {
+      //   polygons.push({
+      //     type: "Feature",
+      //     geometry: {
+      //       type: "Polygon",
+      //       coordinates: [
+      //         calculateSectorPoints(
+      //           [120.95777893066406, 31.075000762939453],
+      //           200.25 - 100.5 / 2 + 100.5 * i,
+      //           200.25 - 100.5 / 2 + 100.5 * (i + 1),
+      //           -1,
+      //           90,
+      //           360,
+      //           "meters"
+      //         ),
+      //       ],
+      //     },
+      //     properties: {
+      //       fillColor: "#" + Math.random().toString(16).substring(2, 8).toUpperCase(),
+      //     },
+      //   });
+      // }
+      let List = result.data.slice(0);
+      if (List.length >= 2) {
+        //定义始末两条径向内的径向位置
+        for (let i = 1; i < List.length - 1; i++) {
+          let Angle1 = List[i - 1].BeamAz;
+          let Angle2 = List[i].BeamAz;
+          let Angle3 = List[i + 1].BeamAz;
+          List[i].α = Math.min((Angle1 + Angle2) / 2, (Angle2 + Angle3) / 2);
+          List[i].β = Math.max((Angle1 + Angle2) / 2, (Angle2 + Angle3) / 2);
+        }
+        //定义第一条径向位置
+        let Angle1 = List[0].BeamAz;
+        let Angle2 = List[1].BeamAz;
+        List[0].α = Math.min(
+          Angle1 - (Angle2 - Angle1) / 2,
+          Angle1 + (Angle2 - Angle1) / 2
+        );
+        List[0].β = Math.max(
+          Angle1 - (Angle2 - Angle1) / 2,
+          Angle1 + (Angle2 - Angle1) / 2
+        );
+        //定义最后一条径向位置
+        Angle1 = List.slice(-2)[0].BeamAz;
+        Angle2 = List.slice(-1)[0].BeamAz;
+        List[List.length - 1].α = Math.min(
+          Angle2 - (Angle2 - Angle1) / 2,
+          Angle2 + (Angle2 - Angle1) / 2
+        );
+        List[List.length - 1].β = Math.max(
+          Angle2 - (Angle2 - Angle1) / 2,
+          Angle2 + (Angle2 - Angle1) / 2
+        );
+      } else if (List.length == 1) {
+        //定义只有一条径向的位置
+        let Angle = List[0].BeamAz;
+        List[0].α = Angle - 0.5;
+        List[0].β = Angle + 0.5;
+      }
+      let maxAngle = -Infinity;
+      let minAngle = +Infinity;
+      for (let j = 0; j < List.length - 1; j++) {
+        let radial = List[j];
+        let max = radial.RadVrData.slice(-1)[0]?.距离 || 0;
+        let min = radial.RadVrData.slice(0, 1)[0]?.距离 || 0;
+        let BinLength = (max - min) / (radial.RadVrData.length - 1);
+        if (radial.BeamAz > minAngle && radial.BeamAz < maxAngle) {
+          polygons.length = 0;
+          maxAngle = -Infinity;
+          minAngle = +Infinity;
+        }
+        for (let i = 0; i < radial.RadVrData.length; i++) {
+          polygons.push({
+            type: "Feature",
+            geometry: {
+              type: "Polygon",
+              coordinates: [
+                calculateSectorPoints(
+                  [113.32015514, 23.00731838],
+                  radial.RadVrData[i].距离 - BinLength / 2,
+                  radial.RadVrData[i].距离 + BinLength / 2,
+                  radial.α,
+                  radial.β,
+                  360,
+                  "meters"
+                ),
+              ],
+            },
+            properties: {
+              fillColor:
+                Math.abs(radial.RadVrData[i].径向速度) == 999
+                  ? "transparent"
+                  : chromatographyRef.value.getColor(radial.RadVrData[i].径向速度),
+            },
+          });
+        }
+        maxAngle = Math.max(maxAngle, radial.BeamAz);
+        minAngle = Math.min(minAngle, radial.BeamAz);
+      }
+      map.addSource("radar", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: polygons,
+        },
+      });
+      map.addLayer({
+        id: "雷达",
+        type: "fill",
+        source: "radar",
+        paint: {
+          "fill-color": ["get", "fillColor"],
+          "fill-opacity": 1,
+          "fill-outline-color": "transparent",
+        },
+      });
+      // map.addLayer({
+      //   id: "雷达line",
+      //   type: "line",
+      //   source: "radar",
+      //   paint: {
+      //     "line-color": ["get", "fillColor"],
+      //     "line-width": 2,
+      //   },
+      // });
+    }
+    function calculateSectorPoints(
+      center: [number, number],
+      radius1: number,
+      radius2: number,
+      startAngle: number,
+      endAngle: number,
+      steps: number,
+      units: turf.Units
+    ): [number, number][] {
+      const points: [number, number][] = [];
+      const angleStep = 360 / steps;
+      let angle = startAngle;
+      for (; angle < endAngle; angle += angleStep) {
+        const point1 = turf.destination(center, radius1, angle, {
+          units: units,
+        }) as any;
+        points.push(point1.geometry.coordinates);
+      }
+      const point1 = turf.destination(center, radius1, endAngle, {
+        units: units,
+      }) as any;
+      points.push(point1.geometry.coordinates);
+
+      angle = endAngle;
+      for (; angle > startAngle; angle -= angleStep) {
+        const point2 = turf.destination(center, radius2, angle, {
+          units: units,
+        }) as any;
+        points.push(point2.geometry.coordinates);
+      }
+      const point2 = turf.destination(center, radius2, startAngle, {
+        units: units,
+      }) as any;
+      points.push(point2.geometry.coordinates);
+
+      points.push(points[0]);
+      return points;
+    }
     /*
     let breaks = [];
     for (let i = 1; i < 20; i++) {

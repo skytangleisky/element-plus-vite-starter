@@ -76,7 +76,7 @@
         <el-col :span="12">
           <div class="flex justify-between items-center pl-10px">
             射击装备<el-select
-              v-model="data.strWeapon"
+              v-model="data.iWeapon"
               placeholder="射击装备"
               style="width: 150px"
             >
@@ -90,13 +90,18 @@
         ></el-col>
         <el-col :span="12"
           ><div class="flex justify-between items-center pl-10px">
-            作业目的<input
-              name="作业目的"
-              class="operation_filter"
+            作业目的<el-select
+              v-model="data.iWorkType"
+              placeholder="作业目的"
               style="width: 150px"
-              value="增雨"
-              @mousedown.stop
-            /></div
+            >
+              <el-option
+                v-for="(item, k) in workOptions"
+                :key="k"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select></div
         ></el-col>
       </el-row>
       <el-row>
@@ -151,7 +156,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, watch } from "vue";
 const weaponOptions = reactive([
   { value: 0, label: "火箭" },
   { value: 1, label: "高炮" },
@@ -160,6 +165,12 @@ const weaponOptions = reactive([
   { value: 4, label: "火箭+烟炉" },
   { value: 5, label: "高炮+烟炉" },
   { value: 6, label: "火箭+高炮+烟炉" },
+]);
+const workOptions = reactive([
+  { value: 1, label: "增雨" },
+  { value: 2, label: "防雹" },
+  { value: 3, label: "大气治理" },
+  { value: 4, label: "其他" },
 ]);
 withDefaults(
   defineProps<{
@@ -171,7 +182,8 @@ withDefaults(
       strPos: string;
       iMaxShotRange: number;
       iMaxShotHei: number;
-      strWeapon: string;
+      iWeapon: number;
+      iWorkType: number;
       iShotRangeBegin: number;
       iShotRangeEnd: number;
       beginTime: string;
@@ -187,7 +199,8 @@ withDefaults(
       strPos: "",
       iMaxShotRange: 10,
       iMaxShotHei: 8000,
-      strWeapon: "",
+      iWeapon: 0,
+      iWorkType: 1,
       iShotRangeBegin: 0,
       iShotRangeEnd: 1000,
       beginTime: "",

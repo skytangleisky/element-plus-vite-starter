@@ -2,6 +2,7 @@
   <div style="width: 100%; height: 100%; overflow: hidden; position: absolute">
     <edit-map
       style="backdrop-filter: blur(25px)"
+      v-model:radar="setting.组网.监控.radar"
       v-model:loadmap="setting.组网.监控.loadmap"
       v-model:district="setting.组网.监控.district"
       v-model:tile="setting.组网.监控.tile"
@@ -60,10 +61,10 @@
           v-model="setting.组网.监控.district"
           label="显示行政区划"
         ></el-checkbox>
-        <el-checkbox label="反制设备图层"></el-checkbox>
-        <el-checkbox label="探测目标图层"></el-checkbox>
+        <el-checkbox v-model="setting.组网.监控.radar" label="天气雷达"></el-checkbox>
+        <!-- <el-checkbox label="探测目标图层"></el-checkbox>
         <el-checkbox label="禁飞区图层"></el-checkbox>
-        <el-checkbox label="备案空域图层"></el-checkbox>
+        <el-checkbox label="备案空域图层"></el-checkbox> -->
       </div>
     </div>
   </div>

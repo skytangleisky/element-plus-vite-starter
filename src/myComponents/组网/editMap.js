@@ -436,7 +436,7 @@ export default {
 					"raster-resampling": "nearest",
 				},
 				layout: {
-					visibility: "visible",
+					visibility: setting.组网.监控.radar?'visible':'none',
 				},
 			}
 	],

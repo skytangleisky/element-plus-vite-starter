@@ -119,7 +119,8 @@ const props = withDefaults(
       strPos: string;
       iMaxShotRange: number;
       iMaxShotHei: number;
-      strWeapon: string;
+      iWeapon: number;
+      iWorkType: number;
       iShotRangeBegin: number;
       iShotRangeEnd: number;
       beginTime: string;
@@ -413,7 +414,8 @@ onMounted(() => {
                 strPos: v,
                 iMaxShotRange: item.iMaxShotRange,
                 iMaxShotHei: item.iMaxShotHei,
-                strWeapon: item.strWeapon,
+                iWeapon: Number(item.strWeapon),
+                iWorkType: 1,
                 iShotRangeBegin: item.iShortAngelBegin,
                 iShotRangeEnd: item.iShortAngelEnd,
                 beginTime: moment().format("HH:mm:ss"),
