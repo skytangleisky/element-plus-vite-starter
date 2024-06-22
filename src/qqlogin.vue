@@ -13,9 +13,8 @@ if (params.access_token) {
   axios
     .get("/qqAuth/oauth2.0/me", { params: { access_token: params.access_token } })
     .then((res) => {
-      let me = JSON.parse(
-        res.data.substring("callback( ".length, res.data.length - " );\n".length)
-      );
+      console.log(res.data);
+      let me = JSON.parse(res.data.replace(/^callback\( | \);$/g, ""));
       if (me.client_id && me.openid) {
         axios
           .get("/qqAuth/user/get_user_info", {
