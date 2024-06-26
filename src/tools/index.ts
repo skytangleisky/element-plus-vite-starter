@@ -1,4 +1,4 @@
-
+import * as turf from '@turf/turf'
 const modules = import.meta.glob('~/**/*.vue')
 import {v4 as uuid} from 'uuid'
 import imageUrl from "~/assets/feather.svg?url";
@@ -218,6 +218,9 @@ export class View{
     this.littleEndian =  array[0] === 256;
     this.pos=0;
     this.flag=false
+  }
+  reachEnd(){
+    return this.pos == this.dataView.byteLength
   }
   getOne(){
     let prePos = this.pos
@@ -549,3 +552,48 @@ export const getRandomPointBetweenR1R2 = (r1:number, r2:number) => {
   let y = R * Math.sin(Ⳡ);
   return [x, y];
 };
+export function calculateSectorPoints(
+  center: [number, number],
+  radius: number,
+  startAngle: number,
+  endAngle: number,
+  steps: number,
+  units: turf.Units
+): [number, number][] {
+  const points: [number, number][] = [center];
+  const angleStep = 360 / steps;
+  let angle = startAngle;
+  for (; angle < endAngle; angle += angleStep) {
+    const point = turf.destination(center, radius, angle, {
+      units: units,
+    }) as any;
+    points.push(point.geometry.coordinates);
+  }
+  const point = turf.destination(center, radius, endAngle, {
+    units: units,
+  }) as any;
+  points.push(point.geometry.coordinates);
+  points.push(center); // 返回到圆心以关闭多边形
+  return points;
+}
+export function calculateCirclePoints(
+  center: [number, number],
+  radius: number,
+  steps: number,
+  units: turf.Units
+): [number, number][] {
+  const points: [number, number][] = [];
+  const angleStep = 360 / steps;
+  let angle = 0;
+  for (; angle < 360; angle += angleStep) {
+    const point = turf.destination(center, radius, angle, {
+      units: units,
+    }) as any;
+    points.push(point.geometry.coordinates);
+  }
+  const point = turf.destination(center, radius, 360, {
+    units: units,
+  }) as any;
+  points.push(point.geometry.coordinates);
+  return points;
+}

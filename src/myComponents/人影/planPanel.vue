@@ -1,9 +1,15 @@
 <template>
   <div v-dialogDrag class="planPanel z-1">
     <div
-      style="margin: 7px; overflow: auto; width: 530px; height: -webkit-fill-available"
+      style="margin: 7px; overflow: auto; width: 550px; height: -webkit-fill-available"
     >
-      <div class="item" v-for="(item, key) in props.list" :key="key">
+      <div
+        @click="click(item)"
+        class="item"
+        v-for="(item, key) in props.list"
+        :key="key"
+        @mousedown.stop
+      >
         <div
           class="h-full w-90px flex items-center justify-left"
           style="
@@ -13,7 +19,8 @@
           "
         >
           <div class="flex flex-col">
-            <span>13073009</span><span class="font-size-20px">狼山</span>
+            <span>{{ item.strZydID }}</span
+            ><span class="font-size-20px">{{ item.strName }}</span>
           </div>
         </div>
         <div class="flex flex-col w-full">
@@ -26,19 +33,25 @@
             </div>
             <div class="flex flex-col" style="border: 1px solid grey">
               <div>发送状态</div>
-              <div style="font-weight: bolder; font-size: 16px">发送成功</div>
+              <div style="font-weight: bolder; font-size: 16px">
+                {{ 发送状态格式化(item.ubySendStatus) }}
+              </div>
             </div>
             <div class="flex flex-col" style="border: 1px solid grey">
               <div>作业点代码</div>
-              <div style="font-weight: bolder; font-size: 16px">915</div>
+              <div style="font-weight: bolder; font-size: 16px">{{ item.strCode }}</div>
             </div>
             <div class="flex flex-col" style="border: 1px solid grey">
               <div>申请时间</div>
-              <div style="font-weight: bolder; font-size: 16px">17:59</div>
+              <div style="font-weight: bolder; font-size: 16px">
+                {{ item.tmBeginApply.substring(10, 19) }}
+              </div>
             </div>
             <div class="flex flex-col" style="border: 1px solid grey">
               <div>申请时长</div>
-              <div style="font-weight: bolder; font-size: 16px">60秒</div>
+              <div style="font-weight: bolder; font-size: 16px">
+                {{ item.iApplyTimeLen * 60 }}秒
+              </div>
             </div>
             <div
               class="flex-1 flex flex-col"
@@ -49,36 +62,38 @@
               "
             >
               <div>上报单位</div>
-              <div style="font-weight: bolder; font-size: 16px">北京气象局</div>
+              <div style="font-weight: bolder; font-size: 16px">
+                {{ item.unitName }}
+              </div>
             </div>
           </div>
           <div class="flex h-full">
             <div
-              class="flex-1 flex justify-center items-center bg-green-7"
+              :class="`flex-1 flex justify-center items-center ${申请(item)}`"
               style="border: 1px solid grey; font-weight: bolder"
             >
               申请(17:50)
             </div>
             <div
-              class="flex-1 flex justify-center items-center"
+              :class="`flex-1 flex justify-center items-center ${批复(item)}`"
               style="border: 1px solid grey; font-weight: bolder"
             >
               批复
             </div>
             <div
-              class="flex-1 flex justify-center items-center"
+              :class="`flex-1 flex justify-center items-center ${开始(item)}`"
               style="border: 1px solid grey; font-weight: bolder"
             >
               开始
             </div>
             <div
-              class="flex-1 flex justify-center items-center"
+              :class="`flex-1 flex justify-center items-center ${结束(item)}`"
               style="border: 1px solid grey; font-weight: bolder"
             >
               结束
             </div>
             <div
-              class="flex-1 flex justify-center items-center"
+              :class="`flex-1 flex justify-center items-center ${完成(item)}`"
               style="
                 border: 1px solid grey;
                 font-weight: bolder;
@@ -94,56 +109,67 @@
   </div>
 </template>
 <script lang="ts" setup>
-interface Item {
-  strWorkID: string;
-  strZydID: string;
-  ubyStatus: number;
-  ubySendStatus: number;
-  ubyProcStatus: number;
-  strCode: string;
-  strName: string;
-  strWeapon: string;
-  strCurPos: string;
-  iRange: number;
-  iMaxShotHei: number;
-  strApplyUnit: string;
-  tmBeginApply: string;
-  iApplyTimeLen: number;
-  tmApplyRev: string;
-  tmApplySend: string;
-  tmApplyCreate: string;
-  strApplyMark: string;
-  tmBeginAnswer: string;
-  iAnswerTimeLen: number;
-  strAnswerUnit: string;
-  tmAnswerRev: string;
-  tmAnswerSend: string;
-  tmAnswerCreate: string;
-  strAnswerMark: string;
-  tmUpdate: string;
-  strATCUnitID: string;
-  vecProcess: string;
-  strUpApplyUnit: string;
-  tmBeginActing: string;
-  iActingTimeLen: number;
-  strEndUnit: string;
-  tmEndRev: string;
-  tmEndSend: string;
-  tmEndCreate: string;
-  strEndMark: string;
-  iEndType: number;
-  bApplyValid: number;
-  bAnswerValid: number;
-  bEndValid: number;
-  iAngleBegin: number;
-  iAngleEnd: number;
-  bAnswerAccept: number;
-  tmEnd: string;
-  bRevOver: number;
-  ubyWorkCat: number;
-}
-const props = withDefaults(defineProps<{ list: Item[] }>(), {
-  list: () => new Array<Item>(),
+import { useStationStore } from "~/stores/station";
+import { eventbus } from "~/eventbus";
+const station = useStationStore();
+const click = (item: planDataType) => {
+  station.人影界面被选中的设备 = item.strZydID;
+  eventbus.emit("人影-将站点移动到屏幕中心", { strPos: item.strCurPos });
+};
+
+type zyddataType = {
+  strWorkID: "RW110000000202406120000000001752";
+  strZydID: "110114091";
+  ubyStatus: 100;
+  ubySendStatus: 0;
+  ubyProcStatus: 3;
+  strCode: "真顺";
+  strName: "真顺";
+  strWeapon: "火箭";
+  strCurPos: "116195600E40133600N";
+  iRange: 10000;
+  iMaxShotHei: 8000;
+  strApplyUnit: "110114091";
+  tmBeginApply: "2024-06-15 11:50:00";
+  iApplyTimeLen: 3;
+  tmApplyRev: "2014-12-30 11:47:06";
+  tmApplySend: null;
+  tmApplyCreate: "2014-12-30 11:47:06";
+  strApplyMark: "";
+  tmBeginAnswer: "2014-12-30 11:47:14";
+  iAnswerTimeLen: 3;
+  strAnswerUnit: "110000000";
+  tmAnswerRev: "2014-12-30 11:47:15";
+  tmAnswerSend: null;
+  tmAnswerCreate: "2014-12-30 11:47:15";
+  strAnswerMark: "";
+  tmUpdate: "2014-12-30 11:47:16";
+  strATCUnitID: "110000000";
+  vecProcess: ";11:47:06,本地作业申请(电话);11:47:15,电话下发批准;11:47:16,作业自动开始";
+  strUpApplyUnit: "110000000";
+  tmBeginActing: "2014-12-30 11:47:16";
+  iActingTimeLen: 0;
+  strEndUnit: "";
+  tmEndRev: null;
+  tmEndSend: null;
+  tmEndCreate: null;
+  strEndMark: "";
+  iEndType: 0;
+  bApplyValid: 0;
+  bAnswerValid: 1;
+  bEndValid: 0;
+  iAngleBegin: 0;
+  iAngleEnd: 45;
+  bAnswerAccept: 1;
+  tmEnd: null;
+  bRevOver: null;
+  ubyWorkCat: 0;
+};
+export type planDataType = {
+  unitName: string;
+} & zyddataType;
+const props = withDefaults(defineProps<{ list: planDataType[] }>(), {
+  list: () => new Array<planDataType>(),
 });
 const 工作状态格式化 = (key: number) => {
   let status = [
@@ -164,6 +190,58 @@ const 工作状态格式化 = (key: number) => {
   ];
   return status.filter((item) => item.key == key)[0]?.value || `未知状态${key}`;
 };
+const 发送状态格式化 = (key: number) => {
+  let status = [
+    { key: 0, value: "空闲" },
+    { key: 1, value: "等待发送" },
+    { key: 2, value: "发送中" },
+    { key: 3, value: "发送成功" },
+    { key: 4, value: "发送失败" },
+  ];
+  return status.filter((item) => item.key == key)[0]?.value || `未知状态${key}`;
+};
+const 申请 = (item: planDataType) => {
+  switch (工作状态格式化(item.ubyStatus)) {
+    case "作业结束":
+      return "bg-gray-4";
+    case "作业申请待批复":
+      return "bg-green-6";
+    default:
+      return "";
+  }
+};
+const 批复 = (item: planDataType) => {
+  switch (工作状态格式化(item.ubyStatus)) {
+    case "作业结束":
+      return "bg-gray-4";
+    default:
+      return "";
+  }
+};
+const 开始 = (item: planDataType) => {
+  switch (工作状态格式化(item.ubyStatus)) {
+    case "作业结束":
+      return "bg-gray-4";
+    default:
+      return "";
+  }
+};
+const 结束 = (item: planDataType) => {
+  switch (工作状态格式化(item.ubyStatus)) {
+    case "作业结束":
+      return "bg-gray-4";
+    default:
+      return "";
+  }
+};
+const 完成 = (item: planDataType) => {
+  switch (工作状态格式化(item.ubyStatus)) {
+    case "作业结束":
+      return "bg-gray-4";
+    default:
+      return "";
+  }
+};
 </script>
 <style scoped lang="scss">
 .planPanel {
@@ -174,6 +252,9 @@ const 工作状态格式化 = (key: number) => {
   border-radius: 10px;
   top: 240px;
   .item {
+    &:hover {
+      border: 1px solid cyan;
+    }
     background: #00000022;
     border: 1px solid grey;
     height: 80px;

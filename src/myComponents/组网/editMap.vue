@@ -49,9 +49,7 @@
   </div>
 </template>
 <script setup lang="ts">
-// import rhiData from "./AWL20221001072447_RHI_003.RADV?url";
-import ppiData from "./AWL20220922220258_PPI_003.RADV?url";
-// import ppiData from "./AWL20220922235325_PPI_003.RADV?url";
+import ppiData from "./CDL_S10000_Lidar10HKF00631450_PPI_FrmAzm30.00_ToAzm29.00_Pth3.00_Spd6.00_Res060_StartIdx003_Start003_Stop191_LOSWind_20230515 000240.csv?url";
 import chromatography from "../激光测风尾涡/chromatography.vue";
 import { View } from "~/tools/index.js";
 const getHue = (min: number, v: number, max: number) => {
@@ -133,7 +131,7 @@ const props = withDefaults(
     loadmap: true,
     district: true,
     tile: "街道地图",
-    center: [0, 0],
+    center: () => [0, 0],
     zoom: 4,
     pitch: 0,
   }
@@ -267,8 +265,8 @@ onMounted(() => {
     container: (mapRef.value as unknown) as HTMLCanvasElement,
     // projection: "globe",
     // style: raster,
-    performanceMetricsCollection: false,
-    style,
+    // performanceMetricsCollection: false,
+    style: style as mapboxgl.Style,
     // fadeDuration: 0,
     // dragRotate: false,
     // touchRotate: false,
@@ -289,7 +287,7 @@ onMounted(() => {
     // zoom: 18,
     // center: [148.9819, -35.3981],
     zoom: props.zoom,
-    center: props.center,
+    center: props.center as mapboxgl.LngLatLike,
     pitch: props.pitch,
   });
   map.on("load", async () => {
@@ -307,7 +305,7 @@ onMounted(() => {
       pitchAlignment: "map",
       rotationAlignment: "map",
     })
-      .setLngLat([113.32015514, 23.00731838])
+      .setLngLat(wgs84togcj02(...[120.477398, 36.16953]) as [number, number])
       .addTo(map);
     await addFeatherImages(map);
     map.addLayer({
@@ -701,101 +699,87 @@ onMounted(() => {
 
     var xhr = new XMLHttpRequest();
     xhr.addEventListener("load", function () {
-      const d = new TextDecoder("gbk");
+      const d = new TextDecoder("utf8");
       let v = new View(this.response),
         result: { [key: string]: any } = {};
-      result.FileFlag = {};
-      result.FileFlag.FileID = d.decode(v.getBytes(8));
-      result.FileFlag.VersionNo = d.decode(v.getBytes(5));
-      result.FileFlag.FileHeaderLength = v.getInt32();
-      result.FileFlag.Temp = d.decode(v.getBytes(56));
-      // console.log(result.FileFlag)
-      result.PerformanceInfo = {};
-      result.PerformanceInfo.WaveLength = v.getFloat32();
-      result.PerformanceInfo.Prf = v.getInt32();
-      result.PerformanceInfo.PulseW = v.getInt32();
-      result.PerformanceInfo.PulseE = v.getInt32();
-      result.PerformanceInfo.AccuPluse = v.getInt32();
-      result.PerformanceInfo.ADSample = v.getInt32();
-      result.PerformanceInfo.ZeroVFP = v.getFloat32();
-      result.PerformanceInfo.StrVFP = v.getFloat32();
-      result.PerformanceInfo.StpVFP = v.getFloat32();
-      result.PerformanceInfo.Temp = d.decode(v.getBytes(3));
-      result.PerformanceInfo.observNum = d.decode(v.getBytes(1));
-      // console.log(result.PerformanceInfo)
-      result.ObservationInfo = {};
-      result.ObservationInfo.SYear = d.decode(v.getBytes(4));
-      result.ObservationInfo.SMonth = d.decode(v.getBytes(2));
-      result.ObservationInfo.SDay = d.decode(v.getBytes(2));
-      result.ObservationInfo.SHour = d.decode(v.getBytes(2));
-      result.ObservationInfo.SMinute = d.decode(v.getBytes(2));
-      result.ObservationInfo.SSecond = d.decode(v.getBytes(2));
-      result.ObservationInfo.EYear = d.decode(v.getBytes(4));
-      result.ObservationInfo.EMonth = d.decode(v.getBytes(2));
-      result.ObservationInfo.EDay = d.decode(v.getBytes(2));
-      result.ObservationInfo.EHour = d.decode(v.getBytes(2));
-      result.ObservationInfo.EMinute = d.decode(v.getBytes(2));
-      result.ObservationInfo.ESecond = d.decode(v.getBytes(2));
-      result.ObservationInfo.ObsvMode = d
-        .decode(v.getBytes(6))
-        .replace(/\0[\s\S]*$/g, "");
-      result.ObservationInfo.AzStart = v.getFloat32();
-      result.ObservationInfo.AzEnd = v.getFloat32();
-      result.ObservationInfo.AzStep = v.getFloat32();
-      result.ObservationInfo.ElStart = v.getFloat32();
-      result.ObservationInfo.ElEnd = v.getFloat32();
-      result.ObservationInfo.ElStep = v.getFloat32();
-      result.ObservationInfo.ScanNum = v.getInt32();
-      result.ObservationInfo.StartBin = v.getInt32();
-      result.ObservationInfo.EndBin = v.getInt32();
-      result.ObservationInfo.BinLength = v.getInt32();
-      result.ObservationInfo.BinNum = v.getInt32();
-      result.ObservationInfo.Fft = v.getInt32();
-      result.ObservationInfo.RcdNum = v.getInt32(); //探测次数
-      result.ObservationInfo.ModelNum = v.getInt16();
-      result.ObservationInfo.ModelNo = v.getInt16();
-      result.ObservationInfo.xpoint = v.getInt32();
-      result.ObservationInfo.ypoint = v.getInt32();
-      result.ObservationInfo.XAngle = v.getInt32();
-      result.ObservationInfo.YAngle = v.getInt32();
-      result.ObservationInfo.Temp = d.decode(v.getBytes(6));
-      // console.log(ObservationInfo)
-      result.data = [];
-      for (let j = 0; j < result.ObservationInfo.RcdNum; j++) {
-        const RadVr: { [key: string]: any } = {};
-        RadVr.ModelNo = v.getBytes(1)[0];
-        RadVr.SHour = d.decode(v.getBytes(2));
-        RadVr.SMinute = d.decode(v.getBytes(2));
-        RadVr.SSecond = d.decode(v.getBytes(2));
-        RadVr.BeamAz = v.getFloat32();
-        RadVr.BeamEl = v.getFloat32();
-        RadVr.flatBeamAz = v.getFloat32();
-        RadVr.flatBeamEl = v.getFloat32();
-        RadVr.longtitude = v.getFloat32();
-        RadVr.latitude = v.getFloat32();
-        RadVr.Altitude = v.getFloat32();
-        RadVr.V = v.getFloat32();
-        RadVr.VEAST = v.getFloat32();
-        RadVr.VNORTH = v.getFloat32();
-        RadVr.ZAixV = v.getFloat32();
-        RadVr.StemAngle = v.getFloat32();
-        RadVr.VerticalAngle = v.getFloat32();
-        RadVr.TransverseAngle = v.getFloat32();
-        RadVr.ScanNo = v.getInt32();
-        RadVr.BinNum = v.getInt32();
-        RadVr.j = j;
-        RadVr.n = result.ObservationInfo.RcdNum;
-        RadVr.RadVrData = [];
-        for (let i = 0; i < RadVr.BinNum; i++) {
-          RadVr.RadVrData.push({
-            径向速度: Number(v.getFloat32().toFixed(2)),
-            谱宽: Number(v.getFloat32().toFixed(2)),
-            信噪比: Number(v.getFloat32().toFixed()),
-            频谱强度: Number(v.getFloat32().toFixed(2)),
-            距离: v.getFloat32(),
-          });
+      let firstLine = d
+        .decode(v.getLine())
+        .replace(/,\r\n$/, "")
+        .split(",");
+      let secondLine = d
+        .decode(v.getLine())
+        .replace(/,\r\n$/, "")
+        .split(",");
+      type HeaderInfo = {
+        AllGates: 200;
+        Altitude: 40;
+        BKGates: 9;
+        FrequencyShift: 120;
+        Latitude: 36.16953;
+        Location: "榆林机场";
+        Longitude: 120.477398;
+        Model: "S10000";
+        NorthOffset: 0;
+        ProjectMemo: "Test";
+        ProjectName: "榆林机场风切变";
+        PulseWidth: 400;
+        ReShotsTimes: 1;
+        Resolution: 60;
+        SCanMode: "Script";
+        SN: "10HKF00631450";
+        SNRThreshold: 8;
+        SamplesPerGate: 100;
+        Script: '<ppi cycles="1" interval="0" avelostimes="1" pitch="3" fromAzimuth="30" toAzimuth="29" speed="6" direction="1" vadwind="1" ScanBack="0" vadisslide="2" IsSecTick="0" shots="10000" NewFilePerCycle="1" />';
+        Shots: 10000;
+        SpetralEnd: 131;
+        SpetralStart: 32;
+        StartIndex: 3;
+        TriggerDelayTime: 1000;
+        Version: "1.0.1.6";
+        ZeroFreq: 49.31;
+      };
+      let headerInfo: HeaderInfo = (result.headerInfo = {} as HeaderInfo);
+      for (let i = 1; i < firstLine.length; i++) {
+        let kv = firstLine[i].split(":");
+        if (kv.length == 2) {
+          Object.defineProperty(headerInfo, kv[0], { value: kv[1] });
+        } else {
+          throw Error("invalid " + firstLine[i]);
         }
-        result.data.push(RadVr);
+      }
+      let data: Array<any> = (result.data = []);
+
+      while (!v.reachEnd()) {
+        let thirdLine = d
+          .decode(v.getLine())
+          .replace(/,\r\n$/, "")
+          .split(",");
+        let item = { EarthAzimuth: 0, list: new Array<any>() };
+        for (let i = 0; i < 23; i++) {
+          Object.defineProperty(item, secondLine[i], { value: thirdLine[i] });
+        }
+        item.EarthAzimuth = Number(item.EarthAzimuth);
+        //用于确保两根径向之间夹角不大于180度
+        if (data.length > 0) {
+          let lastItem = data[data.length - 1];
+          if (Math.abs(item.EarthAzimuth - lastItem.EarthAzimuth) > 180) {
+            // item.EarthAzimuth = 360 + item.EarthAzimuth;
+            item.EarthAzimuth =
+              lastItem.EarthAzimuth +
+              (360 - (Math.abs(item.EarthAzimuth - lastItem.EarthAzimuth) % 360));
+          }
+        }
+        for (let i = 23; i < thirdLine.length; i += 4) {
+          let obj = {
+            [secondLine[i + 0].split(" ")[1]]: Number(thirdLine[i + 0]),
+            [secondLine[i + 1].split(" ")[1]]: Number(thirdLine[i + 1]),
+            [secondLine[i + 2].split(" ")[1]]: Number(thirdLine[i + 2]),
+            [secondLine[i + 3].split(" ")[1]]: Number(thirdLine[i + 3]),
+            distance: Number(secondLine[i + 3].split(" ")[0].replace(/m$/, "")),
+          };
+          item.list.push(obj);
+        }
+        data.push(item);
       }
       processData(result);
     });
@@ -804,7 +788,6 @@ onMounted(() => {
     xhr.send();
     function processData(result: any) {
       let polygons: any[] = [];
-
       //测试
       // for (let i = 0; i < 100; i++) {
       //   polygons.push({
@@ -813,7 +796,7 @@ onMounted(() => {
       //       type: "Polygon",
       //       coordinates: [
       //         calculateSectorPoints(
-      //           [120.95777893066406, 31.075000762939453],
+      //           [120.477398, 36.16953],
       //           200.25 - 100.5 / 2 + 100.5 * i,
       //           200.25 - 100.5 / 2 + 100.5 * (i + 1),
       //           -1,
@@ -832,15 +815,15 @@ onMounted(() => {
       if (List.length >= 2) {
         //定义始末两条径向内的径向位置
         for (let i = 1; i < List.length - 1; i++) {
-          let Angle1 = List[i - 1].BeamAz;
-          let Angle2 = List[i].BeamAz;
-          let Angle3 = List[i + 1].BeamAz;
+          let Angle1 = Number(List[i - 1].EarthAzimuth);
+          let Angle2 = Number(List[i].EarthAzimuth);
+          let Angle3 = Number(List[i + 1].EarthAzimuth);
           List[i].α = Math.min((Angle1 + Angle2) / 2, (Angle2 + Angle3) / 2);
           List[i].β = Math.max((Angle1 + Angle2) / 2, (Angle2 + Angle3) / 2);
         }
         //定义第一条径向位置
-        let Angle1 = List[0].BeamAz;
-        let Angle2 = List[1].BeamAz;
+        let Angle1 = Number(List[0].EarthAzimuth);
+        let Angle2 = Number(List[1].EarthAzimuth);
         List[0].α = Math.min(
           Angle1 - (Angle2 - Angle1) / 2,
           Angle1 + (Angle2 - Angle1) / 2
@@ -850,8 +833,8 @@ onMounted(() => {
           Angle1 + (Angle2 - Angle1) / 2
         );
         //定义最后一条径向位置
-        Angle1 = List.slice(-2)[0].BeamAz;
-        Angle2 = List.slice(-1)[0].BeamAz;
+        Angle1 = Number(List.slice(-2)[0].EarthAzimuth);
+        Angle2 = Number(List.slice(-1)[0].EarthAzimuth);
         List[List.length - 1].α = Math.min(
           Angle2 - (Angle2 - Angle1) / 2,
           Angle2 + (Angle2 - Angle1) / 2
@@ -862,34 +845,33 @@ onMounted(() => {
         );
       } else if (List.length == 1) {
         //定义只有一条径向的位置
-        let Angle = List[0].BeamAz;
+        let Angle = Number(List[0].EarthAzimuth);
         List[0].α = Angle - 0.5;
         List[0].β = Angle + 0.5;
       }
-      let maxAngle = -Infinity;
-      let minAngle = +Infinity;
-      for (let j = 0; j < List.length - 1; j++) {
+      for (let j = 0; j < List.length; j++) {
         let radial = List[j];
-        let max = radial.RadVrData.slice(-1)[0]?.距离 || 0;
-        let min = radial.RadVrData.slice(0, 1)[0]?.距离 || 0;
-        let BinLength = (max - min) / (radial.RadVrData.length - 1);
-        if (radial.BeamAz > minAngle && radial.BeamAz < maxAngle) {
-          polygons.length = 0;
-          maxAngle = -Infinity;
-          minAngle = +Infinity;
-        }
-        for (let i = 0; i < radial.RadVrData.length; i++) {
+        let max = radial.list.slice(-1)[0]?.distance || 0;
+        let min = radial.list.slice(0, 1)[0]?.distance || 0;
+        let BinLength = (max - min) / (radial.list.length - 1);
+        for (let i = 0; i < radial.list.length; i++) {
+          let angle1 = radial.α;
+          let angle2 = radial.β;
+          if (angle2 - angle1 > 180) {
+            angle1 = radial.β - (360 - ((angle2 - angle1) % 360));
+            angle2 = radial.β;
+          }
           polygons.push({
             type: "Feature",
             geometry: {
               type: "Polygon",
               coordinates: [
                 calculateSectorPoints(
-                  [113.32015514, 23.00731838],
-                  radial.RadVrData[i].距离 - BinLength / 2,
-                  radial.RadVrData[i].距离 + BinLength / 2,
-                  radial.α,
-                  radial.β,
+                  wgs84togcj02(...[120.477398, 36.16953]) as [number, number],
+                  radial.list[i].distance - BinLength / 2,
+                  radial.list[i].distance + BinLength / 2,
+                  angle1,
+                  angle2,
                   360,
                   "meters"
                 ),
@@ -897,14 +879,12 @@ onMounted(() => {
             },
             properties: {
               fillColor:
-                Math.abs(radial.RadVrData[i].径向速度) == 999
+                Math.abs(radial.list[i]["RadialWind(m/s)"]) == 999
                   ? "transparent"
-                  : chromatographyRef.value.getColor(radial.RadVrData[i].径向速度),
+                  : chromatographyRef.value.getColor(radial.list[i]["RadialWind(m/s)"]),
             },
           });
         }
-        maxAngle = Math.max(maxAngle, radial.BeamAz);
-        minAngle = Math.min(minAngle, radial.BeamAz);
       }
       map.addSource("radar", {
         type: "geojson",
@@ -919,7 +899,7 @@ onMounted(() => {
         source: "radar",
         paint: {
           "fill-color": ["get", "fillColor"],
-          "fill-opacity": 1,
+          "fill-opacity": 0.8,
           "fill-outline-color": "transparent",
         },
       });

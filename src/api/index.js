@@ -32,6 +32,13 @@ export function getAll({database,table}){
     }
   })
 }
+export function exec({database,query}){
+  return request({
+    url: '/backend/transaction?'+database,
+    method: 'post',
+    data:query
+  })
+}
 export function fetchList({database,table,query}) {
   return request({
     url:'backend/db/'+table+'?'+database,

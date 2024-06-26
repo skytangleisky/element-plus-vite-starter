@@ -142,6 +142,7 @@ watch(
 <style scoped lang="scss">
 $time: 1s;
 .bottom-drawer {
+  z-index: 2;
   white-space: nowrap;
   position: absolute;
   height: 240px;
@@ -182,7 +183,6 @@ $time: 1s;
   }
 }
 .right-drawer {
-  z-index: 4;
   position: absolute;
   right: 0;
   width: 240px;

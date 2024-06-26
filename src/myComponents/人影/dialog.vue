@@ -1,5 +1,5 @@
 <template>
-  <div class="!collapse dragDialog absolute w-530px" style="left: 20px; top: 20px">
+  <div class="!collapse dragDialog absolute w-550px" style="left: 20px; top: 20px">
     <div class="flex flex-row" style="align-items: center">
       <input
         @mousedown.stop
@@ -65,9 +65,7 @@
           <tbody style="position: relative">
             <tr
               :id="'人影-' + v.strID"
-              :class="`${
-                station.人影界面被选中的设备 == v.strID ? 'bg-gray-5' : 'bg-transparent'
-              }`"
+              :class="`${station.人影界面被选中的设备 == v.strID ? 'selected' : ''}`"
               v-for="(v, k) in options.list"
               :key="v.strID"
               @contextmenu.prevent="contextmenu($event, v)"
@@ -318,7 +316,13 @@ const toggleCollapse = () => {
     }
     tbody {
       tr {
+        &:hover {
+          background: #ffffff22;
+        }
         cursor: pointer;
+      }
+      tr.selected {
+        background: #ffffff66;
       }
       td:first-child {
         border-left: none;

@@ -10,6 +10,7 @@
         <el-col :span="12"
           ><div class="flex justify-between items-center pl-10px">
             代码<input
+              disabled
               name="代码"
               class="operation_filter"
               style="width: 150px"
@@ -20,6 +21,7 @@
         <el-col :span="12"
           ><div class="flex justify-between items-center pl-10px">
             名称<input
+              disabled
               name="名称"
               class="operation_filter"
               style="width: 150px"
@@ -32,6 +34,7 @@
         <el-col :span="12"
           ><div class="flex justify-between items-center pl-10px">
             位置<input
+              disabled
               name="位置"
               class="operation_filter"
               style="width: 150px"
@@ -42,6 +45,7 @@
         <el-col :span="12"
           ><div class="flex justify-between items-center pl-10px">
             审批单位<input
+              disabled
               name="审批单位"
               class="operation_filter"
               style="width: 150px"

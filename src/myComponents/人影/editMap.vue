@@ -11,7 +11,7 @@
         height: 100%;
         line-height: 1;
         outline: none;
-        background: #2b2b2b;
+        background: #444;
       "
     ></div>
     <Dialog
@@ -23,7 +23,7 @@
     <plan-panel :list="planProps.list"></plan-panel>
     <el-select
       class="select"
-      style="position: absolute; width: 100px; left: 554px; top: 10px"
+      style="position: absolute; width: 100px; left: 574px; top: 10px"
       size="small"
       v-model="color"
       placeholder="请选择颜色"
@@ -44,10 +44,14 @@
 </template>
 <script setup lang="ts">
 import moment from "moment";
-import { checkPermission } from "~/tools/index.ts";
+import {
+  checkPermission,
+  calculateSectorPoints,
+  calculateCirclePoints,
+} from "~/tools/index.ts";
 import CustomLayer from "./webglLayer/CustomLayer.js";
 import graph from "~/tools/graph.vue";
-import PlanPanel from "./planPanel.vue";
+import PlanPanel, { planDataType } from "./planPanel.vue";
 import { area, pointInPolygon } from "~/tools/index.ts";
 import { rgb2Hsl } from "~/myComponents/map/js/core";
 import palette from "../mapbox/data/温度/tempreture.xml?raw";
@@ -83,8 +87,9 @@ import * as turf from "@turf/turf";
 import Circle from "@turf/circle";
 import { wgs84togcj02 } from "~/myComponents/map/workers/mapUtil";
 import { watch, ref, onMounted, onBeforeUnmount, reactive } from "vue";
+
 const planProps = reactive({
-  list: [],
+  list: new Array<planDataType>(),
 });
 let graphArgs = reactive({
   fps: { value: 0, min: 0, max: 144, strokeStyle: "#ffffff88" },
@@ -172,7 +177,7 @@ style.layers.map((v: any) => {
     v.layout.visibility = props.district ? "visible" : "none";
   }
 });
-import { getAll } from "~/api/index.js";
+import { getAll, exec } from "~/api/index.js";
 const emits = defineEmits([
   "update:center",
   "update:zoom",
@@ -244,6 +249,7 @@ watch([() => props.zoom, () => props.center], ([zoom, center]) => {
 });
 import { useStationStore } from "~/stores/station";
 import { useSettingStore } from "~/stores/setting";
+import { zoomByDelta } from "ol/interaction/Interaction.js";
 const setting = useSettingStore();
 let enclosureList = new Array<any>();
 const station = useStationStore();
@@ -324,7 +330,7 @@ onMounted(() => {
     // zoom: 18,
     // center: [148.9819, -35.3981],
     zoom: props.zoom,
-    center: props.center,
+    center: props.center as mapboxgl.LngLatLike,
     pitch: props.pitch,
   });
   map.on("load", async () => {
@@ -430,7 +436,7 @@ onMounted(() => {
             if (item.iMaxShotRange) {
               // 有问题
               // let circle: any = Circle([pt.lng, pt.lat], item.iMaxShotRange, {
-              //   steps: 64,
+              //   steps: 360,
               //   units: "meters",
               //   properties: {
               //     id: item.strID,
@@ -446,88 +452,17 @@ onMounted(() => {
                   number
                 ]; // 圆心点的经纬度
                 const radius: number = item.iMaxShotRange; // 半径（单位：米
-                const steps: number = 64; // 用于生成圆弧的步数，越大越平滑
+                const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
                 const units: turf.Units = "meters"; // 半径的单位
-                function calculateSectorPoints(
-                  center: [number, number],
-                  radius: number,
-                  steps: number,
-                  units: turf.Units
-                ): [number, number][] {
-                  const points: [number, number][] = [];
-                  const angleStep = 360 / steps;
-                  let angle = 0;
-                  for (; angle < 360; angle += angleStep) {
-                    const point = turf.destination(center, radius, angle, {
-                      units: units,
-                    }) as any;
-                    points.push(point.geometry.coordinates);
-                  }
-                  const point = turf.destination(center, radius, 360, {
-                    units: units,
-                  }) as any;
-                  points.push(point.geometry.coordinates);
-                  return points;
-                }
-                const sectorPoints: [number, number][] = calculateSectorPoints(
+                const sectorPoints: [number, number][] = calculateCirclePoints(
                   center,
                   radius,
                   steps,
                   units
                 );
                 const sectorPolygon = turf.polygon([sectorPoints], {
-                  id: item.strID,
-                  color: "white",
-                  fillColor: "transparent",
-                });
-                circleFeatures.push(sectorPolygon);
-              }
-
-              {
-                const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
-                  number,
-                  number
-                ]; // 圆心点的经纬度
-                const radius: number = item.iMaxShotRange; // 半径（单位：米）
-                const startAngle: number = 0; // 起始角度（单位：度）
-                const endAngle: number = 90; // 终止角度（单位：度）
-                const steps: number = 64; // 用于生成圆弧的步数，越大越平滑
-                const units: turf.Units = "meters"; // 半径的单位
-                function calculateSectorPoints(
-                  center: [number, number],
-                  radius: number,
-                  startAngle: number,
-                  endAngle: number,
-                  steps: number,
-                  units: turf.Units
-                ): [number, number][] {
-                  const points: [number, number][] = [center];
-                  const angleStep = 360 / steps;
-                  let angle = startAngle;
-                  for (; angle < endAngle; angle += angleStep) {
-                    const point = turf.destination(center, radius, angle, {
-                      units: units,
-                    }) as any;
-                    points.push(point.geometry.coordinates);
-                  }
-                  const point = turf.destination(center, radius, endAngle, {
-                    units: units,
-                  }) as any;
-                  points.push(point.geometry.coordinates);
-                  points.push(center); // 返回到圆心以关闭多边形
-                  return points;
-                }
-                const sectorPoints: [number, number][] = calculateSectorPoints(
-                  center,
-                  radius,
-                  startAngle,
-                  endAngle,
-                  steps,
-                  units
-                );
-                const sectorPolygon = turf.polygon([sectorPoints], {
-                  id: item.strID,
-                  color: "white",
+                  strID: item.strID,
+                  color: "transparent",
                   fillColor: "transparent",
                 });
                 circleFeatures.push(sectorPolygon);
@@ -630,12 +565,6 @@ onMounted(() => {
         emits("update:prevRequestShow", true);
         emits("update:prevRequestData", feature.properties);
         station.人影界面被选中的设备 = feature.properties.strID;
-        $(`#人影-${station.人影界面被选中的设备}`)[0].scrollIntoView({
-          block: "nearest",
-          behavior: "smooth",
-          inline: "center",
-        });
-        active();
       });
       map.on("click", "zydLayer", (e: any) => {
         const fs = map.queryRenderedFeatures(e.point, {
@@ -656,12 +585,6 @@ onMounted(() => {
         //   )
         //   .addTo(map);
         station.人影界面被选中的设备 = feature.properties.strID;
-        $(`#人影-${station.人影界面被选中的设备}`)[0].scrollIntoView({
-          block: "nearest",
-          behavior: "smooth",
-          inline: "center",
-        });
-        active();
       });
       active = () => {
         features = features.map((item: any) => {
@@ -679,11 +602,11 @@ onMounted(() => {
         });
 
         circleFeatures = circleFeatures.map((item: any) => {
-          if (item.properties.id == station.人影界面被选中的设备) {
+          if (item.properties.strID == station.人影界面被选中的设备) {
             item.properties.color = "white";
-            item.properties.fillColor = "white";
+            item.properties.fillColor = "#000";
           } else {
-            item.properties.color = "white";
+            item.properties.color = "transparent";
             item.properties.fillColor = "transparent";
           }
           return item;
@@ -699,8 +622,110 @@ onMounted(() => {
           "host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
         table: "zyddata",
       };
-      getAll(datasource_zyddata).then((res) => {
+      exec({
+        database:
+          "host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
+        query: {
+          sqls: [
+            "SELECT z.*,u.strName as unitName FROM `zyddata` z left join `units` u on z.strATCUnitID=u.strID",
+          ],
+          vals: [[]],
+        },
+      }).then((res) => {
         planProps.list = res.data[0];
+        console.log(planProps);
+        planProps.list.map((item: planDataType) => {
+          for (let i = 0; i < circleFeatures.length; i++) {
+            if (circleFeatures[i].properties.strID == item.strZydID) {
+              circleFeatures.splice(i--, 1);
+            }
+          }
+
+          let v = item.strCurPos;
+          let lng = v.substring(0, v.indexOf("E"));
+          let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
+          let pt = {
+            lng:
+              Number(lng.substring(0, 3)) +
+              Number(lng.substring(3, 5)) / 60 +
+              Number(lng.substring(5, 9)) / 100 / 3600,
+            lat:
+              Number(lat.substring(0, 2)) +
+              Number(lat.substring(2, 4)) / 60 +
+              Number(lat.substring(4, 8)) / 100 / 3600,
+          };
+          const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
+            number,
+            number
+          ]; // 圆心点的经纬度
+          const radius: number = item.iRange; // 半径（单位：米）
+          const startAngle: number = item.iAngleBegin; // 起始角度（单位：度）
+          const endAngle: number = item.iAngleEnd; // 终止角度（单位：度）
+          const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
+          const units: turf.Units = "meters"; // 半径的单位
+          if (endAngle - startAngle >= 360) {
+            const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
+              number,
+              number
+            ]; // 圆心点的经纬度
+            const radius: number = item.iRange; // 半径（单位：米
+            const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
+            const units: turf.Units = "meters"; // 半径的单位
+            function calculateSectorPoints(
+              center: [number, number],
+              radius: number,
+              steps: number,
+              units: turf.Units
+            ): [number, number][] {
+              const points: [number, number][] = [];
+              const angleStep = 360 / steps;
+              let angle = 0;
+              for (; angle < 360; angle += angleStep) {
+                const point = turf.destination(center, radius, angle, {
+                  units: units,
+                }) as any;
+                points.push(point.geometry.coordinates);
+              }
+              const point = turf.destination(center, radius, 360, {
+                units: units,
+              }) as any;
+              points.push(point.geometry.coordinates);
+              return points;
+            }
+            const sectorPoints: [number, number][] = calculateSectorPoints(
+              center,
+              radius,
+              steps,
+              units
+            );
+            const sectorPolygon = turf.polygon([sectorPoints], {
+              strID: item.strZydID,
+              color: "transparent",
+              fillColor: "transparent",
+            });
+            circleFeatures.push(sectorPolygon);
+          } else {
+            const sectorPoints: [number, number][] = calculateSectorPoints(
+              center,
+              radius,
+              startAngle,
+              endAngle,
+              steps,
+              units
+            );
+            const sectorPolygon = turf.polygon([sectorPoints], {
+              strID: item.strZydID,
+              color: "transparent",
+              fillColor: "transparent",
+            });
+            circleFeatures.push(sectorPolygon);
+          }
+        });
+        let source = map.getSource("最大射程source");
+        source.setData({
+          type: "FeatureCollection",
+          features: circleFeatures,
+        });
       });
     });
     // getDevice().then((res) => {
@@ -941,7 +966,7 @@ onMounted(() => {
     //   let pointFeatures = [];
     //   for (let i = 1; i <= 10; i++) {
     //     let circle = Circle([102.04150296221326, 36.530313361869744], i * 1000, {
-    //       steps: 64,
+    //       steps: 360,
     //       units: "meters",
     //     });
     //     circleFeatures.push(circle);
@@ -2195,6 +2220,17 @@ onBeforeUnmount(() => {
   map.off("bearing", bearingFunc);
   map.remove();
 });
+watch(
+  () => station.人影界面被选中的设备,
+  (strID) => {
+    $(`#人影-${strID}`)[0].scrollIntoView({
+      block: "nearest",
+      behavior: "smooth",
+      inline: "center",
+    });
+    active();
+  }
+);
 watch(
   () => props.gridValue,
   (newVal) => {
