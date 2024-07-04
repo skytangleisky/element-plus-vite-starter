@@ -20,7 +20,6 @@
 import { ref, onMounted, onBeforeUnmount, watch } from "vue";
 import { useStationStore } from "~/stores/station";
 const station = useStationStore();
-import * as echarts from "echarts";
 import { isDark } from "~/composables";
 import { useBus } from "~/myComponents/bus";
 const bus = useBus();

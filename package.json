@@ -27,7 +27,6 @@
     "bundle-require": "^4.0.2",
     "cookie-parser": "^1.4.6",
     "dat.gui": "^0.7.9",
-    "echarts": "^5.4.3",
     "element-plus": "^2.3.6",
     "fabric": "^5.3.0",
     "gl-matrix": "^3.4.3",

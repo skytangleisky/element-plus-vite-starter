@@ -49,7 +49,7 @@
               name="审批单位"
               class="operation_filter"
               style="width: 150px"
-              value="北空"
+              :value="data.unitName"
               @mousedown.stop
             /></div
         ></el-col>
@@ -152,15 +152,20 @@
         ></el-col>
       </el-row>
       <div class="flex flex-row justify-between items-center pl-10px mt-0.5rem mb-0.5rem">
-        <el-button type="default" @mousedown.stop>网络上报</el-button>
-        <el-button type="default" @mousedown.stop>电话上报</el-button>
+        <el-button type="default" @mousedown.stop @click="click(data)"
+          >网络上报</el-button
+        >
+        <el-button type="default" style="display: none" @mousedown.stop
+          >电话上报</el-button
+        >
         <el-button @click="cancel" type="default" @mousedown.stop>取消</el-button>
       </div>
     </div>
   </div>
 </template>
+
 <script lang="ts" setup>
-import { ref, reactive, watch } from "vue";
+import { reactive } from "vue";
 const weaponOptions = reactive([
   { value: 0, label: "火箭" },
   { value: 1, label: "高炮" },
@@ -176,23 +181,30 @@ const workOptions = reactive([
   { value: 3, label: "大气治理" },
   { value: 4, label: "其他" },
 ]);
+const click = (data: prevRequestDataType) => {
+  emit("click", data);
+};
+type zyddataType = {
+  strID: string;
+  strCode: string;
+  strName: string;
+  strPos: string;
+  iMaxShotRange: number;
+  iMaxShotHei: number;
+  iWeapon: number;
+  iWorkType: number;
+  iShotRangeBegin: number;
+  iShotRangeEnd: number;
+  beginTime: string;
+  duration: number;
+};
+export type prevRequestDataType = {
+  unitName: string;
+} & zyddataType;
 withDefaults(
   defineProps<{
     show?: boolean;
-    data?: {
-      strID: string;
-      strCode: string;
-      strName: string;
-      strPos: string;
-      iMaxShotRange: number;
-      iMaxShotHei: number;
-      iWeapon: number;
-      iWorkType: number;
-      iShotRangeBegin: number;
-      iShotRangeEnd: number;
-      beginTime: string;
-      duration: number;
-    };
+    data?: prevRequestDataType;
   }>(),
   {
     show: true,
@@ -209,10 +221,11 @@ withDefaults(
       iShotRangeEnd: 1000,
       beginTime: "",
       duration: 1,
+      unitName: "",
     }),
   }
 );
-const emit = defineEmits(["update:show"]);
+const emit = defineEmits(["update:show", "click"]);
 const cancel = () => {
   emit("update:show", false);
 };

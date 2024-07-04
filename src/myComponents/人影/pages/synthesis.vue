@@ -123,6 +123,7 @@
   <dialog-plan-request
     v-model:show="setting.人影.监控.prevPlanRequestShow"
     v-model:data="setting.人影.监控.prevPlanRequestData"
+    @click="confirm"
   ></dialog-plan-request>
 </template>
 <script lang="ts" setup>
@@ -137,9 +138,9 @@ import whitelistSvg from "~/assets/whitelist.svg?raw";
 import statisticSvg from "~/assets/statistic.svg?raw";
 import selectTile from "../selectTile.vue";
 import { watch, ref, reactive } from "vue";
-import DialogPrevRequest from "../../dialog_prev_request.vue";
-import DialogPlanRequest from "../../dialog_plan_request.vue";
+import DialogPlanRequest, { prevRequestDataType } from "../../dialog_plan_request.vue";
 import { useSettingStore } from "~/stores/setting";
+import { eventbus } from "~/eventbus/index";
 const setting = useSettingStore();
 import datatable from "~/myComponents/datatable/index.vue";
 const menus = reactive([
@@ -151,6 +152,9 @@ const menus = reactive([
   { value: 0, svg: statisticSvg, active: false },
 ]);
 import { checkPermission } from "~/tools";
+const confirm = (data: prevRequestDataType) => {
+  eventbus.emit("人影-地面作业申请-网络上报", data);
+};
 const click = (v: any) => {
   setting.人影.监控.bottom_disappear = false;
   v.active = true;

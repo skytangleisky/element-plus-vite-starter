@@ -22,7 +22,6 @@ import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
 import { useStationStore } from "~/stores/station";
 const station = useStationStore();
-import * as echarts from "echarts";
 import { isDark } from "~/composables";
 import { useBus } from "~/myComponents/bus";
 const bus = useBus();

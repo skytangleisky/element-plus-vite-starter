@@ -38,7 +38,6 @@
 </template>
 <script setup>
 import { onMounted, ref, onBeforeUnmount, watch } from "vue";
-import * as echarts from "echarts";
 import Showers from "./data/showers_128.png?url";
 import Sunny from "./data/sunny_128.png?url";
 import Cloudy from "./data/cloudy_128.png?url";

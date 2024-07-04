@@ -1,12 +1,12 @@
 export default {
-  path: 'gz',
+  path: 'cq',
   component: '/src/container.vue',
-  redirect: { path: '/gz/synthesis' },
+  redirect: { path: '/cq/synthesis' },
   name:'5e1816a8-f4e1-03dd-c0e5-ba131030e9e7',
-  svg:'a042c0df2d3b11ef98d8b025aa2c9ada',
+  svg:'f7f96575383611efb04bb025aa2c9ada',
   meta:{
-    label:'风雷达组网观测系统',
-    roles:['admin','gz']
+    label:'重庆激光雷达组网观测系统',
+    roles:['admin','cq']
   },
   children:[
     {
@@ -20,10 +20,45 @@ export default {
       }
     },
     {
+      path:'device',
+      name:'8f316b61-96ed-e4ad-6f96-3899833db3b8',
+      hide:false,
+      svg:'97d8a6d93ab711ee8077b025aa2c9ada',
+      meta:{
+        label:'单站产品'
+      },
+      children:[
+        {
+          path: 'deviceA',
+          name: 'da20fee1-5ad7-51e1-2789-5e0933011f11',
+          component: '/src/myComponents/风雷达组网/pages/deviceA.vue',
+          meta:{
+            label: '广州基地站',
+          }
+        },
+        {
+          path: 'deviceB',
+          name: 'da20fee1-5ad7-51e1-2788-5e0933011a11',
+          component: '/src/myComponents/风雷达组网/pages/deviceB.vue',
+          meta:{
+            label: '海珠生态基地',
+          }
+        },
+        {
+          path: 'deviceC',
+          name: 'da20fee1-5ad7-51e1-2787-5e0933011a11',
+          component: '/src/myComponents/风雷达组网/pages/deviceC.vue',
+          meta:{
+            label: '测试站',
+          }
+        },
+      ]
+    },
+    {
       path: 'system',
-      name:'aa4619cf-ca3d-ffb1-9781-9fcf73cfa623',
+      name:'aa4619cf-ca3d-ffb1-9781-afcf73cfa623',
       svg:'7809a650d6c811ee9aafb025aa2c9ada',
-      redirect:'/gz/system/person',
+      redirect:'/cq/system/person',
       meta:{
         label:'系统管理',
       },

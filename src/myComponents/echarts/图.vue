@@ -1,7 +1,6 @@
 <template><div class="graph" ref="graphRef" v-resize="resize"></div></template>
 <script lang="ts" setup>
 import { onMounted, ref, onBeforeUnmount } from "vue";
-import * as echarts from "echarts";
 const graphRef = ref<HTMLDivElement>();
 import data from "./les-miserables.json";
 const resize = () => {

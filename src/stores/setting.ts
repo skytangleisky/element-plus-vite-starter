@@ -1,10 +1,11 @@
 import { defineStore, acceptHMRUpdate2 } from "pinia"
 import moment from 'moment'
+import {type prevRequestDataType} from '../myComponents/dialog_plan_request.vue'
 import ry from "./subs/ry.js";
 import jx from "./subs/jx.js";
 import dev from "./subs/dev.js";
 import zh from "./subs/zh.js";
-import gz from "./subs/gz.js";
+import cq from "./subs/cq.js";
 export const useSettingStore = defineStore({
   id: 'setting',
   state:()=>({
@@ -226,6 +227,7 @@ export const useSettingStore = defineStore({
           iShotRangeEnd: 0,
           beginTime: moment().format("HH:mm:ss"),
           duration: 1,
+          unitName:"",
         },
         bottom_disappear:true,
         tile:{
@@ -433,7 +435,7 @@ export const useSettingStore = defineStore({
       zh,
       ry,
       jx,
-      gz,
+      cq,
       {
         path: 'qqlogin',
         name: '3c1f8a79-4fe6-2263-08fb-477f961fc946',
@@ -506,10 +508,10 @@ export const useSettingStore = defineStore({
       {
         path: '',
         name: '99961e04-e574-0e1f-2e23-94f157b14b55',
-        redirect: '/gz/synthesis',
+        redirect: '/cq/synthesis',
         hide:true,
         meta:{
-          roles:['gz']
+          roles:['cq']
         }
       },
       {

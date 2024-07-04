@@ -104,7 +104,7 @@ export default defineConfig({
     //   // cert: fs.readFileSync('tanglei.site.pem'),
     //   // key: fs.readFileSync('tanglei.site.key')
     // },
-    open:'https://dev.tanglei.site',
+    open:'https://dev.tanglei.top',
     host:true,
     port:5173,
     strictPort:true,
@@ -142,6 +142,11 @@ export default defineConfig({
       '/ArcGIS':{
         target:'https://map.geoq.cn',//替换的服务端地址
         changeOrigin:true,//开启代理，允许跨域
+      },
+      '/qt':{
+        target:'http://qt.tanglei.top',//替换的服务端地址
+        changeOrigin:true,//开启代理，允许跨域
+        rewrite:path=>path.replace(/^\/qt/,'') // 设置重写的路径
       }
     }
   }

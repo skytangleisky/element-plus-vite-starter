@@ -656,7 +656,7 @@ watch(
                 ) {
                   const lngLat = points.data.features[i].geometry.coordinates;
 
-                  data_list.map((item) => {
+                  data_list.map((item, k) => {
                     let ll = destinationPoint(
                       lngLat[0],
                       lngLat[1],
@@ -669,6 +669,21 @@ watch(
                       item.center_h_direction_abs != -1000 &&
                       item.center_h_speed != -1000
                     ) {
+                      // points.data.features.push({
+                      //   type: "Feature",
+                      //   properties: {
+                      //     type: "风羽",
+                      //     radar_id: radar_id,
+                      //     风速: item.center_h_speed,
+                      //     image: "feather" + getFeather(item.center_h_speed),
+                      //     风向: item.center_h_direction_abs,
+                      //   },
+                      //   geometry: {
+                      //     type: "Point",
+                      //     coordinates: [ll.lng, ll.lat],
+                      //   },
+                      // });
+
                       points.data.features.push({
                         type: "Feature",
                         properties: {

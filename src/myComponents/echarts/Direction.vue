@@ -22,7 +22,6 @@ import { useStationStore } from "~/stores/station";
 const station = useStationStore();
 import { useBus } from "~/myComponents/bus";
 const bus = useBus();
-import * as echarts from "echarts";
 import { isDark } from "~/composables";
 
 var thContainer = ref(null);

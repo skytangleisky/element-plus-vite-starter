@@ -529,7 +529,7 @@ export const addFeatherImages = async( map:any ) => {
         y1: 0,
         x2: 1,
         y2: 1,
-        fill: 'white',
+        // fill: 'white',
       },
       'projectile-red':{
         x1: 0,
