@@ -120,12 +120,12 @@ const setting = useSettingStore();
 const show2 = ref(true);
 const showMapSetting = ref(true);
 const resetLocation = () => {
-  setting.$resetFields("openlayers.center");
-  setting.$resetFields("openlayers.zoom");
+  setting.$resetFields("风雷达组网地图相关.center");
+  setting.$resetFields("风雷达组网地图相关.zoom");
   eventbus.emit("将站点移动到屏幕中心", {
-    longitude: setting.openlayers.center[0],
-    latitude: setting.openlayers.center[1],
-    zoom: setting.openlayers.zoom,
+    longitude: setting.风雷达组网地图相关.center[0],
+    latitude: setting.风雷达组网地图相关.center[1],
+    zoom: setting.风雷达组网地图相关.zoom,
   });
 };
 const beforeChange = () => {

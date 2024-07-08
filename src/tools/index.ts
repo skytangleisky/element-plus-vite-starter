@@ -597,3 +597,19 @@ export function calculateCirclePoints(
   points.push(point.geometry.coordinates);
   return points;
 }
+export function sixty2Float(val:number|string){
+  if(typeof val == 'number' || typeof val == 'undefined'){
+    return val
+  }else if(/^\d+(\.\d+)?$/.test(val)){
+    return Number(val)
+  }else{
+    let degree = val.match(/(\d+)?\.\d+(?=°)|\d+(?=°)/g);
+    let minute = val.match(/(\d+)?\.\d+(?=′)|\d+(?=′)/g);
+    let second = val.match(/(\d+)?\.\d+(?=″)|\d+(?=″)/g);
+    if(!(degree&&minute&&second)||degree.length!=1||minute.length!=1||second.length!=1){
+      throw "invalid val:" + val;
+    }else{
+      return Number(degree[0]) + Number(minute[0])/60 + Number(second[0])/3600
+    }
+  }
+}

@@ -106,21 +106,63 @@
       v-model:level="setting.level"
       class="absolute bottom-0"
     ></time-line>
-    <graph
+    <!-- <graph
       v-if="checkPermission(['admin'])"
       class="absolute left-0 bottom-30px"
       v-model:args="graphArgs"
-    ></graph>
+    ></graph> -->
+    <chromatography
+      ref="chromatographyRef"
+      :arr="chromatographyArr"
+      style="
+        right: 30px;
+        color: white;
+        top: 50%;
+        transform: translateY(-50%);
+        bottom: 0;
+        height: 300px;
+        position: absolute;
+      "
+    ></chromatography>
   </div>
 </template>
-<script setup>
-import { checkPermission } from "~/tools";
-import { addFeatherImages, getFeather } from "~/tools";
+<script setup lang="ts">
+import chromatography from "../激光测风尾涡/chromatography.vue";
+import * as turf from "@turf/turf";
+import ppiData from "../组网/CDL_S10000_Lidar10HKF00631450_PPI_FrmAzm30.00_ToAzm29.00_Pth3.00_Spd6.00_Res060_StartIdx003_Start003_Stop191_LOSWind_20230515 000240.csv?url";
+import { exec } from "~/api/index.js";
+import {
+  checkPermission,
+  sixty2Float,
+  addFeatherImages,
+  getFeather,
+  View,
+} from "~/tools";
 import { destinationPoint } from "~/myComponents/map/js/core.js";
 import { watch, ref, onMounted, onBeforeUnmount, reactive } from "vue";
 import { useBus } from "~/myComponents/bus";
 import Dialog from "../dialog.vue";
 import { eventbus } from "~/eventbus";
+const chromatographyArr = reactive([
+  -20,
+  -14,
+  -12,
+  -10,
+  -8,
+  -6,
+  -4,
+  -2,
+  2,
+  4,
+  6,
+  8,
+  10,
+  12,
+  16,
+  20,
+]);
+const chromatographyRef = ref(null);
+const Marker = mapboxgl.Marker;
 const bus = useBus();
 const graphArgs = reactive({
   fps: { value: 0, min: 0, max: 144, strokeStyle: "#ffffff88" },
@@ -216,6 +258,8 @@ import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
 import Legend from "./legend.vue";
 import style from "./streets-v11.js";
+import moment from "moment";
+import { wgs84togcj02 } from "../map/workers/mapUtil.js";
 
 let prevDate;
 watch(
@@ -249,7 +293,7 @@ const popup_closer = ref(null);
 const disappear = (e) => {
   setting.disappear = !setting.disappear;
 };
-let timer, map;
+let timer, map: mapboxgl.Map;
 let mock;
 let speed = 20;
 const points = {
@@ -295,11 +339,11 @@ const clickFunc = (e) => {
   }
 };
 const zoomFunc = () => {
-  setting.openlayers.zoom = map.getZoom();
+  setting.风雷达组网地图相关.zoom = map.getZoom();
 };
 const moveFunc = () => {
   let center = map.getCenter();
-  setting.openlayers.center = [center.lng, center.lat];
+  setting.风雷达组网地图相关.center = [center.lng, center.lat];
 };
 const task = () => {
   // if (prevDate === new Date(setting.now).Format("yyyyMMdd")) {
@@ -330,6 +374,309 @@ const task = () => {
 };
 task();
 const loadFunc = () => {
+  var xhr = new XMLHttpRequest();
+  xhr.addEventListener("load", function () {
+    const d = new TextDecoder("utf8");
+    let v = new View(this.response),
+      result: { [key: string]: any } = {};
+    let firstLine = d
+      .decode(v.getLine())
+      .replace(/,\r\n$/, "")
+      .split(",");
+    let secondLine = d
+      .decode(v.getLine())
+      .replace(/,\r\n$/, "")
+      .split(",");
+    type HeaderInfo = {
+      AllGates: 200;
+      Altitude: 40;
+      BKGates: 9;
+      FrequencyShift: 120;
+      Latitude: 36.16953;
+      Location: "榆林机场";
+      Longitude: 120.477398;
+      Model: "S10000";
+      NorthOffset: 0;
+      ProjectMemo: "Test";
+      ProjectName: "榆林机场风切变";
+      PulseWidth: 400;
+      ReShotsTimes: 1;
+      Resolution: 60;
+      SCanMode: "Script";
+      SN: "10HKF00631450";
+      SNRThreshold: 8;
+      SamplesPerGate: 100;
+      Script: '<ppi cycles="1" interval="0" avelostimes="1" pitch="3" fromAzimuth="30" toAzimuth="29" speed="6" direction="1" vadwind="1" ScanBack="0" vadisslide="2" IsSecTick="0" shots="10000" NewFilePerCycle="1" />';
+      Shots: 10000;
+      SpetralEnd: 131;
+      SpetralStart: 32;
+      StartIndex: 3;
+      TriggerDelayTime: 1000;
+      Version: "1.0.1.6";
+      ZeroFreq: 49.31;
+    };
+    let headerInfo: HeaderInfo = (result.headerInfo = {} as HeaderInfo);
+    for (let i = 1; i < firstLine.length; i++) {
+      let kv = firstLine[i].split(":");
+      if (kv.length == 2) {
+        Object.defineProperty(headerInfo, kv[0], { value: kv[1] });
+      } else {
+        throw Error("invalid " + firstLine[i]);
+      }
+    }
+    let data: Array<any> = (result.data = []);
+
+    while (!v.reachEnd()) {
+      let thirdLine = d
+        .decode(v.getLine())
+        .replace(/,\r\n$/, "")
+        .split(",");
+      let item = { EarthAzimuth: 0, list: new Array<any>() };
+      for (let i = 0; i < 23; i++) {
+        Object.defineProperty(item, secondLine[i], { value: thirdLine[i] });
+      }
+      item.EarthAzimuth = Number(item.EarthAzimuth);
+      //用于确保两根径向之间夹角不大于180度
+      if (data.length > 0) {
+        let lastItem = data[data.length - 1];
+        if (Math.abs(item.EarthAzimuth - lastItem.EarthAzimuth) > 180) {
+          // item.EarthAzimuth = 360 + item.EarthAzimuth;
+          item.EarthAzimuth =
+            lastItem.EarthAzimuth +
+            (360 - (Math.abs(item.EarthAzimuth - lastItem.EarthAzimuth) % 360));
+        }
+      }
+      for (let i = 23; i < thirdLine.length; i += 4) {
+        let obj = {
+          [secondLine[i + 0].split(" ")[1]]: Number(thirdLine[i + 0]),
+          [secondLine[i + 1].split(" ")[1]]: Number(thirdLine[i + 1]),
+          [secondLine[i + 2].split(" ")[1]]: Number(thirdLine[i + 2]),
+          [secondLine[i + 3].split(" ")[1]]: Number(thirdLine[i + 3]),
+          distance: Number(secondLine[i + 3].split(" ")[0].replace(/m$/, "")),
+        };
+        item.list.push(obj);
+      }
+      data.push(item);
+    }
+    exec({
+      database: "host=tanglei.top&port=3306&user=root&password=tanglei&database=union",
+      query: {
+        sqls: ["select * from `device`"],
+      },
+    }).then((res) => {
+      res.data[0].map((item) => {
+        if (item.hide !== "true") {
+          let position = wgs84togcj02(sixty2Float(item.lng), sixty2Float(item.lat)) as [
+            number,
+            number
+          ];
+          points.data.features.push({
+            type: "Feature",
+            properties: {
+              type: "站点",
+              radar_id: item.no,
+              风速: 20,
+              time: moment().format("YYYY-MM-DD HH:mm:ss"),
+              name: item.device_name,
+              is_online: true,
+              external_temperature: 25,
+              external_humidity: 0.6,
+              image: "feather" + getFeather(13),
+              color: "#0f0",
+            },
+            geometry: {
+              type: "Point",
+              coordinates: position,
+            },
+          });
+          // new Marker({
+          //   draggable: false,
+          //   pitchAlignment: "map",
+          //   rotationAlignment: "map",
+          // })
+          //   .setLngLat(position)
+          //   .addTo(map);
+          processData(result, position);
+        }
+      });
+      map.getSource("point").setData(points.data);
+      map.getSource("radar").setData({
+        type: "FeatureCollection",
+        features: polygons,
+      });
+    });
+  });
+  xhr.responseType = "arraybuffer";
+  xhr.open("GET", ppiData);
+  xhr.send();
+  let polygons: any[] = [];
+  function processData(result: any, position: [number, number]) {
+    //测试
+    // for (let i = 0; i < 100; i++) {
+    //   polygons.push({
+    //     type: "Feature",
+    //     geometry: {
+    //       type: "Polygon",
+    //       coordinates: [
+    //         calculateSectorPoints(
+    //           [120.477398, 36.16953],
+    //           200.25 - 100.5 / 2 + 100.5 * i,
+    //           200.25 - 100.5 / 2 + 100.5 * (i + 1),
+    //           -1,
+    //           90,
+    //           360,
+    //           "meters"
+    //         ),
+    //       ],
+    //     },
+    //     properties: {
+    //       fillColor: "#" + Math.random().toString(16).substring(2, 8).toUpperCase(),
+    //     },
+    //   });
+    // }
+    let List = result.data.slice(0);
+    if (List.length >= 2) {
+      //定义始末两条径向内的径向位置
+      for (let i = 1; i < List.length - 1; i++) {
+        let Angle1 = Number(List[i - 1].EarthAzimuth);
+        let Angle2 = Number(List[i].EarthAzimuth);
+        let Angle3 = Number(List[i + 1].EarthAzimuth);
+        List[i].α = Math.min((Angle1 + Angle2) / 2, (Angle2 + Angle3) / 2);
+        List[i].β = Math.max((Angle1 + Angle2) / 2, (Angle2 + Angle3) / 2);
+      }
+      //定义第一条径向位置
+      let Angle1 = Number(List[0].EarthAzimuth);
+      let Angle2 = Number(List[1].EarthAzimuth);
+      List[0].α = Math.min(
+        Angle1 - (Angle2 - Angle1) / 2,
+        Angle1 + (Angle2 - Angle1) / 2
+      );
+      List[0].β = Math.max(
+        Angle1 - (Angle2 - Angle1) / 2,
+        Angle1 + (Angle2 - Angle1) / 2
+      );
+      //定义最后一条径向位置
+      Angle1 = Number(List.slice(-2)[0].EarthAzimuth);
+      Angle2 = Number(List.slice(-1)[0].EarthAzimuth);
+      List[List.length - 1].α = Math.min(
+        Angle2 - (Angle2 - Angle1) / 2,
+        Angle2 + (Angle2 - Angle1) / 2
+      );
+      List[List.length - 1].β = Math.max(
+        Angle2 - (Angle2 - Angle1) / 2,
+        Angle2 + (Angle2 - Angle1) / 2
+      );
+    } else if (List.length == 1) {
+      //定义只有一条径向的位置
+      let Angle = Number(List[0].EarthAzimuth);
+      List[0].α = Angle - 0.5;
+      List[0].β = Angle + 0.5;
+    }
+    for (let j = 0; j < List.length; j++) {
+      let radial = List[j];
+      let max = radial.list.slice(-1)[0]?.distance || 0;
+      let min = radial.list.slice(0, 1)[0]?.distance || 0;
+      let BinLength = (max - min) / (radial.list.length - 1);
+      for (let i = 0; i < radial.list.length; i++) {
+        let angle1 = radial.α;
+        let angle2 = radial.β;
+        if (angle2 - angle1 > 180) {
+          angle1 = radial.β - (360 - ((angle2 - angle1) % 360));
+          angle2 = radial.β;
+        }
+        polygons.push({
+          type: "Feature",
+          geometry: {
+            type: "Polygon",
+            coordinates: [
+              calculateSectorPoints(
+                position,
+                radial.list[i].distance - BinLength / 2,
+                radial.list[i].distance + BinLength / 2,
+                angle1,
+                angle2,
+                360,
+                "meters"
+              ),
+            ],
+          },
+          properties: {
+            fillColor:
+              Math.abs(radial.list[i]["RadialWind(m/s)"]) == 999
+                ? "transparent"
+                : chromatographyRef.value.getColor(radial.list[i]["RadialWind(m/s)"]),
+          },
+        });
+      }
+    }
+    // map.addLayer({
+    //   id: "雷达line",
+    //   type: "line",
+    //   source: "radar",
+    //   paint: {
+    //     "line-color": ["get", "fillColor"],
+    //     "line-width": 2,
+    //   },
+    // });
+  }
+  function calculateSectorPoints(
+    center: [number, number],
+    radius1: number,
+    radius2: number,
+    startAngle: number,
+    endAngle: number,
+    steps: number,
+    units: turf.Units
+  ): [number, number][] {
+    const points: [number, number][] = [];
+    const angleStep = 360 / steps;
+    let angle = startAngle;
+    for (; angle < endAngle; angle += angleStep) {
+      const point1 = turf.destination(center, radius1, angle, {
+        units: units,
+      }) as any;
+      points.push(point1.geometry.coordinates);
+    }
+    const point1 = turf.destination(center, radius1, endAngle, {
+      units: units,
+    }) as any;
+    points.push(point1.geometry.coordinates);
+
+    angle = endAngle;
+    for (; angle > startAngle; angle -= angleStep) {
+      const point2 = turf.destination(center, radius2, angle, {
+        units: units,
+      }) as any;
+      points.push(point2.geometry.coordinates);
+    }
+    const point2 = turf.destination(center, radius2, startAngle, {
+      units: units,
+    }) as any;
+    points.push(point2.geometry.coordinates);
+
+    points.push(points[0]);
+    return points;
+  }
+
+  map.addSource("radar", {
+    type: "geojson",
+    data: {
+      type: "FeatureCollection",
+      features: polygons,
+    },
+  });
+  map.addLayer({
+    id: "雷达",
+    type: "fill",
+    source: "radar",
+    minzoom: 0,
+    maxzoom: 22,
+    paint: {
+      "fill-color": ["get", "fillColor"],
+      "fill-opacity": 0.8,
+      "fill-outline-color": "transparent",
+    },
+  });
   map.addSource("point", points);
   map.addLayer({
     id: "stationLayer",
@@ -415,7 +762,7 @@ const loadFunc = () => {
       visibility: setting.station ? "visible" : "none",
       "text-field": ["get", "name"],
       "text-font": ["simkai"],
-      "text-size": 14,
+      "text-size": 18,
       "text-transform": "uppercase",
       // "text-letter-spacing": 0.05,
       "text-anchor": "center",
@@ -428,7 +775,9 @@ const loadFunc = () => {
     },
     paint: {
       "text-opacity": setting.factor[1].val ? 1 : 0,
-      "text-color": "white",
+      "text-color": "black",
+      "text-halo-width": 1,
+      "text-halo-color": "white",
     },
     filter: ["==", ["get", "type"], "站点"],
   });
@@ -542,15 +891,15 @@ onMounted(() => {
     // maxZoom: 17,
     maxZoom: 18,
     // minZoom: 1,
-    // maxBounds: [
-    //   [60.0, 0],
-    //   [160.0, 60],
-    // ],
+    maxBounds: [
+      [102.0, 27.5],
+      [114.0, 32.7],
+    ],
     // zoom: 18,
     // center: [148.9819, -35.3981],
     // pitch: 60,
-    zoom: setting.openlayers.zoom,
-    center: setting.openlayers.center,
+    zoom: setting.风雷达组网地图相关.zoom,
+    center: setting.风雷达组网地图相关.center,
     pitch: 0,
   });
   map.repaint = false;
@@ -578,54 +927,51 @@ onBeforeUnmount(() => {
   map.off("click", "stationLayer", clickFunc);
   map.remove();
 });
-watch(
-  () => bus.result,
-  (newVal) => {
-    const data = newVal;
-    points.data = {
-      type: "FeatureCollection",
-      features: [],
-    };
-    for (let i = 0; i < data.length; i++) {
-      let color = "blue";
-      if (data[i].radar.data_status == false || data[i].radar.is_online == false) {
-        color = "red";
-      } else if (
-        data[i].compass_status == false ||
-        data[i].control_plate_status == false ||
-        data[i].edfa_status == false ||
-        data[i].external_status == false ||
-        data[i].gps_status == false ||
-        data[i].grabber_status == false
-      ) {
-        color = "orange";
-      } else {
-        color = "#0f0";
-      }
-      // console.log(data[i]);
-      points.data.features.push({
-        type: "Feature",
-        properties: {
-          type: "站点",
-          radar_id: data[i].radar.radar_id,
-          风速: speed,
-          time: data[i].data_time,
-          name: data[i].radar.name,
-          is_online: data[i].is_online,
-          external_temperature: data[i].external_temperature,
-          external_humidity: data[i].external_humidity,
-          image: "feather" + getFeather(speed),
-          color,
-        },
-        geometry: {
-          type: "Point",
-          coordinates: [data[i].longitude, data[i].latitude],
-        },
-      });
-    }
-    map.getSource("point").setData(points.data);
-  }
-);
+// watch(
+//   () => bus.result,
+//   (newVal) => {
+//     const data = newVal;
+//     points.data.features = [];
+//     for (let i = 0; i < data.length; i++) {
+//       let color = "blue";
+//       if (data[i].radar.data_status == false || data[i].radar.is_online == false) {
+//         color = "red";
+//       } else if (
+//         data[i].compass_status == false ||
+//         data[i].control_plate_status == false ||
+//         data[i].edfa_status == false ||
+//         data[i].external_status == false ||
+//         data[i].gps_status == false ||
+//         data[i].grabber_status == false
+//       ) {
+//         color = "orange";
+//       } else {
+//         color = "#0f0";
+//       }
+//       // console.log(data[i]);
+//       points.data.features.push({
+//         type: "Feature",
+//         properties: {
+//           type: "站点",
+//           radar_id: data[i].radar.radar_id,
+//           风速: speed,
+//           time: data[i].data_time,
+//           name: data[i].radar.name,
+//           is_online: data[i].is_online,
+//           external_temperature: data[i].external_temperature,
+//           external_humidity: data[i].external_humidity,
+//           image: "feather" + getFeather(speed),
+//           color,
+//         },
+//         geometry: {
+//           type: "Point",
+//           coordinates: [data[i].longitude, data[i].latitude],
+//         },
+//       });
+//     }
+//     map.getSource("point").setData(points.data);
+//   }
+// );
 watch(
   () => bus.avgWindData,
   (avgWindData) => {
@@ -803,10 +1149,10 @@ watch(
   () => setting.district,
   (newVal) => {
     if (newVal) {
-      map.setLayoutProperty("districtLayer", "visibility", "visible");
+      map.setLayoutProperty("districtLine", "visibility", "visible");
       map.setLayoutProperty("districtOutline", "visibility", "visible");
     } else {
-      map.setLayoutProperty("districtLayer", "visibility", "none");
+      map.setLayoutProperty("districtLine", "visibility", "none");
       map.setLayoutProperty("districtOutline", "visibility", "none");
     }
   }

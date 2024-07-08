@@ -273,7 +273,12 @@ export default {
 	"sources": {
 		"district":{
 			"type":"geojson",
-			"data": window.location.origin+"/resources/100000_full.json"
+			// "data": window.location.origin+"/resources/100000_full.json"
+			"data": window.location.origin+"/resources/重庆区划.geojson"
+		},
+		"districtOutline":{
+			"type":"geojson",
+			"data": window.location.origin+"/resources/重庆市.geojson"
 		},
 		"composite": {
 				"url_origin": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2",
@@ -325,20 +330,20 @@ export default {
 					visibility:setting.loadmap?'visible':'none'
 				}
 			},
+			// {
+			// 	'id': 'districtLayer',
+			// 	'type': 'fill',
+			// 	'source': 'district', // reference the data source
+			// 	'layout': {
+			// 		visibility:setting.district?'visible':'none'
+			// 	},
+			// 	'paint': {
+			// 		'fill-color': '#000',
+			// 		'fill-opacity': 0.2
+			// 	}
+			// },
 			{
-				'id': 'districtLayer',
-				'type': 'fill',
-				'source': 'district', // reference the data source
-				'layout': {
-					visibility:setting.district?'visible':'none'
-				},
-				'paint': {
-					'fill-color': '#000',
-					'fill-opacity': 0.2
-				}
-			},
-			{
-				'id': 'districtOutline',
+				'id': 'districtLine',
 				'type': 'line',
 				'source': 'district',
 				'layout': {
@@ -347,6 +352,18 @@ export default {
 				'paint': {
 					'line-color': 'lightgrey',
 					'line-width': 1
+				}
+			},
+			{
+				'id': 'districtOutline',
+				'type': 'line',
+				'source': 'districtOutline',
+				'layout': {
+					'visibility':setting.district?'visible':'none'
+				},
+				'paint': {
+					'line-color': 'white',
+					'line-width': 2
 				}
 			},
 	],

@@ -171,6 +171,8 @@ const setting = useSettingStore();
 import { array2components } from "~/tools/index";
 const router = useRouter();
 import subEditMenu from "./subEditMenu.vue";
+import { useUserStore } from "~/stores/user.js";
+const user = useUserStore();
 // router.getRoutes().forEach((v) => {
 //   v.name && router.removeRoute(v.name);
 // });
@@ -294,7 +296,7 @@ onMounted(() => {
       router.getRoutes().forEach((v) => {
         v.name && router.removeRoute(v.name);
       });
-      array2components(setting.routes).map((v: any) => {
+      array2components(setting.routes, user.roles).map((v: any) => {
         router.addRoute(v);
       });
     }
