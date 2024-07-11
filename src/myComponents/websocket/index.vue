@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute bottom-0 z-5 right-0">
+  <div class="absolute bottom-0 z-5 left-0">
     <div>{{ infos.num }}</div>
     <div>{{ infos.delay }}</div>
     <div>{{ infos.usedJSHeapSize }}</div>

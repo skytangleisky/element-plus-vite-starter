@@ -1,5 +1,5 @@
 <template>
-  <div class="!collapse dragDialog absolute w-564px" style="left: 20px; top: 20px">
+  <div class="collapse dragDialog absolute w-300px" style="left: 20px; top: 20px">
     <div class="flex flex-row" style="align-items: center">
       <input
         @mousedown.stop
@@ -55,27 +55,27 @@
               style="box-sizing: border-box; top: 0px; position: sticky"
             >
               <th>序号</th>
+              <th>编号</th>
               <th>名称</th>
-              <th>设备类型</th>
-              <th>经纬度</th>
-              <th>海拔</th>
+              <th>状态</th>
             </tr>
           </thead>
           <tbody style="position: relative">
-            <tr
-              :id="'人影-' + v.strID"
-              :class="`${station.人影界面被选中的设备 == v.strID ? 'selected' : ''}`"
-              v-for="(v, k) in options.list"
-              :key="v.strID"
-              @contextmenu.prevent="contextmenu($event, v)"
-              @click="flyTo($event, v)"
-            >
-              <td>{{ k + 1 }}</td>
-              <td>{{ v.strName }}</td>
-              <td>{{ formatWeapon(v.strWeapon) }}</td>
-              <td>{{ v.strPos }}</td>
-              <td>{{ v.iAltitude }}</td>
-            </tr>
+            <template v-for="(v, k) in options.list">
+              <tr
+                :id="v.no"
+                :class="`${station.active == v.no ? 'selected' : ''}`"
+                @contextmenu.prevent="contextmenu($event, v)"
+                @click="flyTo($event, v)"
+              >
+                <td>{{ k + 1 }}</td>
+                <td>{{ v.no }}</td>
+                <td>{{ v.device_name }}</td>
+                <td :class="v.status == '正常' ? 'color-green' : 'color-red'">
+                  {{ v.status == "正常" ? "在线" : "离线" }}
+                </td>
+              </tr>
+            </template>
           </tbody>
         </table>
       </div>
@@ -97,36 +97,20 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { reactive, onMounted, watch, computed } from "vue";
+import { reactive, onMounted, watch } from "vue";
 import { useStationStore } from "~/stores/station";
 import { eventbus } from "~/eventbus";
-const formatWeapon = (weapon: number) =>
-  ["火箭", "高炮", "火箭+高炮", "烟炉", "火箭+烟炉", "高炮+烟炉", "火箭+高炮+烟炉"][
-    weapon
-  ];
-const props = withDefaults(defineProps<{ menus?: Array<any> }>(), {
-  menus: () => [
-    {
-      id: 1,
-      name: "便携11",
-      deviceType: "便携式激光测风雷达",
-      lng: 102.023,
-      lat: 36.5353,
-      altitude: 2157,
-    },
-  ],
-});
 const station = useStationStore();
 import { useBus } from "~/myComponents/bus";
 const bus = useBus();
-// const menus = reactive([
-//   { code: 291, name: "白河堡作业点", status: "离线", equipment: "火箭", id: "110229041" },
-//   { code: 295, name: "千家店作业点", status: "在线", equipment: "火箭", id: "110229042" },
-//   { code: 297, name: "红旗甸作业点", status: "离线", equipment: "火箭", id: "110229043" },
-//   { code: 275, name: "275", status: "离线", equipment: "火箭", id: "110229044" },
-//   { code: 276, name: "276", status: "离线", equipment: "火箭", id: "110229045" },
-//   { code: 277, name: "277", status: "离线", equipment: "火箭", id: "110229046" },
-// ]);
+const menus = reactive([
+  { code: 291, name: "白河堡作业点", status: "离线", equipment: "火箭", id: "110229041" },
+  { code: 295, name: "千家店作业点", status: "在线", equipment: "火箭", id: "110229042" },
+  { code: 297, name: "红旗甸作业点", status: "离线", equipment: "火箭", id: "110229043" },
+  { code: 275, name: "275", status: "离线", equipment: "火箭", id: "110229044" },
+  { code: 276, name: "276", status: "离线", equipment: "火箭", id: "110229045" },
+  { code: 277, name: "277", status: "离线", equipment: "火箭", id: "110229046" },
+]);
 onMounted(() => {
   $(".menuUl").on("focusout", () => {
     $(".menuUl").css({ display: "none" });
@@ -140,9 +124,12 @@ const options = reactive({
   value: "",
 });
 watch(
-  [() => props.menus, () => options.value],
+  [() => bus.风雷达组网地图相关雷达站点信息, () => options.value],
   ([result, value]) => {
-    options.list = result.filter((item) => item.strName.indexOf(value) > -1);
+    console.log(result);
+    options.list = result.filter(
+      (item) => (item.device_name.indexOf(value) > -1 || item.no.indexOf(value) > -1)&& item.hide !== "true"
+    );
   },
   {
     immediate: true,
@@ -169,13 +156,14 @@ const click = (event: MouseEvent) => {
   $(".menuUl").trigger("blur");
 };
 const flyTo = (event: any, v: any) => {
-  station.人影界面被选中的设备 = v.strID;
-  eventbus.emit("人影-将站点移动到屏幕中心", v);
+  station.active = v.no;
+  eventbus.emit("将站点移动到屏幕中心", v);
 };
 const toggleCollapse = () => {
   $(".dragDialog").toggleClass("collapse");
 };
 </script>
+
 <style lang="scss">
 .dropdown {
   transform: rotate(180deg);
@@ -193,7 +181,7 @@ const toggleCollapse = () => {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 180px;
+  height: 130px;
   .menuUl {
     outline: none;
     position: absolute;

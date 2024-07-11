@@ -462,86 +462,86 @@ export const getCoord = (i:number, j:number, v:number) => ({
   fill: getColor(v),
 });
 export const addFeatherImages = async( map:any ) => {
-    let result:{[key:string]:any} = await loadImage(imageUrl, 340, 188, {
-      feather0: getCoord(0, 0, 0),
-      feather1: getCoord(1, 0, 1),
-      feather2: getCoord(2, 0, 2),
-      feather4: getCoord(3, 0, 3),
-      feather6: getCoord(4, 0, 6),
-      feather8: getCoord(5, 0, 8),
-      feather10: getCoord(6, 0, 10),
-      feather12: getCoord(7, 0, 12),
-      feather14: getCoord(8, 0, 14),
-      feather16: getCoord(9, 0, 16),
-      feather18: getCoord(0, 1, 18),
-      feather20: getCoord(1, 1, 20),
-      feather22: getCoord(2, 1, 22),
-      feather24: getCoord(3, 1, 24),
-      feather26: getCoord(4, 1, 26),
-      feather28: getCoord(5, 1, 28),
-      feather30: getCoord(6, 1, 30),
-      feather32: getCoord(7, 1, 32),
-      feather34: getCoord(8, 1, 34),
-      feather36: getCoord(9, 1, 36),
-      feather38: getCoord(0, 2, 38),
-      feather40: getCoord(1, 2, 40),
-      feather42: getCoord(2, 2, 42),
-      feather44: getCoord(3, 2, 44),
-      feather46: getCoord(4, 2, 46),
-      feather48: getCoord(5, 2, 48),
-      feather50: getCoord(6, 2, 50),
-      feather52: getCoord(7, 2, 52),
-      feather54: getCoord(8, 2, 54),
-      feather56: getCoord(9, 2, 56),
-      feather58: getCoord(0, 3, 58),
-      feather60: getCoord(1, 3, 60),
-    }) as unknown as {[key:string]:any};
-    for (let k in result) {
-      map.addImage(k, result[k]);
+  let result:{[key:string]:any} = await loadImage(imageUrl, 340, 188, {
+    feather0: getCoord(0, 0, 0),
+    feather1: getCoord(1, 0, 1),
+    feather2: getCoord(2, 0, 2),
+    feather4: getCoord(3, 0, 3),
+    feather6: getCoord(4, 0, 6),
+    feather8: getCoord(5, 0, 8),
+    feather10: getCoord(6, 0, 10),
+    feather12: getCoord(7, 0, 12),
+    feather14: getCoord(8, 0, 14),
+    feather16: getCoord(9, 0, 16),
+    feather18: getCoord(0, 1, 18),
+    feather20: getCoord(1, 1, 20),
+    feather22: getCoord(2, 1, 22),
+    feather24: getCoord(3, 1, 24),
+    feather26: getCoord(4, 1, 26),
+    feather28: getCoord(5, 1, 28),
+    feather30: getCoord(6, 1, 30),
+    feather32: getCoord(7, 1, 32),
+    feather34: getCoord(8, 1, 34),
+    feather36: getCoord(9, 1, 36),
+    feather38: getCoord(0, 2, 38),
+    feather40: getCoord(1, 2, 40),
+    feather42: getCoord(2, 2, 42),
+    feather44: getCoord(3, 2, 44),
+    feather46: getCoord(4, 2, 46),
+    feather48: getCoord(5, 2, 48),
+    feather50: getCoord(6, 2, 50),
+    feather52: getCoord(7, 2, 52),
+    feather54: getCoord(8, 2, 54),
+    feather56: getCoord(9, 2, 56),
+    feather58: getCoord(0, 3, 58),
+    feather60: getCoord(1, 3, 60),
+  }) as unknown as {[key:string]:any};
+  for (let k in result) {
+    map.addImage(k, result[k]);
+  }
+  result = await loadImage(droneUrl,32,32,{
+    drone:{
+      x1: 0,
+      y1: 0,
+      x2: 1,
+      y2: 1,
+      fill: 'yellow',
     }
-    result = await loadImage(droneUrl,32,32,{
-      drone:{
-        x1: 0,
-        y1: 0,
-        x2: 1,
-        y2: 1,
-        fill: 'yellow',
-      }
-    }) as unknown as {[key:string]:any}
-    for (let k in result) {
-      map.addImage(k, result[k]);
+  }) as unknown as {[key:string]:any}
+  for (let k in result) {
+    map.addImage(k, result[k]);
+  }
+  result = await loadImage(planeUrl,32,32,{
+    airplane:{
+      x1: 0,
+      y1: 0,
+      x2: 1,
+      y2: 1,
+      fill: 'yellow',
     }
-    result = await loadImage(planeUrl,32,32,{
-      airplane:{
-        x1: 0,
-        y1: 0,
-        x2: 1,
-        y2: 1,
-        fill: 'yellow',
-      }
-    }) as unknown as {[key:string]:any}
-    for (let k in result) {
-      map.addImage(k, result[k]);
+  }) as unknown as {[key:string]:any}
+  for (let k in result) {
+    map.addImage(k, result[k]);
+  }
+  result = await loadImage(projectileUrl,16,32,{
+    'projectile-white':{
+      x1: 0,
+      y1: 0,
+      x2: 1,
+      y2: 1,
+      // fill: 'white',
+    },
+    'projectile-red':{
+      x1: 0,
+      y1: 0,
+      x2: 1,
+      y2: 1,
+      fill: 'red',
     }
-    result = await loadImage(projectileUrl,16,32,{
-      'projectile-white':{
-        x1: 0,
-        y1: 0,
-        x2: 1,
-        y2: 1,
-        // fill: 'white',
-      },
-      'projectile-red':{
-        x1: 0,
-        y1: 0,
-        x2: 1,
-        y2: 1,
-        fill: 'red',
-      }
-    }) as unknown as {[key:string]:any}
-    for (let k in result) {
-      map.addImage(k, result[k]);
-    }
+  }) as unknown as {[key:string]:any}
+  for (let k in result) {
+    map.addImage(k, result[k]);
+  }
 }
 export const getRandomPointBetweenR1R2 = (r1:number, r2:number) => {
   let min = Math.min(r1, r2);

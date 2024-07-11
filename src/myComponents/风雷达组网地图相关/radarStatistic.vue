@@ -3,9 +3,9 @@
     class="radarStatistic absolute left-0 top-0 w-240px box-border bg-blue-9 dark:bg-gray-8"
     style="background-color: transparent; overflow: auto; max-height: 100%"
   >
-    <div class="item">
+    <!-- <div class="item">
       <collapse-card
-        v-for="item of setting.checks"
+        v-for="item of setting.风雷达组网地图相关.checks"
         :title="item.name"
         v-model:show="item.show"
         v-model:select="item.select"
@@ -20,10 +20,10 @@
           <span>{{ v.val }}</span>
         </div>
       </collapse-card>
-    </div>
+    </div> -->
     <div class="item">
       <collapse-card title="雷达设备" v-model:show="show2" :show-collapse="false">
-        <template v-for="(v, k) in setting.factor">
+        <template v-for="(v, k) in setting.风雷达组网地图相关.factor">
           <div v-if="v.visible" class="subitem">
             <span>{{ v.toolTips }}</span>
             <el-switch
@@ -35,6 +35,46 @@
             />
           </div>
         </template>
+      </collapse-card>
+    </div>
+    <div class="item">
+      <collapse-card title="PPI" v-model:show="showPPI" :show-collapse="false">
+        <div class="subitem">
+          <span class="whitespace-nowrap">风场数据</span>
+          <el-select
+            style="width: 100px"
+            v-model="setting.风雷达组网地图相关.风场数据"
+            placeholder=""
+            size="small"
+          >
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :value="item.value"
+              :label="item.label"
+            ></el-option>
+          </el-select>
+        </div>
+        <div class="subitem">
+          <span class="whitespace-nowrap">反演风场</span>
+          <el-select
+            style="width: 100px"
+            v-model="setting.风雷达组网地图相关.反演风场"
+            placeholder=""
+            size="small"
+          >
+            <el-option
+              v-for="item in options2"
+              :key="item.value"
+              :value="item.value"
+              :label="item.label"
+            ></el-option>
+          </el-select>
+        </div>
+      </collapse-card>
+    </div>
+    <div class="item">
+      <collapse-card title="DBS" v-model:show="showDBS" :show-collapse="false">
         <div class="subitem">
           <span>风杆</span>
           <el-switch
@@ -45,6 +85,22 @@
             size="small"
           />
         </div>
+        <div class="subitem">
+          <span class="whitespace-nowrap">相对高度</span>
+          <el-select
+            style="width: 100px"
+            v-model="setting.风雷达组网地图相关.relativeHeight"
+            placeholder=""
+            size="small"
+          >
+            <el-option
+              v-for="item in heightOptions"
+              :key="item.value"
+              :value="item.value"
+              :label="item.label"
+            ></el-option>
+          </el-select>
+        </div>
       </collapse-card>
     </div>
     <div class="item">
@@ -54,13 +110,14 @@
         :show-collapse="false"
       >
         <div class="subitem">
-          <span>地图</span>
-          <el-switch
-            v-model="setting.loadmap"
-            inline-prompt
-            :active-icon="Check"
-            :inactive-icon="Close"
-            size="small"
+          <span class="whitespace-nowrap">地图不透明度</span>
+          <el-slider
+            class="m-l-10px m-r-10px"
+            :min="0"
+            :max="1.0"
+            :step="0.01"
+            :show-tooltip="false"
+            v-model="setting.风雷达组网地图相关.mapOpacity"
           />
         </div>
         <!-- <div class="subitem">
@@ -107,7 +164,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { watch, ref, onMounted, onBeforeUnmount, h, toRef } from "vue";
+import { watch, ref, onMounted, onBeforeUnmount, h, reactive } from "vue";
 import { Check, Close, HomeFilled } from "@element-plus/icons-vue";
 import { 雷达统计接口 } from "~/api/光恒/station";
 import collapseCard from "./collapseCard.vue";
@@ -115,9 +172,27 @@ import { useSettingStore } from "~/stores/setting";
 import { ElMessage } from "element-plus";
 import { useRoute } from "vue-router";
 import { eventbus } from "~/eventbus";
+const options = reactive([
+  { value: "无", label: "无" },
+  { value: "径向速度", label: "径向速度" },
+  { value: "谱宽", label: "谱宽" },
+  { value: "信噪比", label: "信噪比" },
+  { value: "频谱强度", label: "频谱强度" },
+]);
+const options2 = reactive([
+  { value: "无", label: "无" },
+  { value: "风羽", label: "风羽" },
+  { value: "风矢", label: "风矢" },
+]);
+const heightOptions = reactive<Array<any>>([]);
+for (let i = 1976; i >= 52; i -= 26) {
+  heightOptions.push({ value: i, label: i + "米" });
+}
 const route = useRoute();
 const setting = useSettingStore();
 const show2 = ref(true);
+const showPPI = ref(true);
+const showDBS = ref(true);
 const showMapSetting = ref(true);
 const resetLocation = () => {
   setting.$resetFields("风雷达组网地图相关.center");
@@ -129,8 +204,8 @@ const resetLocation = () => {
   });
 };
 const beforeChange = () => {
-  for (let k in setting.checks) {
-    setting.checks[k].select = false;
+  for (let k in setting.风雷达组网地图相关.checks) {
+    setting.风雷达组网地图相关.checks[k].select = false;
   }
   return true;
 };
@@ -146,13 +221,14 @@ const update = () => {
       _linux_jc = data.radar_count.radar_count_linux_jc;
       _linux_ts = data.radar_count.radar_count_linux_ts;
       _linux_3d = data.radar_count.radar_count_linux_3d;
-      setting.checks[0].children[0].val = _jc;
-      setting.checks[0].children[1].val = _ts;
-      setting.checks[0].children[2].val = _3d;
-      setting.checks[0].children[3].val = _linux_jc;
-      setting.checks[0].children[4].val = _linux_ts;
-      setting.checks[0].children[5].val = _linux_3d;
-      setting.checks[0].val = _jc + _ts + _3d + _linux_jc + _linux_ts + _linux_3d;
+      setting.风雷达组网地图相关.checks[0].children[0].val = _jc;
+      setting.风雷达组网地图相关.checks[0].children[1].val = _ts;
+      setting.风雷达组网地图相关.checks[0].children[2].val = _3d;
+      setting.风雷达组网地图相关.checks[0].children[3].val = _linux_jc;
+      setting.风雷达组网地图相关.checks[0].children[4].val = _linux_ts;
+      setting.风雷达组网地图相关.checks[0].children[5].val = _linux_3d;
+      setting.风雷达组网地图相关.checks[0].val =
+        _jc + _ts + _3d + _linux_jc + _linux_ts + _linux_3d;
 
       _jc = data.online_radar_count.online_radar_count_jc;
       _ts = data.online_radar_count.online_radar_count_ts;
@@ -160,16 +236,20 @@ const update = () => {
       _linux_jc = data.online_radar_count.online_radar_count_linux_jc;
       _linux_ts = data.online_radar_count.online_radar_count_linux_ts;
       _linux_3d = data.online_radar_count.online_radar_count_linux_3d;
-      setting.checks[1].children[0].val = data.online_radar_count.online_radar_count_jc;
-      setting.checks[1].children[1].val = data.online_radar_count.online_radar_count_ts;
-      setting.checks[1].children[2].val = data.online_radar_count.online_radar_count_3d;
-      setting.checks[1].children[3].val =
+      setting.风雷达组网地图相关.checks[1].children[0].val =
+        data.online_radar_count.online_radar_count_jc;
+      setting.风雷达组网地图相关.checks[1].children[1].val =
+        data.online_radar_count.online_radar_count_ts;
+      setting.风雷达组网地图相关.checks[1].children[2].val =
+        data.online_radar_count.online_radar_count_3d;
+      setting.风雷达组网地图相关.checks[1].children[3].val =
         data.online_radar_count.online_radar_count_linux_jc;
-      setting.checks[1].children[4].val =
+      setting.风雷达组网地图相关.checks[1].children[4].val =
         data.online_radar_count.online_radar_count_linux_ts;
-      setting.checks[1].children[5].val =
+      setting.风雷达组网地图相关.checks[1].children[5].val =
         data.online_radar_count.online_radar_count_linux_3d;
-      setting.checks[1].val = _jc + _ts + _3d + _linux_jc + _linux_ts + _linux_3d;
+      setting.风雷达组网地图相关.checks[1].val =
+        _jc + _ts + _3d + _linux_jc + _linux_ts + _linux_3d;
 
       _jc = data.offline_radar_count.offline_radar_count_jc;
       _ts = data.offline_radar_count.offline_radar_count_ts;
@@ -177,16 +257,20 @@ const update = () => {
       _linux_jc = data.offline_radar_count.offline_radar_count_linux_jc;
       _linux_ts = data.offline_radar_count.offline_radar_count_linux_ts;
       _linux_3d = data.offline_radar_count.offline_radar_count_linux_3d;
-      setting.checks[2].children[0].val = data.offline_radar_count.offline_radar_count_jc;
-      setting.checks[2].children[1].val = data.offline_radar_count.offline_radar_count_ts;
-      setting.checks[2].children[2].val = data.offline_radar_count.offline_radar_count_3d;
-      setting.checks[2].children[3].val =
+      setting.风雷达组网地图相关.checks[2].children[0].val =
+        data.offline_radar_count.offline_radar_count_jc;
+      setting.风雷达组网地图相关.checks[2].children[1].val =
+        data.offline_radar_count.offline_radar_count_ts;
+      setting.风雷达组网地图相关.checks[2].children[2].val =
+        data.offline_radar_count.offline_radar_count_3d;
+      setting.风雷达组网地图相关.checks[2].children[3].val =
         data.offline_radar_count.offline_radar_count_linux_jc;
-      setting.checks[2].children[4].val =
+      setting.风雷达组网地图相关.checks[2].children[4].val =
         data.offline_radar_count.offline_radar_count_linux_ts;
-      setting.checks[2].children[5].val =
+      setting.风雷达组网地图相关.checks[2].children[5].val =
         data.offline_radar_count.offline_radar_count_linux_3d;
-      setting.checks[2].val = _jc + _ts + _3d + _linux_jc + _linux_ts + _linux_3d;
+      setting.风雷达组网地图相关.checks[2].val =
+        _jc + _ts + _3d + _linux_jc + _linux_ts + _linux_3d;
 
       _jc = data.new_radar_count.new_radar_count_jc;
       _ts = data.new_radar_count.new_radar_count_ts;
@@ -194,13 +278,20 @@ const update = () => {
       _linux_jc = data.new_radar_count.new_radar_count_linux_jc;
       _linux_ts = data.new_radar_count.new_radar_count_linux_ts;
       _linux_3d = data.new_radar_count.new_radar_count_linux_3d;
-      setting.checks[3].children[0].val = data.new_radar_count.new_radar_count_jc;
-      setting.checks[3].children[1].val = data.new_radar_count.new_radar_count_ts;
-      setting.checks[3].children[2].val = data.new_radar_count.new_radar_count_3d;
-      setting.checks[3].children[3].val = data.new_radar_count.new_radar_count_linux_jc;
-      setting.checks[3].children[4].val = data.new_radar_count.new_radar_count_linux_ts;
-      setting.checks[3].children[5].val = data.new_radar_count.new_radar_count_linux_3d;
-      setting.checks[3].val = _jc + _ts + _3d + _linux_jc + _linux_ts + _linux_3d;
+      setting.风雷达组网地图相关.checks[3].children[0].val =
+        data.new_radar_count.new_radar_count_jc;
+      setting.风雷达组网地图相关.checks[3].children[1].val =
+        data.new_radar_count.new_radar_count_ts;
+      setting.风雷达组网地图相关.checks[3].children[2].val =
+        data.new_radar_count.new_radar_count_3d;
+      setting.风雷达组网地图相关.checks[3].children[3].val =
+        data.new_radar_count.new_radar_count_linux_jc;
+      setting.风雷达组网地图相关.checks[3].children[4].val =
+        data.new_radar_count.new_radar_count_linux_ts;
+      setting.风雷达组网地图相关.checks[3].children[5].val =
+        data.new_radar_count.new_radar_count_linux_3d;
+      setting.风雷达组网地图相关.checks[3].val =
+        _jc + _ts + _3d + _linux_jc + _linux_ts + _linux_3d;
     })
     .catch((e) => {
       ElMessage({

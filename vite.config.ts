@@ -121,8 +121,8 @@ export default defineConfig({
         // changeOrigin:true,//开启代理，允许跨域
       },
       '/backend':{
-        target:'https://websocket.tanglei.top',//替换的服务端地址
-        // target:'http://127.0.0.1:3000',//替换的服务端地址
+        // target:'https://websocket.tanglei.top',//替换的服务端地址
+        target:'http://127.0.0.1:3000',//替换的服务端地址
         // target:'https://test.tanglei.site',//替换的服务端地址
         secure:false,
         changeOrigin:true,//允许跨域

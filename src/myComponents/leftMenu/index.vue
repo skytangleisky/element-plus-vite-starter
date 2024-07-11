@@ -2,6 +2,8 @@
   <div class="relative flex flex-col">
     <el-scrollbar
       class="flex-1"
+      ref="scrollbarRef"
+      @scroll="handleScroll"
       :style="`height: 100%; background-color: ${isDark ? '#304156' : '#eee'};${
         setting.isCollapse ? '' : 'min-width:210px'
       }`"
@@ -55,6 +57,7 @@ const user = useUserStore();
 let router = useRouter();
 const absoluteRootPath = ref("");
 import { intersection } from "~/tools";
+const scrollbarRef = ref();
 const routes = computed(() => {
   let arr = new Array<any>();
   setting.routes.map((item: any) => {
@@ -74,8 +77,12 @@ const routes = computed(() => {
 });
 import SubMenu from "./SubMenu.vue";
 import { array2components } from "~/tools";
+const handleScroll = ({ scrollTop }: { scrollTop: number }) => {
+  setting.scrollTop = scrollTop;
+};
 onMounted(() => {
   icon.FetchList();
+  scrollbarRef.value.setScrollTop(setting.scrollTop);
 });
 const change = (v: any) => {
   function fn(list: any[]) {

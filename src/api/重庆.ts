@@ -21,6 +21,18 @@ export function getFkxHisData(query:{radar_id:string,dateTime:string}){
   })
 }
 
+//mock
+export function getFkxRealData(query:{radar_id:string,dateTime:string}){
+  return request({
+    url: '/backend/realData/fkx',
+    method: 'post',
+    headers:{
+      'content-type':'application/json'
+    },
+    data:{}
+  })
+}
+
 export function getPPIRadial(query:{radar_id:string,dataTime:string}){
   let data = {
     "version":"1.0",

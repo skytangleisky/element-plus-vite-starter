@@ -33,7 +33,7 @@ export default {
           name: 'da20fee1-5ad7-51e1-2789-5e0933011f11',
           component: '/src/myComponents/风雷达组网/pages/deviceA.vue',
           meta:{
-            label: '广州基地站',
+            label: '渝北激光测风雷达',
           }
         },
         {
@@ -41,7 +41,7 @@ export default {
           name: 'da20fee1-5ad7-51e1-2788-5e0933011a11',
           component: '/src/myComponents/风雷达组网/pages/deviceB.vue',
           meta:{
-            label: '海珠生态基地',
+            label: '北碚激光测风雷达',
           }
         },
         {
@@ -49,7 +49,31 @@ export default {
           name: 'da20fee1-5ad7-51e1-2787-5e0933011a11',
           component: '/src/myComponents/风雷达组网/pages/deviceC.vue',
           meta:{
-            label: '测试站',
+            label: '巴南激光测风雷达',
+          }
+        },
+        {
+          path: 'deviceD',
+          name: 'da20fee1-5ad7-5111-2787-5e0933011a11',
+          component: '/src/myComponents/风雷达组网/pages/deviceC.vue',
+          meta:{
+            label: '綦江激光测风雷达',
+          }
+        },
+        {
+          path: 'deviceE',
+          name: 'da20fee1-5ad7-5121-2787-5e0933011a11',
+          component: '/src/myComponents/风雷达组网/pages/deviceC.vue',
+          meta:{
+            label: '万州激光测风雷达',
+          }
+        },
+        {
+          path: 'deviceF',
+          name: 'da20fee1-5ad7-5131-2787-5e0933011a11',
+          component: '/src/myComponents/风雷达组网/pages/deviceC.vue',
+          meta:{
+            label: '城口激光测风雷达',
           }
         },
       ]

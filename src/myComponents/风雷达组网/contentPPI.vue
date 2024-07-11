@@ -35,6 +35,7 @@
             @node-click="handleNodeClick"
             style="min-width: max-content"
             highlight-current
+            empty-text=""
           />
         </div>
       </div>

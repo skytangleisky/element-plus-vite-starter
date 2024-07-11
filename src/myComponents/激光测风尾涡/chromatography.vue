@@ -1,11 +1,11 @@
 <template>
   <div class="gradient" ref="gradientRef">
-    <template v-for="(v, k) in arr.slice().reverse()">
+    <template v-for="(v, k) in arr.toReversed()">
       <div v-if="k !== arr.length - 1" class="section">
         <div class="division">{{ v }}</div>
       </div>
     </template>
-    <div class="division">{{ arr.slice().reverse()[arr.length - 1] }}</div>
+    <div class="division">{{ arr.toReversed()[arr.length - 1] }}</div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -94,14 +94,14 @@ defineExpose({
   background: var(--gradient, linear-gradient(to top, #f00, #0f0, #00f));
   display: flex;
   flex-direction: column;
-  color: black;
   .section {
     position: relative;
     height: 100%;
     &:hover {
-      outline: 2px solid black;
+      outline: 2px solid lightgray;
     }
     .division {
+      color: var(--ep-text-color-primary);
       top: 0;
       position: absolute;
       left: calc(100% + 4px);
@@ -109,6 +109,7 @@ defineExpose({
     }
   }
   .division {
+    color: var(--ep-text-color-primary);
     top: 100%;
     transform: translateY(-50%);
     position: absolute;

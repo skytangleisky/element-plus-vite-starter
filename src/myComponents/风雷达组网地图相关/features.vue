@@ -68,15 +68,18 @@ function draw(canvas: HTMLCanvasElement, isDark: boolean) {
   context.stroke();
   context.textAlign = "center";
   context.textBaseline = "middle";
-  context.fillText("站名", 0, -20 * devicePixelRatio);
-
-  context.textAlign = "right";
+  context.fillText("站名", 0, -30 * devicePixelRatio);
+  context.textAlign = "center";
   context.textBaseline = "middle";
-  context.fillText("温度", -20 * devicePixelRatio, 0);
+  context.fillText("站号", 0, -20 * devicePixelRatio);
 
-  context.textAlign = "right";
-  context.textBaseline = "top";
-  context.fillText("湿度", -20 * devicePixelRatio, 20 * devicePixelRatio);
+  // context.textAlign = "right";
+  // context.textBaseline = "middle";
+  // context.fillText("温度", -20 * devicePixelRatio, 0);
+
+  // context.textAlign = "right";
+  // context.textBaseline = "top";
+  // context.fillText("湿度", -20 * devicePixelRatio, 20 * devicePixelRatio);
 
   context.restore();
 }

@@ -3,7 +3,7 @@
     <div
       v-resize="resize"
       ref="mapRef"
-      class="map"
+      class="map dark:bg-#2b2b2b bg-white"
       style="
         position: absolute;
         left: 0;
@@ -131,6 +131,7 @@ import chromatography from "../激光测风尾涡/chromatography.vue";
 import * as turf from "@turf/turf";
 import ppiData from "../组网/CDL_S10000_Lidar10HKF00631450_PPI_FrmAzm30.00_ToAzm29.00_Pth3.00_Spd6.00_Res060_StartIdx003_Start003_Stop191_LOSWind_20230515 000240.csv?url";
 import { exec } from "~/api/index.js";
+import { getFkxRealData } from "../../api/重庆.js";
 import {
   checkPermission,
   sixty2Float,
@@ -141,26 +142,30 @@ import {
 import { destinationPoint } from "~/myComponents/map/js/core.js";
 import { watch, ref, onMounted, onBeforeUnmount, reactive } from "vue";
 import { useBus } from "~/myComponents/bus";
-import Dialog from "../dialog.vue";
+import Dialog from "./dialog.vue";
 import { eventbus } from "~/eventbus";
-const chromatographyArr = reactive([
-  -20,
-  -14,
-  -12,
-  -10,
-  -8,
-  -6,
-  -4,
-  -2,
-  2,
-  4,
-  6,
-  8,
-  10,
-  12,
-  16,
-  20,
-]);
+//径向速度
+// const chromatographyArr = reactive([
+//   -20,
+//   -14,
+//   -12,
+//   -10,
+//   -8,
+//   -6,
+//   -4,
+//   -2,
+//   2,
+//   4,
+//   6,
+//   8,
+//   10,
+//   12,
+//   16,
+//   20,
+// ]);
+//信噪比
+const chromatographyArr = reactive([0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20]);
+
 const chromatographyRef = ref(null);
 const Marker = mapboxgl.Marker;
 const bus = useBus();
@@ -243,6 +248,7 @@ const info = ref({
   deg: "",
 });
 
+let dbsData: { [key: string]: any } = {};
 import { useStationStore } from "~/stores/station";
 import chartTh from "~/myComponents/echarts/T_H.vue";
 import chartDom from "~/myComponents/echarts/index.vue";
@@ -319,8 +325,11 @@ const points = {
 const clickFunc = (e) => {
   if (e.features) {
     setting.disappear = false;
-    for (let i = 0; i < bus.result.length; i++) {
-      if (bus.result[i].radar.radar_id == e.features[0].properties.radar_id) {
+    for (let i = 0; i < bus.风雷达组网地图相关雷达站点信息.length; i++) {
+      if (
+        bus.风雷达组网地图相关雷达站点信息[i].radar.radar_id ==
+        e.features[0].properties.radar_id
+      ) {
         station
           .查询雷达最新的径向风数据接口({
             radar_id: e.features[0].properties.radar_id.replaceAll("-", ""),
@@ -328,7 +337,7 @@ const clickFunc = (e) => {
           .then((res) => {
             bus.radialWindData = res.data.data;
           });
-        station.active = bus.result[i].radar.radar_id;
+        station.active = bus.风雷达组网地图相关雷达站点信息[i].radar.radar_id;
         $(`#${station.active}`)[0].scrollIntoView({
           block: "nearest",
           behavior: "smooth",
@@ -373,7 +382,8 @@ const task = () => {
   // }
 };
 task();
-const loadFunc = () => {
+const loadFunc = async () => {
+  await addFeatherImages(map);
   var xhr = new XMLHttpRequest();
   xhr.addEventListener("load", function () {
     const d = new TextDecoder("utf8");
@@ -464,6 +474,13 @@ const loadFunc = () => {
         sqls: ["select * from `device`"],
       },
     }).then((res) => {
+      res.data[0] = res.data[0].map((v: any) => {
+        let position = wgs84togcj02(sixty2Float(v.lng), sixty2Float(v.lat));
+        v.longitude = position[0];
+        v.latitude = position[1];
+        return v;
+      });
+      bus.风雷达组网地图相关雷达站点信息 = res.data[0];
       res.data[0].map((item) => {
         if (item.hide !== "true") {
           let position = wgs84togcj02(sixty2Float(item.lng), sixty2Float(item.lat)) as [
@@ -475,13 +492,14 @@ const loadFunc = () => {
             properties: {
               type: "站点",
               radar_id: item.no,
-              风速: 20,
+              风速: 0,
+              风向: 0,
               time: moment().format("YYYY-MM-DD HH:mm:ss"),
               name: item.device_name,
               is_online: true,
               external_temperature: 25,
               external_humidity: 0.6,
-              image: "feather" + getFeather(13),
+              image: "feather" + getFeather(0),
               color: "#0f0",
             },
             geometry: {
@@ -496,10 +514,9 @@ const loadFunc = () => {
           // })
           //   .setLngLat(position)
           //   .addTo(map);
-          processData(result, position);
+          processData(result, position, item.no);
         }
       });
-      map.getSource("point").setData(points.data);
       map.getSource("radar").setData({
         type: "FeatureCollection",
         features: polygons,
@@ -510,7 +527,7 @@ const loadFunc = () => {
   xhr.open("GET", ppiData);
   xhr.send();
   let polygons: any[] = [];
-  function processData(result: any, position: [number, number]) {
+  function processData(result: any, position: [number, number], radar_id: string) {
     //测试
     // for (let i = 0; i < 100; i++) {
     //   polygons.push({
@@ -584,6 +601,29 @@ const loadFunc = () => {
           angle1 = radial.β - (360 - ((angle2 - angle1) % 360));
           angle2 = radial.β;
         }
+        // polygons.push({
+        //   type: "Feature",
+        //   geometry: {
+        //     type: "Polygon",
+        //     coordinates: [
+        //       calculateSectorPoints(
+        //         position,
+        //         radial.list[i].distance - BinLength / 2,
+        //         radial.list[i].distance + BinLength / 2,
+        //         angle1,
+        //         angle2,
+        //         360,
+        //         "meters"
+        //       ),
+        //     ],
+        //   },
+        //   properties: {
+        //     fillColor:
+        //       Math.abs(radial.list[i]["RadialWind(m/s)"]) == 999
+        //         ? "transparent"
+        //         : chromatographyRef.value.getColor(radial.list[i]["RadialWind(m/s)"]),
+        //   },
+        // });
         polygons.push({
           type: "Feature",
           geometry: {
@@ -601,10 +641,7 @@ const loadFunc = () => {
             ],
           },
           properties: {
-            fillColor:
-              Math.abs(radial.list[i]["RadialWind(m/s)"]) == 999
-                ? "transparent"
-                : chromatographyRef.value.getColor(radial.list[i]["RadialWind(m/s)"]),
+            fillColor: chromatographyRef.value.getColor(radial.list[i]["SNR"]),
           },
         });
       }
@@ -618,6 +655,29 @@ const loadFunc = () => {
     //     "line-width": 2,
     //   },
     // });
+    getFkxRealData({
+      radar_id,
+      dateTime: moment().format("YYYY-MM-DD HH:mm:ss"),
+    }).then((res) => {
+      let index = 0;
+      res.data.subdirectories.map((v: any, k: number) => {
+        if (v.fHei === setting.风雷达组网地图相关.relativeHeight) {
+          index = k;
+        }
+      });
+      dbsData[radar_id] = res.data.subdirectories;
+      let lib = res.data.subdirectories[index];
+      console.log(lib);
+      points.data.features = points.data.features.map((item) => {
+        if (item.properties.radar_id === radar_id) {
+          item.properties.风速 = lib.fHSpeed;
+          item.properties.风向 = lib.fHAngle;
+          item.properties.image = "feather" + getFeather(lib.fHSpeed);
+        }
+        return item;
+      });
+      map.getSource("point").setData(points.data);
+    });
   }
   function calculateSectorPoints(
     center: [number, number],
@@ -673,7 +733,7 @@ const loadFunc = () => {
     maxzoom: 22,
     paint: {
       "fill-color": ["get", "fillColor"],
-      "fill-opacity": 0.8,
+      "fill-opacity": 1,
       "fill-outline-color": "transparent",
     },
   });
@@ -696,7 +756,7 @@ const loadFunc = () => {
       //   22,
       //   200,
       // ],
-      "circle-radius": 5,
+      "circle-radius": 6,
       "circle-color": ["get", "color"],
       // "circle-stroke-width": [
       //   "interpolate",
@@ -752,7 +812,33 @@ const loadFunc = () => {
     paint: {
       "icon-opacity": setting.feather ? 1 : 0,
     },
-    filter: ["==", ["get", "type"], "风羽"],
+  });
+  map.addLayer({
+    id: "idLayer",
+    source: "point",
+    type: "symbol",
+    layout: {
+      visibility: setting.station ? "visible" : "none",
+      "text-field": ["get", "radar_id"],
+      "text-font": ["simkai"],
+      "text-size": 18,
+      "text-transform": "uppercase",
+      // "text-letter-spacing": 0.05,
+      "text-anchor": "center",
+      "text-line-height": 1,
+      "text-offset": [0, -1.2],
+      "text-ignore-placement": true,
+      "text-allow-overlap": true,
+      "text-rotation-alignment": "map",
+      "text-max-width": 400,
+    },
+    paint: {
+      "text-opacity": setting.风雷达组网地图相关.factor[1].val ? 1 : 0,
+      "text-color": "white",
+      "text-halo-width": 1,
+      "text-halo-color": "black",
+    },
+    filter: ["==", ["get", "type"], "站点"],
   });
   map.addLayer({
     id: "textLayer",
@@ -767,17 +853,17 @@ const loadFunc = () => {
       // "text-letter-spacing": 0.05,
       "text-anchor": "center",
       "text-line-height": 1,
-      "text-offset": [0, -1.2],
+      "text-offset": [0, -2.2],
       "text-ignore-placement": true,
       "text-allow-overlap": true,
       "text-rotation-alignment": "map",
       "text-max-width": 400,
     },
     paint: {
-      "text-opacity": setting.factor[1].val ? 1 : 0,
-      "text-color": "black",
+      "text-opacity": setting.风雷达组网地图相关.factor[0].val ? 1 : 0,
+      "text-color": "white",
       "text-halo-width": 1,
-      "text-halo-color": "white",
+      "text-halo-color": "black",
     },
     filter: ["==", ["get", "type"], "站点"],
   });
@@ -800,8 +886,10 @@ const loadFunc = () => {
       "text-rotation-alignment": "map",
     },
     paint: {
-      "text-opacity": setting.factor[7].val ? 1 : 0,
+      "text-opacity": setting.风雷达组网地图相关.factor[7].val ? 1 : 0,
       "text-color": "white",
+      "text-halo-width": 1,
+      "text-halo-color": "black",
     },
     filter: ["==", ["get", "type"], "站点"],
   });
@@ -824,8 +912,10 @@ const loadFunc = () => {
       "text-rotation-alignment": "map",
     },
     paint: {
-      "text-opacity": setting.factor[9].val ? 1 : 0,
+      "text-opacity": setting.风雷达组网地图相关.factor[9].val ? 1 : 0,
       "text-color": "white",
+      "text-halo-width": 1,
+      "text-halo-color": "black",
     },
     filter: ["==", ["get", "type"], "站点"],
   });
@@ -844,13 +934,13 @@ const loadFunc = () => {
     // graphArgs.memory.value = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
     // graphArgs.memory.max = Math.round(performance.memory.jsHeapSizeLimit / 1024 / 1024);
   }, 1000);
-  if (setting.checks[0].select)
+  if (setting.风雷达组网地图相关.checks[0].select)
     station.查询雷达列表接口({ user_id: route.query.user_id });
-  if (setting.checks[1].select)
+  if (setting.风雷达组网地图相关.checks[1].select)
     station.查询雷达在线列表接口({ user_id: route.query.user_id });
-  if (setting.checks[2].select)
+  if (setting.风雷达组网地图相关.checks[2].select)
     station.查询雷达离线列表接口({ user_id: route.query.user_id });
-  if (setting.checks[3].select)
+  if (setting.风雷达组网地图相关.checks[3].select)
     station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
 };
 const flyTo = (item) => {
@@ -903,7 +993,6 @@ onMounted(() => {
     pitch: 0,
   });
   map.repaint = false;
-  addFeatherImages(map);
   map.on("zoom", zoomFunc);
   map.on("move", moveFunc);
   map.on("load", loadFunc);
@@ -927,8 +1016,46 @@ onBeforeUnmount(() => {
   map.off("click", "stationLayer", clickFunc);
   map.remove();
 });
+watch(()=>setting.风雷达组网地图相关.风场数据,风场数据=>{
+  switch(风场数据){
+    case '无':
+      break;
+    case '径向速度':
+    break;
+    case '谱宽':
+      break;
+    case '信噪比':
+      break;
+    case '频谱强度':
+      break;
+    default:
+      console.error('unknown 风场数据 '+风场数据)
+      break;
+  }
+})
+watch(
+  () => setting.风雷达组网地图相关.relativeHeight,
+  (rHeight) => {
+    points.data.features = points.data.features.map((item) => {
+      for (let radar_id in dbsData) {
+        if (item.properties.radar_id === radar_id) {
+          for (let i = 0; i < dbsData[radar_id].length; i++) {
+            if (dbsData[radar_id][i].fHei === rHeight) {
+              let lib = dbsData[radar_id][i];
+              item.properties.风速 = lib.fHSpeed;
+              item.properties.风向 = lib.fHAngle;
+              item.properties.image = "feather" + getFeather(lib.fHSpeed);
+            }
+          }
+        }
+      }
+      return item;
+    });
+    map.getSource("point").setData(points.data);
+  }
+);
 // watch(
-//   () => bus.result,
+//   () => bus.风雷达组网地图相关雷达站点信息,
 //   (newVal) => {
 //     const data = newVal;
 //     points.data.features = [];
@@ -1061,12 +1188,14 @@ watch(
   () => setting.station,
   (newVal) => {
     if (newVal) {
+      map.setLayoutProperty("idLayer", "visibility", "visible");
       map.setLayoutProperty("stationLayer", "visibility", "visible");
       map.setLayoutProperty("featherLayer", "visibility", "visible");
       map.setLayoutProperty("textLayer", "visibility", "visible");
       map.setLayoutProperty("temperatureLayer", "visibility", "visible");
       map.setLayoutProperty("humidityLayer", "visibility", "visible");
     } else {
+      map.setLayoutProperty("idLayer", "visibility", "none");
       map.setLayoutProperty("stationLayer", "visibility", "none");
       map.setLayoutProperty("featherLayer", "visibility", "none");
       map.setLayoutProperty("textLayer", "visibility", "none");
@@ -1076,7 +1205,17 @@ watch(
   }
 );
 watch(
-  () => setting.factor[1].val,
+  () => setting.风雷达组网地图相关.factor[1].val,
+  (newVal) => {
+    if (newVal) {
+      map.setPaintProperty("idLayer", "text-opacity", 1);
+    } else {
+      map.setPaintProperty("idLayer", "text-opacity", 0);
+    }
+  }
+);
+watch(
+  () => setting.风雷达组网地图相关.factor[0].val,
   (newVal) => {
     if (newVal) {
       map.setPaintProperty("textLayer", "text-opacity", 1);
@@ -1086,7 +1225,7 @@ watch(
   }
 );
 watch(
-  () => setting.factor[7].val,
+  () => setting.风雷达组网地图相关.factor[7].val,
   (newVal) => {
     if (newVal) {
       map.setPaintProperty("temperatureLayer", "text-opacity", 1);
@@ -1096,7 +1235,7 @@ watch(
   }
 );
 watch(
-  () => setting.factor[9].val,
+  () => setting.风雷达组网地图相关.factor[9].val,
   (newVal) => {
     if (newVal) {
       map.setPaintProperty("humidityLayer", "text-opacity", 1);
@@ -1106,42 +1245,42 @@ watch(
   }
 );
 watch(
-  () => setting.checks[0].select,
+  () => setting.风雷达组网地图相关.checks[0].select,
   (newVal) => {
     if (newVal) {
       station.查询雷达列表接口({ user_id: route.query.user_id });
     } else {
-      bus.result = [];
+      bus.风雷达组网地图相关雷达站点信息 = [];
     }
   }
 );
 watch(
-  () => setting.checks[1].select,
+  () => setting.风雷达组网地图相关.checks[1].select,
   (newVal) => {
     if (newVal) {
       station.查询雷达在线列表接口({ user_id: route.query.user_id });
     } else {
-      bus.result = [];
+      bus.风雷达组网地图相关雷达站点信息 = [];
     }
   }
 );
 watch(
-  () => setting.checks[2].select,
+  () => setting.风雷达组网地图相关.checks[2].select,
   (newVal) => {
     if (newVal) {
       station.查询雷达离线列表接口({ user_id: route.query.user_id });
     } else {
-      bus.result = [];
+      bus.风雷达组网地图相关雷达站点信息 = [];
     }
   }
 );
 watch(
-  () => setting.checks[3].select,
+  () => setting.风雷达组网地图相关.checks[3].select,
   (newVal) => {
     if (newVal) {
       station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
     } else {
-      bus.result = [];
+      bus.风雷达组网地图相关雷达站点信息 = [];
     }
   }
 );
@@ -1158,13 +1297,9 @@ watch(
   }
 );
 watch(
-  () => setting.loadmap,
+  () => setting.风雷达组网地图相关.mapOpacity,
   (newVal) => {
-    if (newVal) {
-      map.setLayoutProperty("simple-tiles", "visibility", "visible");
-    } else {
-      map.setLayoutProperty("simple-tiles", "visibility", "none");
-    }
+    map.setPaintProperty("simple-tiles", "raster-opacity", newVal);
   }
 );
 watch(

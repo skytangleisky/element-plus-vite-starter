@@ -9,6 +9,7 @@ import cq from "./subs/cq.js";
 export const useSettingStore = defineStore({
   id: 'setting',
   state:()=>({
+    scrollTop:0,
     isCollapse:false,
     catalogue:{
       dirs:[],
@@ -31,11 +32,98 @@ export const useSettingStore = defineStore({
       ],
     },
     风雷达组网地图相关:{
-      "zoom": 6.88653107915571,
+      relativeHeight:52,
+      风场数据:"信噪比",
+      反演风场:"风羽",
+      "zoom": 7.850443778917797,
       "center": [
-          107.80462048275581,
-          30.134231836212066
-      ]
+        108.00233643253932,
+        30.134231836212066
+      ],
+      mapOpacity:1.0,
+      factor:[
+        {toolTips:'站名',name:'ZN',val:true,visible:true},
+        {toolTips:'站号',name:'ZH',val:false,visible:true},
+        {toolTips:'风羽',name:'FY',val:false,visible:false},
+        {toolTips:'信噪比',name:'SNR',val:false,visible:false},
+        {toolTips:'垂直气流',name:'W',val:false,visible:false},
+        {toolTips:'站点',name:'N',val:false,visible:false},
+        {toolTips:'普宽',name:'SW',val:false,visible:false},
+        {toolTips:'温度',name:'T',val:false,visible:false},
+        {toolTips:'露点',name:'Td',val:true,visible:false},
+        {toolTips:'湿度',name:'RH',val:false,visible:false},
+        {toolTips:'高度',name:'H',val:true,visible:false},
+      ],
+      checks:[
+        {
+          name: "雷达总数",
+          show:false,
+          showSelect:true,
+          showCollapse:false,
+          val:0,
+          showVal:true,
+          children: [
+            {name:'机舱雷达',val: 2},
+            {name:'塔式雷达',val: 0},
+            {name:'三维雷达',val: 0},
+            {name:'linux-机舱雷达',val: 2},
+            {name:'linux-塔式雷达',val: 0},
+            {name:'linux-三维雷达',val: 0},
+          ],
+          select: true
+        },
+        {
+          name: "在线雷达",
+          showCollapse:false,
+          show:false,
+          showSelect:true,
+          val:0,
+          showVal:true,
+          children:[
+            {name:'机舱雷达',val: 1},
+            {name:'塔式雷达',val: 0},
+            {name:'三维雷达',val: 0},
+            {name:'linux-机舱雷达',val: 1},
+            {name:'linux-塔式雷达',val: 0},
+            {name:'linux-三维雷达',val: 0},
+          ],
+          select: false
+        },
+        {
+          name: "离线雷达",
+          showCollapse:false,
+          show:false,
+          showSelect:true,
+          val:0,
+          showVal:true,
+          children: [
+            {name:'机舱雷达',val: 1},
+            {name:'塔式雷达',val: 0},
+            {name:'三维雷达',val: 0},
+            {name:'linux-机舱雷达',val: 1},
+            {name:'linux-塔式雷达',val: 0},
+            {name:'linux-三维雷达',val: 0},
+          ],
+          select: false
+        },
+        {
+          name: "新增雷达",
+          showCollapse:false,
+          show:false,
+          showSelect:true,
+          val:0,
+          showVal:true,
+          children: [
+            {name:'机舱雷达',val: 2},
+            {name:'塔式雷达',val: 0},
+            {name:'三维雷达',val: 0},
+            {name:'linux-机舱雷达',val: 2},
+            {name:'linux-塔式雷达',val: 0},
+            {name:'linux-三维雷达',val: 0},
+          ],
+          select: false
+        },
+      ],
     },
     无人机:{
       监控:{
@@ -131,8 +219,8 @@ export const useSettingStore = defineStore({
       监控:{
         "zoom": 8.882777980661407,
         "center": [
-            117.04212403858509,
-            28.1994655756006
+          117.04212403858509,
+          28.1994655756006
         ],
         gridValue:false,
         gridPoint:false,
@@ -430,11 +518,6 @@ export const useSettingStore = defineStore({
         ],
         select: false
       },
-    ],
-    aaa:[
-      {
-        testFunc:()=>{},
-      }
     ],
     routes:[
       dev,

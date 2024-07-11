@@ -238,38 +238,38 @@ export default {
 	"zoom": 12.711177223232953,
 	"bearing": 0,
 	"pitch": 0,
-	"fog": {
-			"range": [2, 20],
-			"color": "hsl(0, 0%, 100%)",
-			"high-color": "hsl(210, 100%, 80%)",
-			"space-color": [
-					"interpolate",
-					["exponential", 1.2],
-					["zoom"],
-					5,
-					"hsl(210, 40%, 30%)",
-					7,
-					"hsl(210, 100%, 80%)"
-			],
-			"horizon-blend": [
-					"interpolate",
-					["exponential", 1.2],
-					["zoom"],
-					5,
-					0.02,
-					7,
-					0.08
-			],
-			"star-intensity": [
-					"interpolate",
-					["exponential", 1.2],
-					["zoom"],
-					5,
-					0.1,
-					7,
-					0
-			]
-	},
+	// "fog": {
+	// 		"range": [2, 20],
+	// 		"color": "hsl(0, 0%, 100%)",
+	// 		"high-color": "hsl(210, 100%, 80%)",
+	// 		"space-color": [
+	// 				"interpolate",
+	// 				["exponential", 1.2],
+	// 				["zoom"],
+	// 				5,
+	// 				"hsl(210, 40%, 30%)",
+	// 				7,
+	// 				"hsl(210, 100%, 80%)"
+	// 		],
+	// 		"horizon-blend": [
+	// 				"interpolate",
+	// 				["exponential", 1.2],
+	// 				["zoom"],
+	// 				5,
+	// 				0.02,
+	// 				7,
+	// 				0.08
+	// 		],
+	// 		"star-intensity": [
+	// 				"interpolate",
+	// 				["exponential", 1.2],
+	// 				["zoom"],
+	// 				5,
+	// 				0.1,
+	// 				7,
+	// 				0
+	// 		]
+	// },
 	"sources": {
 		"district":{
 			"type":"geojson",
@@ -309,15 +309,16 @@ export default {
 					},
 					"layout": {},
 					"paint": {
-							"background-color": [
-									"interpolate",
-									["linear"],
-									["zoom"],
-									9,
-									"#2b2b2b",
-									11,
-									"#2b2b2b"
-							]
+						"background-color":'transparent'
+							// "background-color": [
+							// 		"interpolate",
+							// 		["linear"],
+							// 		["zoom"],
+							// 		9,
+							// 		"#2b2b2b",
+							// 		11,
+							// 		"#2b2b2b"
+							// ]
 					}
 			},
 			{
@@ -326,8 +327,8 @@ export default {
 				"source": "raster-tiles",
 				"minzoom": 0,
 				"maxzoom": 22,
-				layout:{
-					visibility:setting.loadmap?'visible':'none'
+				paint:{
+					"raster-opacity":setting.风雷达组网地图相关.mapOpacity
 				}
 			},
 			// {
@@ -362,7 +363,7 @@ export default {
 					'visibility':setting.district?'visible':'none'
 				},
 				'paint': {
-					'line-color': 'white',
+					'line-color': 'lightgrey',
 					'line-width': 2
 				}
 			},
