@@ -2,6 +2,7 @@ import * as turf from '@turf/turf'
 const modules = import.meta.glob('~/**/*.vue')
 import {v4 as uuid} from 'uuid'
 import imageUrl from "~/assets/feather.svg?url";
+import arrowUrl from "~/assets/arrow.svg?url";
 import planeUrl from "~/assets/plane.svg?url";
 import projectileUrl from "~/assets/projectile.svg?url";
 import droneUrl from "~/assets/aircraft.svg?url";
@@ -543,6 +544,45 @@ export const addFeatherImages = async( map:any ) => {
     map.addImage(k, result[k]);
   }
 }
+export const addArrowImages = async( map:any ) => {
+  let result:{[key:string]:any} = await loadImage(arrowUrl, 340, 188, {
+    arrow0: getCoord(0, 0, 0),
+    arrow1: getCoord(1, 0, 1),
+    arrow2: getCoord(2, 0, 2),
+    arrow4: getCoord(3, 0, 3),
+    arrow6: getCoord(4, 0, 6),
+    arrow8: getCoord(5, 0, 8),
+    arrow10: getCoord(6, 0, 10),
+    arrow12: getCoord(7, 0, 12),
+    arrow14: getCoord(8, 0, 14),
+    arrow16: getCoord(9, 0, 16),
+    arrow18: getCoord(0, 1, 18),
+    arrow20: getCoord(1, 1, 20),
+    arrow22: getCoord(2, 1, 22),
+    arrow24: getCoord(3, 1, 24),
+    arrow26: getCoord(4, 1, 26),
+    arrow28: getCoord(5, 1, 28),
+    arrow30: getCoord(6, 1, 30),
+    arrow32: getCoord(7, 1, 32),
+    arrow34: getCoord(8, 1, 34),
+    arrow36: getCoord(9, 1, 36),
+    arrow38: getCoord(0, 2, 38),
+    arrow40: getCoord(1, 2, 40),
+    arrow42: getCoord(2, 2, 42),
+    arrow44: getCoord(3, 2, 44),
+    arrow46: getCoord(4, 2, 46),
+    arrow48: getCoord(5, 2, 48),
+    arrow50: getCoord(6, 2, 50),
+    arrow52: getCoord(7, 2, 52),
+    arrow54: getCoord(8, 2, 54),
+    arrow56: getCoord(9, 2, 56),
+    arrow58: getCoord(0, 3, 58),
+    arrow60: getCoord(1, 3, 60),
+  }) as unknown as {[key:string]:any};
+  for (let k in result) {
+    map.addImage(k, result[k]);
+  }
+}
 export const getRandomPointBetweenR1R2 = (r1:number, r2:number) => {
   let min = Math.min(r1, r2);
   let max = Math.max(r1, r2);
@@ -595,6 +635,44 @@ export function calculateCirclePoints(
     units: units,
   }) as any;
   points.push(point.geometry.coordinates);
+  return points;
+}
+export function calculateBlockPoints(
+  center: [number, number],
+  radius1: number,
+  radius2: number,
+  startAngle: number,
+  endAngle: number,
+  steps: number,
+  units: turf.Units
+): [number, number][] {
+  const points: [number, number][] = [];
+  const angleStep = 360 / steps;
+  let angle = startAngle;
+  for (; angle < endAngle; angle += angleStep) {
+    const point1 = turf.destination(center, radius1, angle, {
+      units: units,
+    }) as any;
+    points.push(point1.geometry.coordinates);
+  }
+  const point1 = turf.destination(center, radius1, endAngle, {
+    units: units,
+  }) as any;
+  points.push(point1.geometry.coordinates);
+
+  angle = endAngle;
+  for (; angle > startAngle; angle -= angleStep) {
+    const point2 = turf.destination(center, radius2, angle, {
+      units: units,
+    }) as any;
+    points.push(point2.geometry.coordinates);
+  }
+  const point2 = turf.destination(center, radius2, startAngle, {
+    units: units,
+  }) as any;
+  points.push(point2.geometry.coordinates);
+
+  points.push(points[0]);
   return points;
 }
 export function sixty2Float(val:number|string){

@@ -68,18 +68,26 @@ function draw(canvas: HTMLCanvasElement, isDark: boolean) {
   context.stroke();
   context.textAlign = "center";
   context.textBaseline = "middle";
-  context.fillText("站名", 0, -30 * devicePixelRatio);
+  context.fillText("站名", 0, -35 * devicePixelRatio);
   context.textAlign = "center";
   context.textBaseline = "middle";
-  context.fillText("站号", 0, -20 * devicePixelRatio);
+  context.fillText("站号", 0, -25 * devicePixelRatio);
 
-  // context.textAlign = "right";
-  // context.textBaseline = "middle";
-  // context.fillText("温度", -20 * devicePixelRatio, 0);
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  context.fillText("高度", 0, -15 * devicePixelRatio);
 
-  // context.textAlign = "right";
-  // context.textBaseline = "top";
-  // context.fillText("湿度", -20 * devicePixelRatio, 20 * devicePixelRatio);
+  context.textAlign = "right";
+  context.textBaseline = "middle";
+  context.fillText("风向", -20 * devicePixelRatio, 0);
+
+  context.textAlign = "left";
+  context.textBaseline = "middle";
+  context.fillText("风速", 20 * devicePixelRatio, 0);
+
+  context.textAlign = "center";
+  context.textBaseline = "top";
+  context.fillText("垂直气流", 0, 20 * devicePixelRatio);
 
   context.restore();
 }

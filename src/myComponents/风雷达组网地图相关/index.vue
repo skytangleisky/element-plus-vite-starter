@@ -113,7 +113,7 @@
     ></graph> -->
     <chromatography
       ref="chromatographyRef"
-      :arr="chromatographyArr"
+      :arr="chromatographyOption.arr"
       style="
         right: 30px;
         color: white;
@@ -124,47 +124,65 @@
         position: absolute;
       "
     ></chromatography>
+    <div class="stationMenu" ref="stationMenuRef" @mousedown.stop>
+      <ul>
+        <li>站点信息</li>
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+        <li>4</li>
+      </ul>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
 import chromatography from "../激光测风尾涡/chromatography.vue";
 import * as turf from "@turf/turf";
-import ppiData from "../组网/CDL_S10000_Lidar10HKF00631450_PPI_FrmAzm30.00_ToAzm29.00_Pth3.00_Spd6.00_Res060_StartIdx003_Start003_Stop191_LOSWind_20230515 000240.csv?url";
+import ppiDataUrl from "../组网/CDL_S10000_Lidar10HKF00631450_PPI_FrmAzm30.00_ToAzm29.00_Pth3.00_Spd6.00_Res060_StartIdx003_Start003_Stop191_LOSWind_20230515 000240.csv?url";
 import { exec } from "~/api/index.js";
-import { getFkxRealData } from "../../api/重庆.js";
+import { getFkxRealData,getPPIGrid } from "../../api/重庆.ts";
 import {
   checkPermission,
   sixty2Float,
   addFeatherImages,
+  addArrowImages,
   getFeather,
   View,
+  calculateBlockPoints
 } from "~/tools";
+const stationMenuRef = ref<HTMLDivElement>();
+let stationMenu: HTMLDivElement;
 import { destinationPoint } from "~/myComponents/map/js/core.js";
-import { watch, ref, onMounted, onBeforeUnmount, reactive } from "vue";
+import { watch, ref, onMounted, onBeforeUnmount, reactive,nextTick } from "vue";
 import { useBus } from "~/myComponents/bus";
 import Dialog from "./dialog.vue";
+import { useSettingStore } from "~/stores/setting";
+const setting = useSettingStore();
 import { eventbus } from "~/eventbus";
-//径向速度
-// const chromatographyArr = reactive([
-//   -20,
-//   -14,
-//   -12,
-//   -10,
-//   -8,
-//   -6,
-//   -4,
-//   -2,
-//   2,
-//   4,
-//   6,
-//   8,
-//   10,
-//   12,
-//   16,
-//   20,
-// ]);
 //信噪比
-const chromatographyArr = reactive([0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20]);
+const chromatographyOption=reactive<{arr:Array<number>}>({
+  arr:[]
+})
+switch(setting.风雷达组网地图相关.风场数据){
+  case '无':
+    chromatographyOption.arr=[]
+    break;
+  case '径向速度':
+    chromatographyOption.arr = [-60,-48,-40,-32,-24,-16,-8,-0.5,0.5,8,16,24,32,40,48,60]
+    break;
+  case '谱宽':
+    chromatographyOption.arr = [0,1,2,3,4,5,6,7,8,9,10]
+    break;
+  case '信噪比':
+    chromatographyOption.arr = [0,2,4,6,8,10,12,14,16,18,20]
+    break;
+  case '频谱强度':
+    chromatographyOption.arr = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+    break;
+  default:
+    console.error('unknown '+setting.风雷达组网地图相关.风场数据)
+    break;
+}
 
 const chromatographyRef = ref(null);
 const Marker = mapboxgl.Marker;
@@ -249,6 +267,7 @@ const info = ref({
 });
 
 let dbsData: { [key: string]: any } = {};
+let ppiData: { [key: string]: any } = {};
 import { useStationStore } from "~/stores/station";
 import chartTh from "~/myComponents/echarts/T_H.vue";
 import chartDom from "~/myComponents/echarts/index.vue";
@@ -260,8 +279,6 @@ import chartDirection from "~/myComponents/echarts/Direction.vue";
 import { useRoute } from "vue-router";
 const route = useRoute();
 import radarStatistic from "./radarStatistic.vue";
-import { useSettingStore } from "~/stores/setting";
-const setting = useSettingStore();
 import Legend from "./legend.vue";
 import style from "./streets-v11.js";
 import moment from "moment";
@@ -322,6 +339,29 @@ const points = {
     ],
   },
 };
+const contextmenu = (e: any) => {
+  if(e.features){
+    const fs = map.queryRenderedFeatures(e.point, {
+      layers: ["stationLayer"],
+    });
+
+    if (!fs.length) {
+      return;
+    }
+    const feature = fs[0];
+    console.log([feature.properties.lon,feature.properties.lat])
+    marker.setLngLat([feature.properties.lon,feature.properties.lat])
+    $('.stationMenu').css({display:'block'})
+    // station.人影界面被选中的设备 = feature.properties.strID;
+    // marker.setLngLat(feature.geometry.coordinates);
+    // $(stationMenu).css({display:'block'});
+    // $(stationMenu).removeData();
+    // $(stationMenu).data(feature.properties);
+  }
+}
+const mousedownFunc = ()=>{
+  $(stationMenu).css({display:'none'})
+}
 const clickFunc = (e) => {
   if (e.features) {
     setting.disappear = false;
@@ -382,8 +422,172 @@ const task = () => {
   // }
 };
 task();
+let polygons: any[] = [];
+let inversionPPIData:{type:'FeatureCollection',features:Array<any>} = {
+  type: 'FeatureCollection',
+  features:[]
+};
+function processData(result: any, position: [number, number]) {
+  //测试
+  // for (let i = 0; i < 100; i++) {
+  //   polygons.push({
+  //     type: "Feature",
+  //     geometry: {
+  //       type: "Polygon",
+  //       coordinates: [
+  //         calculateSectorPoints(
+  //           [120.477398, 36.16953],
+  //           200.25 - 100.5 / 2 + 100.5 * i,
+  //           200.25 - 100.5 / 2 + 100.5 * (i + 1),
+  //           -1,
+  //           90,
+  //           360,
+  //           "meters"
+  //         ),
+  //       ],
+  //     },
+  //     properties: {
+  //       fillColor: "#" + Math.random().toString(16).substring(2, 8).toUpperCase(),
+  //     },
+  //   });
+  // }
+  let List = result.data.slice(0);
+  if (List.length >= 2) {
+    //定义始末两条径向内的径向位置
+    for (let i = 1; i < List.length - 1; i++) {
+      let Angle1 = Number(List[i - 1].EarthAzimuth);
+      let Angle2 = Number(List[i].EarthAzimuth);
+      let Angle3 = Number(List[i + 1].EarthAzimuth);
+      List[i].α = Math.min((Angle1 + Angle2) / 2, (Angle2 + Angle3) / 2);
+      List[i].β = Math.max((Angle1 + Angle2) / 2, (Angle2 + Angle3) / 2);
+    }
+    //定义第一条径向位置
+    let Angle1 = Number(List[0].EarthAzimuth);
+    let Angle2 = Number(List[1].EarthAzimuth);
+    List[0].α = Math.min(
+      Angle1 - (Angle2 - Angle1) / 2,
+      Angle1 + (Angle2 - Angle1) / 2
+    );
+    List[0].β = Math.max(
+      Angle1 - (Angle2 - Angle1) / 2,
+      Angle1 + (Angle2 - Angle1) / 2
+    );
+    //定义最后一条径向位置
+    Angle1 = Number(List.slice(-2)[0].EarthAzimuth);
+    Angle2 = Number(List.slice(-1)[0].EarthAzimuth);
+    List[List.length - 1].α = Math.min(
+      Angle2 - (Angle2 - Angle1) / 2,
+      Angle2 + (Angle2 - Angle1) / 2
+    );
+    List[List.length - 1].β = Math.max(
+      Angle2 - (Angle2 - Angle1) / 2,
+      Angle2 + (Angle2 - Angle1) / 2
+    );
+  } else if (List.length == 1) {
+    //定义只有一条径向的位置
+    let Angle = Number(List[0].EarthAzimuth);
+    List[0].α = Angle - 0.5;
+    List[0].β = Angle + 0.5;
+  }
+  for (let j = 0; j < List.length; j++) {
+    let radial = List[j];
+    let max = radial.list.slice(-1)[0]?.distance || 0;
+    let min = radial.list.slice(0, 1)[0]?.distance || 0;
+    let BinLength = (max - min) / (radial.list.length - 1);
+    for (let i = 0; i < radial.list.length; i++) {
+      let angle1 = radial.α;
+      let angle2 = radial.β;
+      if (angle2 - angle1 > 180) {
+        angle1 = radial.β - (360 - ((angle2 - angle1) % 360));
+        angle2 = radial.β;
+      }
+      // polygons.push({
+      //   type: "Feature",
+      //   geometry: {
+      //     type: "Polygon",
+      //     coordinates: [
+      //       calculateBlockPoints(
+      //         position,
+      //         radial.list[i].distance - BinLength / 2,
+      //         radial.list[i].distance + BinLength / 2,
+      //         angle1,
+      //         angle2,
+      //         360,
+      //         "meters"
+      //       ),
+      //     ],
+      //   },
+      //   properties: {
+      //     fillColor:
+      //       Math.abs(radial.list[i]["RadialWind(m/s)"]) == 999
+      //         ? "transparent"
+      //         : chromatographyRef.value.getColor(radial.list[i]["RadialWind(m/s)"]),
+      //   },
+      // });
+      let fillColor:string|null = 'black';
+      switch(setting.风雷达组网地图相关.风场数据){
+        case '无':
+          chromatographyOption.arr=[]
+          fillColor = 'black'
+          break;
+        case '径向速度':
+          if(Math.abs(radial.list[i]["RadialWind(m/s)"])===999){
+            fillColor = null
+          }else{
+            fillColor = (chromatographyRef.value as any).getColor(radial.list[i]["RadialWind(m/s)"])
+          }
+          break;
+        case '谱宽':
+          fillColor = (chromatographyRef.value as any).getColor(radial.list[i]["SpectralWidth"])
+          break;
+        case '信噪比':
+          fillColor = (chromatographyRef.value as any).getColor(radial.list[i]["SNR"])
+          break;
+        case '频谱强度':
+          fillColor = (chromatographyRef.value as any).getColor(radial.list[i]["SpectralIntensity"])
+          break;
+        default:
+          fillColor = 'black'
+          console.error('unknown '+setting.风雷达组网地图相关.风场数据)
+          break;
+      }
+      if(fillColor){
+        polygons.push({
+          type: "Feature",
+          geometry: {
+            type: "Polygon",
+            coordinates: [
+              calculateBlockPoints(
+                position,
+                (radial.list[i].distance - BinLength / 2)*Math.cos(radial.EarthPitch),
+                (radial.list[i].distance + BinLength / 2)*Math.cos(radial.EarthPitch),
+                angle1,
+                angle2,
+                360,
+                "meters"
+              ),
+            ],
+          },
+          properties: {
+            fillColor,
+          },
+        });
+      }
+    }
+  }
+  // map.addLayer({
+  //   id: "雷达line",
+  //   type: "line",
+  //   source: "radar",
+  //   paint: {
+  //     "line-color": ["get", "fillColor"],
+  //     "line-width": 2,
+  //   },
+  // });
+}
 const loadFunc = async () => {
   await addFeatherImages(map);
+  await addArrowImages(map);
   var xhr = new XMLHttpRequest();
   xhr.addEventListener("load", function () {
     const d = new TextDecoder("utf8");
@@ -490,6 +694,8 @@ const loadFunc = async () => {
           points.data.features.push({
             type: "Feature",
             properties: {
+              lon:position[0],
+              lat:position[1],
               type: "站点",
               radar_id: item.no,
               风速: 0,
@@ -514,210 +720,71 @@ const loadFunc = async () => {
           // })
           //   .setLngLat(position)
           //   .addTo(map);
-          processData(result, position, item.no);
+          let radar_id = item.no
+          getFkxRealData({
+            radar_id,
+            dateTime: moment().format("YYYY-MM-DD HH:mm:ss"),
+          }).then((res) => {
+            let index = 0;
+            res.data.subdirectories.map((v: any, k: number) => {
+              if (v.fHei === setting.风雷达组网地图相关.relativeHeight) {
+                index = k;
+              }
+            });
+            dbsData[radar_id] = res.data.subdirectories;
+            let lib = res.data.subdirectories[index];
+            points.data.features = points.data.features.map((item) => {
+              if (item.properties.radar_id === radar_id) {
+                item.properties.风速 = lib.fHSpeed;
+                item.properties.风向 = Number(lib.fHAngle.toFixed(2));
+                item.properties.垂直气流 = lib.fVSpeed<0?`\u2193${lib.fVSpeed.toFixed(2)}`:`\u2191${lib.fVSpeed.toFixed(2)}`
+                item.properties.高度 = setting.风雷达组网地图相关.relativeHeight
+                item.properties.速度 = Number(lib.fHSpeed.toFixed(2))
+                item.properties.image = "feather" + getFeather(lib.fHSpeed);
+              }
+              return item;
+            });
+            (map.getSource("point") as any).setData(points.data);
+          });
+          ppiData[radar_id] = {result,position}
+          console.log(result)
+          processData(result, position);
+          getPPIGrid({radar_id,dataTime:moment().format('YYYY-MM-DD HH:mm:ss'),lon:position[0],lat:position[1]}).then(res=>{
+            res.data.data.files.split(';').map((item:string)=>{
+              let arr = item.split(',')
+              let lib = {
+                lon:Number(arr[0]),
+                lat:Number(arr[1]),
+                speed:Number(arr[2]),
+                orientation:Number(arr[3]),
+              }
+              inversionPPIData.features.push({
+                type: "Feature",
+                geometry: {
+                  type: "Point",
+                  coordinates: [lib.lon,lib.lat],
+                },
+                properties: {
+                  风向:Number(lib.orientation),
+                  风速:Number(lib.speed),
+                  image:`${setting.风雷达组网地图相关.反演风场=='风矢'?'arrow':'feather'}${getFeather(Math.abs(lib.speed))}`
+                },
+              })
+              return lib
+            })
+            map.getSource('inversionPPIData').setData(inversionPPIData)
+          })
         }
       });
-      map.getSource("radar").setData({
+      (map.getSource("radar") as any).setData({
         type: "FeatureCollection",
         features: polygons,
       });
     });
   });
   xhr.responseType = "arraybuffer";
-  xhr.open("GET", ppiData);
+  xhr.open("GET", ppiDataUrl);
   xhr.send();
-  let polygons: any[] = [];
-  function processData(result: any, position: [number, number], radar_id: string) {
-    //测试
-    // for (let i = 0; i < 100; i++) {
-    //   polygons.push({
-    //     type: "Feature",
-    //     geometry: {
-    //       type: "Polygon",
-    //       coordinates: [
-    //         calculateSectorPoints(
-    //           [120.477398, 36.16953],
-    //           200.25 - 100.5 / 2 + 100.5 * i,
-    //           200.25 - 100.5 / 2 + 100.5 * (i + 1),
-    //           -1,
-    //           90,
-    //           360,
-    //           "meters"
-    //         ),
-    //       ],
-    //     },
-    //     properties: {
-    //       fillColor: "#" + Math.random().toString(16).substring(2, 8).toUpperCase(),
-    //     },
-    //   });
-    // }
-    let List = result.data.slice(0);
-    if (List.length >= 2) {
-      //定义始末两条径向内的径向位置
-      for (let i = 1; i < List.length - 1; i++) {
-        let Angle1 = Number(List[i - 1].EarthAzimuth);
-        let Angle2 = Number(List[i].EarthAzimuth);
-        let Angle3 = Number(List[i + 1].EarthAzimuth);
-        List[i].α = Math.min((Angle1 + Angle2) / 2, (Angle2 + Angle3) / 2);
-        List[i].β = Math.max((Angle1 + Angle2) / 2, (Angle2 + Angle3) / 2);
-      }
-      //定义第一条径向位置
-      let Angle1 = Number(List[0].EarthAzimuth);
-      let Angle2 = Number(List[1].EarthAzimuth);
-      List[0].α = Math.min(
-        Angle1 - (Angle2 - Angle1) / 2,
-        Angle1 + (Angle2 - Angle1) / 2
-      );
-      List[0].β = Math.max(
-        Angle1 - (Angle2 - Angle1) / 2,
-        Angle1 + (Angle2 - Angle1) / 2
-      );
-      //定义最后一条径向位置
-      Angle1 = Number(List.slice(-2)[0].EarthAzimuth);
-      Angle2 = Number(List.slice(-1)[0].EarthAzimuth);
-      List[List.length - 1].α = Math.min(
-        Angle2 - (Angle2 - Angle1) / 2,
-        Angle2 + (Angle2 - Angle1) / 2
-      );
-      List[List.length - 1].β = Math.max(
-        Angle2 - (Angle2 - Angle1) / 2,
-        Angle2 + (Angle2 - Angle1) / 2
-      );
-    } else if (List.length == 1) {
-      //定义只有一条径向的位置
-      let Angle = Number(List[0].EarthAzimuth);
-      List[0].α = Angle - 0.5;
-      List[0].β = Angle + 0.5;
-    }
-    for (let j = 0; j < List.length; j++) {
-      let radial = List[j];
-      let max = radial.list.slice(-1)[0]?.distance || 0;
-      let min = radial.list.slice(0, 1)[0]?.distance || 0;
-      let BinLength = (max - min) / (radial.list.length - 1);
-      for (let i = 0; i < radial.list.length; i++) {
-        let angle1 = radial.α;
-        let angle2 = radial.β;
-        if (angle2 - angle1 > 180) {
-          angle1 = radial.β - (360 - ((angle2 - angle1) % 360));
-          angle2 = radial.β;
-        }
-        // polygons.push({
-        //   type: "Feature",
-        //   geometry: {
-        //     type: "Polygon",
-        //     coordinates: [
-        //       calculateSectorPoints(
-        //         position,
-        //         radial.list[i].distance - BinLength / 2,
-        //         radial.list[i].distance + BinLength / 2,
-        //         angle1,
-        //         angle2,
-        //         360,
-        //         "meters"
-        //       ),
-        //     ],
-        //   },
-        //   properties: {
-        //     fillColor:
-        //       Math.abs(radial.list[i]["RadialWind(m/s)"]) == 999
-        //         ? "transparent"
-        //         : chromatographyRef.value.getColor(radial.list[i]["RadialWind(m/s)"]),
-        //   },
-        // });
-        polygons.push({
-          type: "Feature",
-          geometry: {
-            type: "Polygon",
-            coordinates: [
-              calculateSectorPoints(
-                position,
-                radial.list[i].distance - BinLength / 2,
-                radial.list[i].distance + BinLength / 2,
-                angle1,
-                angle2,
-                360,
-                "meters"
-              ),
-            ],
-          },
-          properties: {
-            fillColor: chromatographyRef.value.getColor(radial.list[i]["SNR"]),
-          },
-        });
-      }
-    }
-    // map.addLayer({
-    //   id: "雷达line",
-    //   type: "line",
-    //   source: "radar",
-    //   paint: {
-    //     "line-color": ["get", "fillColor"],
-    //     "line-width": 2,
-    //   },
-    // });
-    getFkxRealData({
-      radar_id,
-      dateTime: moment().format("YYYY-MM-DD HH:mm:ss"),
-    }).then((res) => {
-      let index = 0;
-      res.data.subdirectories.map((v: any, k: number) => {
-        if (v.fHei === setting.风雷达组网地图相关.relativeHeight) {
-          index = k;
-        }
-      });
-      dbsData[radar_id] = res.data.subdirectories;
-      let lib = res.data.subdirectories[index];
-      console.log(lib);
-      points.data.features = points.data.features.map((item) => {
-        if (item.properties.radar_id === radar_id) {
-          item.properties.风速 = lib.fHSpeed;
-          item.properties.风向 = lib.fHAngle;
-          item.properties.image = "feather" + getFeather(lib.fHSpeed);
-        }
-        return item;
-      });
-      map.getSource("point").setData(points.data);
-    });
-  }
-  function calculateSectorPoints(
-    center: [number, number],
-    radius1: number,
-    radius2: number,
-    startAngle: number,
-    endAngle: number,
-    steps: number,
-    units: turf.Units
-  ): [number, number][] {
-    const points: [number, number][] = [];
-    const angleStep = 360 / steps;
-    let angle = startAngle;
-    for (; angle < endAngle; angle += angleStep) {
-      const point1 = turf.destination(center, radius1, angle, {
-        units: units,
-      }) as any;
-      points.push(point1.geometry.coordinates);
-    }
-    const point1 = turf.destination(center, radius1, endAngle, {
-      units: units,
-    }) as any;
-    points.push(point1.geometry.coordinates);
-
-    angle = endAngle;
-    for (; angle > startAngle; angle -= angleStep) {
-      const point2 = turf.destination(center, radius2, angle, {
-        units: units,
-      }) as any;
-      points.push(point2.geometry.coordinates);
-    }
-    const point2 = turf.destination(center, radius2, startAngle, {
-      units: units,
-    }) as any;
-    points.push(point2.geometry.coordinates);
-
-    points.push(points[0]);
-    return points;
-  }
-
   map.addSource("radar", {
     type: "geojson",
     data: {
@@ -733,9 +800,52 @@ const loadFunc = async () => {
     maxzoom: 22,
     paint: {
       "fill-color": ["get", "fillColor"],
-      "fill-opacity": 1,
+      "fill-opacity": setting.风雷达组网地图相关.ppiOpacity,
       "fill-outline-color": "transparent",
     },
+    layout:{
+      visibility:setting.风雷达组网地图相关.风场数据=='无'?'none':'visible'
+    }
+  });
+  map.addSource("inversionPPIData",{
+    type:"geojson",
+    data: inversionPPIData,
+  })
+  let anchor = ["match", ["get", "风速"], 0, "center", "bottom-left"]
+  if(setting.风雷达组网地图相关.反演风场=='风矢'){
+    anchor = 'top'
+  }
+  map.addLayer({
+    id: "inversionLayer",
+    source: "inversionPPIData",
+    type: "symbol",
+    layout: {
+      visibility: setting.风雷达组网地图相关.反演风场==='无' ? "none":"visible",
+      // This icon is a part of the Mapbox Streets style.
+      // To view all images available in a Mapbox style, open
+      // the style in Mapbox Studio and click the "Images" tab.
+      // To add a new image to the style at runtime see
+      // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+      "icon-anchor": anchor,
+      "icon-image": ["get", "image"],
+      "icon-size": 1,
+      "icon-rotate": ["get", "风向"],
+      "icon-rotation-alignment": "map",
+      "icon-allow-overlap": true,
+      "icon-ignore-placement": true,
+      // "text-field": ["get", "风速"],
+      // "text-font": ["simkai"],
+      // "text-size": 14,
+      // "text-transform": "uppercase",
+      // // "text-letter-spacing": 0.05,
+      // "text-anchor": "center",
+      // "text-line-height": 1,
+      // // "text-justify": "center",
+      // "text-offset": [0, 0],
+      // "text-ignore-placement": true,
+      // "text-allow-overlap": true,
+      // "text-rotation-alignment": "map",
+    }
   });
   map.addSource("point", points);
   map.addLayer({
@@ -756,7 +866,7 @@ const loadFunc = async () => {
       //   22,
       //   200,
       // ],
-      "circle-radius": 6,
+      "circle-radius": 5,
       "circle-color": ["get", "color"],
       // "circle-stroke-width": [
       //   "interpolate",
@@ -779,68 +889,6 @@ const loadFunc = async () => {
     },
   });
   map.addLayer({
-    id: "featherLayer",
-    source: "point",
-    type: "symbol",
-    layout: {
-      visibility: setting.station ? "visible" : "none",
-      // This icon is a part of the Mapbox Streets style.
-      // To view all images available in a Mapbox style, open
-      // the style in Mapbox Studio and click the "Images" tab.
-      // To add a new image to the style at runtime see
-      // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-      "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
-      "icon-image": ["get", "image"],
-      "icon-size": 1,
-      "icon-rotate": ["get", "风向"],
-      "icon-rotation-alignment": "map",
-      "icon-allow-overlap": true,
-      "icon-ignore-placement": true,
-      // "text-field": ["get", "风速"],
-      // "text-font": ["simkai"],
-      // "text-size": 14,
-      // "text-transform": "uppercase",
-      // // "text-letter-spacing": 0.05,
-      // "text-anchor": "center",
-      // "text-line-height": 1,
-      // // "text-justify": "center",
-      // "text-offset": [0, 0],
-      // "text-ignore-placement": true,
-      // "text-allow-overlap": true,
-      // "text-rotation-alignment": "map",
-    },
-    paint: {
-      "icon-opacity": setting.feather ? 1 : 0,
-    },
-  });
-  map.addLayer({
-    id: "idLayer",
-    source: "point",
-    type: "symbol",
-    layout: {
-      visibility: setting.station ? "visible" : "none",
-      "text-field": ["get", "radar_id"],
-      "text-font": ["simkai"],
-      "text-size": 18,
-      "text-transform": "uppercase",
-      // "text-letter-spacing": 0.05,
-      "text-anchor": "center",
-      "text-line-height": 1,
-      "text-offset": [0, -1.2],
-      "text-ignore-placement": true,
-      "text-allow-overlap": true,
-      "text-rotation-alignment": "map",
-      "text-max-width": 400,
-    },
-    paint: {
-      "text-opacity": setting.风雷达组网地图相关.factor[1].val ? 1 : 0,
-      "text-color": "white",
-      "text-halo-width": 1,
-      "text-halo-color": "black",
-    },
-    filter: ["==", ["get", "type"], "站点"],
-  });
-  map.addLayer({
     id: "textLayer",
     source: "point",
     type: "symbol",
@@ -853,7 +901,7 @@ const loadFunc = async () => {
       // "text-letter-spacing": 0.05,
       "text-anchor": "center",
       "text-line-height": 1,
-      "text-offset": [0, -2.2],
+      "text-offset": [0, -3.2],
       "text-ignore-placement": true,
       "text-allow-overlap": true,
       "text-rotation-alignment": "map",
@@ -861,6 +909,33 @@ const loadFunc = async () => {
     },
     paint: {
       "text-opacity": setting.风雷达组网地图相关.factor[0].val ? 1 : 0,
+      "text-color": "white",
+      "text-halo-width": 1,
+      "text-halo-color": "black",
+    },
+    filter: ["==", ["get", "type"], "站点"],
+  });
+  map.addLayer({
+    id: "idLayer",
+    source: "point",
+    type: "symbol",
+    layout: {
+      visibility: setting.station ? "visible" : "none",
+      "text-field": ["get", "radar_id"],
+      "text-font": ["simkai"],
+      "text-size": 16,
+      "text-transform": "uppercase",
+      // "text-letter-spacing": 0.05,
+      "text-anchor": "center",
+      "text-line-height": 1,
+      "text-offset": [0, -2.2],
+      "text-ignore-placement": true,
+      "text-allow-overlap": true,
+      "text-rotation-alignment": "map",
+      "text-max-width": 400,
+    },
+    paint: {
+      "text-opacity": setting.风雷达组网地图相关.factor[1].val ? 1 : 0,
       "text-color": "white",
       "text-halo-width": 1,
       "text-halo-color": "black",
@@ -919,6 +994,145 @@ const loadFunc = async () => {
     },
     filter: ["==", ["get", "type"], "站点"],
   });
+  map.addLayer({
+    id: "垂直气流图层",
+    source: "point",
+    type: "symbol",
+    layout: {
+      visibility: setting.station ? "visible" : "none",
+      "text-field": ["get", "垂直气流"],
+      "text-font": ["simkai"],
+      "text-size": 14,
+      "text-transform": "uppercase",
+      // "text-letter-spacing": 0.05,
+      "text-anchor": "center",
+      "text-line-height": 1,
+      "text-offset": [0, 1.2],
+      "text-ignore-placement": true,
+      "text-allow-overlap": true,
+      "text-rotation-alignment": "map",
+    },
+    paint: {
+      "text-opacity": setting.风雷达组网地图相关.垂直气流 ? 1 : 0,
+      "text-color": "white",
+      "text-halo-width": 1,
+      "text-halo-color": "black",
+    },
+    filter: ["==", ["get", "type"], "站点"],
+  });
+  map.addLayer({
+    id: "高度图层",
+    source: "point",
+    type: "symbol",
+    layout: {
+      visibility: setting.station ? "visible" : "none",
+      "text-field": ["get", "高度"],
+      "text-font": ["simkai"],
+      "text-size": 14,
+      "text-transform": "uppercase",
+      // "text-letter-spacing": 0.05,
+      "text-anchor": "center",
+      "text-line-height": 1,
+      "text-offset": [0, -1],
+      "text-ignore-placement": true,
+      "text-allow-overlap": true,
+      "text-rotation-alignment": "map",
+    },
+    paint: {
+      "text-opacity": setting.风雷达组网地图相关.高度 ? 1 : 0,
+      "text-color": "white",
+      "text-halo-width": 1,
+      "text-halo-color": "black",
+    },
+    filter: ["==", ["get", "type"], "站点"],
+  });
+  map.addLayer({
+    id: "风向图层",
+    source: "point",
+    type: "symbol",
+    layout: {
+      visibility: setting.station ? "visible" : "none",
+      "text-field": ["get", "风向"],
+      "text-font": ["simkai"],
+      "text-size": 14,
+      "text-transform": "uppercase",
+      // "text-letter-spacing": 0.05,
+      "text-anchor": "right",
+      "text-line-height": 1,
+      "text-offset": [-1, 0],
+      "text-ignore-placement": true,
+      "text-allow-overlap": true,
+      "text-rotation-alignment": "map",
+    },
+    paint: {
+      "text-opacity": setting.风雷达组网地图相关.风向 ? 1 : 0,
+      "text-color": "white",
+      "text-halo-width": 1,
+      "text-halo-color": "black",
+    },
+    filter: ["==", ["get", "type"], "站点"],
+  });
+  map.addLayer({
+    id: "速度图层",
+    source: "point",
+    type: "symbol",
+    layout: {
+      visibility: setting.station ? "visible" : "none",
+      "text-field": ["get", "速度"],
+      "text-font": ["simkai"],
+      "text-size": 14,
+      "text-transform": "uppercase",
+      // "text-letter-spacing": 0.05,
+      "text-anchor": "left",
+      "text-line-height": 1,
+      "text-offset": [1, 0],
+      "text-ignore-placement": true,
+      "text-allow-overlap": true,
+      "text-rotation-alignment": "map",
+    },
+    paint: {
+      "text-opacity": setting.风雷达组网地图相关.速度 ? 1 : 0,
+      "text-color": "white",
+      "text-halo-width": 1,
+      "text-halo-color": "black",
+    },
+    filter: ["==", ["get", "type"], "站点"],
+  });
+  map.addLayer({
+    id: "featherLayer",
+    source: "point",
+    type: "symbol",
+    layout: {
+      visibility: setting.station ? "visible" : "none",
+      // This icon is a part of the Mapbox Streets style.
+      // To view all images available in a Mapbox style, open
+      // the style in Mapbox Studio and click the "Images" tab.
+      // To add a new image to the style at runtime see
+      // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+      "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
+      "icon-image": ["get", "image"],
+      "icon-size": 1.2,
+      "icon-rotate": ["get", "风向"],
+      "icon-rotation-alignment": "map",
+      "icon-allow-overlap": true,
+      "icon-ignore-placement": true,
+      // "text-field": ["get", "风速"],
+      // "text-font": ["simkai"],
+      // "text-size": 14,
+      // "text-transform": "uppercase",
+      // // "text-letter-spacing": 0.05,
+      // "text-anchor": "center",
+      // "text-line-height": 1,
+      // // "text-justify": "center",
+      // "text-offset": [0, 0],
+      // "text-ignore-placement": true,
+      // "text-allow-overlap": true,
+      // "text-rotation-alignment": "map",
+    },
+    paint: {
+      "icon-opacity": setting.feather ? 1 : 0,
+    },
+  });
   bus.avgWindData = [];
   bus.secondWindData = [];
   bus.radialWindData = [];
@@ -963,7 +1177,9 @@ const flyTo = (item) => {
 const resize = (entry) => {
   map && map.resize();
 };
+var marker:Marker;
 onMounted(() => {
+  stationMenu = stationMenuRef.value as HTMLDivElement;
   map = new mapboxgl.Map({
     container: mapRef.value,
     // style: raster,
@@ -981,10 +1197,10 @@ onMounted(() => {
     // maxZoom: 17,
     maxZoom: 18,
     // minZoom: 1,
-    maxBounds: [
-      [102.0, 27.5],
-      [114.0, 32.7],
-    ],
+    // maxBounds: [
+    //   [102.0, 27.5],
+    //   [114.0, 32.7],
+    // ],
     // zoom: 18,
     // center: [148.9819, -35.3981],
     // pitch: 60,
@@ -992,10 +1208,21 @@ onMounted(() => {
     center: setting.风雷达组网地图相关.center,
     pitch: 0,
   });
+  marker = new mapboxgl.Marker({
+      element: stationMenu,
+      draggable: true,
+      // pitchAlignment: "map",
+      // rotationAlignment: "map",
+      anchor: "top-left",
+    })
+      .setLngLat([0, 0])
+      .setOffset([0, 0])
+      .addTo(map);
   map.repaint = false;
   map.on("zoom", zoomFunc);
   map.on("move", moveFunc);
   map.on("load", loadFunc);
+  map.on("mousedown", mousedownFunc);
   map.on("click", "stationLayer", clickFunc);
   eventbus.on("将站点移动到屏幕中心", flyTo);
   const closer = popup_closer.value;
@@ -1005,6 +1232,7 @@ onMounted(() => {
     closer.blur();
     return false;
   };
+  map.on("contextmenu", "stationLayer", contextmenu);
 });
 onBeforeUnmount(() => {
   eventbus.off("将站点移动到屏幕中心", flyTo);
@@ -1014,23 +1242,74 @@ onBeforeUnmount(() => {
   map.off("move", moveFunc);
   map.off("load", loadFunc);
   map.off("click", "stationLayer", clickFunc);
+  map.off("contextmenu", "stationLayer", contextmenu);
+  map.off('mousedown',mousedownFunc)
   map.remove();
 });
 watch(()=>setting.风雷达组网地图相关.风场数据,风场数据=>{
   switch(风场数据){
     case '无':
+      map.setLayoutProperty('雷达','visibility','none')
+      chromatographyOption.arr=[]
       break;
     case '径向速度':
-    break;
+      map.setLayoutProperty('雷达','visibility','visible')
+      chromatographyOption.arr = [-60,-48,-40,-32,-24,-16,-8,-0.5,0.5,8,16,24,32,40,48,60]
+      break;
     case '谱宽':
+      map.setLayoutProperty('雷达','visibility','visible')
+      chromatographyOption.arr = [0,1,2,3,4,5,6,7,8,9,10]
       break;
     case '信噪比':
+      map.setLayoutProperty('雷达','visibility','visible')
+      chromatographyOption.arr = [0,2,4,6,8,10,12,14,16,18,20]
       break;
     case '频谱强度':
+      map.setLayoutProperty('雷达','visibility','visible')
+      chromatographyOption.arr = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
       break;
     default:
       console.error('unknown 风场数据 '+风场数据)
       break;
+  }
+  nextTick(()=>{
+    polygons.length=0;
+    for(let radar_id in ppiData){
+      let {result,position} = ppiData[radar_id]
+      processData(result,position)
+    }
+    map.getSource("radar").setData({
+      type: "FeatureCollection",
+      features: polygons,
+    });
+  })
+})
+watch(()=>setting.风雷达组网地图相关.垂直气流,(val)=>{
+  if(val){
+    map.setPaintProperty("垂直气流图层", "text-opacity", 1);
+  }else{
+    map.setPaintProperty("垂直气流图层", "text-opacity", 0);
+  }
+})
+watch(()=>setting.风雷达组网地图相关.高度,(val)=>{
+  if(val){
+    map.setPaintProperty("高度图层", "text-opacity", 1);
+  }else{
+    map.setPaintProperty("高度图层", "text-opacity", 0);
+  }
+})
+watch(()=>setting.风雷达组网地图相关.风向,(val)=>{
+  if(val){
+    map.setPaintProperty("风向图层", "text-opacity", 1);
+  }else{
+    map.setPaintProperty("风向图层", "text-opacity", 0);
+  }
+})
+watch(()=>setting.风雷达组网地图相关.速度,(val)=>{
+  if(val){
+    map.setPaintProperty("速度图层", "text-opacity", 1);
+  }else{
+    map.setPaintProperty("速度图层", "text-opacity", 0);
   }
 })
 watch(
@@ -1043,8 +1322,11 @@ watch(
             if (dbsData[radar_id][i].fHei === rHeight) {
               let lib = dbsData[radar_id][i];
               item.properties.风速 = lib.fHSpeed;
-              item.properties.风向 = lib.fHAngle;
+              item.properties.风向 = Number(lib.fHAngle.toFixed(2));
               item.properties.image = "feather" + getFeather(lib.fHSpeed);
+              item.properties.垂直气流 = lib.fVSpeed<0?`\u2193${lib.fVSpeed.toFixed(2)}`:`\u2191${lib.fVSpeed.toFixed(2)}`
+              item.properties.高度 = rHeight
+              item.properties.速度 = Number(lib.fHSpeed.toFixed(2))
             }
           }
         }
@@ -1054,6 +1336,23 @@ watch(
     map.getSource("point").setData(points.data);
   }
 );
+watch(()=>setting.风雷达组网地图相关.反演风场,(val)=>{
+  if(val=='无'){
+    map.setLayoutProperty('inversionLayer','visibility','none')
+  }else{
+    map.setLayoutProperty('inversionLayer','visibility','visible')
+    inversionPPIData.features.map((item:any)=>{
+      item.properties.image = `${val=='风矢'?'arrow':'feather'}${getFeather(Math.abs(item.properties.风速))}`
+      return item
+    })
+    if(val=='风矢'){
+      map.setLayoutProperty('inversionLayer','icon-anchor',"top")
+    }else{
+      map.setLayoutProperty('inversionLayer','icon-anchor',["match", ["get", "风速"], 0, "center", "bottom-left"])
+    }
+    map.getSource('inversionPPIData').setData(inversionPPIData)
+  }
+})
 // watch(
 //   () => bus.风雷达组网地图相关雷达站点信息,
 //   (newVal) => {
@@ -1194,6 +1493,11 @@ watch(
       map.setLayoutProperty("textLayer", "visibility", "visible");
       map.setLayoutProperty("temperatureLayer", "visibility", "visible");
       map.setLayoutProperty("humidityLayer", "visibility", "visible");
+      map.setLayoutProperty("垂直气流图层", "visibility", "visible");
+      map.setLayoutProperty("高度图层", "visibility", "visible");
+      map.setLayoutProperty("风向图层", "visibility", "visible");
+      map.setLayoutProperty("速度图层", "visibility", "visible");
+      map.setLayoutProperty("垂直气流图层", "visibility", "visible");
     } else {
       map.setLayoutProperty("idLayer", "visibility", "none");
       map.setLayoutProperty("stationLayer", "visibility", "none");
@@ -1201,6 +1505,10 @@ watch(
       map.setLayoutProperty("textLayer", "visibility", "none");
       map.setLayoutProperty("humidityLayer", "visibility", "none");
       map.setLayoutProperty("temperatureLayer", "visibility", "none");
+      map.setLayoutProperty("高度图层", "visibility", "none");
+      map.setLayoutProperty("风向图层", "visibility", "none");
+      map.setLayoutProperty("速度图层", "visibility", "none");
+      map.setLayoutProperty("垂直气流图层", "visibility", "none");
     }
   }
 );
@@ -1297,6 +1605,12 @@ watch(
   }
 );
 watch(
+  () => setting.风雷达组网地图相关.ppiOpacity,
+  (newVal) => {
+    map.setPaintProperty("雷达", "fill-opacity", newVal);
+  }
+);
+watch(
   () => setting.风雷达组网地图相关.mapOpacity,
   (newVal) => {
     map.setPaintProperty("simple-tiles", "raster-opacity", newVal);
@@ -1314,6 +1628,59 @@ watch(
 );
 </script>
 <style scoped lang="scss">
+.stationMenu {
+  display: none;
+  background: #ffffff88;
+  border-radius: 10px;
+  border-top-left-radius: 4px;
+  border: 1px solid var(--ep-border-color);
+  opacity: 1 !important;
+  ul {
+    cursor: default;
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    padding: 5px;
+    box-sizing: border-box;
+    margin-top: 0;
+    margin-bottom: 0;
+    li {
+      cursor: pointer;
+      border-radius: 4px;
+      position: relative;
+      font-size: 16px;
+      list-style: none;
+      padding: 2px;
+      &:hover {
+        background: rgba(62, 110, 197, 1);
+      }
+      &:active {
+        background: inherit;
+      }
+      &:not(:first-child) {
+        margin-top: 2px;
+      }
+    }
+  }
+}
+
+.dark .stationMenu {
+  background: #00000088;
+  ul {
+    cursor: default;
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    padding: 5px;
+    box-sizing: border-box;
+    margin-top: 0;
+    margin-bottom: 0;
+    li:hover {
+      background: rgba(62, 110, 197, 1);
+    }
+  }
+}
+
 .ol-popup {
   width: 340px;
   height: 280px;

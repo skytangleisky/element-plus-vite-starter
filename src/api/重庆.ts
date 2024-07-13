@@ -49,6 +49,24 @@ export function getPPIRadial(query:{radar_id:string,dataTime:string}){
     data
   })
 }
+export function getPPIGrid(query:{radar_id:string,dataTime:string,lon:number,lat:number}){
+  let data = {
+    "version":"1.0",
+    "secretKey":"904c396f6956d02c59a6ad35c08f5678",
+    "lon":query.lon,
+    "lat":query.lat,
+    "radar_id":"G1000",
+    "dataTime":'20240710154908',
+  }
+  return request({
+    url: '/qt/realWindFieldData/ppi',
+    method: 'post',
+    headers:{
+    'content-type':'application/json'
+    },
+    data
+  })
+}
 export function getRHIRadial(query:{radar_id:string,dataTime:string}){
   let data = {
     "version":"1.0",

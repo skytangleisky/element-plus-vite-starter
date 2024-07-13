@@ -66,8 +66,10 @@ onMounted(() => {
             .map((item) => item.color + " " + item.percent * 100 + "%")
             .join(", ")})`
         );
+        gradient.style.setProperty("display", "flex");
       } else {
         gradient.style.setProperty("--gradient", "unset");
+        gradient.style.setProperty("display", "none");
       }
     },
     { immediate: true }

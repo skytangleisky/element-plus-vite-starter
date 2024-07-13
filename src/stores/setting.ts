@@ -35,11 +35,16 @@ export const useSettingStore = defineStore({
       relativeHeight:52,
       风场数据:"信噪比",
       反演风场:"风羽",
+      高度:true,
+      速度:true,
+      风向:true,
+      垂直气流:true,
       "zoom": 7.850443778917797,
       "center": [
         108.00233643253932,
         30.134231836212066
       ],
+      ppiOpacity:1.0,
       mapOpacity:1.0,
       factor:[
         {toolTips:'站名',name:'ZN',val:true,visible:true},

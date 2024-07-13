@@ -40,7 +40,7 @@
       <canvas
         v-resize="resize"
         ref="timeShaft"
-        class="dark:bg-#646464 bg-#fff absolute"
+        class="dark:bg-#646464 bg-#eee absolute"
         style="width: 100%; height: 100%"
       ></canvas>
     </div>

@@ -38,7 +38,88 @@
       </collapse-card>
     </div>
     <div class="item">
+      <collapse-card title="DBS" v-model:show="showDBS" :show-collapse="false">
+        <div class="subitem">
+          <span class="whitespace-nowrap">相对高度</span>
+          <el-select
+            style="width: 100px"
+            v-model="setting.风雷达组网地图相关.relativeHeight"
+            placeholder=""
+            size="small"
+          >
+            <el-option
+              v-for="item in heightOptions"
+              :key="item.value"
+              :value="item.value"
+              :label="item.label"
+            ></el-option>
+          </el-select>
+        </div>
+        <div class="subitem">
+          <span>风杆</span>
+          <el-switch
+            v-model="setting.feather"
+            inline-prompt
+            :active-icon="Check"
+            :inactive-icon="Close"
+            size="small"
+          />
+        </div>
+        <div class="subitem">
+          <span>高度</span>
+          <el-switch
+            v-model="setting.风雷达组网地图相关.高度"
+            inline-prompt
+            :active-icon="Check"
+            :inactive-icon="Close"
+            size="small"
+          />
+        </div>
+        <div class="subitem">
+          <span>风向</span>
+          <el-switch
+            v-model="setting.风雷达组网地图相关.风向"
+            inline-prompt
+            :active-icon="Check"
+            :inactive-icon="Close"
+            size="small"
+          />
+        </div>
+        <div class="subitem">
+          <span>风速</span>
+          <el-switch
+            v-model="setting.风雷达组网地图相关.速度"
+            inline-prompt
+            :active-icon="Check"
+            :inactive-icon="Close"
+            size="small"
+          />
+        </div>
+        <div class="subitem">
+          <span>垂直气流</span>
+          <el-switch
+            v-model="setting.风雷达组网地图相关.垂直气流"
+            inline-prompt
+            :active-icon="Check"
+            :inactive-icon="Close"
+            size="small"
+          />
+        </div>
+      </collapse-card>
+    </div>
+    <div class="item">
       <collapse-card title="PPI" v-model:show="showPPI" :show-collapse="false">
+        <div class="subitem">
+          <span class="whitespace-nowrap">风场不透明度</span>
+          <el-slider
+            class="m-l-10px m-r-10px"
+            :min="0"
+            :max="1.0"
+            :step="0.01"
+            :show-tooltip="false"
+            v-model="setting.风雷达组网地图相关.ppiOpacity"
+          />
+        </div>
         <div class="subitem">
           <span class="whitespace-nowrap">风场数据</span>
           <el-select
@@ -65,36 +146,6 @@
           >
             <el-option
               v-for="item in options2"
-              :key="item.value"
-              :value="item.value"
-              :label="item.label"
-            ></el-option>
-          </el-select>
-        </div>
-      </collapse-card>
-    </div>
-    <div class="item">
-      <collapse-card title="DBS" v-model:show="showDBS" :show-collapse="false">
-        <div class="subitem">
-          <span>风杆</span>
-          <el-switch
-            v-model="setting.feather"
-            inline-prompt
-            :active-icon="Check"
-            :inactive-icon="Close"
-            size="small"
-          />
-        </div>
-        <div class="subitem">
-          <span class="whitespace-nowrap">相对高度</span>
-          <el-select
-            style="width: 100px"
-            v-model="setting.风雷达组网地图相关.relativeHeight"
-            placeholder=""
-            size="small"
-          >
-            <el-option
-              v-for="item in heightOptions"
               :key="item.value"
               :value="item.value"
               :label="item.label"
