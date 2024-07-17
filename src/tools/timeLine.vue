@@ -18,7 +18,7 @@
     <div class="relative h-30px" style="width: 100%">
       <span class="currentTime">
         <div
-          style="display: flex; align-items: center; font-family: Menlo, Consolas, Monaco"
+          style="display: flex; align-items: center; font-family: Menlo, Consolas, Monaco;;"
         >
           <el-icon
             class="active:color-#2b2b2b"
@@ -750,7 +750,7 @@ onBeforeUnmount(() => {
     padding: 4px;
     margin: 4px;
     border-radius: 4px;
-    background-color: #fff;
+    background-color: #eee;
     color: black;
     /* visibility: hidden; */
     &::before {
@@ -758,7 +758,7 @@ onBeforeUnmount(() => {
       content: "";
       border-width: 4px;
       border-style: solid;
-      border-color: #fff transparent transparent transparent;
+      border-color: #eee transparent transparent transparent;
       left: calc(50% - 4px);
       top: calc(100% - 4px);
     }

@@ -25,9 +25,9 @@ export default {
   "scheme": "xyz",
   "tilejson": "2.2.0",
   "tiles": [
-    // "https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
+    "https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
     // "/amap/api/map/gismap/{x}/{y}/{z}",
-    "https://tile.tanglei.site/maps/vt?lyrs=s&x={x}&y={y}&z={z}"
+    // "https://tile.tanglei.site/maps/vt?lyrs=y&x={x}&y={y}&z={z}"
   ],
   "webpage": "https://dev-studio.tilestream.net/tilesets/mapbox.satellite"
 }

@@ -522,9 +522,10 @@ export default function DBS() {
       position: 'top',
       // trigger: 'item',
       formatter: function(params) {
+        console.log(params)
         return [
           '时间：' + params.value[3].time,
-          '高度：' + params.value[1].toFixed(2) + 'm',
+          '高度：' + params.value[3].fHei.toFixed(2) + 'm',
           '风向：' + params.value[3].fHAngle.toFixed(2) + '°',
           '风速：' + params.value[3].fHSpeed.toFixed(2) + 'm/s',
           '垂直气流：' + params.value[3].fVSpeed.toFixed(2) + 'm/s'
@@ -958,23 +959,23 @@ export default function DBS() {
     for (let i = 0; i < 21; i++) {
       if (i < fData.length) {
         for (let index = 0; index < fData[i]. data.length; index++) {
-          fData[i].data[index].time = fData[i].timestamp.substring(10,18)
+          fData[i].data[index].time = fData[i].timestamp.substring(9,18)
           var fHei = fData[i]. data[index].fHei
           // var fHorChange = fData[i][index].fHorChange
           // var fHAngle = fData[i]. data[index].fHAngle
-          var fHSpeed = fData[i]. data[index].fHSpeed
+          var fHSpeed = fData[i].data[index].fHSpeed
           // var fSDev = fData[i]. data[index].fSDev
-          var fVSpeed = fData[i]. data[index].fVSpeed
+          var fVSpeed = fData[i].data[index].fVSpeed
           // var fVerChange = fData[i]. data[index].fVerChange
           // var iBelieveable = fData[i]. data[index].iBelieveable
           if (Number(fHSpeed) === 999) continue
           if (type1 === '垂直气流') {
-            option.series[0].data.push([i, fHei, fVSpeed, fData[i]. data[index]])
+            option.series[0].data.push([i, fHei, fVSpeed, fData[i].data[index]])
           }
           if (type1 === '水平风' || (diejia && type1 !== '水平风')) {
             option.series[1].data.push([i, fHei, fVSpeed, fData[i]. data[index]])
           }
-          option.xAxis.data[i] = fData[i].timestamp.substring(10,18)
+          option.xAxis.data[i] = fData[i].timestamp.substring(9,18)
         }
       } else {
         option.xAxis.data[i] = ''

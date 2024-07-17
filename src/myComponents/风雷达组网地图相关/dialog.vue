@@ -71,8 +71,8 @@
                 <td>{{ k + 1 }}</td>
                 <td>{{ v.no }}</td>
                 <td>{{ v.device_name }}</td>
-                <td :class="v.status == '正常' ? 'color-green' : 'color-red'">
-                  {{ v.status == "正常" ? "在线" : "离线" }}
+                <td :class="v.status == '正常' ? 'color-green' : v.status == '超时'? 'color-red' :'color-inherit'">
+                  {{ v.status }}
                 </td>
               </tr>
             </template>

@@ -40,10 +40,11 @@
           v-loading="loading"
         >
           <el-tree
-            default-expand-all
+            :default-expand-all="false"
             ref="treeRef"
             node-key="id"
-            :data="data"
+            lazy
+            :load="loadNode"
             :render-content="renderContent"
             :props="defaultProps"
             @node-click="handleNodeClick"
@@ -69,7 +70,7 @@ import { eventbus } from "~/eventbus";
 import chartFkx from "./fkxV.vue";
 import { ref, reactive, onMounted, watch } from "vue";
 import moment from "moment";
-const loading = ref(true);
+const loading = ref(false);
 const size = ref<"" | "large" | "small">("small");
 const date = ref(moment().format("YYYYMMDD"));
 const value1 = ref<"水平风" | "垂直气流">("水平风");
@@ -84,31 +85,25 @@ const options2 = reactive([
 ]);
 const check = ref(false);
 interface Tree {
-  label: string;
-  children?: Tree[];
+  name: string
+  leaf?: boolean
 }
 
 const handleNodeClick = (data: Tree) => {
-  fetchFkxHisData(data.label);
+  if(data.leaf){
+    fetchFkxHisData(data.name);
+  }
 };
-
-let data = ref<Tree[]>([]);
 import { getDataList, getFkxHisData } from "~/api/重庆";
 onMounted(() => {
-  fetchDataList(moment().format("YYYYMMDD"));
+  // fetchDataList(moment().format("YYYYMMDD"));
 });
-let radar_id = "";
-if (location.href.endsWith("deviceA")) {
-  radar_id = "G3218";
-} else if (location.href.endsWith("deviceB")) {
-  radar_id = "G9590";
-} else if (location.href.endsWith("deviceC")) {
-  radar_id = "G1000";
-}
+let radar_id = location.href.substring(location.href.lastIndexOf('/')+1,location.href.length)
 let 风廓线数据: any = [];
 const fetchFkxHisData = (dateTime: string) => {
-  getFkxHisData({ radar_id, dateTime }).then((res) => {
-    风廓线数据 = res.data.data.files;
+  console.log(dateTime.replace(' ',''))
+  getFkxHisData({ radar_id, dateTime:dateTime.replace(' ','') }).then((res) => {
+    风廓线数据 = res.data.data.file.file_data;
     eventbus.emit("处理风廓线数据", 风廓线数据, value1.value, check.value, value2.value);
   });
 };
@@ -116,37 +111,58 @@ watch([value1, check, value2], ([v1, check, v2]) => {
   console.log(v1, check, v2);
   eventbus.emit("处理风廓线数据", 风廓线数据, v1, check, v2);
 });
-const fetchDataList = (date: string) => {
-  loading.value = true;
-  getDataList({
-    radar_id,
-    dataType: "fkx",
-    date,
-  }).then((res) => {
-    let id = 0;
-    function recur(list: Array<any>) {
-      list.map((v, k) => {
-        if (v.subdirectories instanceof Array) {
-          recur(v.subdirectories);
-          v.children = v.subdirectories;
-          delete v.subdirectories;
+
+import type Node from 'element-plus/es/components/tree/src/model/node'
+const loadNode = (node: Node, resolve: (data: Tree[]) => void) => {
+  console.log(node)
+  if (node.level === 0) {
+    loading.value = true
+    return getDataList({
+      radar_id,
+      dataType: "fkx",
+      path:'',
+    }).then((res) => {
+      let paths = res.data.data.path.map((name:string)=>{
+        return {
+          id:'',
+          name
         }
-        v.label = v.name;
-        v.id = id++;
-        delete v.name;
-      });
-    }
-    recur(res.data.data.files);
-    data.value = res.data.data.files;
-    loading.value = false;
-  });
-};
+      })
+      loading.value=false
+      return resolve(paths)
+    });
+  }else{
+    let path = node.data.id+'/'+node.data.name
+    return getDataList({
+      radar_id,
+      dataType: "fkx",
+      path,
+    }).then((res) => {
+      let prefix = 'CDL_S4000_Lidar10BQC07110410_WindProfile_DBS-5_Res030_StartIdx002_Sec_';
+      let files = res.data.data.files.filter((name:string)=>name.indexOf('WindProfile_DBS')>-1).map((name:string)=>{
+        return {
+          id:path,
+          name:name.substring(prefix.length,prefix.length+15),
+          leaf:true,
+        }
+      })
+      let paths = res.data.data.path.filter((name:string)=>name!='level1'&&name!='level3'&&name!='logs'&&name!='sensor').map((name:string)=>{
+        return {
+          id:path,
+          name
+        }
+      })
+      return resolve(paths.concat(files))
+    });
+  }
+}
 const query = () => {
-  fetchDataList(date.value);
+  // fetchDataList(date.value);
 };
 const defaultProps = {
-  children: "children",
-  label: "label",
+  label: 'name',
+  children: 'zones',
+  isLeaf: 'leaf',
 };
 const renderContent = (
   h: any,
@@ -158,17 +174,7 @@ const renderContent = (
     data: Tree;
   }
 ) => {
-  if (node.label.length > 10) {
-    return (
-      node.label.substring(8, 10) +
-      ":" +
-      node.label.substring(10, 12) +
-      ":" +
-      node.label.substring(12, 14)
-    );
-  } else {
-    return node.label;
-  }
+  return node.label
 };
 const treeRef = ref(null);
 </script>

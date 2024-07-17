@@ -6,6 +6,7 @@ import jx from "./subs/jx.js";
 import dev from "./subs/dev.js";
 import zh from "./subs/zh.js";
 import cq from "./subs/cq.js";
+import device from "./subs/device.js";
 export const useSettingStore = defineStore({
   id: 'setting',
   state:()=>({
@@ -32,17 +33,20 @@ export const useSettingStore = defineStore({
       ],
     },
     风雷达组网地图相关:{
+      等距环:false,
       relativeHeight:52,
-      风场数据:"信噪比",
-      反演风场:"风羽",
+      风场数据:"无",
+      反演风场:"无",
       高度:true,
-      速度:true,
       风向:true,
+      风速:true,
       垂直气流:true,
-      "zoom": 7.850443778917797,
+      时间:true,
+      请求时间:"",
+      "zoom": 6.612522982969934,
       "center": [
-        108.00233643253932,
-        30.134231836212066
+        108,
+        30.286192617004076
       ],
       ppiOpacity:1.0,
       mapOpacity:1.0,
@@ -530,6 +534,7 @@ export const useSettingStore = defineStore({
       ry,
       jx,
       cq,
+      device,
       {
         path: 'qqlogin',
         name: '3c1f8a79-4fe6-2263-08fb-477f961fc946',
@@ -606,6 +611,15 @@ export const useSettingStore = defineStore({
         hide:true,
         meta:{
           roles:['cq']
+        }
+      },
+      {
+        path: '',
+        name: '99961e0a-e574-0e1f-2e23-94f157b14b55',
+        redirect: '/device/synthesis',
+        hide:true,
+        meta:{
+          roles:['device']
         }
       },
       {

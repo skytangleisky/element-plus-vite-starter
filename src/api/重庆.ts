@@ -1,5 +1,5 @@
 import request from '../utils/request'
-export function getDataList(query:{radar_id:string,dataType:string,date:string}){
+export function getDataList(query:{radar_id:string,dataType:string,path:string}){
   return request({
     url: '/qt/dataList',
     method: 'post',
@@ -8,28 +8,36 @@ export function getDataList(query:{radar_id:string,dataType:string,date:string})
       "secretKey":"904c396f6956d02c59a6ad35c08f5678",
       "radar_id":query.radar_id,
       "dataType":query.dataType,
-      "dataTime":query.date
+      "path":query.path
     }
   })
 }
 
 export function getFkxHisData(query:{radar_id:string,dateTime:string}){
   return request({
-    url: '/qt/hisData/fkx',
+    url: '/qt/hisCSV/dbs',
     method: 'post',
-    data: {"version":"1.0","secretKey":"904c396f6956d02c59a6ad35c08f5678","radar_id":query.radar_id,"dataTime":query.dateTime}
+    data: {"version":"1.0","secretKey":"904c396f6956d02c59a6ad35c08f5678","radar_id":query.radar_id,"dataTime":query.dateTime,num:4}
   })
 }
 
 //mock
 export function getFkxRealData(query:{radar_id:string,dateTime:string}){
+  let data = {
+    "version": "1.0",
+    "secretKey": "904c396f6956d02c59a6ad35c08f5678",
+    "radar_id": query.radar_id,
+    "dataTime": query.dateTime,
+    "level":3,
+    "num":1
+  }
   return request({
-    url: '/backend/realData/fkx',
+    url: '/qt/realCSV/dbs',
     method: 'post',
     headers:{
       'content-type':'application/json'
     },
-    data:{}
+    data
   })
 }
 
@@ -41,7 +49,7 @@ export function getPPIRadial(query:{radar_id:string,dataTime:string}){
     "dataTime":query.dataTime,
   }
   return request({
-    url: '/qt/hisRadialVecData/ppi',
+    url: '/qt/hisCSV/ppi',
     method: 'post',
     headers:{
     'content-type':'application/json'
@@ -49,17 +57,15 @@ export function getPPIRadial(query:{radar_id:string,dataTime:string}){
     data
   })
 }
-export function getPPIGrid(query:{radar_id:string,dataTime:string,lon:number,lat:number}){
+export function getPPIGrid(query:{radar_id:string,dataTime:string}){
   let data = {
     "version":"1.0",
     "secretKey":"904c396f6956d02c59a6ad35c08f5678",
-    "lon":query.lon,
-    "lat":query.lat,
-    "radar_id":"G1000",
-    "dataTime":'20240710154908',
+    "radar_id":"A6418",
+    "dataTime":'20240715203223',
   }
   return request({
-    url: '/qt/realWindFieldData/ppi',
+    url: '/qt/realCSV/ppi',
     method: 'post',
     headers:{
     'content-type':'application/json'
@@ -79,6 +85,22 @@ export function getRHIRadial(query:{radar_id:string,dataTime:string}){
     method: 'post',
     headers:{
     'content-type':'application/json'
+    },
+    data
+  })
+}
+export function getSensorData(query:{radar_id:string,dataTime:string}){
+  let data = {
+    "version":"1.0",
+    "secretKey":"904c396f6956d02c59a6ad35c08f5678",
+    "radar_id":query.radar_id,
+    "dataTime":query.dataTime,
+  }
+  return request({
+    url: '/qt/sensor',
+    method: 'post',
+    headers:{
+      'content-type':'application/json'
     },
     data
   })

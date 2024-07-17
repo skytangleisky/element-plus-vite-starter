@@ -29,29 +29,62 @@ onMounted(() => {
 const currentTime = ref("");
 let timer: number;
 import moment from "moment";
+import {View} from '~/tools/index'
+const encoder = new TextEncoder()
+const decoder = new TextDecoder()
 const 处理风廓线数据 = (data: any, type1: string, diejia: string, type2: string) => {
   if (data) {
-    console.log(data);
+    let result:{[key:string]:any} = {}
+    const view = new View(encoder.encode(data).buffer)
+    let firstLine = decoder.decode(view.getLine()).trim().replace(RegExp(/,$/g),'')
+    result.HeaderInfo = {}
+    firstLine.split(',').map((str:string)=>{
+      let item = str.split(':')
+      if(item.length==2){
+        result.HeaderInfo[item[0]]=item[1]
+      }
+    })
+    let secondLine = decoder.decode(view.getLine()).trim().replace(RegExp(/,$/g),'')
+    result.radials = []
+    while(!view.reachEnd()){
+      let item:{[key:string]:any} = {}
+      let thirdLine = decoder.decode(view.getLine()).trim().replace(RegExp(/,$/g),'')
+      for(let i=0;i<12;i++){
+        item[secondLine.split(',')[i]] = thirdLine.split(',')[i]
+      }
+      item.list = []
+      for(let i=12;i<thirdLine.split(',').length;i+=4){
+        let lib = thirdLine.split(',')
+        let distance = Number(secondLine.split(',')[i+0].split(' ')[0].substring(0,secondLine.split(',')[i+0].split(' ')[0].length-1))
+        item.list.push({
+          distance,
+          [secondLine.split(',')[i+0].split(' ')[1]]:Number(lib[i+0]),
+          [secondLine.split(',')[i+1].split(' ')[1]]:Number(lib[i+1]),
+          [secondLine.split(',')[i+2].split(' ')[1]]:Number(lib[i+2]),
+          [secondLine.split(',')[i+3].split(' ')[1]]:Number(lib[i+3]),
+        })
+      }
+      result.radials.push(item)
+    }
+    console.log(result)
     dbs && dbs.clear();
     let Fdatas: any[] = [];
-    data.map((v: any, k: number) => {
+    result.radials.map((v: any, k: number) => {
       if (k === 0) {
-        currentTime.value = moment(v.name, "YYYYMMDDHHmmss").format(
-          "YYYY-MM-DD HH:mm:ss"
-        );
+        currentTime.value = v.Date_time
       }
-      let data_time = moment(v.name, "YYYYMMDDHHmmss").format("YYYY-MM-DD HH:mm:ss");
-      let data_list = v.subdirectories;
+      let data_time = v.Date_time;
+      let data_list = v.list;
       let fData: { [key: string]: any } = {};
       fData.timestamp = data_time;
       fData.data = [];
       data_list.map((item: any) => {
         fData.data.push({
-          fHei: item.fHei.toString(),
-          fHAngle: item.fHAngle.toString(),
-          fHSpeed: item.fHSpeed.toString(),
-          fVSpeed: item.fVSpeed.toString(),
-          iBelieveable: item.fHorBelieve.toString(),
+          fHei: item.distance,
+          fHAngle: item.WindDirection,
+          fHSpeed: item.WindSpeed,
+          fVSpeed: item.ZWind,
+          iBelieveable: item.SNR,
         });
       });
       Fdatas.push(fData);

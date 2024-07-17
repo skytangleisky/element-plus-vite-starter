@@ -68,8 +68,8 @@ const users = {
 //     method: 'DELETE',
 //     response: (req,res) => {
 //         res.clearCookie('Admin-Token')
-//         res.send({
+//         return {
 //             message: 'success'
-//         })
+//         }
 //     }
 // }]

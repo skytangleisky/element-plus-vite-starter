@@ -1,7 +1,7 @@
 <template>
   <datatable
     style="padding: 10px"
-    database="host=tanglei.top&port=3306&user=root&password=tanglei&database=union"
+    database="host=tanglei.top&port=3308&user=root&password=mysql&database=weatherservice"
     table="device"
     :headerOption="headerOption"
   ></datatable>
@@ -22,6 +22,9 @@ const headerOption = reactive({
   },
   device_name: {
     label: "设备编号",
+  },
+  device_short_name: {
+    label: "设备简称",
   },
   device_type: {
     label: "设备类型",

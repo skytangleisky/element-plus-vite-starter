@@ -27,9 +27,11 @@
           v-loading="loading"
         >
           <el-tree
+            :default-expand-all="false"
             ref="treeRef"
             node-key="id"
-            :data="data"
+            lazy
+            :load="loadNode"
             :render-content="renderContent"
             :props="defaultProps"
             @node-click="handleNodeClick"
@@ -79,60 +81,64 @@ interface Tree {
 }
 
 const handleNodeClick = (data: Tree) => {
-  radar_time.value = data.label.substring(0, 14);
+  radar_time.value = data.name.replace(' ','')
 };
 
-let data = ref<Tree[]>([]);
 import { getDataList } from "~/api/重庆";
 onMounted(() => {
-  fetchDataList(moment().format("YYYYMMDD"));
+  // fetchDataList(moment().format("YYYYMMDD"));
 });
-const radar_id = ref("");
-if (location.href.endsWith("deviceA")) {
-  radar_id.value = "G3218";
-} else if (location.href.endsWith("deviceB")) {
-  radar_id.value = "G9590";
-} else if (location.href.endsWith("deviceC")) {
-  radar_id.value = "G1000";
-}
-const fetchDataList = (date: string) => {
-  loading.value = true;
-  getDataList({
-    radar_id: radar_id.value,
-    dataType: "ppi",
-    date,
-  }).then((res) => {
-    let id = 0;
-    function recur(list: Array<any>) {
-      list.map((v, k) => {
-        if (v.subdirectories instanceof Array) {
-          recur(v.subdirectories);
-          v.children = v.subdirectories;
-          delete v.subdirectories;
-        }
-        v.label = v.name;
-        v.id = id++;
-        delete v.name;
-      });
-    }
-    recur(res.data.data.files);
-    data.value = res.data.data.files;
-    if (res.data.data.files[0]) {
-      let node =
-        res.data.data.files[0].children[res.data.data.files[0].children.length - 1];
-      nextTick(() => {
-        (treeRef.value as any).setCurrentKey(node.id);
-      });
-    }
-    loading.value = false;
-  });
-};
+let radar_id = location.href.substring(location.href.lastIndexOf('/')+1,location.href.length)
 const query = () => {
-  fetchDataList(date.value);
+  // fetchDataList(date.value);
 };
+import type Node from 'element-plus/es/components/tree/src/model/node'
+const loadNode = (node: Node, resolve: (data: Tree[]) => void) => {
+  if (node.level === 0) {
+    loading.value = true
+    return getDataList({
+      radar_id,
+      dataType: "ppi",
+      path:'',
+    }).then((res) => {
+      let paths = res.data.data.path.map((name:string)=>{
+        return {
+          id:'',
+          name
+        }
+      })
+      loading.value=false
+      return resolve(paths)
+    });
+  }else{
+    let path = node.data.id+'/'+node.data.name
+    return getDataList({
+      radar_id,
+      dataType: "ppi",
+      path,
+    }).then((res) => {
+      let prefix = 'CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pth15.00_Spd6.00_Res030_StartIdx002_VADStart002_VADStop190_VADWind_Sec_';
+      let files = res.data.data.files.filter((name:string)=>name.indexOf('_PPI_')>-1).map((name:string)=>{
+        return {
+          id:path,
+          name:name.substring(prefix.length,prefix.length+15),
+          leaf:true,
+        }
+      })
+      let paths = res.data.data.path.filter((name:string)=>name!='level1'&&name!='level3'&&name!='logs'&&name!='sensor').map((name:string)=>{
+        return {
+          id:path,
+          name
+        }
+      })
+      return resolve(paths.concat(files))
+    });
+  }
+}
 const defaultProps = {
-  children: "children",
-  label: "label",
+  label: 'name',
+  children: 'zones',
+  isLeaf: 'leaf',
 };
 const renderContent = (
   h: any,
@@ -144,23 +150,7 @@ const renderContent = (
     data: Tree;
   }
 ) => {
-  if (node.label.indexOf("~") > -1) {
-    return (
-      node.label.substring(8, 10) +
-      ":" +
-      node.label.substring(10, 12) +
-      ":" +
-      node.label.substring(12, 14) +
-      "~" +
-      node.label.substring(23, 25) +
-      ":" +
-      node.label.substring(25, 27) +
-      ":" +
-      node.label.substring(27, 29)
-    );
-  } else {
-    return node.label;
-  }
+  return node.label
 };
 const treeRef = ref(null);
 </script>

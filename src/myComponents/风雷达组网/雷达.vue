@@ -35,7 +35,10 @@ function windowToCanvas(x, y, canvas) {
     y: ((y - box.top) / box.height) * canvas.height,
   };
 }
+import {View} from '~/tools'
 import { getPPIRadial, getRHIRadial } from "~/api/重庆.ts";
+const decoder = new TextDecoder()
+const encoder = new TextEncoder()
 // import 雷达数据 from './雷达PPI数据.js'
 // import 雷达数据 from './雷达RHI数据.js'
 
@@ -300,7 +303,7 @@ export default {
         for (let i = 0; i < library_num; i++) {
           if (Math.random() > 0.1) {
             array.push({
-              color: "#" + Math.random().toString(16).substr(2, 6).toUpperCase() + "88",
+              color: "#" + Math.random().toString(16).substring(2, 8).toUpperCase() + "88",
             });
           } else {
             array.push(undefined);
@@ -313,7 +316,106 @@ export default {
       }
     },
     processData(res) {
-      let dataArr = [];
+      let result = {}
+      const view = new View(encoder.encode(res.data.file.file_data).buffer)
+      let firstLine = decoder.decode(view.getLine()).split(',')
+      result.HeaderInfo = {}
+      firstLine.map((str)=>{
+        let item = str.split(':')
+        if(item.length==2){
+          result.HeaderInfo[item[0]]=item[1]
+        }
+      })
+      let secondLine = decoder.decode(view.getLine()).trim().replace(RegExp(/,$/g),'').split(',')
+      result.radials = []
+      while(!view.reachEnd()){
+        let item = {}
+        let thirdLine = decoder.decode(view.getLine()).trim().replace(RegExp(/,$/g),'').split(',')
+        for(let i=0;i<12;i++){
+          item[secondLine[i]] = thirdLine[i]
+        }
+        item.list = []
+        for(let i=12;i<thirdLine.length;i+=4){
+          let distance = Number(secondLine[i+0].split(' ')[0].substring(0,secondLine[i+0].split(' ')[0].length-1))
+          item.list.push({
+            distance,
+            [secondLine[i+0].split(' ')[1]]:Number(thirdLine[i+0]),
+            [secondLine[i+1].split(' ')[1]]:Number(thirdLine[i+1]),
+            [secondLine[i+2].split(' ')[1]]:Number(thirdLine[i+2]),
+            [secondLine[i+3].split(' ')[1]]:Number(thirdLine[i+3]),
+          })
+        }
+        result.radials.push(item)
+      }
+      console.log(result)
+      let dataArr = []
+      for(let i=0;i<result.radials.length;i++){
+        let radial = result.radials[i]
+        let array = [undefined]
+        let HorAngel = radial.Azimuth
+        let Time = radial.Date_time
+        let VerAngel = radial.Pitch
+        if (this.type == "ppi") {
+          this.distance = 30 * Math.cos((VerAngel / 180) * Math.PI);
+        }
+        radial.list.map(lib=>{
+          let item = {
+                HorAngel,
+                Time,
+                VerAngel,
+                Hei: lib.distance,
+                Speed: lib.WindSpeed,
+                PK: lib.PK,
+                SNR: radial[r].SNR,
+                PKQD: radial[r].PKQD,
+              };
+              if (this.type == "ppi") {
+                if (this.PPIval === 3) {
+                  if (radial[r].Speed === 999) {
+                    item = undefined;
+                  } else {
+                    item.color = verticalFlowColor(radial[r].Speed);
+                    item.distance = r;
+                  }
+                } else if (this.PPIval === 4) {
+                  item.color = getPKColor(radial[r].PK);
+                  item.distance = r;
+                } else if (this.PPIval === 5) {
+                  item.color = getSNRColor(radial[r].SNR);
+                  item.distance = r;
+                } else if (this.PPIval === 6) {
+                  item.color = getPKQDColor(radial[r].PKQD);
+                  item.distance = r;
+                }
+              } else if (this.type == "rhi") {
+                if (this.RHIval === 1) {
+                  if (radial[r].Speed === 999) {
+                    item = undefined;
+                  } else {
+                    item.color = verticalFlowColor(radial[r].Speed);
+                    item.distance = r;
+                  }
+                } else if (this.RHIval === 2) {
+                  item.color = getPKColor(radial[r].PK);
+                  item.distance = r;
+                } else if (this.RHIval === 3) {
+                  item.color = getSNRColor(radial[r].SNR);
+                  item.distance = r;
+                } else if (this.RHIval === 4) {
+                  item.color = getPKQDColor(radial[r].PKQD);
+                  item.distance = r;
+                }
+              }
+              array.push(item);
+        })
+
+        if (this.type == "ppi") {
+          dataArr.push({ Angle: HorAngel - 90, array });
+        } else if (this.type == "rhi") {
+          dataArr.push({ Angle: VerAngel, array });
+        }
+      }
+      // let dataArr = [];
       for (let k in res.data) {
         if (k !== "radar_id" && k !== "radar_name") {
           let radial = res.data[k];

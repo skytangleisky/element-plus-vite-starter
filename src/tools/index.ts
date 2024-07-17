@@ -391,8 +391,11 @@ export const getHue = (min:number, v:number, max:number) => {
   return percent < 0.5 ? ((0.5 - percent) / 0.5) * 60 + 180 : ((1 - percent) / 0.5) * 60;
 };
 export const getColor = (v:number) => `hsl(${getHue(0,v,60)},100%,50%)`
-export const getFeather = (v:number) =>
-  v <= 0
+export const getFeather = (v:number) =>{
+  if(v==null||v==undefined||Math.abs(v)===999||v==0){
+    return ''
+  }
+  return v <= 0
     ? 0
     : v <= 1
     ? 1
@@ -455,6 +458,7 @@ export const getFeather = (v:number) =>
     : v <= 58
     ? 58
     : 60;
+}
 export const getCoord = (i:number, j:number, v:number) => ({
   x1: (i * (16 + 20)) / (16 * 10 + 20 * (10 - 1)),
   y1: (j * (32 + 20)) / (32 * 4 + 20 * (4 - 1)),
@@ -464,6 +468,7 @@ export const getCoord = (i:number, j:number, v:number) => ({
 });
 export const addFeatherImages = async( map:any ) => {
   let result:{[key:string]:any} = await loadImage(imageUrl, 340, 188, {
+    feather: getCoord(3, 3, 0),
     feather0: getCoord(0, 0, 0),
     feather1: getCoord(1, 0, 1),
     feather2: getCoord(2, 0, 2),
@@ -546,6 +551,7 @@ export const addFeatherImages = async( map:any ) => {
 }
 export const addArrowImages = async( map:any ) => {
   let result:{[key:string]:any} = await loadImage(arrowUrl, 340, 188, {
+    arrow: getCoord(3, 3, 0),
     arrow0: getCoord(0, 0, 0),
     arrow1: getCoord(1, 0, 1),
     arrow2: getCoord(2, 0, 2),

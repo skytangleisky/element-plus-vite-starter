@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@mapbox/mapbox-gl-draw": "^1.4.3",
-    "@orillusion/core": "^0.6.9",
+    "@orillusion/core": "^0.8.1",
     "@pixi/utils": "7.2.4",
     "@rollup/plugin-inject": "^5.0.3",
     "@turf/helpers": "^6.5.0",

@@ -38,11 +38,14 @@
       </collapse-card>
     </div>
     <div class="item">
-      <collapse-card title="DBS" v-model:show="showDBS" :show-collapse="false">
+      <collapse-card title="风廓线" v-model:show="showDBS" :show-collapse="false">
         <div class="subitem">
           <span class="whitespace-nowrap">相对高度</span>
+          <el-icon @click="upward()">
+            <svg t="1721132139964" class="icon hover:color-red active:color-inherit" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="19449" width="200" height="200"><path d="M873.8816 150.1184C973.9264 250.2656 1024 370.8928 1024 512c0 141.2096-50.0736 261.8368-150.1184 361.8816C773.7344 973.9264 653.1072 1024 512 1024c-141.1072 0-261.7344-50.0736-361.8816-150.1184C50.0736 773.8368 0 653.2096 0 512c0-141.1072 50.0736-261.7344 150.1184-361.8816C250.2656 50.0736 370.8928 0 512 0 653.1072 0 773.7344 50.0736 873.8816 150.1184zM819.712 526.7456 507.0848 211.6608 192 526.7456l56.6272 54.1696 219.0336-219.0336 0 477.4912 78.7456 0L546.4064 361.8816l219.0336 219.0336L819.712 526.7456z" p-id="19450"></path></svg>
+          </el-icon>
           <el-select
-            style="width: 100px"
+            style="width: 80px"
             v-model="setting.风雷达组网地图相关.relativeHeight"
             placeholder=""
             size="small"
@@ -54,6 +57,9 @@
               :label="item.label"
             ></el-option>
           </el-select>
+          <el-icon @click="downward()">
+            <svg t="1721132139964" class="icon rotate-180deg hover:color-red active:color-inherit" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="19449" width="200" height="200"><path d="M873.8816 150.1184C973.9264 250.2656 1024 370.8928 1024 512c0 141.2096-50.0736 261.8368-150.1184 361.8816C773.7344 973.9264 653.1072 1024 512 1024c-141.1072 0-261.7344-50.0736-361.8816-150.1184C50.0736 773.8368 0 653.2096 0 512c0-141.1072 50.0736-261.7344 150.1184-361.8816C250.2656 50.0736 370.8928 0 512 0 653.1072 0 773.7344 50.0736 873.8816 150.1184zM819.712 526.7456 507.0848 211.6608 192 526.7456l56.6272 54.1696 219.0336-219.0336 0 477.4912 78.7456 0L546.4064 361.8816l219.0336 219.0336L819.712 526.7456z" p-id="19450"></path></svg>
+          </el-icon>
         </div>
         <div class="subitem">
           <span>风杆</span>
@@ -88,7 +94,7 @@
         <div class="subitem">
           <span>风速</span>
           <el-switch
-            v-model="setting.风雷达组网地图相关.速度"
+            v-model="setting.风雷达组网地图相关.风速"
             inline-prompt
             :active-icon="Check"
             :inactive-icon="Close"
@@ -105,9 +111,20 @@
             size="small"
           />
         </div>
+        <div class="subitem">
+          <span>时间</span>
+          <span>{{ setting.风雷达组网地图相关.请求时间 }}</span>
+          <el-switch
+            v-model="setting.风雷达组网地图相关.时间"
+            inline-prompt
+            :active-icon="Check"
+            :inactive-icon="Close"
+            size="small"
+          />
+        </div>
       </collapse-card>
     </div>
-    <div class="item">
+    <div class="item" v-if="checkPermission(['admin'])">
       <collapse-card title="PPI" v-model:show="showPPI" :show-collapse="false">
         <div class="subitem">
           <span class="whitespace-nowrap">风场不透明度</span>
@@ -201,6 +218,16 @@
             size="small"
           />
         </div>
+        <div class="subitem" v-if="checkPermission(['admin'])">
+          <span>等距环</span>
+          <el-switch
+            v-model="setting.风雷达组网地图相关.等距环"
+            inline-prompt
+            :active-icon="Check"
+            :inactive-icon="Close"
+            size="small"
+          />
+        </div>
         <div class="subitem">
           <span>默认位置</span>
           <el-icon
@@ -215,6 +242,7 @@
   </div>
 </template>
 <script lang="ts" setup>
+import { checkPermission } from "~/tools";
 import { watch, ref, onMounted, onBeforeUnmount, h, reactive } from "vue";
 import { Check, Close, HomeFilled } from "@element-plus/icons-vue";
 import { 雷达统计接口 } from "~/api/光恒/station";
@@ -236,8 +264,24 @@ const options2 = reactive([
   { value: "风矢", label: "风矢" },
 ]);
 const heightOptions = reactive<Array<any>>([]);
-for (let i = 1976; i >= 52; i -= 26) {
-  heightOptions.push({ value: i, label: i + "米" });
+for (let i = 200; i >= 1; i --) {
+  heightOptions.push({ value: i, label:"第" + i + "个" });
+}
+const upward = () => {
+  for(let i=heightOptions.length-1;i>=0;i--){
+    if(heightOptions[i].value>setting.风雷达组网地图相关.relativeHeight){
+      setting.风雷达组网地图相关.relativeHeight = heightOptions[i].value
+      break
+    }
+  }
+}
+const downward = () => {
+  for(let i=0;i<heightOptions.length;i++){
+    if(heightOptions[i].value<setting.风雷达组网地图相关.relativeHeight){
+      setting.风雷达组网地图相关.relativeHeight = heightOptions[i].value
+      break
+    }
+  }
 }
 const route = useRoute();
 const setting = useSettingStore();

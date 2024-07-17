@@ -104,7 +104,7 @@ export default defineConfig({
     //   // cert: fs.readFileSync('tanglei.site.pem'),
     //   // key: fs.readFileSync('tanglei.site.key')
     // },
-    open:'https://dev.tanglei.top',
+    open:'http://localhost:5173',
     host:true,
     port:5173,
     strictPort:true,
