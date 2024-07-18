@@ -343,10 +343,10 @@ export function loadImage(url:string,width:number,height:number,options:any){
         let result:{[key:string]:any} = {}
         for(let k in options){
           let v = options[k]
-          let x = v.x1*cvs.width
-          let y = v.y1*cvs.height
-          let w = (v.x2-v.x1)*cvs.width
-          let h = (v.y2-v.y1)*cvs.height
+          let x = Math.round(v.x1*cvs.width)
+          let y = Math.round(v.y1*cvs.height)
+          let w = Math.round((v.x2-v.x1)*cvs.width)
+          let h = Math.round((v.y2-v.y1)*cvs.height)
           if(v.fill){
             let preGlobalCompositeOperation = ctx.globalCompositeOperation
             ctx.globalCompositeOperation = 'source-in'
@@ -460,10 +460,10 @@ export const getFeather = (v:number) =>{
     : 60;
 }
 export const getCoord = (i:number, j:number, v:number) => ({
-  x1: (i * (16 + 20)) / (16 * 10 + 20 * (10 - 1)),
-  y1: (j * (32 + 20)) / (32 * 4 + 20 * (4 - 1)),
-  x2: (i * (16 + 20)) / (16 * 10 + 20 * (10 - 1)) + 16 / (16 * 10 + 20 * (10 - 1)),
-  y2: (j * (32 + 20)) / (32 * 4 + 20 * (4 - 1)) + 32 / (32 * 4 + 20 * (4 - 1)),
+  x1: (i * (16 + 20)) / 340,
+  y1: (j * (32 + 20)) / 188,
+  x2: (i * (16 + 20)) / 340 + 16 / 340,
+  y2: (j * (32 + 20)) / 188 + 32 / 188,
   fill: getColor(v),
 });
 export const addFeatherImages = async( map:any ) => {

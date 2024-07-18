@@ -22,14 +22,14 @@ export function getFkxHisData(query:{radar_id:string,dateTime:string}){
 }
 
 //mock
-export function getFkxRealData(query:{radar_id:string,dateTime:string}){
+export function getFkxRealData(query:{radar_id:string,dateTime:string,num:number}){
   let data = {
     "version": "1.0",
     "secretKey": "904c396f6956d02c59a6ad35c08f5678",
     "radar_id": query.radar_id,
     "dataTime": query.dateTime,
     "level":3,
-    "num":1
+    "num":query.num
   }
   return request({
     url: '/qt/realCSV/dbs',

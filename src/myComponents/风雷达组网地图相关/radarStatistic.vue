@@ -112,7 +112,7 @@
           />
         </div>
         <div class="subitem">
-          <span>时间</span>
+          <span>请求时间</span>
           <span>{{ setting.风雷达组网地图相关.请求时间 }}</span>
           <el-switch
             v-model="setting.风雷达组网地图相关.时间"
@@ -264,8 +264,8 @@ const options2 = reactive([
   { value: "风矢", label: "风矢" },
 ]);
 const heightOptions = reactive<Array<any>>([]);
-for (let i = 200; i >= 1; i --) {
-  heightOptions.push({ value: i, label:"第" + i + "个" });
+for (let i = 300; i >= 1; i --) {
+  heightOptions.push({ value: i, label:"第" + i + "层" });
 }
 const upward = () => {
   for(let i=heightOptions.length-1;i>=0;i--){

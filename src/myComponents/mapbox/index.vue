@@ -511,7 +511,7 @@ onMounted(() => {
                 // the style in Mapbox Studio and click the "Images" tab.
                 // To add a new image to the style at runtime see
                 // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-                "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
+                "icon-anchor": ["match", ["get", "风速"], 0, "center", "top-right"],
                 "icon-image": ["get", "image"],
                 "icon-size": 1,
                 "icon-rotate": ["get", "风向"],

@@ -53,20 +53,20 @@
     </div>
     <Dialog class="absolute" style="left: 240px; top: 10px"></Dialog>
     <radar-statistic></radar-statistic>
-    <Legend style="bottom: 40px;z-index: 1;"></Legend>
+    <Legend style="bottom: 10px;z-index: 1;"></Legend>
     <div
       :class="`right-drawer ${
         setting.disappear ? 'disappear' : ''
       } b-solid b-0 b-l-1px dark:b-color-#888`"
     >
-      <div style="overflow: auto; scroll-snap-type: none">
+      <div style="height: 100%;display:flex;flex-direction: column;overflow: auto; scroll-snap-type: none;">
         <chart-info></chart-info>
         <chart-fkx></chart-fkx>
-        <chart-dom></chart-dom>
-        <chartDirection></chartDirection>
-        <chartSpeed></chartSpeed>
-        <chartSNR></chartSNR>
-        <chart-th></chart-th>
+        <!-- <chart-dom v-if="checkPermission(['admin'])"></chart-dom> -->
+        <!-- <chartDirection v-if="checkPermission(['admin'])"></chartDirection> -->
+        <!-- <chartSpeed v-if="checkPermission(['admin'])"></chartSpeed> -->
+        <!-- <chartSNR v-if="checkPermission(['admin'])"></chartSNR> -->
+        <!-- <chart-th v-if="checkPermission(['admin'])"></chart-th> -->
       </div>
       <el-icon
         class="left--29px z-999 bg-#eee dark:bg-#304156 dark:color-#888"
@@ -97,6 +97,7 @@
       </el-icon>
     </div>
     <time-line
+      v-if="checkPermission(['admin'])"
       :data="data"
       :toLeft="change"
       :toRight="change"
@@ -259,13 +260,13 @@ const info = ref({
 let dbsData: { [key: string]: any } = {};
 let ppiData: { [key: string]: any } = {};
 import { useStationStore } from "~/stores/station";
-import chartTh from "~/myComponents/echarts/T_H.vue";
-import chartDom from "~/myComponents/echarts/index.vue";
-import chartFkx from "~/myComponents/echarts/fkx.vue";
-import chartInfo from "~/myComponents/echarts/info.vue";
-import chartSNR from "~/myComponents/echarts/SNR.vue";
-import chartSpeed from "~/myComponents/echarts/Speed.vue";
-import chartDirection from "~/myComponents/echarts/Direction.vue";
+import chartTh from "~/myComponents/echarts/重庆_T_H.vue";
+import chartDom from "~/myComponents/echarts/重庆_index.vue";
+import chartFkx from "~/myComponents/echarts/重庆_fkx.vue";
+import chartInfo from "~/myComponents/echarts/重庆_info.vue";
+import chartSNR from "~/myComponents/echarts/重庆_SNR.vue";
+import chartSpeed from "~/myComponents/echarts/重庆_Speed.vue";
+import chartDirection from "~/myComponents/echarts/重庆_Direction.vue";
 import { useRoute } from "vue-router";
 const route = useRoute();
 import radarStatistic from "./radarStatistic.vue";
@@ -295,8 +296,6 @@ watch(
     }
   }
 );
-
-console.log("route.query", route.query);
 const station = useStationStore();
 /** @type {import('ol/style/literal.js').LiteralStyle} */
 
@@ -320,7 +319,7 @@ const points = {
           radar_id:'',
           风速: speed,
           image: "feather" + getFeather(speed),
-          风向: 0,
+          风向: NaN,
           高度:NaN,
           垂直气流:NaN,
           时间:NaN,
@@ -364,14 +363,15 @@ const clickFunc = (e) => {
     setting.disappear = false;
     for (let i = 0; i < bus.风雷达组网地图相关雷达站点信息.length; i++) {
       if (bus.风雷达组网地图相关雷达站点信息[i].no == e.features[0].properties.radar_id) {
-        station
-          .查询雷达最新的径向风数据接口({
-            radar_id: e.features[0].properties.radar_id.replaceAll("-", ""),
-          })
-          .then((res) => {
-            bus.radialWindData = res.data.data;
-          });
+        // station
+        //   .查询雷达最新的径向风数据接口({
+        //     radar_id: e.features[0].properties.radar_id.replaceAll("-", ""),
+        //   })
+        //   .then((res) => {
+        //     bus.radialWindData = res.data.data;
+        //   });
         station.active = bus.风雷达组网地图相关雷达站点信息[i].no;
+        fetch最近风廓线数据()
         $(`#${station.active}`)[0].scrollIntoView({
           block: "nearest",
           behavior: "smooth",
@@ -645,7 +645,7 @@ const loadFunc = async () => {
     type:"geojson",
     data: inversionPPIData,
   })
-  let anchor = ["match", ["get", "风速"], 0, "center", "bottom-left"]
+  let anchor = ["match", ["get", "风速"], 0, "center", "top-right"]
   if(setting.风雷达组网地图相关.反演风场=='风矢'){
     anchor = 'top'
   }
@@ -969,7 +969,7 @@ const loadFunc = async () => {
       // the style in Mapbox Studio and click the "Images" tab.
       // To add a new image to the style at runtime see
       // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-      "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
+      "icon-anchor": ["match", ["get", "风速"], 0, "center", "top-right"],
       "icon-image": ["get", "image"],
       "icon-size": 1.2,
       "icon-rotate": ["get", "风向"],
@@ -1208,6 +1208,9 @@ function work(){
     points.data.features.length=0;
     res.data[0].map((item:any) => {
       if (item.hide !== "true") {
+        if(item.no==station.active){
+          fetch最近风廓线数据()
+        }
         let position = wgs84togcj02(sixty2Float(item.lng), sixty2Float(item.lat)) as [
           number,
           number
@@ -1323,10 +1326,11 @@ function work(){
         //   }
         // })
         let time = moment()
-        setting.风雷达组网地图相关.请求时间 = time.format("YYYY-MM-DD HH:mm:ss")
+        setting.风雷达组网地图相关.请求时间 = time.format("HH:mm:ss")
         getFkxRealData({
           radar_id,
           dateTime: time.format("YYYYMMDDHHmmss"),
+          num:1
         }).then((res) => {
           let view:View|null = new View(encoder.encode(res.data.data.file.file_data).buffer)
           let result:{[key:string]:any} = {HeaderInfo:{},data:[]}
@@ -1399,7 +1403,7 @@ function work(){
                     item.properties.风速 = NaN;
                     item.properties.风向 = NaN;
                     item.properties.垂直气流 = NaN
-                    item.properties.高度 = NaN
+                    item.properties.高度 = lib['distance']
                     item.properties.时间 = moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
                     item.properties.color = '#f00'
                     item.properties.image = "feather";
@@ -1414,6 +1418,7 @@ function work(){
                   item.properties.风向 = NaN;
                   item.properties.垂直气流 = NaN
                   item.properties.高度 = NaN
+                  item.properties.时间 = NaN
                   item.properties.image = "feather";
                   item.properties.color = '#000'
                 }
@@ -1535,6 +1540,43 @@ let pointDataFeatures:{type:string,features:Array<any>} = {
   type: "FeatureCollection",
   features: [],
 };
+function fetch最近风廓线数据(){
+  getFkxRealData({radar_id:station.active,dateTime:moment().format('YYYYMMDDHHmmss'),num:6}).then((res=>{
+    const v = new View(encoder.encode(res.data.data.file.file_data).buffer)
+    let result:{[key:string]:any} = {HeaderInfo:{},data:[]}
+    let firstLine = decoder.decode(v.getLine()).replace(/,\r\n$/,'').split(',')
+    for(let i=1;i<firstLine.length;i++){
+      let item = firstLine[i].split(':')
+      if(item.length==2){
+        result.HeaderInfo[item[0]] = item[1]
+      }
+    }
+    let secondLine = decoder.decode(v.getLine()).replace(/,\r\n$/,'').split(',')
+    while(!v.reachEnd()){
+      let radial:{[key:string]:any} = {list:[]}
+      let thirdLine = decoder.decode(v.getLine()).replace(/,\r\n$/,'').split(',')
+      for(let i=0;i<9;i++){
+        radial[secondLine[i]] = thirdLine[i]
+      }
+      for(let i=9;i<thirdLine.length;i+=9){
+        radial.list.push({
+          distance:Number(secondLine[i].split(' ')[0].substring(0,secondLine[i].split(' ')[0].length-1)),
+          [secondLine[i+0].split(' ').slice(1).join(' ')]:Number(thirdLine[i+0]),
+          [secondLine[i+1].split(' ').slice(1).join(' ')]:Number(thirdLine[i+1]),
+          [secondLine[i+2].split(' ').slice(1).join(' ')]:Number(thirdLine[i+2]),
+          [secondLine[i+3].split(' ').slice(1).join(' ')]:Number(thirdLine[i+3]),
+          [secondLine[i+4].split(' ').slice(1).join(' ')]:Number(thirdLine[i+4]),
+          [secondLine[i+5].split(' ').slice(1).join(' ')]:Number(thirdLine[i+5]),
+          [secondLine[i+6].split(' ').slice(1).join(' ')]:Number(thirdLine[i+6]),
+          [secondLine[i+7].split(' ').slice(1).join(' ')]:Number(thirdLine[i+7]),
+          [secondLine[i+8].split(' ').slice(1).join(' ')]:Number(thirdLine[i+8]),
+        })
+      }
+      result.data.push(radial)
+    }
+    bus.avgWindData_重庆 = result
+  }))
+}
 onMounted(() => {
   stationMenu = stationMenuRef.value as HTMLDivElement;
   map = new mapboxgl.Map({
@@ -1614,6 +1656,7 @@ watch(isDark,isDark=>{
     map.setPaintProperty('风向图层','text-color','white')
     map.setPaintProperty('风速图层','text-color','white')
     map.setPaintProperty('时间图层','text-color','white')
+    map.setPaintProperty('stationLayer','circle-stroke-color','white')
     points.data.features.forEach(feature=>{
       feature.properties.color = 'white'
     })
@@ -1627,6 +1670,7 @@ watch(isDark,isDark=>{
     map.setPaintProperty('风向图层','text-color','black')
     map.setPaintProperty('风速图层','text-color','black')
     map.setPaintProperty('时间图层','text-color','black')
+    map.setPaintProperty('stationLayer','circle-stroke-color','black')
     points.data.features.forEach(feature=>{
       feature.properties.color = 'black'
     })
@@ -1758,7 +1802,7 @@ watch(
                     item.properties.风速 = NaN;
                     item.properties.风向 = NaN;
                     item.properties.垂直气流 = NaN
-                    item.properties.高度 = NaN
+                    item.properties.高度 = lib['distance']
                     item.properties.时间 = moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
                     item.properties.color = '#f00'
                     item.properties.image = "feather";
@@ -1813,7 +1857,7 @@ watch(()=>setting.风雷达组网地图相关.反演风场,(val)=>{
     if(val=='风矢'){
       map.setLayoutProperty('inversionLayer','icon-anchor',"top")
     }else{
-      map.setLayoutProperty('inversionLayer','icon-anchor',["match", ["get", "风速"], 0, "center", "bottom-left"])
+      map.setLayoutProperty('inversionLayer','icon-anchor',["match", ["get", "风速"], 0, "center", "top-right"])
     }
     map.getSource('inversionPPIData').setData(inversionPPIData)
   }

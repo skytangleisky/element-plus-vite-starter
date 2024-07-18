@@ -126,7 +126,6 @@ const options = reactive({
 watch(
   [() => bus.风雷达组网地图相关雷达站点信息, () => options.value],
   ([result, value]) => {
-    console.log(result);
     options.list = result.filter(
       (item) => (item.device_name.indexOf(value) > -1 || item.no.indexOf(value) > -1)&& item.hide !== "true"
     );
