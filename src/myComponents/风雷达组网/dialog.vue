@@ -66,7 +66,7 @@
             <tr
               :id="'风雷达组网-' + v.strID"
               :class="`${
-                station.风雷达组网界面被选中的设备 == v.strID ? 'bg-gray-5' : 'bg-transparent'
+                station.风雷达组网地图相关被选中的设备 == v.strID ? 'bg-gray-5' : 'bg-transparent'
               }`"
               v-for="(v, k) in options.list"
               :key="v.strID"
@@ -172,7 +172,7 @@ const click = (event: MouseEvent) => {
   $(".menuUl").trigger("blur");
 };
 const flyTo = (event: any, v: any) => {
-  station.风雷达组网界面被选中的设备 = v.strID;
+  station.风雷达组网地图相关被选中的设备 = v.strID;
   eventbus.emit("风雷达组网-将站点移动到屏幕中心", v);
 };
 const toggleCollapse = () => {

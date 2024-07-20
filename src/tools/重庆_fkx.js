@@ -127,7 +127,7 @@ export default function DBS() {
       type: 'piecewise',
       show: true,
       orient: 'vertical',
-      bottom: 0,
+      bottom: 'center',
       left: 10,
       itemGap: -2,
       itemWidth: 20,
@@ -260,7 +260,7 @@ export default function DBS() {
       },
       symbolOffset: function(value) {
         const obj = value[2]
-        const symbolRotate = -Number(obj.fHAngle)+180
+        const symbolRotate = -Number(obj.fHAngle)
         const cos = Math.cos(symbolRotate / 180 * Math.PI)
         const sin = Math.sin(symbolRotate / 180 * Math.PI)
         if (getFeather(Number(obj.fHSpeed) <= 0)) {
@@ -275,7 +275,7 @@ export default function DBS() {
       },
       symbolRotate: function(value) {
         const obj = value[2]
-        return - Number(obj.fHAngle)+180
+        return - Number(obj.fHAngle)
       },
       itemStyle: {
         color: function(params) {

@@ -4,13 +4,22 @@
       class="bg-#e1eeff dark:bg-black relative w-full h-full"
       style="border-radius: 10px; border: 1px solid black; box-sizing: border-box"
     >
-      <contentDBS></contentDBS>
+      <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
+        <el-tab-pane label="DBS" name="DBS"><contentDBS></contentDBS></el-tab-pane>
+        <el-tab-pane label="PPI" name="PPI"><contentPPI></contentPPI></el-tab-pane>
+        <el-tab-pane label="RHI" name="RHI"><contentRHI></contentRHI></el-tab-pane>
+      </el-tabs>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
 import contentDBS from "../contentDBS.vue";
+import contentPPI from "../contentPPI.vue";
+import contentRHI from "../contentRHI.vue";
+import { ref } from "vue";
 import type { TabsPaneContext } from "element-plus";
+const activeName = ref("DBS");
+
 const handleClick = (tab: TabsPaneContext, event: Event) => {
   console.log(tab, event);
 };

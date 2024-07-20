@@ -11,7 +11,7 @@
       &emsp;{{ title }}
     </div>
     <div class="w-full h-full flex justify-center">
-      <div style="position: relative; width: 80px; height: 80px; overflow: hidden">
+      <div style="position: relative; width: 100%; height: 80px; overflow: hidden">
         <img src="/src/assets/feathers/12.svg" class="imgClass" />
         <canvas
           v-resize="resize"
@@ -68,26 +68,23 @@ function draw(canvas: HTMLCanvasElement, isDark: boolean) {
   context.stroke();
   context.textAlign = "center";
   context.textBaseline = "middle";
-  context.fillText("站名", 0, -35 * devicePixelRatio);
-  context.textAlign = "center";
-  context.textBaseline = "middle";
-  context.fillText("站号", 0, -25 * devicePixelRatio);
+  context.fillText("站名/站号", 0, -35 * devicePixelRatio);
 
-  context.textAlign = "center";
-  context.textBaseline = "middle";
-  context.fillText("高度", 0, -15 * devicePixelRatio);
+  // context.textAlign = "center";
+  // context.textBaseline = "middle";
+  // context.fillText("高度", 0, -15 * devicePixelRatio);
 
   context.textAlign = "right";
   context.textBaseline = "middle";
-  context.fillText("风向", -20 * devicePixelRatio, 0);
+  context.fillText("高度(m)", -20 * devicePixelRatio, 0);
 
   context.textAlign = "left";
   context.textBaseline = "middle";
-  context.fillText("风速", 20 * devicePixelRatio, 0);
+  context.fillText("垂直气流(m/s)", 20 * devicePixelRatio, 0);
 
-  context.textAlign = "center";
-  context.textBaseline = "top";
-  context.fillText("垂直气流", 0, 20 * devicePixelRatio);
+  // context.textAlign = "center";
+  // context.textBaseline = "top";
+  // context.fillText("最近数据时间", 0, 20 * devicePixelRatio);
 
   context.restore();
 }

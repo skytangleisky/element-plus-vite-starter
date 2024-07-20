@@ -382,8 +382,8 @@ let setEcharts = (isDark) => {
   //   myChart.setOption(option, false, true);
   // });
   watch(
-    [() => bus.avgWindData_重庆, layerIndex, () => station.active],
-    ([avgWindData, layerIdx, active]) => {
+    [() => bus.avgWindData_重庆, layerIndex],
+    ([avgWindData, layerIdx]) => {
       option.series[1].data = [];
       option.series[2].data = [];
       myChart.setOption(option, false, true);

@@ -36,7 +36,7 @@ const currentTime = ref("");
 watch(() => bus.avgWindData_重庆,(avgWindData:any) => {
     option.series[0].data = [];
     myChart.setOption(option, false, true);
-    if (avgWindData.data.length>0) {
+    if (avgWindData.data&&avgWindData.data.length>0) {
       let radial = avgWindData.data[0]
       currentTime.value = moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
       radial.list.map((lib:any)=>{

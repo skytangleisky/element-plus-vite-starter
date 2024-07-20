@@ -23,6 +23,26 @@
     </div> -->
     <div class="item">
       <collapse-card title="雷达设备" v-model:show="show2" :show-collapse="false">
+        <div class="subitem">
+          <span>站名</span>
+          <el-switch
+            v-model="setting.风雷达组网地图相关.站名"
+            inline-prompt
+            :active-icon="Check"
+            :inactive-icon="Close"
+            size="small"
+          />
+        </div>
+        <div class="subitem">
+          <span>站名</span>
+          <el-switch
+            v-model="setting.风雷达组网地图相关.站号"
+            inline-prompt
+            :active-icon="Check"
+            :inactive-icon="Close"
+            size="small"
+          />
+        </div>
         <template v-for="(v, k) in setting.风雷达组网地图相关.factor">
           <div v-if="v.visible" class="subitem">
             <span>{{ v.toolTips }}</span>
@@ -40,10 +60,7 @@
     <div class="item">
       <collapse-card title="风廓线" v-model:show="showDBS" :show-collapse="false">
         <div class="subitem">
-          <span class="whitespace-nowrap">相对高度</span>
-          <el-icon @click="upward()">
-            <svg t="1721132139964" class="icon hover:color-red active:color-inherit" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="19449" width="200" height="200"><path d="M873.8816 150.1184C973.9264 250.2656 1024 370.8928 1024 512c0 141.2096-50.0736 261.8368-150.1184 361.8816C773.7344 973.9264 653.1072 1024 512 1024c-141.1072 0-261.7344-50.0736-361.8816-150.1184C50.0736 773.8368 0 653.2096 0 512c0-141.1072 50.0736-261.7344 150.1184-361.8816C250.2656 50.0736 370.8928 0 512 0 653.1072 0 773.7344 50.0736 873.8816 150.1184zM819.712 526.7456 507.0848 211.6608 192 526.7456l56.6272 54.1696 219.0336-219.0336 0 477.4912 78.7456 0L546.4064 361.8816l219.0336 219.0336L819.712 526.7456z" p-id="19450"></path></svg>
-          </el-icon>
+          <span class="whitespace-nowrap">相对高度层</span>
           <el-select
             style="width: 80px"
             v-model="setting.风雷达组网地图相关.relativeHeight"
@@ -57,12 +74,15 @@
               :label="item.label"
             ></el-option>
           </el-select>
-          <el-icon @click="downward()">
-            <svg t="1721132139964" class="icon rotate-180deg hover:color-red active:color-inherit" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="19449" width="200" height="200"><path d="M873.8816 150.1184C973.9264 250.2656 1024 370.8928 1024 512c0 141.2096-50.0736 261.8368-150.1184 361.8816C773.7344 973.9264 653.1072 1024 512 1024c-141.1072 0-261.7344-50.0736-361.8816-150.1184C50.0736 773.8368 0 653.2096 0 512c0-141.1072 50.0736-261.7344 150.1184-361.8816C250.2656 50.0736 370.8928 0 512 0 653.1072 0 773.7344 50.0736 873.8816 150.1184zM819.712 526.7456 507.0848 211.6608 192 526.7456l56.6272 54.1696 219.0336-219.0336 0 477.4912 78.7456 0L546.4064 361.8816l219.0336 219.0336L819.712 526.7456z" p-id="19450"></path></svg>
+          <el-icon @click="upward()" style="font-size:large">
+            <svg t="1721356236932" class="icon hover:color-red active:color-inherit" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="8112" width="200" height="200"><path d="M600.064 119.68l342.336 730.24a64 64 0 0 1-88.064 83.584L544 768l-340.288 170.112a64 64 0 0 1-85.824-85.824l367.04-734.08a64 64 0 0 1 115.2 1.472z" p-id="8113"></path></svg>
+          </el-icon>
+          <el-icon @click="downward()" style="font-size:large">
+            <svg t="1721356236932" class="icon hover:color-red active:color-inherit rotate-180deg" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="8112" width="200" height="200"><path d="M600.064 119.68l342.336 730.24a64 64 0 0 1-88.064 83.584L544 768l-340.288 170.112a64 64 0 0 1-85.824-85.824l367.04-734.08a64 64 0 0 1 115.2 1.472z" p-id="8113"></path></svg>
           </el-icon>
         </div>
         <div class="subitem">
-          <span>风杆</span>
+          <span>水平风</span>
           <el-switch
             v-model="setting.feather"
             inline-prompt
@@ -81,7 +101,7 @@
             size="small"
           />
         </div>
-        <div class="subitem">
+        <!-- <div class="subitem">
           <span>风向</span>
           <el-switch
             v-model="setting.风雷达组网地图相关.风向"
@@ -100,7 +120,7 @@
             :inactive-icon="Close"
             size="small"
           />
-        </div>
+        </div> -->
         <div class="subitem">
           <span>垂直气流</span>
           <el-switch
@@ -111,7 +131,7 @@
             size="small"
           />
         </div>
-        <div class="subitem">
+        <!-- <div class="subitem">
           <span>请求时间</span>
           <span>{{ setting.风雷达组网地图相关.请求时间 }}</span>
           <el-switch
@@ -121,13 +141,13 @@
             :inactive-icon="Close"
             size="small"
           />
-        </div>
+        </div> -->
       </collapse-card>
     </div>
     <div class="item" v-if="checkPermission(['admin'])">
       <collapse-card title="PPI" v-model:show="showPPI" :show-collapse="false">
         <div class="subitem">
-          <span class="whitespace-nowrap">风场不透明度</span>
+          <span class="whitespace-nowrap">风场透明度</span>
           <el-slider
             class="m-l-10px m-r-10px"
             :min="0"
@@ -178,7 +198,7 @@
         :show-collapse="false"
       >
         <div class="subitem">
-          <span class="whitespace-nowrap">地图不透明度</span>
+          <span class="whitespace-nowrap">地图透明度</span>
           <el-slider
             class="m-l-10px m-r-10px"
             :min="0"
@@ -285,6 +305,16 @@ const downward = () => {
 }
 const route = useRoute();
 const setting = useSettingStore();
+watch(()=>setting.风雷达组网地图相关.站名,val=>{
+  if(val){
+    setting.风雷达组网地图相关.站号=false
+  }
+})
+watch(()=>setting.风雷达组网地图相关.站号,val=>{
+  if(val){
+    setting.风雷达组网地图相关.站名=false
+  }
+})
 const show2 = ref(true);
 const showPPI = ref(true);
 const showDBS = ref(true);

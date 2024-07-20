@@ -42,7 +42,7 @@ watch(
     option.series[3].data = [];
     option.series[4].data = [];
     option.series[5].data = [];
-    avgWindData.data.map((radial:any,key:number)=>{
+    avgWindData.data&&avgWindData.data.map((radial:any,key:number)=>{
       if(key==0){
         currentTime.value = moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
       }

@@ -1,5 +1,5 @@
 import request from '../utils/request'
-export function getDataList(query:{radar_id:string,dataType:string,path:string}){
+export function getDataList(query:{radar_id:string,path:string}){
   return request({
     url: '/qt/dataList',
     method: 'post',
@@ -7,7 +7,6 @@ export function getDataList(query:{radar_id:string,dataType:string,path:string})
       "version":"1.0",
       "secretKey":"904c396f6956d02c59a6ad35c08f5678",
       "radar_id":query.radar_id,
-      "dataType":query.dataType,
       "path":query.path
     }
   })

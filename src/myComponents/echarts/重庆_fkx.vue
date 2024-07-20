@@ -33,6 +33,27 @@ watch(isDark, (isDark) => {
     dbs.destroy();
   }
   setDBS(isDark);
+  let avgWindData = bus.avgWindData_重庆
+  if (avgWindData.data) {
+      let Fdatas: any[] = [];
+      avgWindData.data.map((radial:any,k:number)=>{
+        let fData: { [key: string]: any } = {data:[]};
+        fData.timestamp = moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
+        if(k===0){
+          currentTime.value = fData.timestamp
+        }
+        radial.list.map((lib:any)=>{
+          fData.data.push({
+            fHei: lib['distance'].toString(),
+            fHAngle: lib['WindDirection'].toString(),
+            fHSpeed: lib['WindSpeed'].toString(),
+            fVSpeed: lib['ZWind'].toString(),
+          })
+        })
+        Fdatas.unshift(fData);
+      })
+      dbs.process(Fdatas);
+    }
 });
 let dbs: DBS;
 onMounted(() => {

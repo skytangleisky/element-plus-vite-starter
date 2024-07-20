@@ -629,8 +629,8 @@ onMounted(() => {
         const feature = fs[0];
         emits("update:prevRequestShow", true);
         emits("update:prevRequestData", feature.properties);
-        station.风雷达组网界面被选中的设备 = feature.properties.strID;
-        $(`#风雷达组网-${station.风雷达组网界面被选中的设备}`)[0].scrollIntoView({
+        station.风雷达组网地图相关被选中的设备 = feature.properties.strID;
+        $(`#风雷达组网-${station.风雷达组网地图相关被选中的设备}`)[0].scrollIntoView({
           block: "nearest",
           behavior: "smooth",
           inline: "center",
@@ -655,8 +655,8 @@ onMounted(() => {
         //     `<h3>${feature.properties.title}</h3><p>${feature.properties.description}</p>`
         //   )
         //   .addTo(map);
-        station.风雷达组网界面被选中的设备 = feature.properties.strID;
-        $(`#风雷达组网-${station.风雷达组网界面被选中的设备}`)[0].scrollIntoView({
+        station.风雷达组网地图相关被选中的设备 = feature.properties.strID;
+        $(`#风雷达组网-${station.风雷达组网地图相关被选中的设备}`)[0].scrollIntoView({
           block: "nearest",
           behavior: "smooth",
           inline: "center",
@@ -665,7 +665,7 @@ onMounted(() => {
       });
       active = () => {
         features = features.map((item: any) => {
-          if (item.properties.id == station.风雷达组网界面被选中的设备) {
+          if (item.properties.id == station.风雷达组网地图相关被选中的设备) {
             item.properties["icon-image"] = "projectile-white";
           } else {
             item.properties["icon-image"] = "projectile-white";
@@ -679,7 +679,7 @@ onMounted(() => {
         });
 
         circleFeatures = circleFeatures.map((item: any) => {
-          if (item.properties.id == station.风雷达组网界面被选中的设备) {
+          if (item.properties.id == station.风雷达组网地图相关被选中的设备) {
             item.properties.color = "white";
             item.properties.fillColor = "white";
           } else {
@@ -762,8 +762,8 @@ onMounted(() => {
     //     // $(div).append(label);
 
     //     // device.on("click", function click() {
-    //     //   station.风雷达组网界面被选中的设备 = $(this).parent().data("id");
-    //     //   $(`#风雷达组网-${station.风雷达组网界面被选中的设备}`)[0].scrollIntoView({
+    //     //   station.风雷达组网地图相关被选中的设备 = $(this).parent().data("id");
+    //     //   $(`#风雷达组网-${station.风雷达组网地图相关被选中的设备}`)[0].scrollIntoView({
     //     //     block: "nearest",
     //     //     behavior: "smooth",
     //     //     inline: "center",
