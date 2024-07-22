@@ -51,7 +51,7 @@ export const useSettingStore = defineStore({
         30.286192617004076
       ],
       ppiOpacity:0,
-      mapOpacity:0,
+      mapOpacity:1,
       factor:[
         {toolTips:'站名',name:'ZN',val:true,visible:false},
         {toolTips:'站号',name:'ZH',val:false,visible:false},

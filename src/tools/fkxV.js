@@ -1,3 +1,5 @@
+import { getColor } from "~/tools"
+const getFeatherColor = (v)=>getColor(v)
 export default function DBS() {
   let showType = '风羽' // 风羽|风矢
   var option = null
@@ -74,10 +76,6 @@ export default function DBS() {
   function verticalFlowColor(v) {
     const colors = ['#0000ff', '#001cff', '#0038ff', '#0054ff', '#0070ff', '#008cff', '#00a8ff', '#00c4ff', '#00e0ff', '#78ffff', '#ffff50', '#ffe600', '#ffbf00', '#ff9800', '#ff7100', '#ff4a00', '#ff2300', '#fb0000', '#d40000', '#ad0000']
     return v <= -5.4 ? colors[0] : v <= -4.8 ? colors[1] : v <= -4.2 ? colors[2] : v <= -3.6 ? colors[3] : v <= -3 ? colors[4] : v <= -2.4 ? colors[5] : v <= -1.8 ? colors[6] : v <= -1.2 ? colors[7] : v <= -0.6 ? colors[8] : v <= 0 ? colors[9] : v <= 0.6 ? colors[10] : v <= 1.2 ? colors[11] : v <= 1.8 ? colors[12] : v <= 2.4 ? colors[13] : v <= 3 ? colors[14] : v <= 3.6 ? colors[15] : v <= 4.2 ? colors[16] : v <= 4.8 ? colors[17] : v <= 5.4 ? colors[18] : colors[19]
-  }
-
-  function getFeatherColor(speed) {
-    return speed <= 4 ? '#0000ff' : speed <= 8 ? '#002aff' : speed <= 12 ? '#0054ff' : speed <= 16 ? '#007eff' : speed <= 20 ? '#00a8ff' : speed <= 24 ? '#00d2ff' : speed <= 28 ? '#14d474' : speed <= 32 ? '#a6dd00' : speed <= 36 ? '#ffe600' : speed <= 40 ? '#ffb300' : speed <= 44 ? '#ff8000' : speed <= 48 ? '#ff4d00' : speed <= 52 ? '#ff1a00' : speed <= 56 ? '#e60000' : '#b30000'
   }
   var getFeather = v => v <= 0 ? 0 : v <= 1 ? 1 : v <= 2 ? 2 : v <= 4 ? 3 : v <= 6 ? 4 : v <= 8 ? 5 : v <= 10 ? 6 : v <= 12 ? 7 : v <= 14 ? 8 : v <= 16 ? 9 : v <= 18 ? 10 : v <= 20 ? 11 : v <= 22 ? 12 : v <= 24 ? 13 : v <= 26 ? 14 : v <= 28 ? 15 : v <= 30 ? 16 : v <= 32 ? 17 : v <= 34 ? 18 : v <= 36 ? 19 : v <= 38 ? 20 : v <= 40 ? 21 : v <= 42 ? 22 : v <= 44 ? 23 : v <= 46 ? 24 : v <= 48 ? 25 : v <= 50 ? 26 : v <= 52 ? 27 : v <= 54 ? 28 : v <= 56 ? 29 : v <= 58 ? 30 : 31
   var data = [
@@ -599,97 +597,73 @@ export default function DBS() {
       bottom: 'center',
       itemGap: -2,
       itemWidth: 20,
-      itemHeight: 20,
+      itemHeight: 40,
       itemSymbol: 'rect',
       pieces: [{
         gte: 0,
+        lt: 1,
+        color: getFeatherColor(1),
+        label: '1'
+      },
+      {
+        gte: 1,
+        lt: 2,
+        color: getFeatherColor(2),
+        label: '2'
+      },
+      {
+        gte: 2,
         lt: 4,
         color: getFeatherColor(4),
         label: '4'
       },
       {
         gte: 4,
+        lt: 6,
+        color: getFeatherColor(6),
+        label: '6'
+      },
+      {
+        gte: 6,
         lt: 8,
         color: getFeatherColor(8),
         label: '8'
       },
       {
         gte: 8,
+        lt: 10,
+        color: getFeatherColor(10),
+        label: '10'
+      },
+      {
+        gte: 10,
         lt: 12,
         color: getFeatherColor(12),
         label: '12'
       },
       {
         gte: 12,
+        lt: 14,
+        color: getFeatherColor(14),
+        label: '14'
+      },
+      {
+        gte: 14,
         lt: 16,
         color: getFeatherColor(16),
         label: '16'
       },
       {
         gte: 16,
+        lt: 18,
+        color: getFeatherColor(18),
+        label: '18'
+      },
+      {
+        gte: 18,
         lt: 20,
         color: getFeatherColor(20),
         label: '20'
-      },
-      {
-        gte: 20,
-        lt: 24,
-        color: getFeatherColor(24),
-        label: '24'
-      },
-      {
-        gte: 24,
-        lt: 28,
-        color: getFeatherColor(28),
-        label: '28'
-      },
-      {
-        gte: 28,
-        lt: 32,
-        color: getFeatherColor(32),
-        label: '32'
-      },
-      {
-        gte: 32,
-        lt: 36,
-        color: getFeatherColor(36),
-        label: '36'
-      },
-      {
-        gte: 36,
-        lt: 40,
-        color: getFeatherColor(40),
-        label: '40'
-      },
-      {
-        gte: 40,
-        lt: 44,
-        color: getFeatherColor(44),
-        label: '44'
-      },
-      {
-        gte: 44,
-        lt: 48,
-        color: getFeatherColor(48),
-        label: '48'
-      },
-      {
-        gte: 48,
-        lt: 52,
-        color: getFeatherColor(52),
-        label: '52'
-      },
-      {
-        gte: 52,
-        lt: 56,
-        color: getFeatherColor(56),
-        label: '56'
-      },
-      {
-        gte: 52,
-        lt: 60,
-        color: getFeatherColor(60),
-        label: '60'
       }
       ],
       textStyle: {}

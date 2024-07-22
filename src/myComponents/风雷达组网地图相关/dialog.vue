@@ -180,7 +180,7 @@ const toggleCollapse = () => {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 130px;
+  height: 165px;
   .menuUl {
     outline: none;
     position: absolute;
@@ -286,7 +286,7 @@ const toggleCollapse = () => {
     overflow: auto;
     min-width: 100%;
     tr {
-      line-height: 1rem;
+      line-height: 1.4rem;
     }
     thead {
       tr {

@@ -390,7 +390,7 @@ export const getHue = (min:number, v:number, max:number) => {
   let percent = (v - min) / (max - min);
   return percent < 0.5 ? ((0.5 - percent) / 0.5) * 60 + 180 : ((1 - percent) / 0.5) * 60;
 };
-export const getColor = (v:number) => `hsl(${getHue(0,v,60)},100%,50%)`
+export const getColor = (v:number) => `hsl(${getHue(0,v,20)},100%,50%)`
 export const getFeather = (v:number) =>{
   if(v==null||v==undefined||Math.abs(v)===999||v==0){
     return ''
