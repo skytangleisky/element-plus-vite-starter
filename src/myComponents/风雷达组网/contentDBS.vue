@@ -8,7 +8,7 @@
           v-loading="loading"
         >
           <el-tree
-            :default-expand-all="false"
+            :default-expand-all="true"
             ref="treeRef"
             node-key="id"
             lazy
@@ -103,7 +103,6 @@ watch([value1, check, value2], ([v1, check, v2]) => {
 
 import type Node from 'element-plus/es/components/tree/src/model/node'
 const loadNode = (node: Node, resolve: (data: Tree[]) => void) => {
-  console.log(node)
   if (node.level === 0) {
     loading.value = true
     return getDataList({
@@ -117,7 +116,7 @@ const loadNode = (node: Node, resolve: (data: Tree[]) => void) => {
         }
       })
       loading.value=false
-      return resolve(paths)
+      resolve(paths)
     });
   }else if(node.level === 1){
     let path = node.data.id+'/'+node.data.name
@@ -125,20 +124,20 @@ const loadNode = (node: Node, resolve: (data: Tree[]) => void) => {
       radar_id,
       path,
     }).then((res) => {
-      let files = res.data.data.files.map((name:string)=>{
-        return {
-          id:path,
-          name:name,
-          leaf:true,
-        }
-      })
+      // let files = res.data.data.files.map((name:string)=>{
+      //   return {
+      //     id:path,
+      //     name:name,
+      //     leaf:true,
+      //   }
+      // })
       let paths = res.data.data.path.map((name:string)=>{
         return {
           id:path,
           name
         }
       })
-      return resolve(paths.concat(files))
+      resolve(paths)
     });
   }else if(node.level === 2){
     let path = node.data.id+'/'+node.data.name
@@ -146,13 +145,13 @@ const loadNode = (node: Node, resolve: (data: Tree[]) => void) => {
       radar_id,
       path,
     }).then((res) => {
-      let files = res.data.data.files.map((name:string)=>{
-        return {
-          id:path,
-          name:name,
-          leaf:true,
-        }
-      })
+      // let files = res.data.data.files.map((name:string)=>{
+      //   return {
+      //     id:path,
+      //     name:name,
+      //     leaf:true,
+      //   }
+      // })
       let paths = res.data.data.path.map((name:string)=>{
         return {
           id:path,
@@ -160,8 +159,10 @@ const loadNode = (node: Node, resolve: (data: Tree[]) => void) => {
           leaf:true
         }
       })
-      return resolve(paths.concat(files))
+      resolve(paths)
     });
+  }else{
+    resolve([])
   }
 }
 const query = () => {

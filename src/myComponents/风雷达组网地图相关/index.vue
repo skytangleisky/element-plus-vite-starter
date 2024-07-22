@@ -1008,14 +1008,14 @@ const loadFunc = async () => {
     // graphArgs.memory.value = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
     // graphArgs.memory.max = Math.round(performance.memory.jsHeapSizeLimit / 1024 / 1024);
   }, 1000);
-  if (setting.风雷达组网地图相关.checks[0].select)
-    station.查询雷达列表接口({ user_id: route.query.user_id });
-  if (setting.风雷达组网地图相关.checks[1].select)
-    station.查询雷达在线列表接口({ user_id: route.query.user_id });
-  if (setting.风雷达组网地图相关.checks[2].select)
-    station.查询雷达离线列表接口({ user_id: route.query.user_id });
-  if (setting.风雷达组网地图相关.checks[3].select)
-    station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
+  // if (setting.风雷达组网地图相关.checks[0].select)
+  //   station.查询雷达列表接口({ user_id: route.query.user_id });
+  // if (setting.风雷达组网地图相关.checks[1].select)
+  //   station.查询雷达在线列表接口({ user_id: route.query.user_id });
+  // if (setting.风雷达组网地图相关.checks[2].select)
+  //   station.查询雷达离线列表接口({ user_id: route.query.user_id });
+  // if (setting.风雷达组网地图相关.checks[3].select)
+  //   station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
 };
 const flyTo = (item) => {
   try {

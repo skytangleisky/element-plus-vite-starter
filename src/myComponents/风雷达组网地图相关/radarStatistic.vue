@@ -92,7 +92,7 @@
           />
         </div>
         <div class="subitem">
-          <span>高度</span>
+          <span>相对高度</span>
           <el-switch
             v-model="setting.风雷达组网地图相关.高度"
             inline-prompt
@@ -265,7 +265,7 @@
 import { checkPermission } from "~/tools";
 import { watch, ref, onMounted, onBeforeUnmount, h, reactive } from "vue";
 import { Check, Close, HomeFilled } from "@element-plus/icons-vue";
-import { 雷达统计接口 } from "~/api/光恒/station";
+// import { 雷达统计接口 } from "~/api/光恒/station";
 import collapseCard from "./collapseCard.vue";
 import { useSettingStore } from "~/stores/setting";
 import { ElMessage } from "element-plus";
@@ -335,102 +335,102 @@ const beforeChange = () => {
   return true;
 };
 let timer: any;
-const update = () => {
-  雷达统计接口({ user_id: route.query.user_id })
-    .then((res) => {
-      const { data } = res.data;
-      let _jc, _ts, _3d, _linux_jc, _linux_ts, _linux_3d;
-      _jc = data.radar_count.radar_count_jc;
-      _ts = data.radar_count.radar_count_ts;
-      _3d = data.radar_count.radar_count_3d;
-      _linux_jc = data.radar_count.radar_count_linux_jc;
-      _linux_ts = data.radar_count.radar_count_linux_ts;
-      _linux_3d = data.radar_count.radar_count_linux_3d;
-      setting.风雷达组网地图相关.checks[0].children[0].val = _jc;
-      setting.风雷达组网地图相关.checks[0].children[1].val = _ts;
-      setting.风雷达组网地图相关.checks[0].children[2].val = _3d;
-      setting.风雷达组网地图相关.checks[0].children[3].val = _linux_jc;
-      setting.风雷达组网地图相关.checks[0].children[4].val = _linux_ts;
-      setting.风雷达组网地图相关.checks[0].children[5].val = _linux_3d;
-      setting.风雷达组网地图相关.checks[0].val =
-        _jc + _ts + _3d + _linux_jc + _linux_ts + _linux_3d;
+// const update = () => {
+//   雷达统计接口({ user_id: route.query.user_id })
+//     .then((res) => {
+//       const { data } = res.data;
+//       let _jc, _ts, _3d, _linux_jc, _linux_ts, _linux_3d;
+//       _jc = data.radar_count.radar_count_jc;
+//       _ts = data.radar_count.radar_count_ts;
+//       _3d = data.radar_count.radar_count_3d;
+//       _linux_jc = data.radar_count.radar_count_linux_jc;
+//       _linux_ts = data.radar_count.radar_count_linux_ts;
+//       _linux_3d = data.radar_count.radar_count_linux_3d;
+//       setting.风雷达组网地图相关.checks[0].children[0].val = _jc;
+//       setting.风雷达组网地图相关.checks[0].children[1].val = _ts;
+//       setting.风雷达组网地图相关.checks[0].children[2].val = _3d;
+//       setting.风雷达组网地图相关.checks[0].children[3].val = _linux_jc;
+//       setting.风雷达组网地图相关.checks[0].children[4].val = _linux_ts;
+//       setting.风雷达组网地图相关.checks[0].children[5].val = _linux_3d;
+//       setting.风雷达组网地图相关.checks[0].val =
+//         _jc + _ts + _3d + _linux_jc + _linux_ts + _linux_3d;
 
-      _jc = data.online_radar_count.online_radar_count_jc;
-      _ts = data.online_radar_count.online_radar_count_ts;
-      _3d = data.online_radar_count.online_radar_count_3d;
-      _linux_jc = data.online_radar_count.online_radar_count_linux_jc;
-      _linux_ts = data.online_radar_count.online_radar_count_linux_ts;
-      _linux_3d = data.online_radar_count.online_radar_count_linux_3d;
-      setting.风雷达组网地图相关.checks[1].children[0].val =
-        data.online_radar_count.online_radar_count_jc;
-      setting.风雷达组网地图相关.checks[1].children[1].val =
-        data.online_radar_count.online_radar_count_ts;
-      setting.风雷达组网地图相关.checks[1].children[2].val =
-        data.online_radar_count.online_radar_count_3d;
-      setting.风雷达组网地图相关.checks[1].children[3].val =
-        data.online_radar_count.online_radar_count_linux_jc;
-      setting.风雷达组网地图相关.checks[1].children[4].val =
-        data.online_radar_count.online_radar_count_linux_ts;
-      setting.风雷达组网地图相关.checks[1].children[5].val =
-        data.online_radar_count.online_radar_count_linux_3d;
-      setting.风雷达组网地图相关.checks[1].val =
-        _jc + _ts + _3d + _linux_jc + _linux_ts + _linux_3d;
+//       _jc = data.online_radar_count.online_radar_count_jc;
+//       _ts = data.online_radar_count.online_radar_count_ts;
+//       _3d = data.online_radar_count.online_radar_count_3d;
+//       _linux_jc = data.online_radar_count.online_radar_count_linux_jc;
+//       _linux_ts = data.online_radar_count.online_radar_count_linux_ts;
+//       _linux_3d = data.online_radar_count.online_radar_count_linux_3d;
+//       setting.风雷达组网地图相关.checks[1].children[0].val =
+//         data.online_radar_count.online_radar_count_jc;
+//       setting.风雷达组网地图相关.checks[1].children[1].val =
+//         data.online_radar_count.online_radar_count_ts;
+//       setting.风雷达组网地图相关.checks[1].children[2].val =
+//         data.online_radar_count.online_radar_count_3d;
+//       setting.风雷达组网地图相关.checks[1].children[3].val =
+//         data.online_radar_count.online_radar_count_linux_jc;
+//       setting.风雷达组网地图相关.checks[1].children[4].val =
+//         data.online_radar_count.online_radar_count_linux_ts;
+//       setting.风雷达组网地图相关.checks[1].children[5].val =
+//         data.online_radar_count.online_radar_count_linux_3d;
+//       setting.风雷达组网地图相关.checks[1].val =
+//         _jc + _ts + _3d + _linux_jc + _linux_ts + _linux_3d;
 
-      _jc = data.offline_radar_count.offline_radar_count_jc;
-      _ts = data.offline_radar_count.offline_radar_count_ts;
-      _3d = data.offline_radar_count.offline_radar_count_3d;
-      _linux_jc = data.offline_radar_count.offline_radar_count_linux_jc;
-      _linux_ts = data.offline_radar_count.offline_radar_count_linux_ts;
-      _linux_3d = data.offline_radar_count.offline_radar_count_linux_3d;
-      setting.风雷达组网地图相关.checks[2].children[0].val =
-        data.offline_radar_count.offline_radar_count_jc;
-      setting.风雷达组网地图相关.checks[2].children[1].val =
-        data.offline_radar_count.offline_radar_count_ts;
-      setting.风雷达组网地图相关.checks[2].children[2].val =
-        data.offline_radar_count.offline_radar_count_3d;
-      setting.风雷达组网地图相关.checks[2].children[3].val =
-        data.offline_radar_count.offline_radar_count_linux_jc;
-      setting.风雷达组网地图相关.checks[2].children[4].val =
-        data.offline_radar_count.offline_radar_count_linux_ts;
-      setting.风雷达组网地图相关.checks[2].children[5].val =
-        data.offline_radar_count.offline_radar_count_linux_3d;
-      setting.风雷达组网地图相关.checks[2].val =
-        _jc + _ts + _3d + _linux_jc + _linux_ts + _linux_3d;
+//       _jc = data.offline_radar_count.offline_radar_count_jc;
+//       _ts = data.offline_radar_count.offline_radar_count_ts;
+//       _3d = data.offline_radar_count.offline_radar_count_3d;
+//       _linux_jc = data.offline_radar_count.offline_radar_count_linux_jc;
+//       _linux_ts = data.offline_radar_count.offline_radar_count_linux_ts;
+//       _linux_3d = data.offline_radar_count.offline_radar_count_linux_3d;
+//       setting.风雷达组网地图相关.checks[2].children[0].val =
+//         data.offline_radar_count.offline_radar_count_jc;
+//       setting.风雷达组网地图相关.checks[2].children[1].val =
+//         data.offline_radar_count.offline_radar_count_ts;
+//       setting.风雷达组网地图相关.checks[2].children[2].val =
+//         data.offline_radar_count.offline_radar_count_3d;
+//       setting.风雷达组网地图相关.checks[2].children[3].val =
+//         data.offline_radar_count.offline_radar_count_linux_jc;
+//       setting.风雷达组网地图相关.checks[2].children[4].val =
+//         data.offline_radar_count.offline_radar_count_linux_ts;
+//       setting.风雷达组网地图相关.checks[2].children[5].val =
+//         data.offline_radar_count.offline_radar_count_linux_3d;
+//       setting.风雷达组网地图相关.checks[2].val =
+//         _jc + _ts + _3d + _linux_jc + _linux_ts + _linux_3d;
 
-      _jc = data.new_radar_count.new_radar_count_jc;
-      _ts = data.new_radar_count.new_radar_count_ts;
-      _3d = data.new_radar_count.new_radar_count_3d;
-      _linux_jc = data.new_radar_count.new_radar_count_linux_jc;
-      _linux_ts = data.new_radar_count.new_radar_count_linux_ts;
-      _linux_3d = data.new_radar_count.new_radar_count_linux_3d;
-      setting.风雷达组网地图相关.checks[3].children[0].val =
-        data.new_radar_count.new_radar_count_jc;
-      setting.风雷达组网地图相关.checks[3].children[1].val =
-        data.new_radar_count.new_radar_count_ts;
-      setting.风雷达组网地图相关.checks[3].children[2].val =
-        data.new_radar_count.new_radar_count_3d;
-      setting.风雷达组网地图相关.checks[3].children[3].val =
-        data.new_radar_count.new_radar_count_linux_jc;
-      setting.风雷达组网地图相关.checks[3].children[4].val =
-        data.new_radar_count.new_radar_count_linux_ts;
-      setting.风雷达组网地图相关.checks[3].children[5].val =
-        data.new_radar_count.new_radar_count_linux_3d;
-      setting.风雷达组网地图相关.checks[3].val =
-        _jc + _ts + _3d + _linux_jc + _linux_ts + _linux_3d;
-    })
-    .catch((e) => {
-      ElMessage({
-        message: h("p", null, [
-          // h('span', null, 'Message can be '),
-          h("i", { style: "color: red" }, e.message),
-        ]),
-        type: "error",
-      });
-    });
-};
+//       _jc = data.new_radar_count.new_radar_count_jc;
+//       _ts = data.new_radar_count.new_radar_count_ts;
+//       _3d = data.new_radar_count.new_radar_count_3d;
+//       _linux_jc = data.new_radar_count.new_radar_count_linux_jc;
+//       _linux_ts = data.new_radar_count.new_radar_count_linux_ts;
+//       _linux_3d = data.new_radar_count.new_radar_count_linux_3d;
+//       setting.风雷达组网地图相关.checks[3].children[0].val =
+//         data.new_radar_count.new_radar_count_jc;
+//       setting.风雷达组网地图相关.checks[3].children[1].val =
+//         data.new_radar_count.new_radar_count_ts;
+//       setting.风雷达组网地图相关.checks[3].children[2].val =
+//         data.new_radar_count.new_radar_count_3d;
+//       setting.风雷达组网地图相关.checks[3].children[3].val =
+//         data.new_radar_count.new_radar_count_linux_jc;
+//       setting.风雷达组网地图相关.checks[3].children[4].val =
+//         data.new_radar_count.new_radar_count_linux_ts;
+//       setting.风雷达组网地图相关.checks[3].children[5].val =
+//         data.new_radar_count.new_radar_count_linux_3d;
+//       setting.风雷达组网地图相关.checks[3].val =
+//         _jc + _ts + _3d + _linux_jc + _linux_ts + _linux_3d;
+//     })
+//     .catch((e) => {
+//       ElMessage({
+//         message: h("p", null, [
+//           // h('span', null, 'Message can be '),
+//           h("i", { style: "color: red" }, e.message),
+//         ]),
+//         type: "error",
+//       });
+//     });
+// };
 onMounted(() => {
-  timer = setInterval(update, 3 * 60 * 1000);
-  update();
+  // timer = setInterval(update, 3 * 60 * 1000);
+  // update();
 });
 onBeforeUnmount(() => {
   clearInterval(timer);

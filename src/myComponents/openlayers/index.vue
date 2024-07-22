@@ -328,7 +328,7 @@ const task = () => {
   //     });
   // }
 };
-task();
+// task();
 const loadFunc = () => {
   map.addSource("point", points);
   map.addLayer({
@@ -483,11 +483,11 @@ const loadFunc = () => {
   bus.avgWindData = [];
   bus.secondWindData = [];
   bus.radialWindData = [];
-  if (import.meta.env.PROD) {
-    timer = setInterval(() => task(), 4 * 60 * 1000);
-  } else if (import.meta.env.DEV) {
-    timer = setInterval(() => task(), 4 * 60 * 1000);
-  }
+  // if (import.meta.env.PROD) {
+  //   timer = setInterval(() => task(), 4 * 60 * 1000);
+  // } else if (import.meta.env.DEV) {
+  //   timer = setInterval(() => task(), 4 * 60 * 1000);
+  // }
   let frameCounter = map.painter.frameCounter;
   mock = setInterval(() => {
     graphArgs.fps.value = map.painter.frameCounter - frameCounter;
@@ -495,14 +495,14 @@ const loadFunc = () => {
     // graphArgs.memory.value = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
     // graphArgs.memory.max = Math.round(performance.memory.jsHeapSizeLimit / 1024 / 1024);
   }, 1000);
-  if (setting.checks[0].select)
-    station.查询雷达列表接口({ user_id: route.query.user_id });
-  if (setting.checks[1].select)
-    station.查询雷达在线列表接口({ user_id: route.query.user_id });
-  if (setting.checks[2].select)
-    station.查询雷达离线列表接口({ user_id: route.query.user_id });
-  if (setting.checks[3].select)
-    station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
+  // if (setting.checks[0].select)
+  //   station.查询雷达列表接口({ user_id: route.query.user_id });
+  // if (setting.checks[1].select)
+  //   station.查询雷达在线列表接口({ user_id: route.query.user_id });
+  // if (setting.checks[2].select)
+  //   station.查询雷达离线列表接口({ user_id: route.query.user_id });
+  // if (setting.checks[3].select)
+  //   station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
 };
 const flyTo = (item) => {
   try {
