@@ -109,7 +109,7 @@ let setEcharts = (isDark) => {
         height: arrowSize,
       },
       // rotation: directionMap[api.value(dims.R)],
-      rotation: -Number(api.value(dims.R) / 180) * Math.PI + Math.PI / 2,
+      rotation: -Number(api.value(dims.R) / 180) * Math.PI - Math.PI / 2,
       position: point,
       style: {
         lineWidth: 1,
