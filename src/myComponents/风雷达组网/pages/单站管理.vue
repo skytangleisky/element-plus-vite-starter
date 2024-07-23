@@ -1,7 +1,7 @@
 <template>
   <datatable
     style="padding: 10px"
-    database="host=tanglei.top&port=3308&user=root&password=mysql&database=weatherservice"
+    database="host=127.0.0.1&port=3306&user=admin&password=EkWM76Z8IJbfviCr&database=weatherservice"
     table="device"
     :headerOption="headerOption"
   ></datatable>
