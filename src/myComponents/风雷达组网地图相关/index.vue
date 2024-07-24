@@ -1189,8 +1189,6 @@ xhr.addEventListener("load", function () {
 xhr.responseType = "arraybuffer";
 xhr.open("GET", ppiDataUrl);
 xhr.send();
-
-
 function work(){
   exec({
     database: "host=127.0.0.1&port=3306&user=admin&password=EkWM76Z8IJbfviCr&database=weatherservice",

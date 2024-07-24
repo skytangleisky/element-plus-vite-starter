@@ -34,7 +34,7 @@
           />
         </div>
         <div class="subitem">
-          <span>站名</span>
+          <span>站号</span>
           <el-switch
             v-model="setting.风雷达组网地图相关.站号"
             inline-prompt

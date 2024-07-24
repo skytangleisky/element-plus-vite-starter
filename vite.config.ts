@@ -55,7 +55,7 @@ export default defineConfig({
       ext: '.gz', // 压缩文件后缀名
       deleteOriginFile:false
     }),
-    mock(),
+    // mock(),
     vueJsx(),
     vueSetupExtend({}),
     inject({
