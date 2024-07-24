@@ -1189,11 +1189,9 @@ xhr.addEventListener("load", function () {
 xhr.responseType = "arraybuffer";
 xhr.open("GET", ppiDataUrl);
 xhr.send();
-
-
 function work(){
   exec({
-    database: "host=tanglei.top&port=3308&user=root&password=mysql&database=weatherservice",
+    database: "host=127.0.0.1&port=3306&user=root&password=tanglei&database=weatherservice",
     query: {
       sqls: ["select * from `device`"],
     },
