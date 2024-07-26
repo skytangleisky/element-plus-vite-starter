@@ -1,10 +1,8 @@
 <template>
   <div class="mainContainer">
     <div>
-      <el-input v-model="condition" style="width: 240px" placeholder="请输入过滤条件"
-        ><template #prefix>
-          <el-icon><Search /></el-icon> </template
-        ><template #append>
+      <el-input v-model="condition" style="width: 240px" placeholder="请输入过滤条件">
+        <template #prefix><el-icon><Search /></el-icon></template><template #append>
           <el-button type="primary" size="small" @click="getData()"
             >搜索</el-button
           ></template
@@ -12,7 +10,7 @@
       >
     </div>
     <div class="flex flex-col relative" style="flex-grow: 1; overflow: auto">
-      <div class="flex flex-row z-4">
+      <div class="flex flex-row z-11">
         <div class="listContainer z-1" tabindex="-1">
           <el-icon v-html="listSvg" class="svg" @click="listSvgClick"></el-icon>
           <draggable
@@ -126,8 +124,10 @@
               :class="`th dark:bg-#222 bg-#aaa flex flex-col ${
                 addRow ? 'justify-between' : 'justify-end'
               }`"
+              style="overflow: hidden;"
             >
               <div
+                @keydown.stop
                 v-if="addRow"
                 class="dark:bg-#3b3b3b bg-#ddd"
                 style="
@@ -147,7 +147,7 @@
                   :change="addDataChange"
                 ></myInput>
               </div>
-              <div style="display: flex; flex-direction: row; align-items: center">
+              <div style="display: flex; flex-direction: row; align-items: center;position: relative;">
                 <el-checkbox
                   v-if="key == checkBoxIndex"
                   style="margin: 0 4px; height: min-content"
@@ -155,7 +155,7 @@
                   :indeterminate="isIndeterminate"
                   @change="allChange"
                 ></el-checkbox>
-                <div style="display: flex; flex-direction: column; padding: 3px 4px">
+                <div style="display: flex; flex-direction: column; padding: 2px 6px;white-space: nowrap;">
                   {{ props.headerOption[item.Field]?.label || item.Field }}
                   <span
                     style="
@@ -168,6 +168,7 @@
                     >{{ item.Comment }}</span
                   >
                 </div>
+                <div class="resizer w-4px bg-red h-full absolute right-0 cursor-col-resize z-1"></div>
               </div>
             </div>
             <div
@@ -369,6 +370,18 @@ function getData() {
             res.data.results.map((v: any) => {
               options.tdData.push({ ...v, checked: false });
             });
+            nextTick(()=>{
+              $('.col').map((k:number,col:any)=>{
+                $(col).find('.resizer').on('mousedown',function(event){
+                  isResizing = true;
+                  currentTh = $(col)[0]
+                  startX = event.pageX;
+                  startWidth = currentTh.offsetWidth;
+                  document.addEventListener('mousemove', onMouseMove);
+                  document.addEventListener('mouseup', onMouseUp);
+                })
+              })
+            })
             resolve("得到数据");
           })
           .catch((res) => {
@@ -384,6 +397,25 @@ function getData() {
         reject();
       });
   });
+}
+let isResizing = false;
+let currentTh:any;
+let startX = 0;
+let startWidth = 0;
+function onMouseMove(event:MouseEvent){
+  if(isResizing){
+    const newWidth = startWidth + (event.pageX - startX);
+    if(newWidth>6){
+      currentTh.style['width'] = `${newWidth}px`;
+    }else{
+      currentTh.style['width'] = `6px`;
+    }
+  }
+}
+function onMouseUp(){
+  isResizing = false;
+  document.removeEventListener('mousemove', onMouseMove);
+  document.removeEventListener('mouseup', onMouseUp);
 }
 onMounted(() => {
   getData();
@@ -650,7 +682,7 @@ const allChange = (val: CheckboxValueType) => {
     height: fit-content;
     th {
       // padding: 0;
-      min-width: 160px;
+      // min-width: 160px;
       text-align: left;
       border-right: 1px solid #444;
     }
@@ -677,14 +709,16 @@ const allChange = (val: CheckboxValueType) => {
     }
   }
   .col:first-child {
-    position: sticky;
-    z-index: 3;
+    // position: sticky;
+    // z-index: 3;
     left: 0;
   }
   .col {
+    z-index:10;
+    width:160px;
+    flex-shrink: 0;
     height: fit-content;
     .th {
-      min-width: 160px;
       z-index: 2;
       position: sticky;
       top: 0;

@@ -91,7 +91,7 @@ let 风廓线数据: any = [];
 
 const fetchFkxHisData = (dateTime: string) => {
   console.log(dateTime)
-  getFkxRealData({ radar_id, dateTime:moment(dateTime+' 23:59:59','YYYYMMDD HH:mm:ss').format("YYYYMMDDHHmmss"),num:144 }).then((res) => {
+  getFkxRealData({ radar_id, dateTime:moment(dateTime+' 23:59:59','YYYYMMDD HH:mm:ss').format("YYYYMMDDHHmmss"),num:-1 }).then((res) => {
     风廓线数据 = res.data.data.file.file_data;
     eventbus.emit("处理风廓线数据"+radar_id, 风廓线数据, value1.value, check.value, value2.value);
   });
