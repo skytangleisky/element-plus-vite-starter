@@ -545,7 +545,6 @@ function processData(result: any, position: [number, number]) {
           break;
       }
       if(fillColor){
-        console.log()
         polygons.push({
           type: "Feature",
           geometry: {
@@ -1053,11 +1052,13 @@ xhr.addEventListener("load", function () {
     result: { [key: string]: any } = {};
   let firstLine = d
     .decode(v.getLine())
-    .replace(/,\r\n$/, "")
+    .trim()
+    .replace(/,$/, "")
     .split(",");
   let secondLine = d
     .decode(v.getLine())
-    .replace(/,\r\n$/, "")
+    .trim()
+    .replace(/,$/, "")
     .split(",");
   type HeaderInfo = {
     AllGates: 200;
@@ -1101,7 +1102,8 @@ xhr.addEventListener("load", function () {
   while (!v.reachEnd()) {
     let thirdLine = d
       .decode(v.getLine())
-      .replace(/,\r\n$/, "")
+      .trim()
+      .replace(/,$/, "")
       .split(",");
     let item = { EarthAzimuth: 0, list: new Array<any>() };
     for (let i = 0; i < 23; i++) {
@@ -1136,7 +1138,8 @@ xhr.addEventListener("load", function () {
     result: { [key: string]: any } = {};
   let firstLine = d
     .decode(v.getLine())
-    .replace(/,\r\n$/, "")
+    .trim()
+    .replace(/,$/, "")
     .split(",");
   result.HeaderInfo = {};
   for (let i = 1; i < firstLine.length; i++) {
@@ -1147,13 +1150,15 @@ xhr.addEventListener("load", function () {
   }
   let secondLine = d
     .decode(v.getLine())
-    .replace(/,\r\n$/, "")
+    .trim()
+    .replace(/,$/, "")
     .split(",");
   let data: Array<any> = (result.data = []);
   while (!v.reachEnd()) {
     let thirdLine = d
       .decode(v.getLine())
-      .replace(/,\r\n$/, "")
+      .trim()
+      .replace(/,$/, "")
       .split(",");
     let radial:{[key:string]:any} = { Azimuth: 0, list: new Array<any>() };
     for (let i = 0; i < 11; i++) {
@@ -1331,17 +1336,17 @@ function work(){
         }).then((res) => {
           let view:View|null = new View(encoder.encode(res.data.data.file.file_data).buffer)
           let result:{[key:string]:any} = {HeaderInfo:{},data:[]}
-          let firstLine = decoder.decode(view.getLine()).replace(/,\r\n$/,'').split(',')
+          let firstLine = decoder.decode(view.getLine()).trim().replace(/,$/,'').split(',')
           for(let i=1;i<firstLine.length;i++){
             let item = firstLine[i].split(':')
             if(item.length==2){
               result.HeaderInfo[item[0]] = item[1]
             }
           }
-          let secondLine = decoder.decode(view.getLine()).replace(/,\r\n$/,'').split(',')
+          let secondLine = decoder.decode(view.getLine()).trim().replace(/,$/,'').split(',')
           while(!view.reachEnd()){
             let radial:{[key:string]:any} = {list:[]}
-            let thirdLine = decoder.decode(view.getLine()).replace(/,\r\n$/g,'').split(',')
+            let thirdLine = decoder.decode(view.getLine()).trim().replace(/,$/g,'').split(',')
             for(let i=0;i<9;i++){
               radial[secondLine[i]] = thirdLine[i]
             }
@@ -1417,18 +1422,18 @@ function work(){
         /* PPI数据处理并显示
         let inversionResult:{[key:string]:any} = {HeaderInfo:{}}
         const view = new View(encoder.encode(ppiInversionData).buffer)
-        let firstLine = decoder.decode(view.getLine()).replace(/,\r\n$/, "").split(",");
+        let firstLine = decoder.decode(view.getLine()).trim().replace(/,$/, "").split(",");
         for(let i=1;i<firstLine.length;i++){
           let item = firstLine[i].split(':')
           if(item.length==2){
             inversionResult.HeaderInfo[item[0]]=item[1]
           }
         }
-        let secondLine = decoder.decode(view.getLine()).replace(/,\r\n$/, "").split(",");
+        let secondLine = decoder.decode(view.getLine()).trim().replace(/,$/, "").split(",");
         inversionResult.data = []
         while(!view.reachEnd()){
           let radial:{[key:string]:any} = {list:[]}
-          let thirdLine = decoder.decode(view.getLine()).replace(/,\r\n$/, "").split(",");
+          let thirdLine = decoder.decode(view.getLine()).trim().replace(/,$/, "").split(",");
           for(let i=0;i<12;i++){
             radial[secondLine[i]] = thirdLine[i]
           }
@@ -1490,21 +1495,21 @@ function fetch最近风廓线数据(){
   getFkxRealData({radar_id:station.active,dateTime:moment().format('YYYYMMDDHHmmss'),num:6}).then((res=>{
     const v = new View(encoder.encode(res.data.data.file.file_data).buffer)
     let result:{[key:string]:any} = {HeaderInfo:{},data:[]}
-    let firstLine = decoder.decode(v.getLine()).replace(/,\r\n$/,'').split(',')
+    let firstLine = decoder.decode(v.getLine()).trim().replace(/,$/,'').split(',')
     for(let i=1;i<firstLine.length;i++){
       let item = firstLine[i].split(':')
       if(item.length==2){
         result.HeaderInfo[item[0]] = item[1]
       }
     }
-    let secondLine = decoder.decode(v.getLine()).replace(/,\r\n$/,'').split(',')
+    let secondLine = decoder.decode(v.getLine()).trim().replace(/,$/,'').split(',')
     while(!v.reachEnd()){
       let radial:{[key:string]:any} = {list:[]}
-      let thirdLine = decoder.decode(v.getLine()).replace(/,\r\n$/,'').split(',')
+      let thirdLine = decoder.decode(v.getLine()).trim().replace(/,$/,'').split(',')
       for(let i=0;i<9;i++){
         radial[secondLine[i]] = thirdLine[i]
       }
-      for(let i=9;i<thirdLine.length;i+=9){
+      for(let i=9;i<secondLine.length;i+=9){
         radial.list.push({
           distance:Number(secondLine[i].split(' ')[0].substring(0,secondLine[i].split(' ')[0].length-1)),
           [secondLine[i+0].split(' ').slice(1).join(' ')]:Number(thirdLine[i+0]),
