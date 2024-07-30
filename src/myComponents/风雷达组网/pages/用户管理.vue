@@ -1,12 +1,13 @@
 <template>
   <datatable
     style="padding: 10px"
-    database="host=tanglei.top&port=3306&user=root&password=tanglei&database=union"
+    :database="databaseRaw"
     table="userinfo"
     :headerOption="headerOption"
   ></datatable>
 </template>
 <script lang="ts" setup>
+import { databaseRaw } from "~/api/重庆";
 import { reactive } from "vue";
 import datatable from "~/myComponents/datatable/index.vue";
 const headerOption = reactive({

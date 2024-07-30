@@ -1194,10 +1194,11 @@ xhr.addEventListener("load", function () {
 xhr.responseType = "arraybuffer";
 xhr.open("GET", ppiDataUrl);
 xhr.send();
+import {databaseRaw} from '~/api/重庆'
 function work(){
   exec({
     // database: "host=127.0.0.1&port=3306&user=root&password=tanglei&database=weatherservice",
-    database: "host=tanglei.top&port=3308&user=root&password=mysql&database=weatherservice",
+    database: databaseRaw,
     query: {
       sqls: ["select * from `device`"],
     },
