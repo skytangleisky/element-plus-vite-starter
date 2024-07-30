@@ -1,5 +1,5 @@
 import request from '../utils/request'
-const url = 'backend/libs/db/src/login.php'
+const url = 'backend/libs/db/src/login.php?host=tanglei.top&port=3306&user=root&password=tanglei&database=union'
 export function login(data) {
   return request({
     url,
