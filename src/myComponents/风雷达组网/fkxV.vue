@@ -104,7 +104,7 @@ const 处理风廓线数据 = (data: any, type1: string, diejia: string, type2: 
           [secondLine[i+8].split(' ').slice(1).join(' ')]:Number(thirdLine[i+8]),
         })
       }
-      result.radials.push(radial)
+      result.radials.unshift(radial)
     }
     let Fdatas: any[] = [];
     result.radials.map((v: any, k: number) => {

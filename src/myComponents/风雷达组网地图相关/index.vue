@@ -1196,7 +1196,8 @@ xhr.open("GET", ppiDataUrl);
 xhr.send();
 function work(){
   exec({
-    database: "host=127.0.0.1&port=3306&user=root&password=tanglei&database=weatherservice",
+    // database: "host=127.0.0.1&port=3306&user=root&password=tanglei&database=weatherservice",
+    database: "host=tanglei.top&port=3308&user=root&password=mysql&database=weatherservice",
     query: {
       sqls: ["select * from `device`"],
     },
@@ -1364,7 +1365,7 @@ function work(){
                 [secondLine[i+8].split(' ').slice(1).join(' ')]:Number(thirdLine[i+8]),
               })
             }
-            result.data.push(radial)
+            result.data.unshift(radial)
           }
           dbsData[radar_id] = result
           result.data.map((radial:any)=>{
