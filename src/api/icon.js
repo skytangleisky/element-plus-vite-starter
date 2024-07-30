@@ -1,5 +1,5 @@
 import request from '~/utils/request'
-const url = 'backend/db/icon'
+const url = 'backend/db/icon?host=tanglei.top&port=3306&user=root&password=tanglei&database=union'
 export function fetchList() {
   const data = {
     "select":["*"], // 需要获取的字段，"*"代表所有字段
