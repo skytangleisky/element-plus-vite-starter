@@ -10,12 +10,12 @@
       "
     >
       <img
-        src="/src/assets/eagle.png"
-        style="width: 60px; height: 60px; margin-right: 10px"
+        src="/src/assets/huahang353x353.png"
+        style="width: 100px; height: 100px; margin-right: 10px"
       />
       <!-- <div class="title">北京人影演示系统</div> -->
       <!-- <div class="title">珠海低空飞行监控系统</div> -->
-      <div class="title">重庆激光雷达组网系统</div>
+      <div class="title">重庆测风激光雷达组网系统</div>
     </div>
     <div class="rightPlane fourCorners">
       <el-form

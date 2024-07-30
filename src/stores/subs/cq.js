@@ -5,7 +5,7 @@ export default {
   name:'5e1816a8-f4e1-a3dd-c0e5-ba131030e9e7',
   svg:'f7f96575383611efb04bb025aa2c9ada',
   meta:{
-    label:'重庆激光雷达组网观测系统',
+    label:'重庆测风激光雷达组网系统',
     roles:['admin','cq']
   },
   children:[
