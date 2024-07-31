@@ -405,7 +405,7 @@ let startWidth = 0;
 function onMouseMove(event:MouseEvent){
   if(isResizing){
     const newWidth = startWidth + (event.pageX - startX);
-    if(newWidth>6){
+    if(newWidth>=6){
       currentTh.style['width'] = `${newWidth}px`;
     }else{
       currentTh.style['width'] = `6px`;
@@ -681,8 +681,6 @@ const allChange = (val: CheckboxValueType) => {
     border-collapse: collapse;
     height: fit-content;
     th {
-      // padding: 0;
-      // min-width: 160px;
       text-align: left;
       border-right: 1px solid #444;
     }
@@ -714,7 +712,7 @@ const allChange = (val: CheckboxValueType) => {
     left: 0;
   }
   .col {
-    z-index:10;
+    z-index:1;
     width:160px;
     flex-shrink: 0;
     height: fit-content;
@@ -727,7 +725,7 @@ const allChange = (val: CheckboxValueType) => {
       font-weight: bolder;
       line-height: 1rem;
     }
-    &:not(:last-child) {
+    &{
       .th {
         border-right: 1px solid #fff;
       }
@@ -736,7 +734,7 @@ const allChange = (val: CheckboxValueType) => {
       }
     }
   }
-  .cell:not(:last-child) {
+  .cell {
     border-bottom: 1px solid #fff;
   }
 }
@@ -746,7 +744,7 @@ const allChange = (val: CheckboxValueType) => {
     .th {
       border-bottom: 1px solid #282828;
     }
-    &:not(:last-child) {
+    &{
       .th {
         border-right: 1px solid #282828;
       }
@@ -755,7 +753,7 @@ const allChange = (val: CheckboxValueType) => {
       }
     }
   }
-  .cell:not(:last-child) {
+  .cell {
     border-bottom: 1px solid #282828;
   }
 }
