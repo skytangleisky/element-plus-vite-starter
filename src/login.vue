@@ -125,7 +125,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
               if (e.response.data.message) {
                 openVn(e.response.data.message);
               } else {
-                openVn(e.response.data.sqlMessage);
+                openVn(e.response.data.sqlMessage||e.response.data.code);
               }
             } else {
               openVn(e.message);

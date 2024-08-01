@@ -1,6 +1,7 @@
 import request from '../utils/request'
+export const databaseRaw = 'host=127.0.0.1&port=3306&user=root&password=tanglei&database=weatherservice';
 // export const databaseRaw = 'host=tanglei.top&port=3306&user=root&password=tanglei&database=union';
-export const databaseRaw = 'host=tanglei.top&port=3308&user=root&password=mysql&database=weatherservice';
+// export const databaseRaw = 'host=tanglei.top&port=3308&user=root&password=mysql&database=weatherservice';
 // export const databaseRaw = 'host=127.0.0.1&port=3306&user=admin&password=EkWM76Z8IJbfviCr&database=weatherservice';
 export function getDataList(query:{radar_id:string,path:string}){
   return request({
