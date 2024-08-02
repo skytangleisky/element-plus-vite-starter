@@ -813,7 +813,7 @@ export default function DBS() {
       itemStyle: {
         color: function(params) {
           const obj = params.value[3]
-          let color = obj.fVSpeed === undefined ? 'transparent' : verticalFlowColor(Number(obj.fVSpeed))
+          let color = (obj.fVSpeed === undefined||obj.fVSpeed==999) ? 'transparent' : verticalFlowColor(Number(obj.fVSpeed))
           return  color
         }
       }
@@ -832,7 +832,7 @@ export default function DBS() {
       },
       symbol: function(value) {
         const obj = value[3]
-        if (obj.fHSpeed === '-' || obj.fHSpeed <= 0) { return 'path://' }
+        if (obj.fHSpeed === '-' || obj.fHSpeed <= 0||obj.fHSpeed == 999) { return 'path://' }
         if (showType === '风羽') {
           return 'path://' + feathers[getFeather(obj.fHSpeed)]
         } else {
@@ -948,7 +948,6 @@ export default function DBS() {
           var fHei = fData[i]. data[index].fHei
           var fHSpeed = fData[i].data[index].fHSpeed
           var fVSpeed = fData[i].data[index].fVSpeed
-          if (Number(fHSpeed) === 999) continue
           if (type1 === '垂直气流') {
             option.series[0].data.push([i, fHei, fVSpeed, fData[i].data[index]])
           }

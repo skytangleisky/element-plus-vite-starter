@@ -214,10 +214,10 @@ export default function DBS() {
       },
       symbol: function(value) {
         const obj = value[2]
-        if(obj){
-          return 'path://' + feathers[getFeather(Number(obj.fHSpeed))]
-        }else{
+        if(!obj||obj.fHSpeed==-1000||obj.fHSpeed==999){
           return 'path://'
+        }else{
+          return 'path://' + feathers[getFeather(Number(obj.fHSpeed))]
         }
       },
       symbolSize(value) {
@@ -346,7 +346,6 @@ export default function DBS() {
         var fVSpeed = v.data[index].fVSpeed
         // var fVerChange = v.data[index].fVerChange
         // var iBelieveable = v.data[index].iBelieveable
-        if (Number(fHSpeed) === 999||Number(fHSpeed) === -1000) continue
         // option.series[1].data.push([1, fHei, fVSpeed, fData.data[index]])
         option.series[0].data.push([k, fHei,v.data[index]])
       }

@@ -91,8 +91,9 @@ const 处理风廓线数据 = (data: any, type1: string, diejia: string, type2: 
         radial[secondLine[i]] = thirdLine[i]
       }
       for(let i=9;i<secondLine.length;i+=9){
+        let distance = Number(secondLine[i].split(' ')[0].substring(0,secondLine[i].split(' ')[0].length-1))
         radial.list.push({
-          distance:Number(secondLine[i].split(' ')[0].substring(0,secondLine[i].split(' ')[0].length-1)),
+          distance,
           [secondLine[i+0].split(' ').slice(1).join(' ')]:Number(thirdLine[i+0]),
           [secondLine[i+1].split(' ').slice(1).join(' ')]:Number(thirdLine[i+1]),
           [secondLine[i+2].split(' ').slice(1).join(' ')]:Number(thirdLine[i+2]),
