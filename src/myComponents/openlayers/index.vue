@@ -65,7 +65,7 @@
         <chart-dom></chart-dom>
         <chartDirection></chartDirection>
         <chartSpeed></chartSpeed>
-        <chartSNR></chartSNR>
+        <!-- <chartSNR></chartSNR> -->
         <chart-th></chart-th>
       </div>
       <el-icon
@@ -206,7 +206,7 @@ import chartTh from "~/myComponents/echarts/T_H.vue";
 import chartDom from "~/myComponents/echarts/index.vue";
 import chartFkx from "~/myComponents/echarts/fkx.vue";
 import chartInfo from "~/myComponents/echarts/info.vue";
-import chartSNR from "~/myComponents/echarts/SNR.vue";
+// import chartSNR from "~/myComponents/echarts/SNR.vue";
 import chartSpeed from "~/myComponents/echarts/Speed.vue";
 import chartDirection from "~/myComponents/echarts/Direction.vue";
 import { useRoute } from "vue-router";
@@ -328,7 +328,7 @@ const task = () => {
   //     });
   // }
 };
-// task();
+task();
 const loadFunc = () => {
   map.addSource("point", points);
   map.addLayer({
@@ -612,8 +612,8 @@ watch(
           time: data[i].data_time,
           name: data[i].radar.name,
           is_online: data[i].is_online,
-          external_temperature: data[i].external_temperature,
-          external_humidity: data[i].external_humidity,
+          external_temperature: data[i].external_temperature.toFixed(2),
+          external_humidity: data[i].external_humidity.toFixed(2),
           image: "feather" + getFeather(speed),
           color,
         },
@@ -623,7 +623,16 @@ watch(
         },
       });
     }
-    map.getSource("point").setData(points.data);
+    map?.getSource("point")?.setData(points.data);
+    if(station.active&&station.active!=''){
+      station
+        .查询雷达最新的径向风数据接口({
+          radar_id: station.active.replaceAll("-", ""),
+        })
+        .then((res) => {
+          bus.radialWindData = res.data.data;
+        });
+    }
   }
 );
 watch(
@@ -752,6 +761,9 @@ watch(
     } else {
       bus.result = [];
     }
+  },
+  {
+    immediate:true,
   }
 );
 watch(
@@ -762,6 +774,9 @@ watch(
     } else {
       bus.result = [];
     }
+  },
+  {
+    immediate:true
   }
 );
 watch(
@@ -772,6 +787,9 @@ watch(
     } else {
       bus.result = [];
     }
+  },
+  {
+    immediate:true
   }
 );
 watch(
@@ -782,6 +800,9 @@ watch(
     } else {
       bus.result = [];
     }
+  },
+  {
+    immediate:true
   }
 );
 watch(

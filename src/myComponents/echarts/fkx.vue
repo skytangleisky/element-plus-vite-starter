@@ -30,6 +30,7 @@ watch(isDark, (isDark) => {
     dbs.destroy();
   }
   setDBS(isDark);
+  process(tmpAvgWindData)
 });
 let dbs: DBS;
 onMounted(() => {
@@ -52,46 +53,52 @@ const setDBS = (isDark: boolean) => {
   //   // clearInterval(timer);
   // }, 5000);
   watch([() => bus.avgWindData, () => station.active], ([avgWindData, active]) => {
-    console.log("dbs", avgWindData);
     dbs.clear();
-    if (avgWindData) {
-      avgWindData.map((v, k) => {
-        let data;
-        for (let key in v) {
-          if (key == active) {
-            data = v[key];
-          }
-        }
-        if (data) {
-          let Fdatas: any[] = [];
-          data.map((v, k) => {
-            if (k === 0) {
-              currentTime.value = v.data_time;
-            }
-            let data_time = v.data_time;
-            let data_list = v.data_list;
-            let fData: { [key: string]: any } = {};
-            fData.timestamp = data_time;
-            fData.data = [];
-            data_list.map((item) => {
-              fData.data.push({
-                fHei: item.distance.toString(),
-                fHAngle: item.center_h_direction_abs.toString(),
-                fHSpeed: item.center_h_speed.toString(),
-                fVSpeed: item.vert_airflow.toString(),
-                // iBelieveable: v[k].reliability,
-              });
-            });
-            fData.data.reverse();
-            Fdatas.unshift(fData);
-            // console.log(fData);
-          });
-          dbs.process(Fdatas);
-        }
-      });
-    }
+    tmpAvgWindData = avgWindData
+    tmpActive = active
+    process(avgWindData)
   });
 };
+let tmpAvgWindData:any;
+let tmpActive:any;
+function process(avgWindData:any){
+  if (avgWindData) {
+    avgWindData.map((v:any, k:number) => {
+      let data;
+      for (let key in v) {
+        if (key == tmpActive) {
+          data = v[key];
+        }
+      }
+      if (data) {
+        let Fdatas: any[] = [];
+        data.map((v:any, k:number) => {
+          if (k === 0) {
+            currentTime.value = v.data_time;
+          }
+          let data_time = v.data_time;
+          let data_list = v.data_list;
+          let fData: { [key: string]: any } = {};
+          fData.timestamp = data_time;
+          fData.data = [];
+          data_list.map((item:any) => {
+            fData.data.push({
+              fHei: item.distance.toString(),
+              fHAngle: item.center_h_direction_abs.toString(),
+              fHSpeed: item.center_h_speed.toString(),
+              fVSpeed: item.vert_airflow.toString(),
+              // iBelieveable: v[k].reliability,
+            });
+          });
+          fData.data.reverse();
+          Fdatas.unshift(fData);
+          // console.log(fData);
+        });
+        dbs.process(Fdatas);
+      }
+    });
+  }
+}
 onBeforeUnmount(() => {
   clearInterval(timer);
   dbs.clear();

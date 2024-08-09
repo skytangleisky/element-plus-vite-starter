@@ -10,6 +10,16 @@ export default {
   },
   children:[
     {
+      path:'guangheng',
+      name:'22254d40-71a3-8406-b0d8-cc9eb3aed11c',
+      component:'/src/myComponents/openlayers/index.vue',
+      svg:'ccb99649537e11ef8f23b025aa2c9ada',
+      replace:true,
+      meta:{
+        label:'光恒',
+      }
+    },
+    {
       path:'edit',
       name:'12254d40-71a3-8406-b0d8-cc9eb3aed11c',
       component:'/src/myComponents/leftMenu/edit.vue',

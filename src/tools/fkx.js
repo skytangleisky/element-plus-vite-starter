@@ -1,3 +1,4 @@
+import {getColor} from '~/tools'
 export default function DBS() {
   var option = null
   var feathers = [
@@ -34,10 +35,6 @@ export default function DBS() {
     'M1,6v4H15v1H1V30H0V0H14.5A.49.49,0,0,1,15,.42a.49.49,0,0,1-.32.55L3.39,5H15V6Z', // 58
     'M1,6v4H15v1H1v4H8v1H1V30H0V0H14.5A.49.49,0,0,1,15,.42a.49.49,0,0,1-.32.55L3.39,5H15V6Z' // 60
   ]
-
-  function getFeatherColor(speed) {
-    return speed <= 4 ? '#0000ff' : speed <= 8 ? '#002aff' : speed <= 12 ? '#0054ff' : speed <= 16 ? '#007eff' : speed <= 20 ? '#00a8ff' : speed <= 24 ? '#00d2ff' : speed <= 28 ? '#14d474' : speed <= 32 ? '#a6dd00' : speed <= 36 ? '#ffe600' : speed <= 40 ? '#ffb300' : speed <= 44 ? '#ff8000' : speed <= 48 ? '#ff4d00' : speed <= 52 ? '#ff1a00' : speed <= 56 ? '#e60000' : '#b30000'
-  }
   var getFeather = v => v <= 0 ? 0 : v <= 1 ? 1 : v <= 2 ? 2 : v <= 4 ? 3 : v <= 6 ? 4 : v <= 8 ? 5 : v <= 10 ? 6 : v <= 12 ? 7 : v <= 14 ? 8 : v <= 16 ? 9 : v <= 18 ? 10 : v <= 20 ? 11 : v <= 22 ? 12 : v <= 24 ? 13 : v <= 26 ? 14 : v <= 28 ? 15 : v <= 30 ? 16 : v <= 32 ? 17 : v <= 34 ? 18 : v <= 36 ? 19 : v <= 38 ? 20 : v <= 40 ? 21 : v <= 42 ? 22 : v <= 44 ? 23 : v <= 46 ? 24 : v <= 48 ? 25 : v <= 50 ? 26 : v <= 52 ? 27 : v <= 54 ? 28 : v <= 56 ? 29 : v <= 58 ? 30 : 31
   let data = []
   var hours = [
@@ -135,95 +132,70 @@ export default function DBS() {
       itemSymbol: 'rect',
       pieces: [{
         gte: 0,
+        lt: 1,
+        color: getColor(1),
+        label: '1'
+      },
+      {
+        gte: 1,
+        lt: 2,
+        color: getColor(2),
+        label: '2'
+      },
+      {
+        gte: 2,
         lt: 4,
-        color: getFeatherColor(4),
+        color: getColor(4),
         label: '4'
       },
       {
         gte: 4,
+        lt: 6,
+        color: getColor(6),
+        label: '6'
+      },
+      {
+        gte: 6,
         lt: 8,
-        color: getFeatherColor(8),
+        color: getColor(8),
         label: '8'
       },
       {
         gte: 8,
+        lt: 10,
+        color: getColor(10),
+        label: '10'
+      },
+      {
+        gte: 10,
         lt: 12,
-        color: getFeatherColor(12),
+        color: getColor(12),
         label: '12'
       },
       {
         gte: 12,
+        lt: 14,
+        color: getColor(14),
+        label: '14'
+      },
+      {
+        gte: 14,
         lt: 16,
-        color: getFeatherColor(16),
+        color: getColor(16),
         label: '16'
       },
       {
         gte: 16,
+        lt: 18,
+        color: getColor(18),
+        label: '18'
+      },
+      {
+        gte: 18,
         lt: 20,
-        color: getFeatherColor(20),
+        color: getColor(20),
         label: '20'
-      },
-      {
-        gte: 20,
-        lt: 24,
-        color: getFeatherColor(24),
-        label: '24'
-      },
-      {
-        gte: 24,
-        lt: 28,
-        color: getFeatherColor(28),
-        label: '28'
-      },
-      {
-        gte: 28,
-        lt: 32,
-        color: getFeatherColor(32),
-        label: '32'
-      },
-      {
-        gte: 32,
-        lt: 36,
-        color: getFeatherColor(36),
-        label: '36'
-      },
-      {
-        gte: 36,
-        lt: 40,
-        color: getFeatherColor(40),
-        label: '40'
-      },
-      {
-        gte: 40,
-        lt: 44,
-        color: getFeatherColor(44),
-        label: '44'
-      },
-      {
-        gte: 44,
-        lt: 48,
-        color: getFeatherColor(48),
-        label: '48'
-      },
-      {
-        gte: 48,
-        lt: 52,
-        color: getFeatherColor(52),
-        label: '52'
-      },
-      {
-        gte: 52,
-        lt: 56,
-        color: getFeatherColor(56),
-        label: '56'
-      },
-      {
-        gte: 52,
-        lt: 60,
-        color: getFeatherColor(60),
-        label: '60'
-      }
-      ],
+      }],
       textStyle: {}
     },
     series: [{
@@ -280,7 +252,11 @@ export default function DBS() {
       itemStyle: {
         color: function(params) {
           const obj = params.value[2]
-          return getFeatherColor(Number(obj.fHSpeed))
+          if(Number(obj.fHSpeed)==-1000||Number(obj.fHSpeed)==999||Number(obj.fHSpeed)==0){
+            return 'transparent'
+          }else{
+            return getColor(Number(obj.fHSpeed))
+          }
         }
       }
     }],
@@ -372,7 +348,6 @@ export default function DBS() {
         var fVSpeed = v.data[index].fVSpeed
         // var fVerChange = v.data[index].fVerChange
         // var iBelieveable = v.data[index].iBelieveable
-        if (Number(fHSpeed) === 999||Number(fHSpeed) === -1000) continue
         // option.series[1].data.push([1, fHei, fVSpeed, fData.data[index]])
         option.series[0].data.push([k, fHei,v.data[index]])
       }

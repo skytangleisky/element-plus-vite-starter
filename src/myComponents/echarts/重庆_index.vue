@@ -33,7 +33,7 @@
         />
       </el-select>
     </div>
-    <div ref="chartDom" class="w-full flex-1"></div>
+    <div ref="chartDom" class="w-full flex-1" v-resize="resize"></div>
   </div>
 </template>
 <script setup>
@@ -76,23 +76,84 @@ let setEcharts = (isDark) => {
   } else {
     myChart = echarts.init(chartDom.value);
   }
-  const dims = {
-    time: 0,
-    windSpeed: 1,
-    R: 2,
-    waveHeight: 3,
-    weatherIcon: 2,
-    minTemp: 3,
-    maxTemp: 4,
-  };
-  const weatherIcons = {
-    Showers,
-    Sunny,
-    Cloudy,
-  };
-  const directionMap = {};
-  // prettier-ignore
-  ['W', 'WSW', 'SW', 'SSW', 'S', 'SSE', 'SE', 'ESE', 'E', 'ENE', 'NE', 'NNE', 'N', 'NNW', 'NW', 'WNW'].forEach(function (name, index) {
+  // $.getJSON(url, function (rawData) {
+  //   console.log(rawData);
+  //   const weatherData = rawData.forecast.map(function (entry) {
+  //     return [
+  //       entry.localDate,
+  //       0,
+  //       weatherIcons[entry.skyIcon],
+  //       entry.minTemp,
+  //       entry.maxTemp,
+  //     ];
+  //   });
+  //   const data = rawData.data.map(function (entry) {
+  //     return [entry.time, entry.windSpeed, entry.R, entry.waveHeight];
+  //   });
+  //   option.series[0].data = data;
+  //   option.series[1].data = data;
+  //   option.series[2].data = data;
+  //   // option.series[3].data = weatherData;
+  //   myChart.setOption(option, false, true);
+  // });
+  option && myChart.setOption(option, false, true);
+};
+watch(
+  [() => bus.avgWindData_重庆, layerIndex],
+  ([avgWindData, layerIdx]) => {
+    option.series[1].data = [];
+    option.series[2].data = [];
+    myChart.setOption(option, false, true);
+    if(avgWindData.data){
+      let data = [];
+      avgWindData.data.map((radial,k)=>{
+        if(k==0){
+          options.value.length = 0
+          for(let i=radial.list.length-1;i>=0;i--){
+            options.value.push({
+              value: i,
+              label: `${radial.list[i].distance}米`,
+            });
+          }
+        }
+        let lib = radial.list[layerIdx]
+        if(lib){
+          if(lib['WindSpeed']!==999){
+            data.push([
+              moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'),
+              lib['WindSpeed'],
+              lib['WindDirection'],
+              lib['distance'],
+            ]);
+          }
+        }
+      })
+      for (let i = 0; i < data.length; i++) {
+        option.series[1].data.push(data[i]);
+        option.series[2].data.push(data[i]);
+      }
+      myChart.setOption(option, false, true);
+    }
+  }
+);
+
+const directionMap = {};
+const dims = {
+  time: 0,
+  windSpeed: 1,
+  R: 2,
+  waveHeight: 3,
+  weatherIcon: 2,
+  minTemp: 3,
+  maxTemp: 4,
+};
+const weatherIcons = {
+  Showers,
+  Sunny,
+  Cloudy,
+};
+// prettier-ignore
+['W', 'WSW', 'SW', 'SSW', 'S', 'SSE', 'SE', 'ESE', 'E', 'ENE', 'NE', 'NNE', 'N', 'NNW', 'NW', 'WNW'].forEach(function (name, index) {
       directionMap[name] = Math.PI / 8 * index;
     });
   const arrowSize = 18;
@@ -118,308 +179,247 @@ let setEcharts = (isDark) => {
     };
   };
   const renderWeather = function (param, api) {
-    const point = api.coord([api.value(dims.time) + (3600 * 24 * 1000) / 2, 0]);
-    return {
-      type: "group",
-      children: [
-        {
-          type: "image",
-          style: {
-            image: api.value(dims.weatherIcon),
-            x: -weatherIconSize / 2,
-            y: -weatherIconSize / 2,
-            width: weatherIconSize,
-            height: weatherIconSize,
-          },
-          position: [point[0], 110],
+  const point = api.coord([api.value(dims.time) + (3600 * 24 * 1000) / 2, 0]);
+  return {
+    type: "group",
+    children: [
+      {
+        type: "image",
+        style: {
+          image: api.value(dims.weatherIcon),
+          x: -weatherIconSize / 2,
+          y: -weatherIconSize / 2,
+          width: weatherIconSize,
+          height: weatherIconSize,
         },
-        {
-          type: "text",
-          style: {
-            text: api.value(dims.minTemp) + " - " + api.value(dims.maxTemp) + "°",
-            textFont: api.font({ fontSize: 14 }),
-            textAlign: "center",
-            textVerticalAlign: "bottom",
-          },
-          position: [point[0], 80],
+        position: [point[0], 110],
+      },
+      {
+        type: "text",
+        style: {
+          text: api.value(dims.minTemp) + " - " + api.value(dims.maxTemp) + "°",
+          textFont: api.font({ fontSize: 14 }),
+          textAlign: "center",
+          textVerticalAlign: "bottom",
         },
-      ],
-    };
+        position: [point[0], 80],
+      },
+    ],
   };
-  var option = {
-    animation: false,
-    backgroundColor: "transparent",
-    title: {
-      text: "风速风向",
-      subtext: "",
-      left: "center",
+};
+var option = {
+  animation: false,
+  backgroundColor: "transparent",
+  title: {
+    text: "风速风向",
+    subtext: "",
+    left: "center",
+    show: false,
+  },
+  tooltip: {
+    trigger: "axis",
+    formatter: function (params) {
+      return [
+        echarts.format.formatTime("yyyy-MM-dd hh:mm:ss", params[0].value[dims.time]), //echarts.time.format("yyyy-MM-dd hh:mm:ss", params[0].value[dims.time])//官方源码正则没写对
+        "风速：" + params[0].value[dims.windSpeed].toFixed(2)+'m/s',
+        "风向：" + params[0].value[dims.R].toFixed(2)+'°',
+        "高度：" + params[0].value[dims.waveHeight]+'m',
+      ].join("<br>");
+    },
+  },
+  grid: {
+    top: 40,
+    bottom: 125,
+  },
+  xAxis: {
+    // type: "category",
+    type: "time",
+    inverse: true,
+    boundaryGap: 0.15,
+    // type: 'time',
+    // boundaryGap:true,
+    // minInterval:5000,
+    // maxInterval:5000,
+    // interval:5000,
+    // inverse:true,
+    // min: function(value) {
+    // 	return value.min - 1000;
+    // },
+    // max: function(value) {
+    // 	return value.max + 1000;
+    // },
+    // splitLine: {
+    // 	show: true,
+    // 	lineStyle: {
+    // 		color: '#ddd'
+    // 	},
+    // 	interval:'5000'
+    // },
+    // data: hours,
+    axisLabel: {
+      rotate: 360,
+      // formatter: function(value, index){
+      // 	return echarts.format.formatTime('hh:mm:ss', new Date(value));
+      // }
+    },
+    splitLine: {
+      show: true,
+    },
+    splitArea: {
       show: false,
     },
-    tooltip: {
-      trigger: "axis",
-      formatter: function (params) {
-        return [
-          echarts.format.formatTime("yyyy-MM-dd hh:mm:ss", params[0].value[dims.time]), //echarts.time.format("yyyy-MM-dd hh:mm:ss", params[0].value[dims.time])//官方源码正则没写对
-          "风速：" + params[0].value[dims.windSpeed].toFixed(2)+'m/s',
-          "风向：" + params[0].value[dims.R].toFixed(2)+'°',
-          "高度：" + params[0].value[dims.waveHeight]+'m',
-        ].join("<br>");
-      },
+  },
+  yAxis: [
+    {
+      name: "风速（m/s）",
+      nameLocation: "middle",
+      nameGap: 35,
     },
-    grid: {
-      top: 40,
-      bottom: 125,
+    {
+      name: "高度（米）",
+      nameLocation: "middle",
+      nameGap: 35,
+      max: 6,
+      show: false,
+      splitLine: { show: false },
     },
-    xAxis: {
-      // type: "category",
-      type: "time",
-      inverse: true,
-      boundaryGap: 0.15,
-      // type: 'time',
-      // boundaryGap:true,
-      // minInterval:5000,
-      // maxInterval:5000,
-      // interval:5000,
-      // inverse:true,
-      // min: function(value) {
-      // 	return value.min - 1000;
-      // },
-      // max: function(value) {
-      // 	return value.max + 1000;
-      // },
-      // splitLine: {
-      // 	show: true,
-      // 	lineStyle: {
-      // 		color: '#ddd'
-      // 	},
-      // 	interval:'5000'
-      // },
-      // data: hours,
-      axisLabel: {
-        rotate: 360,
-        // formatter: function(value, index){
-        // 	return echarts.format.formatTime('hh:mm:ss', new Date(value));
-        // }
-      },
-      splitLine: {
-        show: true,
-      },
-      splitArea: {
-        show: false,
-      },
+    {
+      axisLine: { show: false },
+      axisTick: { show: false },
+      axisLabel: { show: false },
+      splitLine: { show: false },
     },
-    yAxis: [
+  ],
+  visualMap: {
+    type: "piecewise",
+    // show: false,
+    orient: "horizontal",
+    left: "center",
+    bottom: 10,
+    pieces: [
       {
-        name: "风速（m/s）",
-        nameLocation: "middle",
-        nameGap: 35,
+        gte: 7.9,
+        color: "#D33C3E",
+        label: "大风（>= 7.9 m/s）",
       },
       {
-        name: "高度（米）",
-        nameLocation: "middle",
-        nameGap: 35,
-        max: 6,
-        show: false,
-        splitLine: { show: false },
+        gte: 5.4,
+        lt: 7.9,
+        color: "#f4e9a3",
+        label: "中风（5.4  ~ 7.9 m/s）",
       },
       {
-        axisLine: { show: false },
-        axisTick: { show: false },
-        axisLabel: { show: false },
-        splitLine: { show: false },
+        lt: 5.4,
+        color: "#18BF12",
+        label: "微风（小于 5.4 m/s）",
       },
     ],
-    visualMap: {
-      type: "piecewise",
-      // show: false,
-      orient: "horizontal",
-      left: "center",
-      bottom: 10,
-      pieces: [
-        {
-          gte: 7.9,
-          color: "#D33C3E",
-          label: "大风（>= 7.9 m/s）",
-        },
-        {
-          gte: 5.4,
-          lt: 7.9,
-          color: "#f4e9a3",
-          label: "中风（5.4  ~ 7.9 m/s）",
-        },
-        {
-          lt: 5.4,
-          color: "#18BF12",
-          label: "微风（小于 5.4 m/s）",
-        },
-      ],
-      seriesIndex: 1,
-      dimension: 1,
+    seriesIndex: 1,
+    dimension: 1,
+  },
+  dataZoom: [
+    {
+      type: "inside",
+      xAxisIndex: 0,
+      minSpan: 5,
     },
-    dataZoom: [
-      {
-        type: "inside",
-        xAxisIndex: 0,
-        minSpan: 5,
+    {
+      type: "slider",
+      xAxisIndex: 0,
+      minSpan: 5,
+      bottom: 50,
+    },
+  ],
+  series: [
+    {
+      type: "line",
+      yAxisIndex: 1,
+      showSymbol: false,
+      emphasis: {
+        scale: false,
       },
-      {
-        type: "slider",
-        xAxisIndex: 0,
-        minSpan: 5,
-        bottom: 50,
+      symbolSize: 10,
+      areaStyle: {
+        color: {
+          type: "linear",
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
+          global: false,
+          colorStops: [
+            {
+              offset: 0,
+              color: "rgba(88,160,253,1)",
+            },
+            {
+              offset: 0.5,
+              color: "rgba(88,160,253,0.7)",
+            },
+            {
+              offset: 1,
+              color: "rgba(88,160,253,0)",
+            },
+          ],
+        },
       },
-    ],
-    series: [
-      {
-        type: "line",
-        yAxisIndex: 1,
-        showSymbol: false,
-        emphasis: {
-          scale: false,
-        },
-        symbolSize: 10,
-        areaStyle: {
-          color: {
-            type: "linear",
-            x: 0,
-            y: 0,
-            x2: 0,
-            y2: 1,
-            global: false,
-            colorStops: [
-              {
-                offset: 0,
-                color: "rgba(88,160,253,1)",
-              },
-              {
-                offset: 0.5,
-                color: "rgba(88,160,253,0.7)",
-              },
-              {
-                offset: 1,
-                color: "rgba(88,160,253,0)",
-              },
-            ],
-          },
-        },
-        lineStyle: {
-          color: "rgba(88,160,253,1)",
-        },
-        itemStyle: {
-          color: "rgba(88,160,253,1)",
-        },
-        encode: {
-          x: dims.time,
-          y: dims.waveHeight,
-        },
-        data: [],
-        z: 2,
+      lineStyle: {
+        color: "rgba(88,160,253,1)",
       },
-      {
-        type: "custom",
-        renderItem: renderArrow,
-        encode: {
-          x: dims.time,
-          y: dims.windSpeed,
-        },
-        data: [],
-        z: 10,
+      itemStyle: {
+        color: "rgba(88,160,253,1)",
       },
-      {
-        type: "line",
-        symbol: "none",
-        encode: {
-          x: dims.time,
-          y: dims.windSpeed,
-        },
-        lineStyle: {
-          color: "#aaa",
-          type: "dotted",
-        },
-        data: [],
-        z: 1,
+      encode: {
+        x: dims.time,
+        y: dims.waveHeight,
       },
-      {
-        type: "custom",
-        renderItem: renderWeather,
-        // data: weatherData,
-        tooltip: {
-          trigger: "item",
-          formatter: function (param) {
-            return (
-              param.value[dims.time] +
-              ": " +
-              param.value[dims.minTemp] +
-              " - " +
-              param.value[dims.maxTemp] +
-              "°"
-            );
-          },
-        },
-        yAxisIndex: 2,
-        z: 11,
+      data: [],
+      z: 2,
+    },
+    {
+      type: "custom",
+      renderItem: renderArrow,
+      encode: {
+        x: dims.time,
+        y: dims.windSpeed,
       },
-    ],
-  };
-  // $.getJSON(url, function (rawData) {
-  //   console.log(rawData);
-  //   const weatherData = rawData.forecast.map(function (entry) {
-  //     return [
-  //       entry.localDate,
-  //       0,
-  //       weatherIcons[entry.skyIcon],
-  //       entry.minTemp,
-  //       entry.maxTemp,
-  //     ];
-  //   });
-  //   const data = rawData.data.map(function (entry) {
-  //     return [entry.time, entry.windSpeed, entry.R, entry.waveHeight];
-  //   });
-  //   option.series[0].data = data;
-  //   option.series[1].data = data;
-  //   option.series[2].data = data;
-  //   // option.series[3].data = weatherData;
-  //   myChart.setOption(option, false, true);
-  // });
-  watch(
-    [() => bus.avgWindData_重庆, layerIndex],
-    ([avgWindData, layerIdx]) => {
-      option.series[1].data = [];
-      option.series[2].data = [];
-      myChart.setOption(option, false, true);
-      if(avgWindData.data){
-        let data = [];
-        avgWindData.data.map((radial,k)=>{
-          if(k==0){
-            options.value.length = 0
-            for(let i=radial.list.length-1;i>=0;i--){
-              options.value.push({
-                value: i,
-                label: `${radial.list[i].distance}米`,
-              });
-            }
-          }
-          let lib = radial.list[layerIdx]
-          if(lib){
-            if(lib['WindSpeed']!==999){
-              data.push([
-                moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'),
-                lib['WindSpeed'],
-                lib['WindDirection'],
-                lib['distance'],
-              ]);
-            }
-          }
-        })
-        for (let i = 0; i < data.length; i++) {
-          option.series[1].data.push(data[i]);
-          option.series[2].data.push(data[i]);
-        }
-        myChart.setOption(option, false, true);
-      }
-    }
-  );
-
-  option && myChart.setOption(option, false, true);
+      data: [],
+      z: 10,
+    },
+    {
+      type: "line",
+      symbol: "none",
+      encode: {
+        x: dims.time,
+        y: dims.windSpeed,
+      },
+      lineStyle: {
+        color: "#aaa",
+        type: "dotted",
+      },
+      data: [],
+      z: 1,
+    },
+    {
+      type: "custom",
+      renderItem: renderWeather,
+      // data: weatherData,
+      tooltip: {
+        trigger: "item",
+        formatter: function (param) {
+          return (
+            param.value[dims.time] +
+            ": " +
+            param.value[dims.minTemp] +
+            " - " +
+            param.value[dims.maxTemp] +
+            "°"
+          );
+        },
+      },
+      yAxisIndex: 2,
+      z: 11,
+    },
+  ],
 };
 </script>

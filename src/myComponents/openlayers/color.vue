@@ -37,6 +37,7 @@
   </div>
 </template>
 <script>
+import {getColor} from '~/tools/index'
 export default {
   props: {
     title: {
@@ -54,23 +55,19 @@ export default {
         风速: {
           describe: "fkx|ppi风羽|ppi风矢",
           colors: [
-            "#0000ff",
-            "#002aff",
-            "#0054ff",
-            "#007eff",
-            "#00a8ff",
-            "#00d2ff",
-            "#14d474",
-            "#a6dd00",
-            "#ffe600",
-            "#ffb300",
-            "#ff8000",
-            "#ff4d00",
-            "#ff1a00",
-            "#e60000",
-            "#b30000",
+            getColor(1),
+            getColor(2),
+            getColor(4),
+            getColor(6),
+            getColor(8),
+            getColor(10),
+            getColor(12),
+            getColor(14),
+            getColor(16),
+            getColor(18),
+            getColor(20)
           ],
-          values: [0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60],
+          values: [0, 1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20],
         },
         径向风: {
           colors: [
