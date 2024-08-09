@@ -22,7 +22,7 @@ const headerOption = reactive({
     label: "编号",
   },
   device_name: {
-    label: "设备编号",
+    label: "设备名称",
   },
   device_short_name: {
     label: "设备简称",
