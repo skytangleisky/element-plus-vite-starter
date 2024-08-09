@@ -129,7 +129,7 @@ export default function DBS() {
       left: 10,
       itemGap: -2,
       itemWidth: 20,
-      itemHeight: 40,
+      itemHeight: 25,
       itemSymbol: 'rect',
       pieces: [{
         gte: 0,

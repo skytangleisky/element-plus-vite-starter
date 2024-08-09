@@ -1058,7 +1058,8 @@ function work(){
     circleDataFeatures.features.length=0
     pointDataFeatures.features.length=0
     inversionPPIData.features.length = 0
-    res.data[0].map((item:any) => {
+    polygons.length = 0
+    res.data[0].map((item:any,k:number) => {
       if (item.hide !== "true") {
         if(item.no==station.active){
           fetch最近风廓线数据()
@@ -1268,155 +1269,159 @@ function work(){
 
 
 
-  var xhr = new XMLHttpRequest();
-  xhr.addEventListener("load", function () {
-  /*S10000
-  const d = new TextDecoder("utf8");
-  let v = new View(this.response),
-    result: { [key: string]: any } = {};
-  let firstLine = d
-    .decode(v.getLine())
-    .trim()
-    .replace(/,$/, "")
-    .split(",");
-  let secondLine = d
-    .decode(v.getLine())
-    .trim()
-    .replace(/,$/, "")
-    .split(",");
-  type HeaderInfo = {
-    AllGates: 200;
-    Altitude: 40;
-    BKGates: 9;
-    FrequencyShift: 120;
-    Latitude: 36.16953;
-    Location: "榆林机场";
-    Longitude: 120.477398;
-    Model: "S10000";
-    NorthOffset: 0;
-    ProjectMemo: "Test";
-    ProjectName: "榆林机场风切变";
-    PulseWidth: 400;
-    ReShotsTimes: 1;
-    Resolution: 60;
-    SCanMode: "Script";
-    SN: "10HKF00631450";
-    SNRThreshold: 8;
-    SamplesPerGate: 100;
-    Script: '<ppi cycles="1" interval="0" avelostimes="1" pitch="3" fromAzimuth="30" toAzimuth="29" speed="6" direction="1" vadwind="1" ScanBack="0" vadisslide="2" IsSecTick="0" shots="10000" NewFilePerCycle="1" />';
-    Shots: 10000;
-    SpetralEnd: 131;
-    SpetralStart: 32;
-    StartIndex: 3;
-    TriggerDelayTime: 1000;
-    Version: "1.0.1.6";
-    ZeroFreq: 49.31;
-  };
-  let headerInfo: HeaderInfo = (result.headerInfo = {} as HeaderInfo);
-  for (let i = 1; i < firstLine.length; i++) {
-    let kv = firstLine[i].split(":");
-    if (kv.length == 2) {
-      Object.defineProperty(headerInfo, kv[0], { value: kv[1] });
-    } else {
-      throw Error("invalid " + firstLine[i]);
-    }
-  }
-  let data: Array<any> = (result.data = []);
+        var xhr = new XMLHttpRequest();
+        xhr.addEventListener("load", function () {
+          /*S10000
+          const d = new TextDecoder("utf8");
+          let v = new View(this.response),
+            result: { [key: string]: any } = {};
+          let firstLine = d
+            .decode(v.getLine())
+            .trim()
+            .replace(/,$/, "")
+            .split(",");
+          let secondLine = d
+            .decode(v.getLine())
+            .trim()
+            .replace(/,$/, "")
+            .split(",");
+          type HeaderInfo = {
+            AllGates: 200;
+            Altitude: 40;
+            BKGates: 9;
+            FrequencyShift: 120;
+            Latitude: 36.16953;
+            Location: "榆林机场";
+            Longitude: 120.477398;
+            Model: "S10000";
+            NorthOffset: 0;
+            ProjectMemo: "Test";
+            ProjectName: "榆林机场风切变";
+            PulseWidth: 400;
+            ReShotsTimes: 1;
+            Resolution: 60;
+            SCanMode: "Script";
+            SN: "10HKF00631450";
+            SNRThreshold: 8;
+            SamplesPerGate: 100;
+            Script: '<ppi cycles="1" interval="0" avelostimes="1" pitch="3" fromAzimuth="30" toAzimuth="29" speed="6" direction="1" vadwind="1" ScanBack="0" vadisslide="2" IsSecTick="0" shots="10000" NewFilePerCycle="1" />';
+            Shots: 10000;
+            SpetralEnd: 131;
+            SpetralStart: 32;
+            StartIndex: 3;
+            TriggerDelayTime: 1000;
+            Version: "1.0.1.6";
+            ZeroFreq: 49.31;
+          };
+          let headerInfo: HeaderInfo = (result.headerInfo = {} as HeaderInfo);
+          for (let i = 1; i < firstLine.length; i++) {
+            let kv = firstLine[i].split(":");
+            if (kv.length == 2) {
+              Object.defineProperty(headerInfo, kv[0], { value: kv[1] });
+            } else {
+              throw Error("invalid " + firstLine[i]);
+            }
+          }
+          let data: Array<any> = (result.data = []);
 
-  while (!v.reachEnd()) {
-    let thirdLine = d
-      .decode(v.getLine())
-      .trim()
-      .replace(/,$/, "")
-      .split(",");
-    let item = { EarthAzimuth: 0, list: new Array<any>() };
-    for (let i = 0; i < 23; i++) {
-      Object.defineProperty(item, secondLine[i], { value: thirdLine[i] });
-    }
-    item.EarthAzimuth = Number(item.EarthAzimuth);
-    //用于确保两根径向之间夹角不大于180度
-    if (data.length > 0) {
-      let lastItem = data[data.length - 1];
-      if (Math.abs(item.EarthAzimuth - lastItem.EarthAzimuth) > 180) {
-        // item.EarthAzimuth = 360 + item.EarthAzimuth;
-        item.EarthAzimuth =
-          lastItem.EarthAzimuth +
-          (360 - (Math.abs(item.EarthAzimuth - lastItem.EarthAzimuth) % 360));
-      }
-    }
-    for (let i = 23; i < thirdLine.length; i += 4) {
-      let obj = {
-        [secondLine[i + 0].split(" ")[1]]: Number(thirdLine[i + 0]),
-        [secondLine[i + 1].split(" ")[1]]: Number(thirdLine[i + 1]),
-        [secondLine[i + 2].split(" ")[1]]: Number(thirdLine[i + 2]),
-        [secondLine[i + 3].split(" ")[1]]: Number(thirdLine[i + 3]),
-        distance: Number(secondLine[i + 3].split(" ")[0].replace(/m$/, "")),
-      };
-      item.list.push(obj);
-    }
-    data.push(item);
-  }*/
-  /* S4000 */
-  const d = new TextDecoder("utf8");
-  let v = new View(this.response),
-    result: { [key: string]: any } = {};
-  let firstLine = d
-    .decode(v.getLine())
-    .trim()
-    .replace(/,$/, "")
-    .split(",");
-  result.HeaderInfo = {};
-  for (let i = 1; i < firstLine.length; i++) {
-    let kv = firstLine[i].split(":");
-    if (kv.length == 2) {
-      result.HeaderInfo[kv[0]] = kv[1]
-    }
-  }
-  let secondLine = d
-    .decode(v.getLine())
-    .trim()
-    .replace(/,$/, "")
-    .split(",");
-  let data: Array<any> = (result.data = []);
-  while (!v.reachEnd()) {
-    let thirdLine = d
-      .decode(v.getLine())
-      .trim()
-      .replace(/,$/, "")
-      .split(",");
-    let radial:{[key:string]:any} = { Azimuth: 0, list: new Array<any>() };
-    for (let i = 0; i < 11; i++) {
-      radial[secondLine[i]] = thirdLine[i]
-    }
-    radial.Azimuth = Number(radial.Azimuth);
-    //用于确保两根径向之间夹角不大于180度
-    if (data.length > 0) {
-      let lastItem = data[data.length - 1];
-      if (Math.abs(item.Azimuth - lastItem.Azimuth) > 180) {
-        // item.Azimuth = 360 + item.Azimuth;
-        item.Azimuth =
-          lastItem.Azimuth +
-          (360 - (Math.abs(item.Azimuth - lastItem.Azimuth) % 360));
-      }
-    }
-    for (let i = 11; i < thirdLine.length; i += 4) {
-      let obj = {
-        [secondLine[i + 0].split(" ")[1]]: Number(thirdLine[i + 0]),
-        [secondLine[i + 1].split(" ")[1]]: Number(thirdLine[i + 1]),
-        [secondLine[i + 2].split(" ")[1]]: Number(thirdLine[i + 2]),
-        [secondLine[i + 3].split(" ")[1]]: Number(thirdLine[i + 3]),
-        distance: Number(secondLine[i + 3].split(" ")[0].replace(/m$/, "")),
-      };
-      radial.list.push(obj);
-    }
-    data.push(radial);
-  }
-  ppiData[radar_id] = {result,position}
-  processData(result, position);
-});
-xhr.responseType = "arraybuffer";
-xhr.open("GET", ppiDataUrl);
-xhr.send();
+          while (!v.reachEnd()) {
+            let thirdLine = d
+              .decode(v.getLine())
+              .trim()
+              .replace(/,$/, "")
+              .split(",");
+            let item = { EarthAzimuth: 0, list: new Array<any>() };
+            for (let i = 0; i < 23; i++) {
+              Object.defineProperty(item, secondLine[i], { value: thirdLine[i] });
+            }
+            item.EarthAzimuth = Number(item.EarthAzimuth);
+            //用于确保两根径向之间夹角不大于180度
+            if (data.length > 0) {
+              let lastItem = data[data.length - 1];
+              if (Math.abs(item.EarthAzimuth - lastItem.EarthAzimuth) > 180) {
+                // item.EarthAzimuth = 360 + item.EarthAzimuth;
+                item.EarthAzimuth =
+                  lastItem.EarthAzimuth +
+                  (360 - (Math.abs(item.EarthAzimuth - lastItem.EarthAzimuth) % 360));
+              }
+            }
+            for (let i = 23; i < thirdLine.length; i += 4) {
+              let obj = {
+                [secondLine[i + 0].split(" ")[1]]: Number(thirdLine[i + 0]),
+                [secondLine[i + 1].split(" ")[1]]: Number(thirdLine[i + 1]),
+                [secondLine[i + 2].split(" ")[1]]: Number(thirdLine[i + 2]),
+                [secondLine[i + 3].split(" ")[1]]: Number(thirdLine[i + 3]),
+                distance: Number(secondLine[i + 3].split(" ")[0].replace(/m$/, "")),
+              };
+              item.list.push(obj);
+            }
+            data.push(item);
+          }*/
+          /* S4000 */
+          const d = new TextDecoder("utf8");
+          let v = new View(this.response),
+            result: { [key: string]: any } = {};
+          let firstLine = d
+            .decode(v.getLine())
+            .trim()
+            .replace(/,$/, "")
+            .split(",");
+          result.HeaderInfo = {};
+          for (let i = 1; i < firstLine.length; i++) {
+            let kv = firstLine[i].split(":");
+            if (kv.length == 2) {
+              result.HeaderInfo[kv[0]] = kv[1]
+            }
+          }
+          let secondLine = d
+            .decode(v.getLine())
+            .trim()
+            .replace(/,$/, "")
+            .split(",");
+          let data: Array<any> = (result.data = []);
+          while (!v.reachEnd()) {
+            let thirdLine = d
+              .decode(v.getLine())
+              .trim()
+              .replace(/,$/, "")
+              .split(",");
+            let radial:{[key:string]:any} = { Azimuth: 0, list: new Array<any>() };
+            for (let i = 0; i < 11; i++) {
+              radial[secondLine[i]] = thirdLine[i]
+            }
+            radial.Azimuth = Number(radial.Azimuth);
+            //用于确保两根径向之间夹角不大于180度
+            if (data.length > 0) {
+              let lastItem = data[data.length - 1];
+              if (Math.abs(item.Azimuth - lastItem.Azimuth) > 180) {
+                // item.Azimuth = 360 + item.Azimuth;
+                item.Azimuth =
+                  lastItem.Azimuth +
+                  (360 - (Math.abs(item.Azimuth - lastItem.Azimuth) % 360));
+              }
+            }
+            for (let i = 11; i < thirdLine.length; i += 4) {
+              let obj = {
+                [secondLine[i + 0].split(" ")[1]]: Number(thirdLine[i + 0]),
+                [secondLine[i + 1].split(" ")[1]]: Number(thirdLine[i + 1]),
+                [secondLine[i + 2].split(" ")[1]]: Number(thirdLine[i + 2]),
+                [secondLine[i + 3].split(" ")[1]]: Number(thirdLine[i + 3]),
+                distance: Number(secondLine[i + 3].split(" ")[0].replace(/m$/, "")),
+              };
+              radial.list.push(obj);
+            }
+            data.push(radial);
+          }
+          ppiData[radar_id] = {result,position}
+          processData(result, position);
+          map.getSource("radar").setData({
+            type: "FeatureCollection",
+            features: polygons,
+          });
+        });
+        xhr.responseType = "arraybuffer";
+        xhr.open("GET", ppiDataUrl);
+        xhr.send();
 
 
 
@@ -1455,7 +1460,7 @@ xhr.send();
             if(lib.WindSpeed!==999){
               const pt = turf.destination(
                 turf.point(position),
-                lib.distance,
+                lib.distance/Math.tan(Number(radial.Pitch)/180*Math.PI),
                 Number(radial.Azimuth),
                 { units: "meters" }
               );
@@ -1476,10 +1481,6 @@ xhr.send();
         })
         map.getSource('inversionPPIData').setData(inversionPPIData)
       }
-    });
-    (map.getSource("radar") as any).setData({
-      type: "FeatureCollection",
-      features: polygons,
     });
     (map.getSource("point") as any).setData(points.data);
   });
