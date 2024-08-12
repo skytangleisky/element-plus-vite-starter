@@ -62,11 +62,11 @@
       <div style="display:flex;flex-direction: column;overflow: auto; scroll-snap-type: none;height: 100%;">
         <chart-info></chart-info>
         <chart-fkx></chart-fkx>
-        <chart-dom v-if="checkPermission(['admin'])"></chart-dom>
-        <chartDirection v-if="checkPermission(['admin'])"></chartDirection>
-        <chartSpeed v-if="checkPermission(['admin'])"></chartSpeed>
-        <chartSNR v-if="checkPermission(['admin'])"></chartSNR>
-        <chart-th v-if="checkPermission(['admin'])"></chart-th>
+        <chart-dom></chart-dom>
+        <chartDirection></chartDirection>
+        <chartSpeed></chartSpeed>
+        <chartSNR></chartSNR>
+        <chart-th></chart-th>
       </div>
       <el-icon
         class="left--29px z-999 bg-#eee dark:bg-#304156 dark:color-#888"
@@ -324,7 +324,7 @@ const points = {
           高度:NaN,
           垂直气流:NaN,
           时间:NaN,
-          color:isDark.value?'white':'black'
+          color:isDark.value?'#fff':'#000'
         },
         geometry: {
           type: "Point",
@@ -1093,7 +1093,7 @@ function work(){
             coordinates: position,
           },
         });
-        for (let i = 1; i <= 10; i++) {
+        for (let i = 1; i <= 6; i++) {
           let circle = calculateCirclePoints(position, i * 1000, 64, 'meters');
           circleDataFeatures.features.push({
             type:'Feature',
@@ -1103,7 +1103,7 @@ function work(){
             },
           });
 
-          if(i==1||i==5||i==10){
+          if(i==1||i==3||i==6){
             let pts: any = [];
             const pt1 = turf.destination(
               turf.point(position),
@@ -1611,7 +1611,9 @@ watch(isDark,isDark=>{
     map.setPaintProperty('时间图层','text-color','white')
     map.setPaintProperty('stationLayer','circle-stroke-color','white')
     points.data.features.forEach(feature=>{
-      feature.properties.color = 'white'
+      if(feature.properties.color == '#000'){
+        feature.properties.color = '#fff'
+      }
     })
   }else{
     map.setPaintProperty('等距环','line-color','black')
@@ -1625,9 +1627,12 @@ watch(isDark,isDark=>{
     map.setPaintProperty('时间图层','text-color','black')
     map.setPaintProperty('stationLayer','circle-stroke-color','black')
     points.data.features.forEach(feature=>{
-      feature.properties.color = 'black'
+      if(feature.properties.color == '#fff'){
+        feature.properties.color = '#000'
+      }
     })
   }
+  (map.getSource("point") as any).setData(points.data);
   // bus.avgWindData_重庆={}
   // work()
 })
@@ -1639,7 +1644,8 @@ watch(()=>setting.风雷达组网地图相关.风场数据,风场数据=>{
       break;
     case '径向速度':
       map.setLayoutProperty('雷达','visibility','visible')
-      chromatographyOption.arr = [-60,-48,-40,-32,-24,-16,-8,-0.5,0.5,8,16,24,32,40,48,60]
+      // chromatographyOption.arr = [-60,-48,-40,-32,-24,-16,-8,-0.5,0.5,8,16,24,32,40,48,60]
+      chromatographyOption.arr = [-20,-18,-16,-14,-12,-10,-8,-6,-4,-2,-1,-0.5,0.5,1,2,4,6,8,10,12,14,16,18,20]
       break;
     case '谱宽':
       map.setLayoutProperty('雷达','visibility','visible')
