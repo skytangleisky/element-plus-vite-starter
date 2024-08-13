@@ -207,27 +207,22 @@ export const HSLtoRGB = (h:number, s:number, l:number) => {
 }
 export class View{
   dataView:DataView
-  littleEndian:boolean
   flag:boolean
   pos:number
-  constructor(arrayBuffer:ArrayBuffer){
+  littleEndian:boolean|undefined
+  constructor(arrayBuffer:ArrayBuffer,littleEndian:boolean|undefined=undefined){
     this.dataView = new DataView(arrayBuffer)
-    const buffer = new ArrayBuffer(2);
-    const dataView = new DataView(buffer);
-    dataView.setInt16(0, 256, true);
-    const array = new Int16Array(buffer)
-    this.littleEndian =  array[0] === 256;
     this.pos=0;
     this.flag=false
-  }
-  reachEnd(){
-    return this.pos == this.dataView.byteLength
+    this.littleEndian=littleEndian
   }
   getOne(){
     let prePos = this.pos
     this.flag = false
+    let tmp = ''
     for(let i=0;i<this.dataView.byteLength-prePos;i++){
-      if(/\s/g.test(String.fromCharCode(this.getUint8()))){
+      tmp+=String.fromCharCode(this.getUint8())
+      if((/\s*\S+\s+\S/g.test(tmp))){
         if(this.flag){
           this.flag = false
           break;
@@ -314,18 +309,29 @@ export class View{
     return val
   }
   getBytes(len:number){
-    let arr = new Uint8Array(len)
+    let arr = []
     for(let i=0;i<len;i++){
-      arr[i] = this.dataView.getUint8(this.pos)
+      arr.push(this.dataView.getUint8(this.pos))
       this.pos++
     }
-    return arr
+    return Uint8Array.from(arr)
+  }
+  getAll(){
+    let arr = []
+    while(this.pos<this.dataView.byteLength){
+      arr.push(this.dataView.getUint8(this.pos))
+      this.pos++
+    }
+    return Uint8Array.from(arr)
   }
   seek(pos:number){
     this.pos = pos
   }
   getPos(){
     return this.pos
+  }
+  reachEnd(){
+    return this.pos == this.dataView.byteLength
   }
 }
 let cvs = document.createElement('canvas')

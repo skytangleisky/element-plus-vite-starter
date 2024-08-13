@@ -20,6 +20,7 @@
   </el-select>
 </template>
 <script lang="ts" setup>
+import uvUrl from "./data/06040808.000?url";
 import plotUrl from "./data/plot/06040802.000?url";
 import irUrl1 from "./data/ir/m/0604091200.000?url";
 import irUrl2 from "./data/ir/m/0604091300.000?url";
@@ -533,6 +534,43 @@ onMounted(() => {
               },
             });
           });
+          getMicapsData(uvUrl).then(async(result:any)=>{
+            console.log("===>",result)
+            let cvs = document.createElement('canvas')
+            cvs.width = result.lngCount
+            cvs.height = result.latCount
+            let ctx = cvs.getContext('2d')!
+            let imgData = ctx.getImageData(0,0,cvs.width,cvs.height)
+            let us = result.data.slice(0,result.data.length/2)
+            let vs = result.data.slice(result.data.length/2)
+            const uMin = Math.min(...us);
+            const uMax = Math.max(...us);
+            const vMin = Math.min(...vs);
+            const vMax = Math.max(...vs);
+            for(let y = 0; y < imgData.height; y++){
+              for(let x = 0; x < imgData.width; x++){
+                let i = (y * 4) * imgData.width + x * 4
+                imgData.data[i + 0] = (us[imgData.width*y+x]-uMin)/(uMax-uMin)*255
+                imgData.data[i + 1] = (vs[imgData.width*y+x]-vMin)/(vMax-vMin)*255
+                imgData.data[i + 2] = 0
+                imgData.data[i + 3] = 255
+              }
+            }
+            ctx.putImageData(imgData,0,0)
+            let json = {
+              "source": "http://nomads.ncep.noaa.gov",
+              "date": "2016-11-20T00:00Z",
+              "width": cvs.width,
+              "height": cvs.height,
+              "uMin": uMin,
+              "uMax": uMax,
+              "vMin": vMin,
+              "vMax": vMax
+            }
+            let url = cvs.toDataURL()
+            //map.removeLayer("null-island");
+            map.addLayer(new CustomLayer(json,url))
+          })
         } else {
           map.getLayer("plane") && map.removeLayer("plane");
           map.getSource("point") && map.removeSource("point");
@@ -641,50 +679,50 @@ onMounted(() => {
                   visibility: "visible",
                 },
               });
-              // timer = setInterval(() => {
-              //   let url = urls[INDEX++ % urls.length];
-              //   getMicapsData(url).then((result: any) => {
-              //     let minLng = result.minLng;
-              //     let minLat = result.minLat;
-              //     let cenPos = lngLat2XY(result.cenLng, result.cenLat);
-              //     let minPos = lngLat2XY(minLng, minLat);
-              //     let maxPos = { x: 2 * cenPos.x - minPos.x, y: 2 * cenPos.y - minPos.y };
-              //     let maxLngLat = XY2LngLat(maxPos.x, maxPos.y);
-              //     let maxLng = maxLngLat.lng;
-              //     let maxLat = maxLngLat.lat;
-              //     let array = new Uint8ClampedArray(4 * result.xCount * result.yCount);
-              //     for (let j = 0; j < result.xCount; j++) {
-              //       for (let i = 0; i < result.yCount; i++) {
-              //         let value = result.pixelData[(result.yCount - j - 1) * result.xCount + i];
-              //         // let color = getColor(value / 255);
-              //         let color = Color[value];
-              //         color[3] = value;
-              //         if (color?.length) {
-              //           array[4 * (j * result.xCount + i) + 0] = color[0];
-              //           array[4 * (j * result.xCount + i) + 1] = color[1];
-              //           array[4 * (j * result.xCount + i) + 2] = color[2];
-              //           array[4 * (j * result.xCount + i) + 3] = color[3]; // color[3]
-              //         }
-              //       }
-              //     }
-              //     let imgData = new ImageData(array, result.xCount, result.yCount);
-              //     irCvs.width = result.xCount;
-              //     irCvs.height = result.yCount;
-              //     let ctx = irCvs.getContext("2d");
-              //     if (ctx) {
-              //       ctx.putImageData(imgData, 0, 0);
-              //       map.getSource("irSource").updateImage({
-              //         url: irCvs.toDataURL(),
-              //         coordinates: [
-              //           [minLng, maxLat],
-              //           [maxLng, maxLat],
-              //           [maxLng, minLat],
-              //           [minLng, minLat],
-              //         ],
-              //       });
-              //     }
-              //   });
-              // }, 1000);
+              timer = setInterval(() => {
+                let url = urls[INDEX++ % urls.length];
+                getMicapsData(url).then((result: any) => {
+                  let minLng = result.minLng;
+                  let minLat = result.minLat;
+                  let cenPos = lngLat2XY(result.cenLng, result.cenLat);
+                  let minPos = lngLat2XY(minLng, minLat);
+                  let maxPos = { x: 2 * cenPos.x - minPos.x, y: 2 * cenPos.y - minPos.y };
+                  let maxLngLat = XY2LngLat(maxPos.x, maxPos.y);
+                  let maxLng = maxLngLat.lng;
+                  let maxLat = maxLngLat.lat;
+                  let array = new Uint8ClampedArray(4 * result.xCount * result.yCount);
+                  for (let j = 0; j < result.xCount; j++) {
+                    for (let i = 0; i < result.yCount; i++) {
+                      let value = result.pixelData[(result.yCount - j - 1) * result.xCount + i];
+                      // let color = getColor(value / 255);
+                      let color = Color[value];
+                      color[3] = value;
+                      if (color?.length) {
+                        array[4 * (j * result.xCount + i) + 0] = color[0];
+                        array[4 * (j * result.xCount + i) + 1] = color[1];
+                        array[4 * (j * result.xCount + i) + 2] = color[2];
+                        array[4 * (j * result.xCount + i) + 3] = color[3]; // color[3]
+                      }
+                    }
+                  }
+                  let imgData = new ImageData(array, result.xCount, result.yCount);
+                  irCvs.width = result.xCount;
+                  irCvs.height = result.yCount;
+                  let ctx = irCvs.getContext("2d");
+                  if (ctx) {
+                    ctx.putImageData(imgData, 0, 0);
+                    map.getSource("irSource").updateImage({
+                      url: irCvs.toDataURL(),
+                      coordinates: [
+                        [minLng, maxLat],
+                        [maxLng, maxLat],
+                        [maxLng, minLat],
+                        [minLng, minLat],
+                      ],
+                    });
+                  }
+                });
+              }, 1000);
             }
           });
         } else {
@@ -693,19 +731,6 @@ onMounted(() => {
         }
       },
       { immediate: true }
-    );
-    watch(
-      () => setting.mapbox.showStream,
-      (v) => {
-        if (v) {
-          map.addLayer(new CustomLayer());
-        } else {
-          map.removeLayer("null-island");
-        }
-      },
-      {
-        immediate: true,
-      }
     );
   });
   let timer: number;

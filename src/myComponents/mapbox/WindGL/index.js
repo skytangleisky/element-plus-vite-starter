@@ -5,7 +5,6 @@ import quadVert from './shaders/quad.vert.glsl?raw';
 
 import screenFrag from './shaders/screen.frag.glsl?raw';
 import updateFrag from './shaders/update.frag.glsl?raw';
-
 import * as util from './util.js';
 export default class WindGL{
 	constructor(gl) {

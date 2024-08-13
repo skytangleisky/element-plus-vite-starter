@@ -1,36 +1,30 @@
 import WindGL from './index';
-import json from "../data/2016112000.json?url";
-import png from "../data/2016112000.png?url";
+// import json from "../data/2016112000.json";
+// import png from "../data/2016112000.png?url";
 import {mat4} from 'gl-matrix';
 
 export default class CustomLayer {
-    constructor() {
+    constructor(json,png) {
         this.id = 'null-island';
         this.type = 'custom';
         this.renderingMode = '3d';
+        this.json = json
+        this.png = png
     }
     onAdd(map, gl) {
         this.map = map
         this.projectionName = this.map.getProjection().name
         this.wind = new WindGL(gl)
-		this.wind.numParticles = 65535
-        const xhr = new XMLHttpRequest();
-        xhr.responseType = "json";
-        xhr.open("get", json, true);
-        xhr.onload = () => {
-            if (xhr.status >= 200 && xhr.status < 300) {
-                let windData = xhr.response
-                const windImage = new Image();
-                windData.image = windImage;
-                windImage.src = png;
-                windImage.onload = () => {
-                    this.wind.setWind(windData);
-                };
-            } else {
-                throw new Error(xhr.statusText);
-            }
-        };
-        xhr.send();
+		this.wind.numParticles = 2048
+            let windData = this.json
+            const windImage = new Image();
+            windImage.width = windData.width
+            windImage.height=windData.height
+            windData.image = windImage;
+            windImage.src = this.png;
+            windImage.onload = () => {
+                this.wind.setWind(windData);
+            };
         this.map.on("wheel", () => {
             this.wind.resize();
         });

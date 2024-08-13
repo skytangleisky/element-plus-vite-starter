@@ -78,15 +78,24 @@ void main() {
         0,1,uv_pos.y,
         0,0,1
     );
+    /*和卫星云图位置对应
     float startLng = 100.57;
     float stopLng = 169.42999999999998;
     float startLat = -10.38;
     float stopLat = 50.30088389285023;
+    */
+    /*真实流场位置*/
+    float startLng = 32.0;
+    float stopLng = 160.0;
+    float startLat = 12.0;
+    float stopLat = 80.0;
+
     // float LAT = atan(sinh(PI))*RAD_TO_DEG;
     // float startLng = -180.0;
     // float stopLng = 180.0;
     // float startLat = -LAT;
     // float stopLat = LAT;
+
     vec2 pt1 = vec2(mercatorXfromLng(startLng),mercatorYfromLat(startLat));
     vec2 pt2 = vec2(mercatorXfromLng(stopLng),mercatorYfromLat(stopLat));
 

@@ -1570,6 +1570,7 @@ onMounted(() => {
         paint: {
           "fill-color": ["match", ["get", "threshold"], ...fillColors, "transparent"],
           "fill-opacity": 0.5,
+          "fill-outline-color": "transparent",
         },
       });
 

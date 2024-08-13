@@ -118,6 +118,31 @@ export const getMicapsData = (dataUrl:string) => {
             result.cenLat = Number(gbkDecoder.decode(view.getBytes(8))); //中心纬度（8个字符）
             result.pixelData = view.getBytes(result.xCount * result.yCount);//数据：（数据格式为二进制数据），一个象素点占一个字节，先沿X方向后Y方向。
             resolve(result)
+          }else if(type=='11'){//第十一类数据格式：UV网格数据（绘制流线）
+            view.seek(0)
+            let result: { [key: string]: any } = {};
+            result.symbol = gbkDecoder.decode(view.getOne()).trim(); //diamond （8个字符）
+            result.type = gbkDecoder.decode(view.getOne()).trim(); //11 （3个字符）
+            result.describe = gbkDecoder.decode(view.getOne()).trim(); //数据说明 （40个字符）
+            result.year = gbkDecoder.decode(view.getOne()).trim(); //年 （5个字符）
+            result.month = gbkDecoder.decode(view.getOne()).trim(); //月 （3个字符）
+            result.day = gbkDecoder.decode(view.getOne()).trim(); //日 （3个字符）
+            result.hour = gbkDecoder.decode(view.getOne()).trim(); //时次（3个字符）
+            result.ageing = Number(gbkDecoder.decode(view.getOne()))//实效
+            result.level = Number(gbkDecoder.decode(view.getOne()))//层次
+            result.dLng = Number(gbkDecoder.decode(view.getOne())); //经度格距
+            result.dLat = Number(gbkDecoder.decode(view.getOne())); //纬度格距
+            result.beginLng = Number(gbkDecoder.decode(view.getOne())); //起始经度
+            result.endLng = Number(gbkDecoder.decode(view.getOne())); //终止经度
+            result.beginLat = Number(gbkDecoder.decode(view.getOne())); //起始纬度
+            result.endLat = Number(gbkDecoder.decode(view.getOne())); //终止纬度
+            result.lngCount = Number(gbkDecoder.decode(view.getOne())); //纬向格点数
+            result.latCount = Number(gbkDecoder.decode(view.getOne())); //经向格点数
+            result.data = []
+            for(let i=0;i<result.lngCount*result.latCount*2;i++){
+              result.data.push(Number(gbkDecoder.decode(view.getOne())))
+            }
+            resolve(result)
           }
         }
         reject('type='+type+'，格式不支持')

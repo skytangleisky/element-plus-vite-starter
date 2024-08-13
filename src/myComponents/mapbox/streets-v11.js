@@ -295,7 +295,7 @@ export default {
 			"tileSize": 256
 		}
 	},
-	"terrain": { 'source': 'mapbox-dem', 'exaggeration': 0 },
+	"terrain": { 'source': 'mapbox-dem', 'exaggeration': 1.0 },
 	"sprite_origin": "mapbox://sprites/tanglei201314/clons7b5v00dm01prgrblhncs/6iqitl5z21pbbxxwuij8b59i2",
 	"glyphs_origin": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
 	"sprite": window.location.origin+"/resources/sprite",
