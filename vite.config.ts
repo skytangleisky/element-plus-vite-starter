@@ -115,44 +115,43 @@ export default defineConfig({
       //   rewrite:path=>path.replace(/^\/guangheng/,''), // 设置重写的路径
       // },
       '/api':{
-        // target:'https://main.emgo-tech.com',//替换的服务端地址
-        // target:'http://192.168.101.93:8000',
-        target:'http://127.0.0.1:3000',//替换的服务端地址
-        // changeOrigin:true,//开启代理，允许跨域
+        target:'https://main.emgo-tech.com',//替换的服务端地址
+        // target:'http://127.0.0.1:3000',//替换的服务端地址
+        changeOrigin:true,
       },
       '/backend':{
         // target:'https://websocket.tanglei.top',//替换的服务端地址
         target:'http://127.0.0.1:3000',//替换的服务端地址
         // target:'https://test.tanglei.site',//替换的服务端地址
         secure:false,
-        changeOrigin:true,//允许跨域
+        changeOrigin:true,
         // rewrite:path=>path.replace(/^\/backend/,''), // 设置重写的路径
         ws:true,
       },
       '/tanglei':{
         target:'http://tanglei.top',//替换的服务端地址
-        changeOrigin:true,//开启代理，允许跨域
+        changeOrigin:true,
         rewrite:path=>path.replace(/^\/tanglei/,'') // 设置重写的路径
       },
       '/qqAuth':{
         target:'https://graph.qq.com',//替换的服务端地址
-        changeOrigin:true,//开启代理，允许跨域
+        changeOrigin:true,
         rewrite:path=>path.replace(/^\/qqAuth/,'') // 设置重写的路径
       },
       '/ArcGIS':{
         target:'https://map.geoq.cn',//替换的服务端地址
-        changeOrigin:true,//开启代理，允许跨域
+        changeOrigin:true,
       },
       '/qt':{
         // target:'http://192.168.0.114:9090',//替换的服务端地址
         target:'http://qt.tanglei.top',//替换的服务端地址
-        changeOrigin:true,//开启代理，允许跨域
+        changeOrigin:true,
         rewrite:path=>path.replace(/^\/qt/,'') // 设置重写的路径
       },
       '/amap':{
         // target:'http://tanglei.top:8000',//替换的服务端地址
         target:'http://192.168.0.133:8000',//替换的服务端地址
-        changeOrigin:true,//开启代理，允许跨域
+        changeOrigin:true,
         rewrite:path=>path.replace(/^\/amap/,'') // 设置重写的路径
       }
     }

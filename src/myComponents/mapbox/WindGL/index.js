@@ -10,7 +10,7 @@ export default class WindGL{
 	constructor(gl) {
 		this.gl = gl;
 
-		this.fadeOpacity = 0.98;//  0.996; // how fast the particle trails fade on each frame
+		this.fadeOpacity = 0.996;//  0.996; // how fast the particle trails fade on each frame
 		this.speedFactor = 0.25; // how fast the particles move
 		this.dropRate = 0.003; // how often the particles move to a random place
 		this.dropRateBump = 0.01; // drop rate increase relative to individual particle speed
@@ -164,72 +164,72 @@ export default class WindGL{
 		this.particleStateTexture0 = this.particleStateTexture1;
 		this.particleStateTexture1 = temp;
 	}
-	getSpeed(coordinate) {
-		if (!this.windData || !this.windData.width) {
-			return;
-		}
-		var t = coordinate.x % 180;
-		var pixelX = ((t + 180) / 360) * this.windData.width;
+	// getSpeed(coordinate) {
+	// 	if (!this.windData || !this.windData.width) {
+	// 		return;
+	// 	}
+	// 	var t = coordinate.x % 180;
+	// 	var pixelX = ((t + 180) / 360) * this.windData.width;
 
-		if (coordinate.y < -90 || coordinate.y > 90) {
-			throw new Error('Invalid y for coordinate');
-		}
+	// 	if (coordinate.y < -90 || coordinate.y > 90) {
+	// 		throw new Error('Invalid y for coordinate');
+	// 	}
 
-		var pixelY = ((90 - coordinate.y) / 180) * this.windData.height;
+	// 	var pixelY = ((90 - coordinate.y) / 180) * this.windData.height;
 
-		// make a framebuffer
-		let fb = this.gl.createFramebuffer();
+	// 	// make a framebuffer
+	// 	let fb = this.gl.createFramebuffer();
 
-		// make this the current frame buffer
-		this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, fb);
+	// 	// make this the current frame buffer
+	// 	this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, fb);
 
-		// attach the texture to the framebuffer.
-		this.gl.framebufferTexture2D(
-			this.gl.FRAMEBUFFER,
-			this.gl.COLOR_ATTACHMENT0,
-			this.gl.TEXTURE_2D,
-			this.windTexture,
-			0
-		);
+	// 	// attach the texture to the framebuffer.
+	// 	this.gl.framebufferTexture2D(
+	// 		this.gl.FRAMEBUFFER,
+	// 		this.gl.COLOR_ATTACHMENT0,
+	// 		this.gl.TEXTURE_2D,
+	// 		this.windTexture,
+	// 		0
+	// 	);
 
-		// check if you can read from this type of texture.
-		let canRead = this.gl.checkFramebufferStatus(this.gl.FRAMEBUFFER) == this.gl.FRAMEBUFFER_COMPLETE;
+	// 	// check if you can read from this type of texture.
+	// 	let canRead = this.gl.checkFramebufferStatus(this.gl.FRAMEBUFFER) == this.gl.FRAMEBUFFER_COMPLETE;
 
-		// Unbind the framebuffer
-		this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
-		if (canRead) {
-			// bind the framebuffer
-			this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, fb);
-			// var pixels = new Uint8Array(this.gl.drawingBufferWidth * this.gl.drawingBufferHeight * 4);
-			// console.log(this.gl.drawingBufferWidth,this.gl.drawingBufferHeight )
-			var pixels = new Uint8Array(this.windData.width * this.windData.height * 4);
-			this.gl.readPixels(
-				0,
-				0,
-				this.windData.width,
-				this.windData.height,
-				this.gl.RGBA,
-				this.gl.UNSIGNED_BYTE,
-				pixels
-			);
+	// 	// Unbind the framebuffer
+	// 	this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+	// 	if (canRead) {
+	// 		// bind the framebuffer
+	// 		this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, fb);
+	// 		// var pixels = new Uint8Array(this.gl.drawingBufferWidth * this.gl.drawingBufferHeight * 4);
+	// 		// console.log(this.gl.drawingBufferWidth,this.gl.drawingBufferHeight )
+	// 		var pixels = new Uint8Array(this.windData.width * this.windData.height * 4);
+	// 		this.gl.readPixels(
+	// 			0,
+	// 			0,
+	// 			this.windData.width,
+	// 			this.windData.height,
+	// 			this.gl.RGBA,
+	// 			this.gl.UNSIGNED_BYTE,
+	// 			pixels
+	// 		);
 
-			// console.log(pixels);
-			this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
-			let intX = Math.floor(pixelX);
-			let intY = Math.floor(pixelY);
+	// 		// console.log(pixels);
+	// 		this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+	// 		let intX = Math.floor(pixelX);
+	// 		let intY = Math.floor(pixelY);
 
-			let index0 = intY * this.windData.width * 4 + intX * 4;
+	// 		let index0 = intY * this.windData.width * 4 + intX * 4;
 
-			// console.log(pixels[index0]);
-			// console.log(pixels[index0 + 1]);
-			// console.log(pixels[index0 + 2]);
-			// console.log(pixels[index0 + 3]);
-			var vx = (pixels[index0] * (this.windData.uMax - this.windData.uMin)) / 255 + this.windData.uMin;
-			var vy = (pixels[index0 + 1] * (this.windData.vMax - this.windData.vMin)) / 255 + this.windData.vMin;
-			return [vx, vy];
-		}
-		//
-	}
+	// 		// console.log(pixels[index0]);
+	// 		// console.log(pixels[index0 + 1]);
+	// 		// console.log(pixels[index0 + 2]);
+	// 		// console.log(pixels[index0 + 3]);
+	// 		var vx = (pixels[index0] * (this.windData.uMax - this.windData.uMin)) / 255 + this.windData.uMin;
+	// 		var vy = (pixels[index0 + 1] * (this.windData.vMax - this.windData.vMin)) / 255 + this.windData.vMin;
+	// 		return [vx, vy];
+	// 	}
+	// 	//
+	// }
 }
 function getColorRamp(colors) {
 	var canvas = document.createElement('canvas');

@@ -15,40 +15,33 @@
         min-height: 60px;
       "
     >
-      <div @click="click" style="position: relative">{{ item?.radar.name }}</div>
-      <span style="font-size: small; color: grey; right: 0">{{ item?.data_time }}</span>
+      <div @click="click" style="position: relative">{{ item?.name }}</div>
+      <span style="font-size: small; color: grey; right: 0">{{ item?.status.data_time }}</span>
     </div>
     <div class="grid grid-cols-3 grid-rows-4 w-full h-auto">
-      <div class="info_item" style="grid-column: 1/2">
-        <span>序列号:</span><span>{{ item?.radar.sn_code }}</span>
+      <div class="info_item" style="grid-column: 1/3">
+        <span>序列号:</span><span>{{ item?.status.sn_code }}</span>
       </div>
       <div style="grid-column: 3/4">
         <div
-          v-if="item?.radar.type.name == '塔式'"
+          v-if="item?.type.name == '塔式'"
           class="w-full h-full flex items-center"
         >
           蓄电池电量百分比:
           <div ref="batteryRef" class="battery" style="margin: 0 4px">
             <div class="positiveElectrode"></div>
           </div>
-          <div v-if="item?.battery_level <= 50">{{ item?.battery_level }}%</div>
-          <div v-else>{{ item?.battery_level }}%</div>
+          <div v-if="item?.status.battery_level <= 50">{{ item?.status.battery_level }}%</div>
+          <div v-else>{{ item?.status.battery_level }}%</div>
         </div>
       </div>
       <div class="info_item" style="grid-column: 1/2">
-        <span>雷达类型:</span><span>{{ item?.radar.type.name }}</span>
+        <span>雷达类型:</span><span>{{ item?.type.name }}</span>
       </div>
       <div class="info_item" style="grid-column: 1/2">
         <span>在线状态:</span>
         <div
-          :class="`${item?.radar.is_online ? 'bg-green' : 'bg-red'}`"
-          style="border-radius: 50%; width: 1rem; height: 1rem"
-        ></div>
-      </div>
-      <div class="info_item" style="grid-column: 1/2">
-        <span>数据采集状态:</span>
-        <div
-          :class="`${item?.radar.data_status ? 'bg-green' : 'bg-red'}`"
+          :class="`${item?.is_online ? 'bg-green' : 'bg-red'}`"
           style="border-radius: 50%; width: 1rem; height: 1rem"
         ></div>
       </div>
@@ -59,15 +52,15 @@
       <div class="info_item" style="grid-column: 1/2">
         <span>控制板状态:</span>
         <div
-          :class="`${item?.control_plate_status ? 'bg-green' : 'bg-red'}`"
+          :class="`${item?.status.control_plate_status ? 'bg-green' : 'bg-red'}`"
           style="border-radius: 50%; width: 1rem; height: 1rem"
         ></div>
       </div>
       <div class="info_item" style="grid-column: 1/2">
-        <span>CPU温度:</span><span>{{ item?.cpu_temperature }}</span>
+        <span>CPU温度:</span><span>{{ item?.status.cpu_temperature }}</span>
       </div>
       <div class="info_item">
-        <span>硬盘容量:</span><span>{{ item?.disk_capacity }}</span>
+        <span>硬盘容量:</span><span>{{ item?.status.disk_capacity }}</span>
       </div>
 
       <hr
@@ -77,18 +70,18 @@
       <div class="info_item" style="grid-column: 1/2">
         <span>舱内温湿度状态:</span>
         <div
-          :class="`${item?.internal_status ? 'bg-green' : 'bg-red'}`"
+          :class="`${item?.status.internal_status ? 'bg-green' : 'bg-red'}`"
           style="border-radius: 50%; width: 1rem; height: 1rem"
         ></div>
       </div>
       <div class="info_item" style="grid-column: 1/2">
-        <span>舱内温度:</span><span>{{ item?.internal_temperature }}</span>
+        <span>舱内温度:</span><span>{{ item?.status.internal_temperature }}</span>
       </div>
       <div class="info_item">
-        <span>舱内湿度:</span><span>{{ item?.internal_humidity }}</span>
+        <span>舱内湿度:</span><span>{{ item?.status.internal_humidity }}</span>
       </div>
       <div class="info_item">
-        <span>窗口片温度:</span><span>{{ item?.lens_temperature }}</span>
+        <span>窗口片温度:</span><span>{{ item?.status.lens_temperature }}</span>
       </div>
 
       <hr
@@ -98,15 +91,15 @@
       <div class="info_item" style="grid-column: 1/2">
         <span>舱外温湿度状态:</span>
         <div
-          :class="`${item?.external_status ? 'bg-green' : 'bg-red'}`"
+          :class="`${item?.status.external_status ? 'bg-green' : 'bg-red'}`"
           style="border-radius: 50%; width: 1rem; height: 1rem"
         ></div>
       </div>
       <div class="info_item" style="grid-column: 1/2">
-        <span>舱外温度:</span><span>{{ item?.external_temperature }}</span>
+        <span>舱外温度:</span><span>{{ item?.status.external_temperature }}</span>
       </div>
       <div class="info_item">
-        <span>舱外湿度:</span><span>{{ item?.external_humidity }}</span>
+        <span>舱外湿度:</span><span>{{ item?.status.external_humidity }}</span>
       </div>
 
       <hr
@@ -116,15 +109,15 @@
       <div class="info_item" style="grid-column: 1/2">
         <span>EDFA状态:</span>
         <div
-          :class="`${item?.edfa_status ? 'bg-green' : 'bg-red'}`"
+          :class="`${item?.status.edfa_status ? 'bg-green' : 'bg-red'}`"
           style="border-radius: 50%; width: 1rem; height: 1rem"
         ></div>
       </div>
       <div class="info_item" style="grid-column: 1/2">
-        <span>激光器温度:</span><span>{{ item?.laser_temperature }}</span>
+        <span>激光器温度:</span><span>{{ item?.status.laser_temperature }}</span>
       </div>
       <div class="info_item">
-        <span>激光器功率:</span><span>{{ item?.laser_power }}</span>
+        <span>激光器功率:</span><span>{{ item?.status.laser_power }}</span>
       </div>
 
       <hr
@@ -134,12 +127,12 @@
       <div class="info_item" style="grid-column: 1/2">
         <span>采集卡状态:</span>
         <div
-          :class="`${item?.grabber_status ? 'bg-green' : 'bg-red'}`"
+          :class="`${item?.status.grabber_status ? 'bg-green' : 'bg-red'}`"
           style="border-radius: 50%; width: 1rem; height: 1rem"
         ></div>
       </div>
       <div class="info_item" style="grid-column: 1/2">
-        <span>采集卡温度:</span><span>{{ item?.grabber_temperature }}</span>
+        <span>采集卡温度:</span><span>{{ item?.status.grabber_temperature }}</span>
       </div>
 
       <hr
@@ -149,18 +142,18 @@
       <div class="info_item" style="grid-column: 1/2">
         <span>电子罗盘状态:</span>
         <div
-          :class="`${item?.compass_status ? 'bg-green' : 'bg-red'}`"
+          :class="`${item?.status.compass_status ? 'bg-green' : 'bg-red'}`"
           style="border-radius: 50%; width: 1rem; height: 1rem"
         ></div>
       </div>
       <div class="info_item" style="grid-column: 1/2">
-        <span>北向角:</span><span>{{ item?.north_angle }}</span>
+        <span>北向角:</span><span>{{ item?.status.north_angle }}</span>
       </div>
       <div class="info_item">
-        <span>横倾角:</span><span>{{ item?.heel_angle }}</span>
+        <span>横倾角:</span><span>{{ item?.status.heel_angle }}</span>
       </div>
       <div class="info_item">
-        <span>纵倾角:</span><span>{{ item?.trim_angle }}</span>
+        <span>纵倾角:</span><span>{{ item?.status.trim_angle }}</span>
       </div>
 
       <hr
@@ -170,15 +163,15 @@
       <div class="info_item" style="grid-column: 1/2">
         <span>GPS状态:</span>
         <div
-          :class="`${item?.gps_status ? 'bg-green' : 'bg-red'}`"
+          :class="`${item?.status.gps_status ? 'bg-green' : 'bg-red'}`"
           style="border-radius: 50%; width: 1rem; height: 1rem"
         ></div>
       </div>
       <div class="info_item" style="grid-column: 1/2">
-        <span>位置经度:</span><span>{{ item?.longitude }}</span>
+        <span>位置经度:</span><span>{{ item?.status.longitude }}</span>
       </div>
       <div class="info_item">
-        <span>位置纬度:</span><span>{{ item?.latitude }}</span>
+        <span>位置纬度:</span><span>{{ item?.status.latitude }}</span>
       </div>
     </div>
   </div>
@@ -189,20 +182,21 @@ import { useStationStore } from "~/stores/station";
 const station = useStationStore();
 import { useBus } from "~/myComponents/bus";
 const bus = useBus();
-const item = ref(undefined);
+import {Station} from '~/myComponents/bus'
+const item = ref<Station>();
 const click = () => {
   window.top?.open(
-    `https://main.emgo-tech.com/admin/device/radar/${item.value.radar.id}/change/`,
+    `https://main.emgo-tech.com/admin/device/radar/${item.value.id}/change/`,
     "_self"
   );
 };
 const batteryRef = ref(null);
 watch([() => bus.result, () => station.active], ([result, active]) => {
-  result.map((v) => {
-    if (v.radar.radar_id === active) {
+  result.map((v:Station) => {
+    if (v.radar_id === active) {
       item.value = v;
       nextTick(() => {
-        let battery_level = item.value.battery_level;
+        let battery_level = item.value?.status.battery_level!;
         let battery = (batteryRef.value as unknown) as HTMLDivElement;
         if (battery) {
           if (battery_level < 0) {

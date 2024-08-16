@@ -62,19 +62,19 @@
           </thead>
           <tbody style="position: relative">
             <tr
-              :id="v.radar.radar_id"
+              :id="v.radar_id"
               :class="`${
-                v.radar.radar_id === station.active ? 'bg-gray-5' : 'bg-transparent'
+                v.radar_id === station.active ? 'bg-gray-5' : 'bg-transparent'
               }`"
               v-for="(v, k) in options.list"
-              :key="v.radar.radar_id"
+              :key="v.radar_id"
               @contextmenu.prevent="contextmenu($event, v)"
               @click="flyTo($event, v)"
             >
               <td>{{ k + 1 }}</td>
-              <td>{{ v.radar.name }}</td>
-              <td :class="v.radar.is_online == true ? 'color-green' : 'color-red'">
-                {{ v.radar.is_online ? "在线" : "离线" }}
+              <td>{{ v.name }}</td>
+              <td :class="v.is_online == true ? 'color-green' : 'color-red'">
+                {{ v.is_online ? "在线" : "离线" }}
               </td>
             </tr>
           </tbody>
@@ -127,7 +127,7 @@ const options = reactive({
 watch(
   [() => bus.result, () => options.value],
   ([result, value]) => {
-    options.list = result.filter((item) => item.radar.name.indexOf(value) > -1);
+    options.list = result.filter((item) => item.name.indexOf(value) > -1);
   },
   {
     immediate: true,
@@ -154,7 +154,7 @@ const click = (event: MouseEvent) => {
   $(".menuUl").trigger("blur");
 };
 const flyTo = (event: any, v: any) => {
-  station.active = v.radar.radar_id;
+  station.active = v.radar_id;
   eventbus.emit("将站点移动到屏幕中心", v);
 };
 const toggleCollapse = () => {

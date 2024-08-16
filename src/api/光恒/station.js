@@ -18,7 +18,7 @@ export function 查询雷达列表接口(query) {
     query.user_id = user_id
   }
   return request({
-    url: 'api/radars',
+    url: 'api/radars/condition',
     method: 'post',
     data: query
   })

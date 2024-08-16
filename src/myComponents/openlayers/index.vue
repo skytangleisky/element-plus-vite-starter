@@ -276,7 +276,7 @@ const clickFunc = (e) => {
   if (e.features) {
     setting.disappear = false;
     for (let i = 0; i < bus.result.length; i++) {
-      if (bus.result[i].radar.radar_id == e.features[0].properties.radar_id) {
+      if (bus.result[i].radar_id == e.features[0].properties.radar_id) {
         station
           .查询雷达最新的径向风数据接口({
             radar_id: e.features[0].properties.radar_id.replaceAll("-", ""),
@@ -284,7 +284,7 @@ const clickFunc = (e) => {
           .then((res) => {
             bus.radialWindData = res.data.data;
           });
-        station.active = bus.result[i].radar.radar_id;
+        station.active = bus.result[i].radar_id;
         $(`#${station.active}`)[0].scrollIntoView({
           block: "nearest",
           behavior: "smooth",
@@ -587,41 +587,34 @@ watch(
       features: [],
     };
     for (let i = 0; i < data.length; i++) {
-      let color = "blue";
-      if (data[i].radar.data_status == false || data[i].radar.is_online == false) {
-        color = "red";
-      } else if (
-        data[i].compass_status == false ||
-        data[i].control_plate_status == false ||
-        data[i].edfa_status == false ||
-        data[i].external_status == false ||
-        data[i].gps_status == false ||
-        data[i].grabber_status == false
-      ) {
-        color = "orange";
-      } else {
-        color = "#0f0";
+      if(data[i].status){
+        let color = "#00f";
+        if (data[i].is_online == true) {
+          color = "#0f0";
+        } else {
+          color = "#f00";
+        }
+        // console.log(data[i]);
+        points.data.features.push({
+          type: "Feature",
+          properties: {
+            type: "站点",
+            radar_id: data[i].radar_id,
+            风速: speed,
+            time: "站无时间",
+            name: data[i].name,
+            is_online: data[i].is_online,
+            external_temperature: data[i].status.external_temperature.toFixed(2),
+            external_humidity: data[i].status.external_humidity.toFixed(2),
+            image: "feather" + getFeather(speed),
+            color,
+          },
+          geometry: {
+            type: "Point",
+            coordinates: [data[i].status.longitude, data[i].status.latitude],
+          },
+        });
       }
-      // console.log(data[i]);
-      points.data.features.push({
-        type: "Feature",
-        properties: {
-          type: "站点",
-          radar_id: data[i].radar.radar_id,
-          风速: speed,
-          time: data[i].data_time,
-          name: data[i].radar.name,
-          is_online: data[i].is_online,
-          external_temperature: data[i].external_temperature.toFixed(2),
-          external_humidity: data[i].external_humidity.toFixed(2),
-          image: "feather" + getFeather(speed),
-          color,
-        },
-        geometry: {
-          type: "Point",
-          coordinates: [data[i].longitude, data[i].latitude],
-        },
-      });
     }
     map?.getSource("point")?.setData(points.data);
     if(station.active&&station.active!=''){
@@ -757,7 +750,7 @@ watch(
   () => setting.checks[0].select,
   (newVal) => {
     if (newVal) {
-      station.查询雷达列表接口({ user_id: route.query.user_id });
+      station.查询雷达列表接口({ user_id: route.query.user_id,is_online:null,is_new_add:null });
     } else {
       bus.result = [];
     }
@@ -770,7 +763,7 @@ watch(
   () => setting.checks[1].select,
   (newVal) => {
     if (newVal) {
-      station.查询雷达在线列表接口({ user_id: route.query.user_id });
+      station.查询雷达列表接口({ user_id: route.query.user_id,is_online:true,is_new_add:null });
     } else {
       bus.result = [];
     }
@@ -783,7 +776,7 @@ watch(
   () => setting.checks[2].select,
   (newVal) => {
     if (newVal) {
-      station.查询雷达离线列表接口({ user_id: route.query.user_id });
+      station.查询雷达列表接口({ user_id: route.query.user_id,is_online:false,is_new_add:null });
     } else {
       bus.result = [];
     }
@@ -796,7 +789,7 @@ watch(
   () => setting.checks[3].select,
   (newVal) => {
     if (newVal) {
-      station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
+      station.查询雷达列表接口({ user_id: route.query.user_id,is_online:null,is_new_add:true });
     } else {
       bus.result = [];
     }

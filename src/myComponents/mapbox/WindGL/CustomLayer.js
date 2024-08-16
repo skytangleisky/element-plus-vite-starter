@@ -1,6 +1,6 @@
 import WindGL from './index';
-// import json from "../data/2016112000.json";
-// import png from "../data/2016112000.png?url";
+import json from "../data/2016112000.json";
+import png from "../data/2016112000.png?url";
 import {mat4} from 'gl-matrix';
 
 export default class CustomLayer {

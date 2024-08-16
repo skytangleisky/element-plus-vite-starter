@@ -469,71 +469,71 @@ onMounted(() => {
       () => setting.mapbox.showStation,
       (v) => {
         if (v) {
-          getMicapsData(plotUrl).then(async (result: any) => {
-            console.log(result);
-            let points = {
-              type: "geojson",
-              data: {
-                type: "FeatureCollection",
-                features: [
-                  {
-                    type: "Feature",
-                    properties: {},
-                    geometry: {
-                      type: "Point",
-                      coordinates: [-122.414, 37.776],
-                    },
-                  },
-                ],
-              },
-            };
-            points.data.features = [];
-            result.data.forEach((v: any) => {
-              if (v.风速 != 9999) {
-                points.data.features.push({
-                  type: "Feature",
-                  properties: Object.assign(v, { image: "feather" + getFeather(v.风速) }),
-                  geometry: {
-                    type: "Point",
-                    coordinates: [v.经度, v.纬度],
-                  },
-                });
-              }
-            });
-            map.addSource("point", points);
-            await addFeatherImages(map);
-            map.addLayer({
-              id: "plane",
-              source: "point",
-              type: "symbol",
-              layout: {
-                // This icon is a part of the Mapbox Streets style.
-                // To view all images available in a Mapbox style, open
-                // the style in Mapbox Studio and click the "Images" tab.
-                // To add a new image to the style at runtime see
-                // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-                "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
-                "icon-image": ["get", "image"],
-                "icon-size": 1,
-                "icon-rotate": ["get", "风向"],
-                "icon-rotation-alignment": "map",
-                "icon-allow-overlap": true,
-                "icon-ignore-placement": true,
-                "text-field": ["get", "风速"],
-                "text-font": ["simkai"],
-                "text-size": 20,
-                "text-transform": "uppercase",
-                // "text-letter-spacing": 0.05,
-                "text-anchor": "center",
-                "text-line-height": 1,
-                // "text-justify": "center",
-                "text-offset": [0, 0],
-                "text-ignore-placement": true,
-                "text-allow-overlap": true,
-                "text-rotation-alignment": "map",
-              },
-            });
-          });
+          // getMicapsData(plotUrl).then(async (result: any) => {
+          //   console.log(result);
+          //   let points = {
+          //     type: "geojson",
+          //     data: {
+          //       type: "FeatureCollection",
+          //       features: [
+          //         {
+          //           type: "Feature",
+          //           properties: {},
+          //           geometry: {
+          //             type: "Point",
+          //             coordinates: [-122.414, 37.776],
+          //           },
+          //         },
+          //       ],
+          //     },
+          //   };
+          //   points.data.features = [];
+          //   result.data.forEach((v: any) => {
+          //     if (v.风速 != 9999) {
+          //       points.data.features.push({
+          //         type: "Feature",
+          //         properties: Object.assign(v, { image: "feather" + getFeather(v.风速) }),
+          //         geometry: {
+          //           type: "Point",
+          //           coordinates: [v.经度, v.纬度],
+          //         },
+          //       });
+          //     }
+          //   });
+          //   map.addSource("point", points);
+          //   await addFeatherImages(map);
+          //   map.addLayer({
+          //     id: "plane",
+          //     source: "point",
+          //     type: "symbol",
+          //     layout: {
+          //       // This icon is a part of the Mapbox Streets style.
+          //       // To view all images available in a Mapbox style, open
+          //       // the style in Mapbox Studio and click the "Images" tab.
+          //       // To add a new image to the style at runtime see
+          //       // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+          //       "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
+          //       "icon-image": ["get", "image"],
+          //       "icon-size": 1,
+          //       "icon-rotate": ["get", "风向"],
+          //       "icon-rotation-alignment": "map",
+          //       "icon-allow-overlap": true,
+          //       "icon-ignore-placement": true,
+          //       "text-field": ["get", "风速"],
+          //       "text-font": ["simkai"],
+          //       "text-size": 20,
+          //       "text-transform": "uppercase",
+          //       // "text-letter-spacing": 0.05,
+          //       "text-anchor": "center",
+          //       "text-line-height": 1,
+          //       // "text-justify": "center",
+          //       "text-offset": [0, 0],
+          //       "text-ignore-placement": true,
+          //       "text-allow-overlap": true,
+          //       "text-rotation-alignment": "map",
+          //     },
+          //   });
+          // });
           getMicapsData(uvUrl).then(async(result:any)=>{
             console.log("===>",result)
             let cvs = document.createElement('canvas')

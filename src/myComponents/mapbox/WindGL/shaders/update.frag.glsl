@@ -12,6 +12,12 @@ uniform float u_drop_rate_bump;
 
 varying vec2 v_tex_pos;
 
+#define PI 3.141592653589793
+float RAD_TO_DEG = 180.0 / PI;
+float sinh(float f){
+    return (exp(f)-exp(-f))/2.0;
+}
+
 // pseudo-random generator
 const vec3 rand_constants = vec3(12.9898, 78.233, 4375.85453);
 float rand(const vec2 co) {
@@ -42,8 +48,22 @@ void main() {
     float speed_t = length(velocity) / length(u_wind_max);
 
     // take EPSG:4236 distortion into account for calculating where the particle moved
-    float distortion = cos(radians(pos.y * 180.0 - 90.0));
-    vec2 offset = vec2(velocity.x / distortion, -velocity.y) * 0.0001 * u_speed_factor;
+    // float distortion = cos(radians(pos.y * 180.0 - 90.0));
+    // vec2 offset = vec2(velocity.x / distortion, -velocity.y) * 0.0001 * u_speed_factor;
+
+
+    float startLng = 32.0;
+    float stopLng = 160.0;
+    float startLat = 0.0;
+    float stopLat = 80.0;
+
+    // float LAT = atan(sinh(PI))*RAD_TO_DEG;
+    // float startLng = -180.0;
+    // float stopLng = 180.0;
+    // float startLat = -LAT;
+    // float stopLat = LAT;
+    float distortion = cos(radians(stopLat - pos.y * (stopLat - startLat)));
+    vec2 offset = vec2(velocity.x/distortion, - velocity.y) * 0.0001 * u_speed_factor;
 
     // update particle position, wrapping around the date line
     pos = fract(1.0 + pos + offset);
