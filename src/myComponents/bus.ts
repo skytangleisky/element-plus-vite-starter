@@ -85,6 +85,7 @@ interface Wind {
 const obj = reactive({
   avgWindData_重庆:{},
   avgWindData:new Array<Wind>(),
+  avgWindDataLatest:new Array<Wind>(),
   secondWindData:new Array<Wind>(),
   radialWindData:Array<Wind>(),
   result:new Array<Station>(),

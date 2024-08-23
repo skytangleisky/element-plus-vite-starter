@@ -62,9 +62,9 @@
           </thead>
           <tbody style="position: relative">
             <tr
-              :id="v.radar_id"
+              :id="v.radar_id.replaceAll('-','')"
               :class="`${
-                v.radar_id === station.active ? 'bg-gray-5' : 'bg-transparent'
+                v.radar_id.replaceAll('-','') === station.active ? 'bg-gray-5' : 'bg-transparent'
               }`"
               v-for="(v, k) in options.list"
               :key="v.radar_id"

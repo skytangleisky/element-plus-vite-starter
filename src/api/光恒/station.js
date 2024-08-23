@@ -72,7 +72,7 @@ export function 查询雷达最新的平均风数据接口(query) {
     query.user_id = user_id
   }
   return request({
-    url: 'api/weather/wind/latest-avg',
+    url: 'api/weather/wind/latest-avg-new',
     method: 'post',
     data: query
   })
@@ -92,7 +92,7 @@ export function 查询雷达最新的径向风数据接口(query){
   //   query.user_id = user_id
   // }
   return request({
-    url: 'api/weather/wind/latest-radial',
+    url: 'api/weather/wind/latest-avg-new/list_for_radar',
     method: 'post',
     data:query
   })

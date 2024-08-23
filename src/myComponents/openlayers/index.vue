@@ -279,12 +279,12 @@ const clickFunc = (e) => {
       if (bus.result[i].radar_id == e.features[0].properties.radar_id) {
         station
           .查询雷达最新的径向风数据接口({
-            radar_id: e.features[0].properties.radar_id.replaceAll("-", ""),
+            "radar_id": e.features[0].properties.radar_id.replaceAll("-", ""),
           })
           .then((res) => {
-            bus.radialWindData = res.data.data;
+            bus.avgWindData = [res.data.data];
           });
-        station.active = bus.result[i].radar_id;
+        station.active = bus.result[i].radar_id.replaceAll('-','');
         $(`#${station.active}`)[0].scrollIntoView({
           block: "nearest",
           behavior: "smooth",
@@ -308,7 +308,7 @@ const task = () => {
       user_id: route.query.user_id,
     })
     .then((res) => {
-      bus.avgWindData = res.data.data;
+      bus.avgWindDataLatest = res.data.data;
     });
   // }
   // station
@@ -328,7 +328,6 @@ const task = () => {
   //     });
   // }
 };
-task();
 const loadFunc = () => {
   map.addSource("point", points);
   map.addLayer({
@@ -483,11 +482,11 @@ const loadFunc = () => {
   bus.avgWindData = [];
   bus.secondWindData = [];
   bus.radialWindData = [];
-  // if (import.meta.env.PROD) {
-  //   timer = setInterval(() => task(), 4 * 60 * 1000);
-  // } else if (import.meta.env.DEV) {
-  //   timer = setInterval(() => task(), 4 * 60 * 1000);
-  // }
+  if (import.meta.env.PROD) {
+    timer = setInterval(() => task(), 4 * 60 * 1000);
+  } else if (import.meta.env.DEV) {
+    timer = setInterval(() => task(), 4 * 60 * 1000);
+  }
   let frameCounter = map.painter.frameCounter;
   mock = setInterval(() => {
     graphArgs.fps.value = map.painter.frameCounter - frameCounter;
@@ -581,55 +580,58 @@ onBeforeUnmount(() => {
 watch(
   () => bus.result,
   (newVal) => {
-    const data = newVal;
-    points.data = {
-      type: "FeatureCollection",
-      features: [],
-    };
-    for (let i = 0; i < data.length; i++) {
-      if(data[i].status){
-        let color = "#00f";
-        if (data[i].is_online == true) {
-          color = "#0f0";
-        } else {
-          color = "#f00";
+    if(bus.result.length>0){
+      const data = newVal;
+      points.data = {
+        type: "FeatureCollection",
+        features: [],
+      };
+      for (let i = 0; i < data.length; i++) {
+        if(data[i].status){
+          let color = "#00f";
+          if (data[i].is_online == true) {
+            color = "#0f0";
+          } else {
+            color = "#f00";
+          }
+          // console.log(data[i]);
+          points.data.features.push({
+            type: "Feature",
+            properties: {
+              type: "站点",
+              radar_id: data[i].radar_id,
+              风速: speed,
+              time: "站无时间",
+              name: data[i].name,
+              is_online: data[i].is_online,
+              external_temperature: data[i].status.external_temperature.toFixed(2),
+              external_humidity: data[i].status.external_humidity.toFixed(2),
+              image: "feather" + getFeather(speed),
+              color,
+            },
+            geometry: {
+              type: "Point",
+              coordinates: [data[i].status.longitude, data[i].status.latitude],
+            },
+          });
         }
-        // console.log(data[i]);
-        points.data.features.push({
-          type: "Feature",
-          properties: {
-            type: "站点",
-            radar_id: data[i].radar_id,
-            风速: speed,
-            time: "站无时间",
-            name: data[i].name,
-            is_online: data[i].is_online,
-            external_temperature: data[i].status.external_temperature.toFixed(2),
-            external_humidity: data[i].status.external_humidity.toFixed(2),
-            image: "feather" + getFeather(speed),
-            color,
-          },
-          geometry: {
-            type: "Point",
-            coordinates: [data[i].status.longitude, data[i].status.latitude],
-          },
-        });
       }
-    }
-    map?.getSource("point")?.setData(points.data);
-    if(station.active&&station.active!=''){
-      station
-        .查询雷达最新的径向风数据接口({
-          radar_id: station.active.replaceAll("-", ""),
-        })
-        .then((res) => {
-          bus.radialWindData = res.data.data;
-        });
+      map?.getSource("point")?.setData(points.data);
+      if(station.active&&station.active!=''){
+        station
+          .查询雷达最新的径向风数据接口({
+            radar_id: station.active.replaceAll("-", ""),
+          })
+          .then((res) => {
+            bus.avgWindData = [res.data.data];
+          });
+      }
+      task()
     }
   }
 );
 watch(
-  () => bus.avgWindData,
+  () => bus.avgWindDataLatest,
   (avgWindData) => {
     if (avgWindData) {
       data.length = 0;
@@ -640,7 +642,7 @@ watch(
           //删除相关站点的风羽
           for (let i = 0; i < points.data.features.length; i++) {
             if (
-              radar_id == points.data.features[i].properties.radar_id &&
+              radar_id == points.data.features[i].properties.radar_id.replaceAll('-','') &&
               points.data.features[i].properties.type == "风羽"
             ) {
               points.data.features.splice(i--, 1);
@@ -649,11 +651,10 @@ watch(
           for (let i = 0; i < list.length; i++) {
             let data_time = list[i].data_time;
             let data_list = list[i].data_list;
-            if (i == 0) {
-              //计算风羽的位置并添加
-              for (let i = 0; i < points.data.features.length; i++) {
+            //计算风羽的位置并添加
+            for (let i = 0; i < points.data.features.length; i++) {
                 if (
-                  radar_id == points.data.features[i].properties.radar_id &&
+                  radar_id == points.data.features[i].properties.radar_id.replaceAll('-','') &&
                   points.data.features[i].properties.type == "站点"
                 ) {
                   const lngLat = points.data.features[i].geometry.coordinates;
@@ -691,7 +692,6 @@ watch(
                   source && source.setData(points.data);
                 }
               }
-            }
           }
         }
       });
