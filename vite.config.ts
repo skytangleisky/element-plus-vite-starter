@@ -104,7 +104,7 @@ export default defineConfig({
     //   // cert: fs.readFileSync('tanglei.site.pem'),
     //   // key: fs.readFileSync('tanglei.site.key')
     // },
-    open:'http://localhost:5173',
+    // open:'http://localhost:5173',
     host:true,
     port:5173,
     strictPort:true,
@@ -126,6 +126,12 @@ export default defineConfig({
         secure:false,
         changeOrigin:true,
         // rewrite:path=>path.replace(/^\/backend/,''), // 设置重写的路径
+        ws:true,
+      },
+      '/debug':{
+        target:'http://tanglei.site:7777',
+        secure:false,
+        changeOrigin:true,
         ws:true,
       },
       '/tanglei':{

@@ -631,7 +631,8 @@ function createSetupStore<
         }
         // patch direct access properties to allow store.stateProperty to work as
         // store.$state.stateProperty
-        set(store, stateKey, toRef(newStore.$state,stateKey))
+        // set(store, stateKey, toRef(newStore.$state,stateKey))
+        set(store, stateKey, newStore.$state[stateKey])
       })
 
       // remove deleted state properties

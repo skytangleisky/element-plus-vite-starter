@@ -310,6 +310,13 @@ const task = () => {
     .then((res) => {
       bus.avgWindDataLatest = res.data.data;
     });
+    station
+      .查询雷达最新的径向风数据接口({
+        radar_id: station.active.replaceAll("-", ""),
+      })
+      .then((res) => {
+        bus.avgWindData = [res.data.data];
+      });
   // }
   // station
   //   .查询瞬时风数据接口({
@@ -505,8 +512,9 @@ const loadFunc = () => {
 };
 const flyTo = (item) => {
   try {
+    station.active = item.radar_id.replaceAll('-','');
     map.flyTo({
-      center: [item.longitude, item.latitude], // 新的中心点 [经度, 纬度]
+      center: [item.status.longitude, item.status.latitude], // 新的中心点 [经度, 纬度]
       zoom: item.zoom || 10, // 目标缩放级别
       speed: 1, // 飞行速度，1 为默认速度
       // curve: 1, // 飞行路径的曲率, 1 是直线

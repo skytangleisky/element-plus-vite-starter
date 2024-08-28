@@ -10,6 +10,16 @@ export default {
   },
   children:[
     {
+      path:'nps',
+      name:'22254d40-71a3-8406-b0d8-cc9eb3aed1ef',
+      component:'/src/myComponents/echarts/nps.vue',
+      svg:'a6f2f34c61ee11ef9ed1b025aa2c9ada',
+      replace:true,
+      meta:{
+        label:'NPS',
+      }
+    },
+    {
       path:'guangheng',
       name:'22254d40-71a3-8406-b0d8-cc9eb3aed11c',
       component:'/src/myComponents/openlayers/index.vue',

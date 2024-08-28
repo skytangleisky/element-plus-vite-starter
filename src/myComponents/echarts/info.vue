@@ -194,6 +194,9 @@ const batteryRef = ref(null);
 watch([() => bus.result, () => station.active], ([result, active]) => {
   result.map((v:Station) => {
     if (v.radar_id.replaceAll('-','') === active) {
+      if(!v.status){
+        v.status = {}
+      }
       item.value = v;
       nextTick(() => {
         let battery_level = item.value?.status.battery_level!;
