@@ -117,10 +117,11 @@
 import { checkPermission } from "~/tools";
 import { addFeatherImages, getFeather } from "~/tools";
 import { destinationPoint } from "~/myComponents/map/js/core.js";
-import { watch, ref, onMounted, onBeforeUnmount, reactive } from "vue";
+import { watch, ref, onMounted, onBeforeUnmount, reactive,h } from "vue";
 import { useBus } from "~/myComponents/bus";
 import Dialog from "../dialog.vue";
 import { eventbus } from "~/eventbus";
+import { ElMessage } from 'element-plus'
 const bus = useBus();
 const graphArgs = reactive({
   fps: { value: 0, min: 0, max: 144, strokeStyle: "#ffffff88" },
@@ -511,22 +512,56 @@ const loadFunc = () => {
   //   station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
 };
 const flyTo = (item) => {
-  try {
-    station.active = item.radar_id.replaceAll('-','');
-    map.flyTo({
-      center: [item.status.longitude, item.status.latitude], // 新的中心点 [经度, 纬度]
-      zoom: item.zoom || 10, // 目标缩放级别
-      speed: 1, // 飞行速度，1 为默认速度
-      // curve: 1, // 飞行路径的曲率, 1 是直线
-      // easing: function (t) {
-      //   return t;
-      // }, // 自定义缓动函数
-      essential: true, // 这个飞行动作对于用户交互是必要的
+  if(!item.is_online){
+    ElMessage({
+      message: h("p", null, [
+        // h('span', null, 'Message can be '),
+        h("i", { style: "color: teal" }, "雷达已经离线"),
+      ]),
+      type: "error",
     });
-  } catch (error) {
-    console.log({ longitude: item.longitude, latitude: item.latitude });
-    console.log(error);
+  }else if(!item.status){
+    ElMessage({
+      message: h("p", null, [
+        // h('span', null, 'Message can be '),
+        h("i", { style: "color: teal" }, "雷达无状态数据"),
+      ]),
+      type: "error",
+    });
+  }else if(item.status.longitude==0||item.status.latitude==0){
+    ElMessage({
+      message: h("p", null, [
+        // h('span', null, 'Message can be '),
+        h("i", { style: "color: teal" }, "经纬度异常"),
+      ]),
+      type: "error",
+    });
+  }else if(item.status.longitude==-1000||item.status.latitude==-1000){
+    ElMessage({
+      message: h("p", null, [
+        // h('span', null, 'Message can be '),
+        h("i", { style: "color: teal" }, "经纬度无效"),
+      ]),
+      type: "error",
+    });
+  }else{
+    try {
+      map.flyTo({
+        center: [item.status.longitude, item.status.latitude], // 新的中心点 [经度, 纬度]
+        zoom: item.zoom || 10, // 目标缩放级别
+        speed: 1, // 飞行速度，1 为默认速度
+        // curve: 1, // 飞行路径的曲率, 1 是直线
+        // easing: function (t) {
+        //   return t;
+        // }, // 自定义缓动函数
+        essential: true, // 这个飞行动作对于用户交互是必要的
+      });
+    } catch (error) {
+      console.log({ longitude: item.longitude, latitude: item.latitude });
+      console.log(error);
+    }
   }
+  station.active = item.radar_id.replaceAll('-','');
 };
 const resize = (entry) => {
   map && map.resize();
@@ -603,25 +638,27 @@ watch(
             color = "#f00";
           }
           // console.log(data[i]);
-          points.data.features.push({
-            type: "Feature",
-            properties: {
-              type: "站点",
-              radar_id: data[i].radar_id,
-              风速: speed,
-              time: "站无时间",
-              name: data[i].name,
-              is_online: data[i].is_online,
-              external_temperature: data[i].status.external_temperature.toFixed(2),
-              external_humidity: data[i].status.external_humidity.toFixed(2),
-              image: "feather" + getFeather(speed),
-              color,
-            },
-            geometry: {
-              type: "Point",
-              coordinates: [data[i].status.longitude, data[i].status.latitude],
-            },
-          });
+          if(data[i].is_online&&data[i].status&&(data[i].status.longitude!=0&&data[i].status.latitude!=0)){
+            points.data.features.push({
+              type: "Feature",
+              properties: {
+                type: "站点",
+                radar_id: data[i].radar_id,
+                风速: speed,
+                time: "站无时间",
+                name: data[i].name,
+                is_online: data[i].is_online,
+                external_temperature: data[i].status.external_temperature.toFixed(2),
+                external_humidity: data[i].status.external_humidity.toFixed(2),
+                image: "feather" + getFeather(speed),
+                color,
+              },
+              geometry: {
+                type: "Point",
+                coordinates: [data[i].status.longitude, data[i].status.latitude],
+              },
+            });
+          }
         }
       }
       map?.getSource("point")?.setData(points.data);
@@ -924,8 +961,12 @@ watch(
   }
 }
 .disappear.right-drawer {
-  transform: translateX(calc(100% + 28px));
+  // transform: translateX(calc(100% + 28px));
+  transform: translateX(calc(100%));
   transition: all 250ms;
+  svg{
+    transform: rotate(180deg);
+  }
 }
 .mapboxgl-canvas:focus-visible {
   outline: none;

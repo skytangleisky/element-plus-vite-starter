@@ -566,7 +566,7 @@ export const useSettingStore = defineStore({
         svg:'4db7562c3aa011ee8077b025aa2c9ada',
         hide:true,
         meta:{
-          label:'openlayers',
+          label:'光恒网站',
         }
       },
       {
@@ -576,7 +576,7 @@ export const useSettingStore = defineStore({
         svg:'5e38a2e3aaf011eeb80bb025aa2c9ada',
         hide:true,
         meta:{
-          label: 'calibration',
+          label: '光恒标定场',
         }
       },
       {
@@ -585,6 +585,7 @@ export const useSettingStore = defineStore({
         redirect: '/ry/synthesis',
         hide:true,
         meta:{
+          label:'北京人影',
           roles:['ry']
         }
       },
@@ -594,6 +595,7 @@ export const useSettingStore = defineStore({
         redirect: '/jx/synthesis',
         hide:true,
         meta:{
+          label:'江西无人机',
           roles:['jx']
         }
       },
@@ -603,6 +605,7 @@ export const useSettingStore = defineStore({
         redirect: '/zh/synthesis/monitor',
         hide:true,
         meta:{
+          label:'珠海',
           roles:['zh']
         }
       },
@@ -612,6 +615,7 @@ export const useSettingStore = defineStore({
         redirect: '/cq/synthesis',
         hide:true,
         meta:{
+          label:'重庆组网',
           roles:['cq']
         }
       },
@@ -621,6 +625,7 @@ export const useSettingStore = defineStore({
         redirect: '/device/synthesis',
         hide:true,
         meta:{
+          label:'设备组网',
           roles:['device']
         }
       },
@@ -630,13 +635,17 @@ export const useSettingStore = defineStore({
         redirect: '/ry/synthesis',
         hide:true,
         meta:{
+          label:'超级用户',
           roles:['admin']
         }
       },
       {
         path: ':catchAll(.*)*',
         component: '/src/myComponents/404/index.vue',
-        hide:true
+        hide:true,
+        meta:{
+          label:'404'
+        }
       },
     ]
   }),

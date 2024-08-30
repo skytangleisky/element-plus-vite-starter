@@ -1,5 +1,5 @@
 <template>
-  <div class="collapse dragDialog absolute w-350px" style="left: 20px; top: 20px">
+  <div class="collapse dragDialog absolute w-500px" style="left: 20px; top: 20px">
     <div class="flex flex-row" style="align-items: center">
       <input
         @mousedown.stop
@@ -53,10 +53,12 @@
           <thead>
             <tr
               class="bg-blue z-1"
-              style="box-sizing: border-box; top: 0px; position: sticky"
+              style="box-sizing: border-box; top: 0px; position: sticky;"
             >
               <th>序号</th>
               <th>名称</th>
+              <th>经度</th>
+              <th>纬度</th>
               <th>状态</th>
             </tr>
           </thead>
@@ -72,8 +74,10 @@
               @click="flyTo($event, v)"
             >
               <td>{{ k + 1 }}</td>
-              <td>{{ v.name }}</td>
-              <td :class="v.is_online == true ? 'color-green' : 'color-red'">
+              <td style="overflow: auto;white-space: nowrap;max-width:150px">{{ v.name }}</td>
+              <td>{{ v.status?(v.status.longitude==0||v.status.longitude==-1000?'':v.status.longitude):'' }}</td>
+              <td>{{ v.status?(v.status.latitude==0||v.status.longitude==-1000?'':v.status.latitude):'' }}</td>
+              <td :class="v.is_online == true ? 'color-green' : 'color-red'" style="white-space: nowrap">
                 {{ v.is_online ? "在线" : "离线" }}
               </td>
             </tr>

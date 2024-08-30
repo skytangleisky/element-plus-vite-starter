@@ -13,8 +13,7 @@
         {{ v.name }}</span
       >
     </div>
-    <h1>Nestable2</h1>
-    <el-button text @click="addIcon">open a Form nested Dialog</el-button>
+    <el-button text @click="addIcon">open a icon Dialog</el-button>
     <el-dialog v-model="dialogFormVisible" title="Icon">
       <el-form
         :model="form"
@@ -57,114 +56,15 @@
         </el-form-item>
       </el-form>
     </el-dialog>
-
-    <p>
-      Drag &amp; drop hierarchical list with mouse and touch compatibility (jQuery plugin)
-    </p>
-
-    <p>
-      <strong><a href="https://github.com/RamonSmit/Nestable2">Code on GitHub</a></strong>
-    </p>
-
-    <menu id="nestable-menu">
-      <button type="button" data-action="expand-all">Expand All</button>
-      <button type="button" data-action="collapse-all">Collapse All</button>
-      <button type="button" data-action="add-item">Add new item</button>
-      <button type="button" data-action="replace-item">Replace item 10</button>
-      <button type="button" data-action="remove-item">Remove item</button>
-    </menu>
-
     <div class="cf nestable-lists">
-      <div ref="nestable" v-show="show" class="dd" id="nestable">
-        <ol class="dd-list">
-          <subEditMenu :json="json"></subEditMenu>
-        </ol>
-      </div>
-
-      <div class="dd" id="nestable2">
-        <ol class="dd-list">
-          <li class="dd-item" data-id="13" :data-item="JSON.stringify({ id: 13 })">
-            <div class="dd-handle">Item 13</div>
-          </li>
-          <li class="dd-item" data-id="14" :data-item="JSON.stringify({ id: 14 })">
-            <div class="dd-handle">Item 14</div>
-          </li>
-          <li class="dd-item" data-id="15" :data-item="JSON.stringify({ id: 15 })">
-            <div class="dd-handle">Item 15</div>
-            <ol class="dd-list">
-              <li class="dd-item" data-id="16" :data-item="JSON.stringify({ id: 16 })">
-                <div class="dd-handle">Item 16</div>
-              </li>
-              <li class="dd-item" data-id="17" :data-item="JSON.stringify({ id: 17 })">
-                <div class="dd-handle">Item 17</div>
-              </li>
-              <li class="dd-item" data-id="18" :data-item="JSON.stringify({ id: 18 })">
-                <div class="dd-handle">Item 18</div>
-              </li>
-            </ol>
-          </li>
-        </ol>
-      </div>
+      <MyEditMenu v-model:modelValue="setting.routes"></MyEditMenu>
     </div>
-
-    <p><strong>Serialised Output (per list)</strong></p>
-
-    <textarea id="nestable-output"></textarea>
-    <textarea id="nestable2-output"></textarea>
-
-    <p>&nbsp;</p>
-
-    <div class="cf nestable-lists">
-      <p><strong>Draggable Handles</strong></p>
-
-      <p>
-        If you're clever with your CSS and markup this can be achieved without any
-        JavaScript changes.
-      </p>
-
-      <div class="dd" id="nestable3">
-        <ol class="dd-list">
-          <li class="dd-item dd3-item" data-id="13">
-            <div class="dd-handle dd3-handle">Drag</div>
-            <div class="dd3-content">Item 13</div>
-          </li>
-          <li class="dd-item dd3-item" data-id="14">
-            <div class="dd-handle dd3-handle">Drag</div>
-            <div class="dd3-content">Item 14</div>
-          </li>
-          <li class="dd-item dd3-item" data-id="15">
-            <div class="dd-handle dd3-handle">Drag</div>
-            <div class="dd3-content">Item 15</div>
-            <ol class="dd-list">
-              <li class="dd-item dd3-item" data-id="16">
-                <div class="dd-handle dd3-handle">Drag</div>
-                <div class="dd3-content">Item 16</div>
-              </li>
-              <li class="dd-item dd3-item" data-id="17">
-                <div class="dd-handle dd3-handle">Drag</div>
-                <div class="dd3-content">Item 17</div>
-              </li>
-              <li class="dd-item dd3-item" data-id="18">
-                <div class="dd-handle dd3-handle">Drag</div>
-                <div class="dd3-content">Item 18</div>
-              </li>
-            </ol>
-          </li>
-        </ol>
-      </div>
-    </div>
-
-    <p class="small">
-      Copyright &copy; <a href="http://dbushell.com/">David Bushell</a> | Made for
-      <a href="http://www.browserlondon.com/">Browser</a>
-    </p>
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, reactive, onMounted, onBeforeUnmount, nextTick } from "vue";
+import MyEditMenu from './editMenu.vue'
+import { ref, reactive, onMounted, onBeforeUnmount, nextTick,watch } from "vue";
 import type { FormInstance, FormRules } from "element-plus";
-import "./jquery.nestable.js";
-import "./jquery.nestable.scss";
 import { useRouter } from "vue-router";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
@@ -231,182 +131,12 @@ const form = reactive({
   name: "",
   svg: "",
 });
-const json = ref([]);
+
 onMounted(() => {
-  $(document).ready(function () {
-    var updateOutput = function (e: any) {
-      var list = e.length ? e : $(e.target),
-        output = list.data("output");
-      if (window.JSON) {
-        output.val(window.JSON.stringify(list.nestable("serialize"))); //, null, 2));
-      } else {
-        output.val("JSON browser support required for this demo.");
-      }
-    };
-    let recursion = (array: []) => {
-      const arr = JSON.parse(JSON.stringify(array));
-      const fn = (l: any) => {
-        l.map((v: any) => {
-          if (v.children instanceof Array) {
-            fn(v.children);
-          }
-          v.id = v.name;
-          delete v.name;
-        });
-      };
-      fn(arr);
-      return arr;
-    };
 
-    json.value = recursion(setting.routes);
-
-    // activate Nestable for list 1
-    nextTick(() => {
-      $("#nestable")
-        .nestable({
-          group: 1,
-        })
-        .on("change", output)
-        .on("gainedItem", output)
-        .on("lostItem", output)
-        .on("change", updateOutput)
-        .on("gainedItem", updateOutput)
-        .on("lostItem", updateOutput);
-    });
-    function output() {
-      let result = $(this).nestable("serialize");
-      console.log(result);
-      let recursion = (array: []) => {
-        const arr = JSON.parse(JSON.stringify(array));
-        const fn = (l: any) => {
-          l.map((v: any) => {
-            if (v.children instanceof Array) {
-              fn(v.children);
-            }
-            v.name = v.id;
-            delete v.id;
-          });
-        };
-        fn(arr);
-        return arr;
-      };
-      result = recursion(result);
-      console.log("------------>", result);
-      setting.routes = result;
-      router.getRoutes().forEach((v) => {
-        v.name && router.removeRoute(v.name);
-      });
-      array2components(setting.routes, user.roles).map((v: any) => {
-        router.addRoute(v);
-      });
-    }
-
-    // activate Nestable for list 2
-    $("#nestable2")
-      .nestable({
-        group: 1,
-      })
-      .on("gainedItem", updateOutput)
-      .on("lostItem", updateOutput)
-      .on("change", updateOutput);
-
-    // output initial serialised data
-    nextTick(() => {
-      updateOutput($("#nestable").data("output", $("#nestable-output")));
-    });
-    updateOutput($("#nestable2").data("output", $("#nestable2-output")));
-
-    $("#nestable-menu").on("click", function (e) {
-      var target = $(e.target),
-        action = target.data("action");
-      if (action === "expand-all") {
-        $(".dd").nestable("expandAll");
-      }
-      if (action === "collapse-all") {
-        $(".dd").nestable("collapseAll");
-      }
-      if (action === "add-item") {
-        var newItem = {
-          id: "11",
-          content: "Item 11",
-          label: "label",
-          component: "component",
-          path: "/path",
-          parent_id: "65e99b66-e340-4d4b-6b26-629f41dc63d9",
-          children: [
-            {
-              id: "12",
-              content: "Item 12",
-              label: "label",
-              component: "component",
-              path: "path",
-              children: [
-                {
-                  id: "13",
-                  content: "Item 13",
-                  label: "label",
-                  component: "component",
-                  path: "path",
-                },
-              ],
-            },
-          ],
-        };
-        $("#nestable").nestable("add", newItem, () => {
-          console.log("added");
-        });
-      }
-      if (action === "remove-item") {
-        $("#nestable").nestable("remove", "11", () => {
-          console.log("removed");
-        });
-
-        // router.addRoute(
-        //     {
-        //     path: '/openlayers',
-        //     component:modules['/src/myComponents/openlayers/index.vue']
-        //     }
-        // )
-        // router.push({ path: "/openlayers", replace: false });
-      }
-      if (action === "replace-item") {
-        var replacedItem = {
-          id: "11",
-          content: "New item 11",
-          path: "/newPath",
-          label: "11",
-          component: "new component",
-          children: [
-            {
-              id: "12",
-              content: "Item 12",
-              path: "path",
-              label: "12",
-              component: "component",
-              children: [
-                {
-                  id: "13",
-                  content: "Item 13",
-                  path: "path",
-                  label: "13",
-                  component: "component",
-                },
-              ],
-            },
-          ],
-        };
-        $("#nestable").nestable("replace", replacedItem, () => {
-          console.log("replaced");
-        });
-      }
-    });
-    $("#nestable3").nestable();
-  });
 });
-// onBeforeUnmount(()=>{
-//     $('.dd').nestable('removeAll')
-//     $('.dd').nestable('destroy')
-// })
+onBeforeUnmount(()=>{
+})
 </script>
 <style lang="scss">
 .cf:after {
@@ -453,8 +183,8 @@ p {
 }
 
 /**
-        * Nestable Extras
-        */
+  * Nestable Extras
+  */
 
 .nestable-lists {
   display: block;
@@ -606,6 +336,54 @@ p {
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+}
+
+
+
+
+
+.dd,.dd-dragel {
+  position: relative;
+  list-style: none;
+
+  // ul {
+  //   margin-left: 20px;
+  //   padding-left: 20px;
+  //   position: relative;
+  // }
+
+  li {
+    position: relative;
+    padding-left: 30px;
+
+    &::before,&::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      border-color: #888;
+      border-style: solid;
+    }
+
+    &::before {
+      top: 0;
+      left: 15px;
+      width: 15px;
+      height: 100%;
+      border-width: 0 0 0 1px;
+    }
+
+    &::after {
+      top: 15px;
+      left: 15px;
+      width: 15px;
+      height: 15px;
+      border-width: 1px 0 0 0;
+    }
+
+    &:last-child::before {
+      height: 15px;
+    }
   }
 }
 </style>

@@ -221,7 +221,10 @@ export default {
     {
       path: ':catchAll(.*)*',
       component: '/src/myComponents/404/index.vue',
-      hide:true
+      hide:true,
+      meta:{
+        label:'404'
+      }
     },
   ]
 }

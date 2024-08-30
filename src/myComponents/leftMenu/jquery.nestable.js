@@ -43,8 +43,14 @@ import { rotateX } from '../../tools/gl-matrix/quat';
         emptyClass: 'dd-empty',
         //expandBtnHTML: '<button class="dd-expand" data-action="expand" type="button">Expand</button>',
         //collapseBtnHTML: '<button class="dd-collapse" data-action="collapse" type="button">Collapse</button>',
-        expandBtnHTML: '<button class="dd-expand" data-action="expand" type="button"><i class="ep-icon"><svg t="1692368742984" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7220" width="200" height="200"><path d="M490.061576 311.947636a31.030303 31.030303 0 0 1 43.876848 0l310.303031 310.303031a31.030303 31.030303 0 0 1-43.876849 43.876848L512 377.762909l-288.364606 288.364606a31.030303 31.030303 0 0 1-43.876849-43.876848l310.303031-310.303031z" fill="#303133" p-id="7221"></path></svg></i></button>',
-        // collapseBtnHTML: '<button class="dd-collapse" data-action="collapse" type="button"><i class="icon"><svg t="1692368742984" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7220" width="200" height="200"><path d="M490.061576 311.947636a31.030303 31.030303 0 0 1 43.876848 0l310.303031 310.303031a31.030303 31.030303 0 0 1-43.876849 43.876848L512 377.762909l-288.364606 288.364606a31.030303 31.030303 0 0 1-43.876849-43.876848l310.303031-310.303031z" p-id="7221"></path></svg></i></button>',
+        // expandBtnHTML: '<button class="dd-expand" data-action="expand" type="button"><i class="ep-icon"><svg t="1692368742984" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7220" width="200" height="200"><path d="M490.061576 311.947636a31.030303 31.030303 0 0 1 43.876848 0l310.303031 310.303031a31.030303 31.030303 0 0 1-43.876849 43.876848L512 377.762909l-288.364606 288.364606a31.030303 31.030303 0 0 1-43.876849-43.876848l310.303031-310.303031z" fill="#303133" p-id="7221"></path></svg></i></button>',
+        // collapseBtnHTML: '<div class="dd-collapse button" data-action="collapse" type="button"><i class="icon"><svg t="1692368742984" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7220" width="200" height="200"><path d="M490.061576 311.947636a31.030303 31.030303 0 0 1 43.876848 0l310.303031 310.303031a31.030303 31.030303 0 0 1-43.876849 43.876848L512 377.762909l-288.364606 288.364606a31.030303 31.030303 0 0 1-43.876849-43.876848l310.303031-310.303031z" p-id="7221"></path></svg></i></div>',
+        expandBtnHTML: `<div class="dd-collapse button" data-action="collapse" style="position: absolute;width: 30px;height: 30px;left: 0;display: flex;align-items: center;justify-content: center;">
+        <div style="width: 14px;height: 14px;border-radius: 50%;background: white;z-index: 1;border:1px solid black;"></div>
+            <svg width="200" height="200" viewBox="0 0 200 200" style="width:8px;height:8px;position:absolute;z-index:1">
+                <path id="morph" fill="black" />
+            </svg>
+        </div>`,
         group: 0,
         maxDepth: 5,
         threshold: 20,
@@ -143,7 +149,7 @@ import { rotateX } from '../../tools/gl-matrix/quat';
                 this.appendEmptyElement(this.el);
             }
 
-            list.el.on('click', 'button', function(e) {
+            list.el.on('click', '.button', function(e) {
                 if (list.dragEl) {
                     return;
                 }
@@ -278,12 +284,12 @@ import { rotateX } from '../../tools/gl-matrix/quat';
                 if(tree.length){
                     tree.append(this._buildItem(item, this.options));
                     if (callback) callback();
-                    this.el.trigger('change')
+                    // this.el.trigger('change')
                 }
             }else{
                 tree.append(this._buildItem(item, this.options));
                 if (callback) callback();
-                this.el.trigger('change')
+                // this.el.trigger('change')
             }
 
         },
@@ -294,7 +300,7 @@ import { rotateX } from '../../tools/gl-matrix/quat';
             if(list.length){
                 list.replaceWith(this._buildItem(item, this.options));
                 if (callback) callback();
-                this.el.trigger('change')
+                // this.el.trigger('change')
             }
         },
 
@@ -345,7 +351,7 @@ import { rotateX } from '../../tools/gl-matrix/quat';
                 this.removeItem(item);
             }
             if(item.length){
-                this.el.trigger('change')
+                // this.el.trigger('change')
                 if (callback) callback();
             }
         },
@@ -381,7 +387,7 @@ import { rotateX } from '../../tools/gl-matrix/quat';
             else {
                 remove();
             }
-            this.el.trigger('change')
+            // this.el.trigger('change')
         },
 
         _getItemById: function(itemId) {
@@ -886,7 +892,7 @@ import { rotateX } from '../../tools/gl-matrix/quat';
                 this.dragRootEl.trigger('gainedItem');
             }
             else {
-                this.dragRootEl.trigger('change');
+                // this.dragRootEl.trigger('change');
             }
 
             this.options.callback.call(this, this.dragRootEl, el, position);

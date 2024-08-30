@@ -60,6 +60,7 @@ import { intersection } from "~/tools";
 const scrollbarRef = ref();
 const routes = computed(() => {
   let arr = new Array<any>();
+  console.log(setting.routes)
   setting.routes.map((item: any) => {
     if (!item.hide) {
       if (!item.meta || !item.meta.roles || intersection(user.roles, item.meta.roles)) {
