@@ -24,14 +24,29 @@
           <el-icon v-dompurify-html="format(item.svg)" style="font-size: large"></el-icon>
           {{ item.meta?.label }}
         </div>
+        <div style="position: absolute;right:0">
+          <el-icon v-dompurify-html="format('4258afd964d811efa464b025aa2c9ada')" style="font-size: large" @click="browse(item)"></el-icon>
+          <el-icon v-dompurify-html="format('e7dc3b2e64dd11efa464b025aa2c9ada')" style="font-size: large" @click="remove(item)"</el-icon>
+          <el-icon v-dompurify-html="format('486e681364e311efa464b025aa2c9ada')" style="font-size: large" </el-icon>
+        </div>
       </div>
     </div>
-    <VueDraggable :class="`drag-area ${item.collapsed?'dd-collapsed':''}`" :style="`interpolate-size: allow-keywords;transition:height 0.3s;overflow: hidden;padding:0;height: ${item.collapsed?'0px':'auto'}`" tag="ul" v-model="item.children" group="g1">
-      <subEditMenu :json="item.children"></subEditMenu>
+    <VueDraggable :class="`drag-area ${item.collapsed?'dd-collapsed':''}`" :style="`interpolate-size: allow-keywords;transition:height 0.5s;transition-timing-function:ease-in-out;overflow: hidden;padding:0;height: ${item.collapsed?'0px':'auto'}`" tag="ul" v-model="item.children" group="g1">
+      <subEditMenu :json="item.children" :path="path+item.path+'/'"></subEditMenu>
     </VueDraggable>
   </li>
 </template>
 <script lang="ts" setup>
+function browse(item:Item){
+  window.open(path+item.path,'_blank')
+}
+function remove(item:Item){
+  console.log(item)
+  if(json.indexOf(item)>=0){
+    json.splice(json.indexOf(item),1)
+  }
+}
+
 import { VueDraggable } from 'vue-draggable-plus'
 import { Hide, View } from "@element-plus/icons-vue";
 type Item = {
@@ -46,11 +61,15 @@ type Item = {
     label:string
   }
 }
-const { json } = defineProps({
+const { json,path } = defineProps({
   json: {
     type: Array<Item>,
     default: [],
   },
+  path:{
+    type: String,
+    default:'/'
+  }
 });
 import { useIconStore } from "~/stores/icon";
 const icon = useIconStore();

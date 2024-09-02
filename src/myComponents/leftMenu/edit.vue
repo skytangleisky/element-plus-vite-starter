@@ -3,17 +3,21 @@
     class="flex-col dark:bg-#000 bg-white"
     style="color: black; overflow: auto; width: 100%"
   >
+    <el-button type="primary" @click="resetMenu()">reset menu</el-button>
+    <div class="cf nestable-lists">
+      <MyEditMenu v-model:modelValue="setting.routes"></MyEditMenu>
+    </div>
     <div class="icons">
       <span v-for="v in icon.results"
         ><el-icon
-          style="font-size: 2em; color: var(--ep-text-color-primary)"
+          style="font-size: 4em; color: var(--ep-text-color-primary)"
           v-dompurify-html="v.svg"
           @click="storeIcon(v)"
         ></el-icon>
         {{ v.name }}</span
       >
     </div>
-    <el-button text @click="addIcon">open a icon Dialog</el-button>
+    <el-button @click="addIcon" type="primary" style="margin: 20px;">open a icon Dialog</el-button>
     <el-dialog v-model="dialogFormVisible" title="Icon">
       <el-form
         :model="form"
@@ -56,9 +60,6 @@
         </el-form-item>
       </el-form>
     </el-dialog>
-    <div class="cf nestable-lists">
-      <MyEditMenu v-model:modelValue="setting.routes"></MyEditMenu>
-    </div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -68,6 +69,10 @@ import type { FormInstance, FormRules } from "element-plus";
 import { useRouter } from "vue-router";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
+import {getMenu} from '~/api/角色/role'
+getMenu().then(res=>{
+  Object.assign(setting.routes,JSON.parse(res.data.results[0].menu_tree))
+})
 import { array2components } from "~/tools/index";
 const router = useRouter();
 import subEditMenu from "./subEditMenu.vue";
@@ -83,6 +88,10 @@ const user = useUserStore();
 import { useIconStore } from "~/stores/icon";
 const icon = useIconStore();
 icon.FetchList();
+
+function resetMenu(){
+  setting.$resetFields('routes')
+}
 
 const ruleFormRef = ref<FormInstance>();
 const rules = reactive<FormRules<typeof form>>({});
@@ -189,7 +198,6 @@ p {
 .nestable-lists {
   display: block;
   clear: both;
-  padding: 30px 0;
   width: 100%;
   border: 0;
   border-top: 2px solid #ddd;
@@ -199,22 +207,7 @@ p {
   border-color: #444;
 }
 
-#nestable-menu {
-  padding: 0;
-  margin: 20px 0;
-}
 
-#nestable-output,
-#nestable2-output {
-  width: 100%;
-  height: 7em;
-  font-size: 0.75em;
-  line-height: 1.333333em;
-  font-family: Consolas, monospace;
-  padding: 5px;
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-}
 
 .dark .dd {
   .dd-handle {

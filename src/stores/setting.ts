@@ -6,7 +6,6 @@ import jx from "./subs/jx.js";
 import dev from "./subs/dev.js";
 import zh from "./subs/zh.js";
 import cq from "./subs/cq.js";
-import device from "./subs/device.js";
 export const useSettingStore = defineStore({
   id: 'setting',
   state:()=>({
@@ -536,7 +535,6 @@ export const useSettingStore = defineStore({
       ry,
       jx,
       cq,
-      device,
       {
         path: 'qqlogin',
         name: '3c1f8a79-4fe6-2263-08fb-477f961fc946',
@@ -622,7 +620,7 @@ export const useSettingStore = defineStore({
       {
         path: '',
         name: '99961e0a-e574-0e1f-2e23-94f157b14b55',
-        redirect: '/device/synthesis',
+        redirect: '/cq/synthesis',
         hide:true,
         meta:{
           label:'设备组网',

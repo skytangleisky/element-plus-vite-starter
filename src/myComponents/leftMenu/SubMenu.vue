@@ -1,5 +1,5 @@
 <template>
-  <template v-if="!item.hide">
+  <template v-if="!item.hide&&(!item.meta || !item.meta.roles || intersection(user.roles, item.meta.roles))">
     <el-sub-menu v-if="item.children" :index="item.name">
       <template #title>
         <el-icon v-dompurify-html="format(item.svg)"></el-icon>
@@ -56,6 +56,9 @@
 </template>
 <script lang="ts" setup>
 import { useIconStore } from "~/stores/icon";
+import { intersection } from "~/tools";
+import { useUserStore } from "~/stores/user";
+const user = useUserStore()
 const icon = useIconStore();
 const { item } = defineProps({
   item: {

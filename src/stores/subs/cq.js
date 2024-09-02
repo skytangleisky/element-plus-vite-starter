@@ -6,7 +6,7 @@ export default {
   svg:'f7f96575383611efb04bb025aa2c9ada',
   meta:{
     label:'重庆测风激光雷达组网系统',
-    roles:['admin','cq']
+    roles:['admin','cq','device']
   },
   children:[
     {
@@ -85,6 +85,7 @@ export default {
       redirect:'/cq/system/person',
       meta:{
         label:'系统管理',
+        roles:['admin','cq']
       },
       children:[
         {
