@@ -3,7 +3,7 @@ export default {
   component: '/src/container.vue',
   redirect: { path: '/zh/synthesis' },
   name:'940a453a-4a04-62ac-1186-f271d5641885',
-  svg:'a14c6c671b6611efa02ab025aa2c9ada',
+  svg:'61ebdda6-2cd7-4e41-b8e8-8d4ed09c0e3a',
   meta:{
     label:'珠海低空飞行监控系统',
     roles:['admin','zh']
@@ -13,7 +13,7 @@ export default {
       path:'home',
       name:'e760d61f-874b-790a-768c-a770169b6108',
       component:'/src/myComponents/珠海低空飞行监控系统/pages/空域管理.vue',
-      svg:'46f809531b7e11efa02ab025aa2c9ada',
+      svg:'93876fa4-11c1-4d04-ba8c-3a103dc5271f',
       replace:true,
       meta:{
         label:'首页',
@@ -22,7 +22,7 @@ export default {
     {
       path:'synthesis',
       name:'2d53f22e-6626-c141-e3f6-36af958f76c9',
-      svg:'745cb9d21b7e11efa02ab025aa2c9ada',
+      svg:'9e3de390-351f-4bbc-887d-86cc4683f565',
       redirect:"/zh/synthesis/monitor",
       replace:true,
       meta:{
@@ -52,7 +52,7 @@ export default {
     {
       path:'flightMission',
       name:'f627c231-68e0-a68e-f15f-64bdb9945faf',
-      svg:'b937cf301b7e11efa02ab025aa2c9ada',
+      svg:'c8940af0-4606-413c-851c-4936ae2c58ec',
       redirect:"/zh/flightMission/airspace_audit",
       replace:true,
       meta:{
@@ -82,7 +82,7 @@ export default {
     {
       path:'alarm',
       name:'1a9d7d4c-2d4e-3163-83e5-42e04283a87b',
-      svg:'e90c79241b7e11efa02ab025aa2c9ada',
+      svg:'f90a7254-900a-4c2e-a729-b59459920327',
       redirect:'/zh/alarm/realtime_alarm',
       replace:true,
       meta:{
@@ -112,7 +112,7 @@ export default {
     {
       path:'information_service',
       name:'0de21e82-c3ab-7205-f446-49105a649b71',
-      svg:'14370cb81b7f11efa02ab025aa2c9ada',
+      svg:'3de4321d-07f8-48c1-9507-8cf33c7d8556',
       redirect:'/zh/information_service/weather_data',
       replace:true,
       meta:{
@@ -151,7 +151,7 @@ export default {
     {
       path:'statistical_statement',
       name:'7dec880e-04d5-899a-9db2-5a528d339aad',
-      svg:'911c0d251b7f11efa02ab025aa2c9ada',
+      svg:'c7e3557f-21e5-4740-95c5-acf0d9fe3fde',
       redirect:'/zh/statistical_statement/synthesis_statistics',
       replace:true,
       meta:{
@@ -208,7 +208,7 @@ export default {
     {
       path:'archives_management',
       name:'bc93be80-324f-430d-f59f-31e15d31acab',
-      svg:'cc8373f81b7f11efa02ab025aa2c9ada',
+      svg:'b9a11118-ca69-44b5-98d9-123ec97e1660',
       redirect:'/zh/archives_management/aircraft_archives',
       replace:true,
       meta:{
@@ -265,7 +265,7 @@ export default {
     {
       path:'system_management',
       name:'9f9dd6c5-f0c5-f566-cb8c-9ebb394b0507',
-      svg:'289d13771b8011efa02ab025aa2c9ada',
+      svg:'b7711ec6-aded-4d16-83b5-37b99f5fc903',
       redirect:'/zh/system_management/account',
       replace:true,
       meta:{
@@ -349,6 +349,7 @@ export default {
     {
       path: ':catchAll(.*)*',
       component: '/src/myComponents/404/index.vue',
+      svg:"bbb9fe5b-65b3-4f0c-83e1-c35389b09516",
       hide:true,
       meta:{
         label:404

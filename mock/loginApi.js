@@ -1,12 +1,12 @@
 //模拟登录登出接口
 const Token = require('./token');
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuid } = require('uuid');
 const users = {
     admin:{
         "id": 406,
         "createtime": "2022-02-15 13:09:48",
         "updatetime": "2022-11-17 16:58:02",
-        "uuid": uuidv4(),
+        "uuid": uuid(),
         "username": "admin",
         "introduction": "I am a super administrator",
         "nickname": "超级用户",

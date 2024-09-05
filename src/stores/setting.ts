@@ -539,7 +539,7 @@ export const useSettingStore = defineStore({
         path: 'qqlogin',
         name: '3c1f8a79-4fe6-2263-08fb-477f961fc946',
         component: '/src/qqlogin.vue', //最好是异步加载
-        svg:'92210ef73b4111ee8077b025aa2c9ada',
+        svg:'75325500-d202-404c-accb-5cb56f316638',
         hide:true,
         meta:{
           label:'扣扣登录',
@@ -549,7 +549,7 @@ export const useSettingStore = defineStore({
         path: 'login',
         name: '97f11ef1-f3aa-9b9f-3e77-a131a9278a08',
         component: '/src/login.vue',
-        svg:'97d8a6d93ab711ee8077b025aa2c9ada',
+        svg:'7be7695d-38ed-440f-b3b6-66a7eaa2a81f',
         hide:true,
         meta:{
           label:'登录',
@@ -561,7 +561,7 @@ export const useSettingStore = defineStore({
         // component:'/src/myComponents/openlayers/radarStatistic.vue'
         // component:'/src/myComponents/menu/index.vue'
         component:'/src/myComponents/openlayers/index.vue',
-        svg:'4db7562c3aa011ee8077b025aa2c9ada',
+        svg:'44785b4a-0b7e-40b5-8302-30a734b010aa',
         hide:true,
         meta:{
           label:'光恒网站',
@@ -571,7 +571,7 @@ export const useSettingStore = defineStore({
         path: 'calibration',
         name: 'c4961e04-e574-0e1f-ae23-94f157b14a43',
         component: '/src/myComponents/calibration/index.vue',
-        svg:'5e38a2e3aaf011eeb80bb025aa2c9ada',
+        svg:'c7cbf623-7172-4238-84e0-f70323c60b4f',
         hide:true,
         meta:{
           label: '光恒标定场',
@@ -641,6 +641,7 @@ export const useSettingStore = defineStore({
         path: ':catchAll(.*)*',
         component: '/src/myComponents/404/index.vue',
         hide:true,
+        svg:"bbb9fe5b-65b3-4f0c-83e1-c35389b09516",
         meta:{
           label:'404'
         }

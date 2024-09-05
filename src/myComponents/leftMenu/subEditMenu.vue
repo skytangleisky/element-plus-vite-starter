@@ -1,6 +1,6 @@
 <template>
   <li
-    v-for="item in json"
+    v-for="item in routes"
     :class="`dd-item ${item.children?'children':''}`"
     :key="item.name"
     :data-id="item.name"
@@ -20,30 +20,31 @@
           <Hide v-if="item.hide"/>
           <View v-else/>
         </el-icon>
-        <div class="b-var(--text-primary-color) b-1px p-2px" style="height: 100%;display: flex;align-items: center;border-style: solid;">
-          <el-icon v-dompurify-html="format(item.svg)" style="font-size: large"></el-icon>
+        <div class="b-var(--text-primary-color) b-1px p-2px " style="height: 100%;display: flex;align-items: center;border-style: solid;position:relative">
+          <Icons v-model:svg="item.svg"></Icons>
           {{ item.meta?.label }}
         </div>
         <div style="position: absolute;right:0">
-          <el-icon v-dompurify-html="format('4258afd964d811efa464b025aa2c9ada')" style="font-size: large" @click="browse(item)"></el-icon>
-          <el-icon v-dompurify-html="format('e7dc3b2e64dd11efa464b025aa2c9ada')" style="font-size: large" @click="remove(item)"</el-icon>
-          <el-icon v-dompurify-html="format('486e681364e311efa464b025aa2c9ada')" style="font-size: large" </el-icon>
+          <el-icon v-dompurify-html="format('d6a8e59f-f348-40ab-a9e5-3d80da39b23d')" style="font-size: large" @click="browse(item)"></el-icon>
+          <el-icon v-dompurify-html="format('8ce6fb28-177a-4874-a77e-2917edd852b1')" style="font-size: large" @click="remove(item)"</el-icon>
+          <el-icon v-dompurify-html="format('271fa7c1-e1ae-4081-9efe-fb8ae1d41f69')" style="font-size: large" </el-icon>
         </div>
       </div>
     </div>
     <VueDraggable :class="`drag-area ${item.collapsed?'dd-collapsed':''}`" :style="`interpolate-size: allow-keywords;transition:height 0.5s;transition-timing-function:ease-in-out;overflow: hidden;padding:0;height: ${item.collapsed?'0px':'auto'}`" tag="ul" v-model="item.children" group="g1">
-      <subEditMenu :json="item.children" :path="path+item.path+'/'"></subEditMenu>
+      <subEditMenu :routes="item.children" :path="path+item.path+'/'"></subEditMenu>
     </VueDraggable>
   </li>
 </template>
 <script lang="ts" setup>
+import Icons from "./Icons.vue"
 function browse(item:Item){
   window.open(path+item.path,'_blank')
 }
 function remove(item:Item){
   console.log(item)
-  if(json.indexOf(item)>=0){
-    json.splice(json.indexOf(item),1)
+  if(routes.indexOf(item)>=0){
+    routes.splice(routes.indexOf(item),1)
   }
 }
 
@@ -61,8 +62,8 @@ type Item = {
     label:string
   }
 }
-const { json,path } = defineProps({
-  json: {
+const { routes,path } = defineProps({
+  routes: {
     type: Array<Item>,
     default: [],
   },
@@ -74,7 +75,7 @@ const { json,path } = defineProps({
 import { useIconStore } from "~/stores/icon";
 const icon = useIconStore();
 const format = (svg: string) => {
-  let res = icon.results.filter((it) => it.uuid == svg);
+  let res = icon.row.icon_tree.filter((it) => it.uuid == svg);
   if (res.length <= 0) {
     return "";
   } else if (res.length == 1) {
@@ -104,6 +105,15 @@ const format = (svg: string) => {
   min-height: 0px;
   font-size: 13px;
   line-height: 20px;
+  .menu-icon{
+    cursor: pointer;
+    box-sizing: border-box;
+    border:1px solid transparent;
+  }
+  .menu-icon:hover{
+    box-sizing: border-box;
+    border:1px solid cyan;
+  }
 }
 
 .dd-handle {
@@ -142,13 +152,13 @@ const format = (svg: string) => {
   padding: 0;
   min-height: 30px;
   background: #f2fbff;
-  border: 1px dashed #b6bcbf;
+  border: 1px dashed red;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
 }
 
 .dd-empty {
-  border: 1px dashed #bbb;
+  border: 1px dashed red;
   min-height: 100px;
   background-color: #e5e5e5;
   background-size: 60px 60px;

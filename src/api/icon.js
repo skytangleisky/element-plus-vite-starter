@@ -1,6 +1,5 @@
 import request from '~/utils/request'
-import { databaseRaw } from './重庆'
-const url = 'backend/db/icon?'+databaseRaw
+const url = 'backend/db/图标?host=127.0.0.1&port=3306&user=root&password=tanglei&database=union'
 export function fetchList() {
   const data = {
     "select":["*"], // 需要获取的字段，"*"代表所有字段
@@ -45,5 +44,20 @@ export function saveData(data) {
     url,
     method: 'put',
     data
+  })
+}
+export function deleteData(data) {
+  return request({
+    url,
+    method: 'delete',
+    data
+  })
+}
+
+export function exec({database,query}){
+  return request({
+    url: '/backend/transaction?'+database,
+    method: 'post',
+    data:query
   })
 }

@@ -1,146 +1,28 @@
 <template>
   <div
-    class="flex-col dark:bg-#000 bg-white"
-    style="color: black; overflow: auto; width: 100%"
+    class="flex-col dark:bg-#2b2b2b bg-white"
+    style="color: black; overflow: auto; width: 100%;height: 100%;position: relative;"
   >
     <el-button type="primary" @click="resetMenu()">reset menu</el-button>
-    <div class="cf nestable-lists">
-      <MyEditMenu v-model:modelValue="setting.routes"></MyEditMenu>
-    </div>
-    <div class="icons">
-      <span v-for="v in icon.results"
-        ><el-icon
-          style="font-size: 4em; color: var(--ep-text-color-primary)"
-          v-dompurify-html="v.svg"
-          @click="storeIcon(v)"
-        ></el-icon>
-        {{ v.name }}</span
-      >
-    </div>
-    <el-button @click="addIcon" type="primary" style="margin: 20px;">open a icon Dialog</el-button>
-    <el-dialog v-model="dialogFormVisible" title="Icon">
-      <el-form
-        :model="form"
-        label-width="120px"
-        id="saveIconForm"
-        ref="ruleFormRef"
-        :rules="rules"
-      >
-        <el-form-item label="id">
-          <el-input v-model="form.id" placeholder="autogeneration" />
-        </el-form-item>
-        <el-form-item label="uuid">
-          <el-input v-model="form.uuid" placeholder="autogeneration" />
-        </el-form-item>
-        <el-form-item label="createtime">
-          <el-input v-model="form.createtime" placeholder="autogeneration" />
-        </el-form-item>
-        <el-form-item label="updatetime">
-          <el-input
-            v-model="form.updatetime"
-            placeholder="autogeneration"
-            :clearable="true"
-          />
-        </el-form-item>
-        <el-form-item label="name">
-          <el-input v-model="form.name" />
-        </el-form-item>
-        <el-form-item label="svg">
-          <el-icon style="font-size: 2em" v-dompurify-html="form.svg"></el-icon>
-          <el-input
-            v-model="form.svg"
-            style="width: calc(100% - 2em)"
-            type="textarea"
-            :rows="10"
-          />
-        </el-form-item>
-        <el-form-item>
-          <el-button @click="dialogFormVisible = false">Cancel</el-button>
-          <el-button type="primary" @click="submitForm(ruleFormRef)">Submit</el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
+    <VueDraggable class="drag-area dd" tag="ol" v-model="setting.routes" group="g1">
+      <subEditMenu :routes="setting.routes"></subEditMenu>
+    </VueDraggable>
   </div>
 </template>
 <script lang="ts" setup>
-import MyEditMenu from './editMenu.vue'
-import { ref, reactive, onMounted, onBeforeUnmount, nextTick,watch } from "vue";
-import type { FormInstance, FormRules } from "element-plus";
-import { useRouter } from "vue-router";
+import { VueDraggable } from 'vue-draggable-plus'
+import subEditMenu from "./subEditMenu.vue";
+import { onMounted, onBeforeUnmount } from "vue";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
 import {getMenu} from '~/api/角色/role'
 getMenu().then(res=>{
-  Object.assign(setting.routes,JSON.parse(res.data.results[0].menu_tree))
+  // Object.assign(setting.routes,JSON.parse(res.data.results[0].menu_tree))
 })
-import { array2components } from "~/tools/index";
-const router = useRouter();
-import subEditMenu from "./subEditMenu.vue";
-import { useUserStore } from "~/stores/user.js";
-const user = useUserStore();
-// router.getRoutes().forEach((v) => {
-//   v.name && router.removeRoute(v.name);
-// });
-// array2components(setting.routes).map((v: any) => {
-//   router.addRoute(v);
-// });
-// console.log(router.getRoutes());
-import { useIconStore } from "~/stores/icon";
-const icon = useIconStore();
-icon.FetchList();
 
 function resetMenu(){
   setting.$resetFields('routes')
 }
-
-const ruleFormRef = ref<FormInstance>();
-const rules = reactive<FormRules<typeof form>>({});
-const show = ref(true);
-const addIcon = () => {
-  form.id = undefined;
-  form.uuid = undefined;
-  form.svg = "";
-  form.name = "";
-  form.createtime = undefined;
-  form.updatetime = undefined;
-  dialogFormVisible.value = true;
-};
-const storeIcon = (v: any) => {
-  Object.assign(form, v);
-  dialogFormVisible.value = true;
-};
-const submitForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  dialogFormVisible.value = false;
-  formEl.validate((valid) => {
-    if (valid) {
-      console.log("submit!");
-      console.log(JSON.stringify(form));
-      icon
-        .saveData([form])
-        .then((res: any) => {
-          console.log(res);
-          icon.FetchList();
-        })
-        .catch((e: any) => {
-          throw e;
-        });
-    } else {
-      console.log("error submit!");
-      return false;
-    }
-  });
-};
-const dialogFormVisible = ref(false);
-const form = reactive({
-  id: undefined,
-  uuid: undefined,
-  createtime: undefined,
-  updatetime: undefined,
-  name: "",
-  svg: "",
-});
-
 onMounted(() => {
 
 });
@@ -148,66 +30,6 @@ onBeforeUnmount(()=>{
 })
 </script>
 <style lang="scss">
-.cf:after {
-  visibility: hidden;
-  display: block;
-  font-size: 0;
-  content: " ";
-  clear: both;
-  height: 0;
-}
-
-* html .cf {
-  zoom: 1;
-}
-
-*:first-child + html .cf {
-  zoom: 1;
-}
-
-h1 {
-  font-size: 1.75em;
-  margin: 0 0 0.6em 0;
-}
-
-a {
-  color: #2996cc;
-}
-
-a:hover {
-  text-decoration: none;
-}
-
-p {
-  line-height: 1.5em;
-}
-
-.small {
-  color: #666;
-  font-size: 0.875em;
-}
-
-.large {
-  font-size: 1.25em;
-}
-
-/**
-  * Nestable Extras
-  */
-
-.nestable-lists {
-  display: block;
-  clear: both;
-  width: 100%;
-  border: 0;
-  border-top: 2px solid #ddd;
-  border-bottom: 2px solid #ddd;
-}
-.dark .nestable-lists {
-  border-color: #444;
-}
-
-
 
 .dark .dd {
   .dd-handle {
@@ -226,19 +48,6 @@ p {
   }
 }
 
-@media only screen and (min-width: 700px) {
-  .nestable-lists {
-    .dd {
-      transition: all 2s;
-      float: left;
-      width: 48%;
-    }
-
-    .dd + .dd {
-      margin-left: 2%;
-    }
-  }
-}
 
 .dd-hover > .dd-handle {
   background: #2ea8e5 !important;
@@ -316,22 +125,6 @@ p {
 .dd3-handle:hover {
   background: #ddd;
 }
-
-.icons {
-  border: 1px solid red;
-  display: grid;
-  // grid-template-rows: repeat(3, minmax(0, 1fr));
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  place-items: start;
-  place-content: center;
-  span {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-}
-
 
 
 

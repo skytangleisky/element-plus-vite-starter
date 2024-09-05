@@ -78,7 +78,7 @@ const click = ($router: any, absoluteRootPath: any, item: any) => {
   }
 };
 const format = (svg: string) => {
-  let res = icon.results.filter((it) => it.uuid == svg);
+  let res = icon.row.icon_tree.filter((it) => it.uuid == svg);
   if (res.length <= 0) {
     return "";
   } else if (res.length == 1) {
