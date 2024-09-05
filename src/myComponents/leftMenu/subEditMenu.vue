@@ -9,7 +9,7 @@
       <el-icon  v-if="item.children" :class="`${item.collapsed?'dd-collapsed':''}`" style="position: absolute;width: 30px;height: 30px;left: 0;display: flex;align-items: center;justify-content: center;" @click="item.collapsed=!item.collapsed">
         <div class="dd-collapse cross" style="position: absolute;width: 30px;height: 30px;left: 0;display: flex;align-items: center;justify-content: center;">
         <div style="width: 10px;height: 10px;border-radius: 50%;background: white;z-index: 1;border:1px solid black;"></div>
-          <svg width="200" height="200" viewBox="0 0 200 200" style="width:8px;height:8px;position:absolute;z-index:1">
+          <svg viewBox="0 0 200 200" style="width:8px;height:8px;position:absolute;z-index:1">
               <path id="morph" fill="black" />
           </svg>
         </div>
@@ -60,6 +60,7 @@ type Item = {
   path:string,
   meta?:{
     label:string
+    roles:Array<string>
   }
 }
 const { routes,path } = defineProps({
