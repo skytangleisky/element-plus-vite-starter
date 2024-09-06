@@ -122,7 +122,8 @@ const showMapSetting = ref(true);
 const resetLocation = () => {
   setting.$resetFields("openlayers.center");
   setting.$resetFields("openlayers.zoom");
-  eventbus.emit("将站点移动到屏幕中心", {
+  eventbus.emit("光恒-将站点移动到屏幕中心", {
+    type:'resetLocation',
     longitude: setting.openlayers.center[0],
     latitude: setting.openlayers.center[1],
     zoom: setting.openlayers.zoom,

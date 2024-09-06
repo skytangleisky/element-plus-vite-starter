@@ -322,7 +322,7 @@ const showMapSetting = ref(true);
 const resetLocation = () => {
   setting.$resetFields("风雷达组网地图相关.center");
   setting.$resetFields("风雷达组网地图相关.zoom");
-  eventbus.emit("将站点移动到屏幕中心", {
+  eventbus.emit("风雷达组网-将站点移动到屏幕中心", {
     longitude: setting.风雷达组网地图相关.center[0],
     latitude: setting.风雷达组网地图相关.center[1],
     zoom: setting.风雷达组网地图相关.zoom,

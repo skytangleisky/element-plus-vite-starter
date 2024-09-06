@@ -156,7 +156,7 @@ const click = (event: MouseEvent) => {
 };
 const flyTo = (event: any, v: any) => {
   station.active = v.radar_id;
-  eventbus.emit("将站点移动到屏幕中心", v);
+  eventbus.emit("光恒-将站点移动到屏幕中心", v);
 };
 const toggleCollapse = () => {
   $(".dragDialog").toggleClass("collapse");

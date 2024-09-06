@@ -15,7 +15,7 @@ export default {
     {
       name:'55d064ac-1d46-4dad-a7aa-d5c3506f565b',
       meta:{
-        label:'单站产品'
+        label:'历史数据'
       },
       children:[
         {

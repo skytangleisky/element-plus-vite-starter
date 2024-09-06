@@ -1574,7 +1574,7 @@ onMounted(() => {
   map.on("load", loadFunc);
   map.on("mousedown", mousedownFunc);
   map.on("click", "stationLayer", clickFunc);
-  eventbus.on("将站点移动到屏幕中心", flyTo);
+  eventbus.on("风雷达组网-将站点移动到屏幕中心", flyTo);
   const closer = popup_closer.value;
   closer.onclick = function () {
     selected = null;

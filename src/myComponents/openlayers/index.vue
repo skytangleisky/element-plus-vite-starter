@@ -509,6 +509,19 @@ const loadFunc = () => {
   //   station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
 };
 const flyTo = (item) => {
+  if(item.type=='resetLocation'){
+    return map.flyTo({
+      center: [item.longitude, item.latitude], // 新的中心点 [经度, 纬度]
+      zoom: item.zoom || 10, // 目标缩放级别
+      speed: 1, // 飞行速度，1 为默认速度
+      // curve: 1, // 飞行路径的曲率, 1 是直线
+      // easing: function (t) {
+      //   return t;
+      // }, // 自定义缓动函数
+      essential: true, // 这个飞行动作对于用户交互是必要的
+    });
+  }
+
   if(!item.is_online){
     ElMessage({
       message: h("p", null, [
@@ -598,7 +611,7 @@ onMounted(() => {
   map.on("move", moveFunc);
   map.on("load", loadFunc);
   map.on("click", "stationLayer", clickFunc);
-  eventbus.on("将站点移动到屏幕中心", flyTo);
+  eventbus.on("光恒-将站点移动到屏幕中心", flyTo);
   const closer = popup_closer.value;
   closer.onclick = function () {
     selected = null;
@@ -608,7 +621,7 @@ onMounted(() => {
   };
 });
 onBeforeUnmount(() => {
-  eventbus.off("将站点移动到屏幕中心", flyTo);
+  eventbus.off("光恒-将站点移动到屏幕中心", flyTo);
   clearInterval(timer);
   clearInterval(mock);
   map.off("zoom", zoomFunc);
