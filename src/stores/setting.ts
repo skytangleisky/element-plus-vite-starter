@@ -646,7 +646,8 @@ export const useSettingStore = defineStore({
           label:'404'
         }
       },
-    ]
+    ],
+    targetRoles:[]
   }),
   actions: {
     setloadMap(bool:boolean){

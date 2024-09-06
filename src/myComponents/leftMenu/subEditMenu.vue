@@ -1,12 +1,11 @@
 <template>
   <li
-    v-for="item in routes"
+    v-for="item in routes" :key="item.name"
     :class="`dd-item ${item.children?'children':''}`"
-    :key="item.name"
     :data-id="item.name"
   >
     <div style="display: flex;align-items: center;">
-      <el-icon  v-if="item.children" :class="`${item.collapsed?'dd-collapsed':''}`" style="position: absolute;width: 30px;height: 30px;left: 0;display: flex;align-items: center;justify-content: center;" @click="item.collapsed=!item.collapsed">
+      <el-icon  v-if="item.children" :class="`${item.expand?'':'dd-collapsed'}`" style="position: absolute;width: 30px;height: 30px;left: 0;display: flex;align-items: center;justify-content: center;" @click="item.expand=!item.expand">
         <div class="dd-collapse cross" style="position: absolute;width: 30px;height: 30px;left: 0;display: flex;align-items: center;justify-content: center;">
         <div style="width: 10px;height: 10px;border-radius: 50%;background: white;z-index: 1;border:1px solid black;"></div>
           <svg viewBox="0 0 200 200" style="width:8px;height:8px;position:absolute;z-index:1">
@@ -14,7 +13,7 @@
           </svg>
         </div>
       </el-icon>
-      <div class="dd-handle w-full h-full relative" style="border-radius: 10px;display: flex;align-items: center;">
+      <div class="dd-handle w-full h-full relative" :style="`border-radius: 10px;display: flex;align-items: center;opacity: ${!item.meta.roles||intersection(setting.targetRoles,item.meta.roles)?'1':'0.5'};`">
         <!-- <el-checkbox style="height: fit-content;" v-model="item.hide"></el-checkbox> -->
         <el-icon @click="item.hide=!item.hide" style="cursor:pointer;font-size: large;">
           <Hide v-if="item.hide"/>
@@ -24,6 +23,7 @@
           <Icons v-model:svg="item.svg"></Icons>
           {{ item.meta?.label }}
         </div>
+        {{ item.meta.roles }}
         <div style="position: absolute;right:0">
           <el-icon v-dompurify-html="format('d6a8e59f-f348-40ab-a9e5-3d80da39b23d')" style="font-size: large" @click="browse(item)"></el-icon>
           <el-icon v-dompurify-html="format('8ce6fb28-177a-4874-a77e-2917edd852b1')" style="font-size: large" @click="remove(item)"</el-icon>
@@ -31,13 +31,15 @@
         </div>
       </div>
     </div>
-    <VueDraggable :class="`drag-area ${item.collapsed?'dd-collapsed':''}`" :style="`interpolate-size: allow-keywords;transition:height 0.5s;transition-timing-function:ease-in-out;overflow: hidden;padding:0;height: ${item.collapsed?'0px':'auto'}`" tag="ul" v-model="item.children" group="g1">
+    <VueDraggable :class="`drag-area ${item.expand?'':'dd-collapsed'}`" :style="`interpolate-size: allow-keywords;transition:height 0.5s;transition-timing-function:ease-in-out;overflow: hidden;padding:0;height: ${item.expand?'auto':'0px'}`" tag="ul" v-model="item.children" group="g1">
       <subEditMenu :routes="item.children" :path="path+item.path+'/'"></subEditMenu>
     </VueDraggable>
   </li>
 </template>
 <script lang="ts" setup>
 import Icons from "./Icons.vue"
+import { useSettingStore } from "~/stores/setting";
+const setting = useSettingStore()
 function browse(item:Item){
   window.open(path+item.path,'_blank')
 }
@@ -47,18 +49,19 @@ function remove(item:Item){
     routes.splice(routes.indexOf(item),1)
   }
 }
-
-import { VueDraggable } from 'vue-draggable-plus'
+import { checkPermission,intersection } from "~/tools";
+// import { VueDraggable } from 'vue-draggable-plus'
+import { VueDraggable } from '../../../packages/vue-draggable-plus/component'
 import { Hide, View } from "@element-plus/icons-vue";
 type Item = {
   name:string,
   children:Array<Item>,
-  collapsed:boolean,
+  expand:boolean,
   hide:boolean,
   component:string,
   svg:string,
   path:string,
-  meta?:{
+  meta:{
     label:string
     roles:Array<string>
   }

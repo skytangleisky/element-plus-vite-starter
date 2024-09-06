@@ -9,7 +9,9 @@ import droneUrl from "~/assets/aircraft.svg?url";
 import { useUserStore } from '~/stores/user';
 export function checkPermission(roles:string[]) {
   const user = useUserStore()
-  return intersection(user.roles,roles)
+  if(user.roles.includes('admin')){
+    return true;
+  }else return intersection(user.roles,roles)
 }
 export const area = (vertices: Array<[number, number]>) => {
   let area = 0;

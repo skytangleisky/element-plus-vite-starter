@@ -1,24 +1,62 @@
 <template>
   <div
-    class="flex-col dark:bg-#2b2b2b bg-white"
+    class="flex flex-col dark:bg-#2b2b2b bg-white"
     style="color: black; overflow: auto; width: 100%;height: 100%;position: relative;"
   >
-    <el-button type="primary" @click="resetMenu()">reset menu</el-button>
+  <div>
+    <el-button type="primary" @click="resetMenu()">reset menu</el-button><el-button type="primary" @click="expandAll()">expandAll</el-button><el-button type="primary" @click="collapseAll()">collapseAll</el-button>
+  </div>
+  <div>
+    <el-checkbox v-for="(v,k) in roles" v-model="v.val" :key="k" :label="v.key" size="large" />
+  </div>
     <VueDraggable class="drag-area dd" tag="ol" v-model="setting.routes" group="g1">
-      <subEditMenu :routes="setting.routes"></subEditMenu>
+      <subEditMenu :routes="setting.routes as any"></subEditMenu>
     </VueDraggable>
   </div>
 </template>
 <script lang="ts" setup>
+import {reactive,computed} from 'vue'
+const roles = reactive([{key:'admin',val:true},{key:'device',val:false},{key:'zh',val:true},{key:'ry',val:true},{key:'jx',val:true},{key:'cq',val:true}])
 import { VueDraggable } from 'vue-draggable-plus'
 import subEditMenu from "./subEditMenu.vue";
 import { onMounted, onBeforeUnmount } from "vue";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
+setting.targetRoles = computed(()=>{
+  let arr:any = []
+  roles.map(item=>{
+    if(item.val){
+      arr.push(item.key)
+    }
+  })
+  return arr
+})
 import {getMenu} from '~/api/角色/role'
 getMenu().then(res=>{
   // Object.assign(setting.routes,JSON.parse(res.data.results[0].menu_tree))
 })
+function collapseAll(){
+  let recurse = (list:Array<any>)=>{
+    list.map((item:any)=>{
+      if(Array.isArray(item.children)){
+        recurse(item.children)
+      }
+      item.expand = false
+    })
+  }
+  recurse(setting.routes)
+}
+function expandAll(){
+  let recurse = (list:Array<any>)=>{
+    list.map((item:any)=>{
+      if(Array.isArray(item.children)){
+        recurse(item.children)
+      }
+      item.expand = true
+    })
+  }
+  recurse(setting.routes)
+}
 
 function resetMenu(){
   setting.$resetFields('routes')

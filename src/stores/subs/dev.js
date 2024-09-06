@@ -36,7 +36,7 @@ export default {
       svg:'620d1f40-e30b-405a-a1d2-f19308ec61b5',
       replace:true,
       meta:{
-        label:'菜单',
+        label:'菜单'
       }
     },
     {
