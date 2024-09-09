@@ -5,10 +5,10 @@
     :data-id="item.name"
   >
     <div style="display: flex;align-items: center;">
-      <el-icon  v-if="item.children" :class="`${item.expand?'':'dd-collapsed'}`" style="position: absolute;width: 30px;height: 30px;left: 0;display: flex;align-items: center;justify-content: center;" @click="item.expand=!item.expand">
+      <el-icon  v-if="item.children" :class="`${item.expand?'':'dd-collapsed'}`" style="position: absolute;width: 30px;height: 30px;left: 0;display: flex;align-items: center;justify-content: center;">
         <div class="dd-collapse cross" style="position: absolute;width: 30px;height: 30px;left: 0;display: flex;align-items: center;justify-content: center;">
-        <div style="width: 10px;height: 10px;border-radius: 50%;background: white;z-index: 1;border:1px solid black;"></div>
-          <svg viewBox="0 0 200 200" style="width:8px;height:8px;position:absolute;z-index:1">
+        <div style="width: 10px;height: 10px;border-radius: 50%;background: white;z-index: 1;border:1px solid black;" @click="item.expand=!item.expand"></div>
+          <svg viewBox="0 0 200 200" style="width:8px;height:8px;position:absolute;z-index:1;pointer-events: none;">
               <path id="morph" fill="black" />
           </svg>
         </div>
@@ -31,7 +31,7 @@
         </div>
       </div>
     </div>
-    <VueDraggable :class="`drag-area ${item.expand?'':'dd-collapsed'}`" :style="`interpolate-size: allow-keywords;transition:height 0.5s;transition-timing-function:ease-in-out;overflow: hidden;padding:0;height: ${item.expand?'auto':'0px'}`" tag="ul" v-model="item.children" group="g1">
+    <VueDraggable :class="`drag-area ${item.expand?'':'dd-collapsed'}`" :style="`interpolate-size: allow-keywords;transition:height 0.3s;transition-timing-function:ease-in-out;overflow: hidden;padding:0;height: ${item.expand?'auto':'0px'}`" tag="ul" v-model="item.children" group="g1">
       <subEditMenu :routes="item.children" :path="path+item.path+'/'"></subEditMenu>
     </VueDraggable>
   </li>

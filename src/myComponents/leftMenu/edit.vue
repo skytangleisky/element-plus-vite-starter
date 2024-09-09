@@ -3,22 +3,30 @@
     class="flex flex-col dark:bg-#2b2b2b bg-white"
     style="color: black; overflow: auto; width: 100%;height: 100%;position: relative;"
   >
-  <div>
-    <el-button type="primary" @click="resetMenu()">reset menu</el-button><el-button type="primary" @click="expandAll()">expandAll</el-button><el-button type="primary" @click="collapseAll()">collapseAll</el-button>
-  </div>
-  <div>
-    <el-checkbox v-for="(v,k) in roles" v-model="v.val" :key="k" :label="v.key" size="large" />
-  </div>
-    <VueDraggable class="drag-area dd" tag="ol" v-model="setting.routes" group="g1">
-      <subEditMenu :routes="setting.routes as any"></subEditMenu>
-    </VueDraggable>
+    <div>
+      <el-button type="primary" @click="resetMenu()">reset menu</el-button><el-button type="primary" @click="expandAll()">expandAll</el-button><el-button type="primary" @click="collapseAll()">collapseAll</el-button>
+    </div>
+    <div>
+      <el-checkbox v-for="(v,k) in roles" v-model="v.val" :key="k" :label="v.key" size="large" />
+    </div>
+    <div class="flex flex-row items-start">
+      <VueDraggable class="drag-area dd w-50%" tag="ol" v-model="setting.routes" group="g1">
+        <subEditMenu :routes="(setting.routes as any)"></subEditMenu>
+      </VueDraggable>
+      <VueDraggable class="drag-area dd w-50%" tag="ol" v-model="setting.routes" group="gp">
+        <SubPermission v-for="permission in setting.permissions" :permission="(permission as any)" :key="permission.name"></SubPermission>
+      </VueDraggable>
+    </div>
+    <!-- <Tree></Tree> -->
   </div>
 </template>
 <script lang="ts" setup>
 import {reactive,computed} from 'vue'
 const roles = reactive([{key:'admin',val:true},{key:'device',val:false},{key:'zh',val:true},{key:'ry',val:true},{key:'jx',val:true},{key:'cq',val:true}])
 import { VueDraggable } from 'vue-draggable-plus'
+import SubPermission from "./subPermission.vue";
 import subEditMenu from "./subEditMenu.vue";
+import Tree from "./Tree.vue";
 import { onMounted, onBeforeUnmount } from "vue";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
@@ -30,7 +38,7 @@ setting.targetRoles = computed(()=>{
     }
   })
   return arr
-})
+}) as any
 import {getMenu} from '~/api/角色/role'
 getMenu().then(res=>{
   // Object.assign(setting.routes,JSON.parse(res.data.results[0].menu_tree))

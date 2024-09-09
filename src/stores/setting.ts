@@ -6,6 +6,7 @@ import jx from "./subs/jx.js";
 import dev from "./subs/dev.js";
 import zh from "./subs/zh.js";
 import cq from "./subs/cq.js";
+import cq_permission from "./permission/cq.js"
 export const useSettingStore = defineStore({
   id: 'setting',
   state:()=>({
@@ -647,7 +648,10 @@ export const useSettingStore = defineStore({
         }
       },
     ],
-    targetRoles:[]
+    targetRoles:[],
+    permissions:[
+      cq_permission
+    ],
   }),
   actions: {
     setloadMap(bool:boolean){
