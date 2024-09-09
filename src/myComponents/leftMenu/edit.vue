@@ -14,7 +14,7 @@
         <subEditMenu :routes="(setting.routes as any)"></subEditMenu>
       </VueDraggable>
       <VueDraggable class="drag-area dd w-50%" tag="ol" v-model="setting.routes" group="gp">
-        <SubPermission v-for="permission in setting.permissions" :permission="(permission as any)" :key="permission.name"></SubPermission>
+        <SubPermission v-for="permission in permissions" v-model:permission="(permission as any)"></SubPermission>
       </VueDraggable>
     </div>
     <!-- <Tree></Tree> -->
@@ -29,6 +29,29 @@ import subEditMenu from "./subEditMenu.vue";
 import Tree from "./Tree.vue";
 import { onMounted, onBeforeUnmount } from "vue";
 import { useSettingStore } from "~/stores/setting";
+
+//下面这个目的是补齐权限配置中父节点中indeterminate状态
+const permissions = computed({
+  set:(permissions)=>{
+    Object.assign(setting.permissions,permissions)
+  },
+  get:()=>{
+    const recurse = (list:Array<any>) => {
+      list.map(item=>{
+        if(Array.isArray(item.children)){
+          if(item.children.every((item:any)=>item.checked)||item.children.every((item:any)=>!item.checked)){
+            item.indeterminate = false
+          }else{
+            item.indeterminate = true
+          }
+          recurse(item.children)
+        }
+      })
+    }
+    recurse(setting.permissions)
+    return setting.permissions
+  }
+})
 const setting = useSettingStore();
 setting.targetRoles = computed(()=>{
   let arr:any = []

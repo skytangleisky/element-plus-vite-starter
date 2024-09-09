@@ -144,7 +144,7 @@
         </div> -->
       </collapse-card>
     </div>
-    <div class="item">
+    <div class="item" v-if="hasPermission(['da4ce7c7-3aa9-4b9b-8d8b-ce44241794d5'])">
       <collapse-card title="PPI" v-model:show="showPPI" :show-collapse="false">
         <div class="subitem">
           <span class="whitespace-nowrap">风场透明度</span>
@@ -238,7 +238,7 @@
             size="small"
           />
         </div>
-        <div class="subitem" v-if="checkPermission(['admin'])">
+        <div class="subitem">
           <span>等距环</span>
           <el-switch
             v-model="setting.风雷达组网地图相关.等距环"
@@ -262,7 +262,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { checkPermission } from "~/tools";
+import { hasPermission } from "~/tools";
 import { watch, ref, onMounted, onBeforeUnmount, h, reactive } from "vue";
 import { Check, Close, HomeFilled } from "@element-plus/icons-vue";
 // import { 雷达统计接口 } from "~/api/光恒/station";

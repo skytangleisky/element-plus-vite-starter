@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%; height: 100%; overflow: hidden; position: absolute">
+  <div class="main-container" style="width: 100%; height: 100%; overflow: hidden; position: absolute">
     <div
       v-resize="resize"
       ref="mapRef"
@@ -53,7 +53,7 @@
     </div>
     <Dialog class="absolute" style="left: 240px; top: 10px"></Dialog>
     <radar-statistic></radar-statistic>
-    <Legend style="bottom: 10px;z-index: 1;"></Legend>
+    <Legend class="legend" style="z-index: 1;"></Legend>
     <div
       :class="`right-drawer ${
         setting.disappear ? 'disappear' : ''
@@ -95,7 +95,7 @@
       </el-icon>
     </div>
     <time-line
-      v-if="checkPermission(['admin'])"
+      v-if="hasPermission(['e44f37e1-f642-4dbf-83ca-052313b217f5'])"
       :data="data"
       :toLeft="change"
       :toRight="change"
@@ -103,7 +103,7 @@
       v-model:now="setting.now"
       v-model:status="setting.status"
       v-model:level="setting.level"
-      class="absolute bottom-0"
+      class="timeline absolute bottom-0"
     ></time-line>
     <!-- <graph
       v-if="checkPermission(['admin'])"
@@ -144,7 +144,7 @@ import ppiDataUrl from "./level1/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToA
 import ppiInversionData from "./level2/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pth30.00_Spd6.00_Res030_StartIdx002_VADStart002_VADStop190_VADWind_Sec_20240715 203223.csv?raw";
 import { exec } from "~/api/index.js";
 import { getFkxRealData,getPPIGrid,getSensorData } from "../../api/重庆.ts";
-import {checkPermission,sixty2Float,addFeatherImages,addArrowImages,getFeather,View,calculateBlockPoints,calculateCirclePoints} from "~/tools";
+import {hasPermission,sixty2Float,addFeatherImages,addArrowImages,getFeather,View,calculateBlockPoints,calculateCirclePoints} from "~/tools";
 const decoder = new TextDecoder()
 const encoder = new TextEncoder()
 const stationMenuRef = ref<HTMLDivElement>();
@@ -2214,5 +2214,11 @@ watch(
 }
 .mapboxgl-canvas:focus-visible {
   outline: none;
+}
+.legend{
+  bottom:10px;
+}
+.main-container:has(.timeline) .legend{
+  bottom:40px;
 }
 </style>

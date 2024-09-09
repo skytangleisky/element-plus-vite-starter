@@ -69,8 +69,8 @@
                 <td>{{ k + 1 }}</td>
                 <td>{{ v.no }}</td>
                 <td>{{ v.device_name }}</td>
-                <td :class="v.status==0?'未知':v.status == 1 ? 'color-#0f0' : v.status == 2? 'color-#f80':v.status == 3?'color-#f00' :'color-inherit'">
-                  {{ v.status==0?'未知':v.status==1?'正常':v.status==2?'延迟':v.status==3?'缺失':v.status }}
+                <td :class="v.status==0 ? '未知' : v.status == 1 ? 'color-#0f0' : v.status == 2 ? 'color-#f80' : v.status == 3 ? 'color-#f00' : 'color-inherit'">
+                  {{ v.status==0 ? '未知' : v.status==1 ? '正常' : v.status==2 ? '延迟' : v.status==3 ? '缺失' : v.status }}
                 </td>
               </tr>
             </template>
@@ -161,7 +161,7 @@ const toggleCollapse = () => {
 };
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 .dropdown {
   transform: rotate(180deg);
   user-select: none;

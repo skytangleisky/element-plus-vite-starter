@@ -7,6 +7,22 @@ import planeUrl from "~/assets/plane.svg?url";
 import projectileUrl from "~/assets/projectile.svg?url";
 import droneUrl from "~/assets/aircraft.svg?url";
 import { useUserStore } from '~/stores/user';
+import { useSettingStore } from '~/stores/setting';
+export function hasPermission(permissions:Array<String>){
+  const setting = useSettingStore()
+  let recurse = (list:any)=>{
+    for(let item of list){
+      if(Array.isArray(item.children)){
+        return recurse(item.children)
+      }else{
+        if(permissions.indexOf(item.name)>=0&&item.checked){
+          return true
+        }
+      }
+    }
+  }
+  return recurse(setting.permissions)
+}
 export function checkPermission(roles:string[]) {
   const user = useUserStore()
   if(user.roles.includes('admin')){
