@@ -359,9 +359,8 @@ export function loadImage(url:string,width:number,height:number,options:any){
     let image = new Image();
     image.onload = function(){
       if(options){
-        ctx.save()
-        cvs.width = width * devicePixelRatio
-        cvs.height = height * devicePixelRatio
+        cvs.width = image.width
+        cvs.height = image.height
         ctx.clearRect(0,0,cvs.width,cvs.height)
         ctx.drawImage(image,0,0,image.width,image.height,0,0,cvs.width,cvs.height)
         let result:{[key:string]:any} = {}
@@ -381,7 +380,6 @@ export function loadImage(url:string,width:number,height:number,options:any){
           let imageData = ctx.getImageData(x,y,w,h)
           result[k] = imageData
         }
-        ctx.restore()
         resolve(result)
       }else{
         resolve(image);
@@ -395,8 +393,8 @@ export function loadImage(url:string,width:number,height:number,options:any){
     }
     image.crossOrigin = 'anonymous';
     if(url.endsWith('.svg')){
-      width&&(image.width=width)
-      height&&(image.height=height)
+      width&&(image.width=Math.round(width*devicePixelRatio))
+      height&&(image.height=Math.round(height*devicePixelRatio))
     }
     image.src=url;
   });
