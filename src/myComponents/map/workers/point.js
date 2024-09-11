@@ -2,11 +2,7 @@ import { wgs84togcj02 } from './mapUtil.js'
 class View{
   constructor(arrayBuffer){
     this.dataView = new DataView(arrayBuffer)
-    const buffer = new ArrayBuffer(2);
-    const dataView = new DataView(buffer);
-    dataView.setInt16(0, 256, true);
-    const array = new Int16Array(buffer)
-    this.littleEndian =  array[0] === 256;
+    this.littleEndian =  true;
     this.pos=0;
   }
   getInt8(){
@@ -113,7 +109,6 @@ function draw(args){
   args.ctx = ctx;
   args._i=args.i%2**args._LL>=0?args.i%2**args._LL:args.i%2**args._LL+2**args._LL;
   args._j=args.j%2**args._LL>=0?args.j%2**args._LL:args.j%2**args._LL+2**args._LL;
-
 
   if(loadStatus=='loaded'){
     test(args);//使用已经缓存的数据

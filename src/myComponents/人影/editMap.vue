@@ -55,18 +55,24 @@
   </div>
 </template>
 <script lang="ts" setup>
+import planeUrl from "~/assets/plane.svg?url";
+import projectileUrl from "~/assets/projectile.svg?url";
+import 导航台图标 from '~/assets/navigationStation.svg?url'
+import 火箭弹图标 from '~/assets/火箭弹.svg?url'
+import 高炮图标 from '~/assets/高炮.svg?url'
+import axios from 'axios'
 import { eventbus } from "~/eventbus";
 import { reactive, onMounted, onBeforeUnmount, ref, watch } from "vue";
 import PlanPanel, { planDataType,zyddataType } from "./planPanel.vue";
 import Dialog from "./dialog.vue";
 import graph from "~/tools/graph.vue";
-import { addFeatherImages, getFeather } from "~/tools";
+import { addFeatherImages, getFeather,View,getLngLat } from "~/tools";
 import CustomLayer from "./webglLayer/CustomLayer.js";
 import airstrip from "./airstrip.js";
 import { exec } from "~/api/index.js";
 import interpolate from "./idw.js";
 import { isoLines, isoBands } from "marchingsquares";
-import { area, pointInPolygon } from "~/tools/index.ts";
+import { area, pointInPolygon,loadImage2Map } from "~/tools/index.ts";
 import moment from "moment";
 import { rgb2Hsl } from "~/myComponents/map/js/core";
 import palette from "../mapbox/data/温度/tempreture.xml?raw";
@@ -463,7 +469,701 @@ onMounted(() => {
     center: props.center as mapboxgl.LngLatLike,
     pitch: props.pitch,
   });
+  const d = new TextDecoder('gbk')
+  const GISTYPE={
+    GIS_POINT: 1,
+    GIS_LINE: 2,
+    GIS_REGION: 3,
+    GIS_POINT2: 11,
+    GIS_LINE2 : 12,
+    GIS_REGION2: 13,
+    GIS_AIRLINE: 20,//航线
+    GIS_AIRMAPPOINT: 21,//新的点数据文件
+    GIS_AIRMAPLINE: 22,//新的点数据文件
+    GIS_AIRMAPREGION: 23,//新的点数据文件
+    GIS_AIRLINE2: 30,//新定义的航线，增加航段长，航向信息
+    GIS_DATA_POINT: 31,//新的面图元数据
+    GIS_DATA_LINE: 32,//新的面图元数据
+    GIS_DATA_REGION: 33,//新的面图元数据
+  }
   map.on("load", async () => {
+    await loadImage2Map(map,planeUrl,32,32,{
+      airplane:{
+        x1: 0,
+        y1: 0,
+        x2: 1,
+        y2: 1,
+        style: 'fill:yellow;stroke:black;stroke-width:30px;',
+      }
+    })
+    await loadImage2Map(map,projectileUrl,12,24,{
+      'projectile-white':{
+        style:"fill:white;stroke:black;stroke-width:1px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
+      },
+      'projectile-red':{
+        x1: 0,
+        y1: 0,
+        x2: 1,
+        y2: 1,
+        fill: 'red',
+      }
+    })
+    await loadImage2Map(map,导航台图标,18,18,{
+      导航台图标:{
+        style:'fill:white;stroke:black;stroke-width:1px',
+      }
+    })
+    await loadImage2Map(map,火箭弹图标,32,32,{
+      火箭弹图标:{
+        style:"fill:white;stroke:black;stroke-width:30px;",
+      }
+    })
+    await loadImage2Map(map,高炮图标,32,32,{
+      高炮图标:{style:"fill:white;stroke:black;stroke-width:20px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;"}
+    })
+    axios({
+      method:'get',
+      url:'/resources/导航台.map',
+      responseType: 'arraybuffer',
+    }).then(async(res)=>{
+      let view = new View(res.data,true);
+      let result = {
+        filehead:{
+          iLayerNum: view.getInt32(), //文件中包含的图层数。（建议一个图层一个文件，iLayerNum=1）/*int*/
+          szReserved: view.getBytes(512), //保留字段。/*char[]*/
+        },
+        tagLayerPara:{
+          iLayerID: view.getInt32(), //图层ID。/*int*/
+          szLayerName: view.getBytes(128), //图层名称。/*char[]*/
+          sLayerType: view.getInt16(),  //图层类型。（1-点、2-线、3-面、其他）/*short*/
+          iLayerNotesLen: view.getInt32(),		//图层附加属性长度。/*int*/
+          iUnitCount: view.getInt32(),  //图元个数。/*int*/
+          iUnitNotesLen: view.getInt32(),	//图元附加属性长度。/*int*/
+          iMapLevel: view.getInt32(),  //本图层所属层数。/*int*/
+          dMaximumScale: view.getFloat64(),  // /*double*/
+          dMinimumScale: view.getFloat64(),  //当Map Scale介于dMinimumScale和dMaximumScale之间时，才显示本图层。/*double*/
+          bScaleSymbols: view.getUint8(),  //图层中的Symbol是否随图层放大而放大、随图层缩小而缩小。/*bool*/
+          bVisible: view.getInt16(),  //图层是否显示。（1-全显示、2-部分显示、3-不显示）/*bool*/
+          bShowLable: view.getInt16(),  //图元标注显示与否。（1-全显示、2-部分显示、3-不显示）/*bool*/
+          layerTips:{ //图层标注（预留）。
+            x:view.getFloat64(),/*double*/
+            y:view.getFloat64(), //(x,y)指定标注位置。/*double*/
+            szTips:view.getBytes(128), //标注文本 /*char[]*/
+            bShowTips: view.getUint8() //是否显示图层标注 /*bool*/
+          },
+          spatialReference:{ //投影方式（预留）。
+            iProjectMethod: view.getInt32(), //投影方式（1－正圆锥投影、）/*int*/
+            dOrgLong: view.getFloat64(),		//投影坐标系坐标原点经度。/度 /*double*/
+            dOrgLat: view.getFloat64(),			//投影坐标系坐标原点纬度。/度 /*double*/
+            iOrgHeight: view.getInt32(),		//投影坐标系坐标原点高度。/米 /*int*/
+            szReserved:view.getBytes(512),	//预留。 /*char[]*/
+          },
+          layerSource:{ //图层数据源，（预留）。
+            sDataType:view.getInt16(),  //数据源类型（0―无源(可能是动态创建的)，1―文件，2―数据库）/*short*/
+            DataSource:view.getBytes(128), //数据源。（*.gis）/*char[]*/
+            szReserved:view.getBytes(128), //保留 /*char[]*/
+            iReserved:view.getInt32()  //保留 /*int*/
+          },
+          layerEffects:{ //图层显示效果，（预留）。
+            Brightness: view.getUint8(),  //明亮度（0～100）/*unsigned char*/
+            Constrast: view.getUint8(),  //对比度（0～100）/*unsigned char*/
+            Tranceparency: view.getUint8(),  //透明度（0～100）/*unsigned char*/
+            bSupportsBrightnessChange: view.getUint8(),  //是否支持明亮度变化 /*bool*/
+            bSupportsConstrastChange: view.getUint8(),  //是否支持对比度变化 /*bool*/
+            bSupportsTranceparency: view.getUint8(),  //是否支持透明度 /*bool*/
+            bSupportsInteractive: view.getUint8(),    //Indicates if the layer supports interactive effects changes /*bool*/
+          }
+        },
+      }
+      switch (result.tagLayerPara.sLayerType){
+        // case GISTYPE.GIS_POINT:
+        // case GISTYPE.GIS_POINT2:
+        //   layerPara.m_cLayerType = GIS_POINT;
+        //   bReadUnitOK = ReadPointLayer(rfile, pLayer, layerPara);
+        //   break;
+        // case GISTYPE.GIS_LINE:
+        case GISTYPE.GIS_LINE2://如岛屿
+          // layerPara.m_cLayerType = GIS_LINE;
+          // bReadUnitOK = ReadLineLayer(rfile, pLayer, layerPara);
+          console.log(view.getInt32())
+          break;
+        // case GISTYPE.GIS_REGION:
+        // case GISTYPE.GIS_REGION2:
+        //   layerPara.m_cLayerType = GIS_REGION;
+        //   bReadUnitOK = ReadRegionLayer(rfile, pLayer, layerPara);
+        //   break;
+        case GISTYPE.GIS_AIRLINE:
+          // layerPara.m_cLayerType = GIS_AIRLINE;
+          // bReadUnitOK = ReadAirmapLayer(rfile, pLayer, layerPara);
+          console.log(view.getBytes(view.getInt32()))
+          break;
+        case GISTYPE.GIS_AIRMAPPOINT:
+          // layerPara.m_cLayerType = GIS_AIRMAPPOINT;
+          // bReadUnitOK = ReadAirmapLayer(rfile, pLayer, layerPara);
+          let iDataLen = view.getInt32()
+          if(iDataLen<=0){
+            return;
+          }
+          let utf8Decoder = new TextDecoder('utf8')
+          let tagPara = {
+            m_clearType:view.getInt16(),
+            m_strLayerName:utf8Decoder.decode(view.getBytes(view.getUint16())),
+            iUnitNum:view.getInt32(),
+          }
+          let vecUnit = []
+          for(let i=0;i<tagPara.iUnitNum;i++){//tagPara.iUnitNum
+            let pUnit = {
+              iID: view.getInt32(),//图元ID
+              strCode: utf8Decoder.decode(view.getBytes(view.getUint16())),//图元名称
+              tagRGB:{///图元颜色
+                sBlue: view.getUint8(),
+                sGreen: view.getUint8(),
+                sRed: view.getUint8(),
+              },
+              tagText:{///标注信息
+                strText:utf8Decoder.decode(view.getBytes(view.getUint16())),//标注内容
+                tagPos:{//标注位置
+                  dLong:view.getFloat64(),//Longitude 经度
+                  dLat:view.getFloat64(),//Latitude	纬度
+                  dHeight:view.getFloat64(),//Height 海拔高度 米
+                },
+              },
+              ubyType:view.getUint8(),///类型，0未知，1点，2线，3面
+              ubyShow:view.getUint8(),///是否显示
+              ubyLevel:view.getUint8(),///图元等级
+              tagPos:{//点的空间属性
+                dLong:view.getFloat64(),//Longitude 经度
+                dLat:view.getFloat64(),//Latitude	纬度
+                dHeight:view.getFloat64(),//Height 海拔高度 米
+              },
+              ubyPointStyle:view.getUint8(),///点的形状
+              ubyDataType:view.getUint8(),///地标类型，
+              ubyAirLinePt:view.getUint8(),///航线航路过点
+            }
+            vecUnit.push(pUnit)
+          }
+          let features = []
+          for(let i=0;i<vecUnit.length;i++){
+            features.push({
+              'type': 'Feature',
+              'geometry': {
+                'type': 'Point',
+                'coordinates': wgs84togcj02(vecUnit[i].tagPos.dLong,vecUnit[i].tagPos.dLat)
+              },
+              'properties': {
+                'name': vecUnit[i].tagText.strText,
+              }
+            })
+          }
+          map.addLayer({
+            id: "导航台图层",
+            type: "symbol",
+            source:  {
+            'type': 'geojson',
+            'data': {
+                'type': 'FeatureCollection',
+                'features':features
+              }
+            },
+            layout: {
+              visibility: props.zyd ? "visible" : "none",
+              // This icon is a part of the Mapbox Streets style.
+              // To view all images available in a Mapbox style, open
+              // the style in Mapbox Studio and click the "Images" tab.
+              // To add a new image to the style at runtime see
+              // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+              "icon-image":'导航台图标',
+              // "icon-allow-overlap": true,
+              // "icon-ignore-placement": true,
+              "icon-pitch-alignment": "map",
+              "icon-rotation-alignment":"map",
+              "text-field": ["get", "name"],
+              "text-font": ["simkai"],
+              "text-size": 12,
+              "text-transform": "uppercase",
+              // "text-letter-spacing": 0.05,】,
+              "text-line-height": 1,
+              'text-anchor': 'bottom', // 水平垂直居中
+              'text-offset': [0, -1], // 调整文本偏移量
+              'text-justify': 'center', // 水平居中对齐
+              "text-ignore-placement": false,
+              "text-allow-overlap": false,
+              "text-pitch-alignment": "map",
+              "text-rotation-alignment": "map",
+              // "text-max-width": 400,
+            },
+            paint: {
+              "icon-opacity": 1,
+              "text-color": "white",
+              "text-halo-color": "black",
+              "text-halo-width": 1,
+            }
+          });
+
+
+          break;
+        case GISTYPE.GIS_DATA_POINT:
+        case GISTYPE.GIS_DATA_LINE://如飞行管制分区
+        case GISTYPE.GIS_DATA_REGION://如禁区
+        //   layerPara.m_cLayerType = tagLayerPara.sLayerType;
+        //   bReadUnitOK = ReadAirmapLayer(rfile, pLayer, layerPara);
+          break;
+        default:
+          throw new Error('Unknow GISTYPE: '+result.tagLayerPara.sLayerType)
+      }
+    })
+    /*
+    axios({
+      method: 'get',
+      url: 'https://data.tanglei.top/人影飞行区域.map',
+      responseType: 'arraybuffer',
+    }).then(res=>{
+      let view = new View(res.data,true);
+      type S_SimpleRegionSymbol = {
+        Line:S_SimpleLineSymbol,//面边线
+        FillColor:S_Color,//面填充颜色
+        iStyle:number,//1字节，0不填充，1填充
+      }
+      type S_RegionUnit = {
+        iID:number,//4字节
+        UnitName:string,//10字节,图元名称
+        LinePos:S_LinePos,
+        RegionSymbol:S_SimpleRegionSymbol,
+        TextSymbol:S_TextSymbol,
+        sShow:number,//1字节，0都不显示，1仅显示图元，2仅显示标注，3都显示
+      }
+      type S_LinePoint = {
+        PointPos:S_PointPos,
+        sPointType:number,//1字节,(1-普通线，2-圆弧（后续四点在pLinePoint中依次存放:圆弧外包矩形的左上角点，右下角点；圆弧的起始点，终止点）)
+        TextSymbol:S_TextSymbol,
+      }
+      type S_PointPos={
+        dLong:number,//8字节
+        dLat:number,//8字节
+        x:number,//4字节
+        y:number,//4字节
+      }
+      type S_Color={
+        sRed:number,//1字节
+        sGreen:number,//1字节
+        sBlue:number,//1字节
+        sTransperancy:number,//1字节,透明度
+      }
+      type S_Font = {
+        szFontName:string//32字节，字体名称
+        sFontSize:number//2字节,字体大小
+        sFontBold:number//2字节,字体磅值
+        sStyle:number//1字节,[1-1-000000]表示[斜体-下划线-000000]
+      }
+      type S_SimplePointSymbol={
+        sSymbolType:number,//1字节，点符号类型（如Truetype字体,位图等）
+        Angle:number,//2字节,角度
+        Color:S_Color,
+        Font:S_Font,
+        iFontIndex:number,//2字节,字号
+        szBitMap:string,//128字节，位图文件名
+        iBitMapX:number,//2字节
+        iBitMapY:number,//2字节
+      }
+      type S_TextSymbol = {
+        Angle:number,//2字节
+        Color:S_Color,
+        Font:S_Font,
+        AlignmentStyle:number,//1字节，文字横排风格，文字竖排风格，文字是否从右写到左
+        iTextSize:number,//2字节，文本长度
+        szText:string,//128字节，文本
+        sTextPos:number,//1字节，标注位置
+        fLong:number,//4字节，文本显示位置经度
+        fLat:number,//4字节，文本显示位置纬度
+      }
+      type S_PointUnit ={
+        iID:number,//4字节
+        unitName:string,//10字节，图元名称
+        Pos:S_PointPos,
+        PointSymbol:S_SimplePointSymbol,
+        TextSymbol:S_TextSymbol,
+        sShow:number,//1字节，0都不显示，1仅显示图元，2仅显示标注，3都显示
+      }
+      type S_LinePos = {
+        iPointNum:number,//4字节，点数目
+        reserve:number,//4字节,保留，取代原S_LinePoint指针,指针在64位时长度变为8，导致程序编译为64位时无法正常读取地图文件
+      }
+      type S_SimpleLineSymbol = {
+        Color:S_Color,
+        sStyle:number,//1字节，线型[0000000-1|0]表示[0000000-虚线|实线]
+        iWidth:number,//2字节
+      }
+      type S_LineUnit = {
+        iID:number,//4字节，图元ID
+        UnitName:string,//10字节,图元名称
+        LinePos:S_LinePos,//线的空间属性
+        LineSymbol:S_SimpleLineSymbol,//线符号
+        TextSymbol:S_TextSymbol,//线标注
+        sShow:number,//1字节，0都不显示，1仅显示图元，2仅显示标注，3都显示
+      }
+
+
+      let result = {
+        filehead:{
+          iLayerNum: view.getInt32(), //文件中包含的图层数。（建议一个图层一个文件，iLayerNum=1）int
+          szReserved: view.getBytes(512), //保留字段。char[]
+        },
+        tagLayerPara:{
+          iLayerID: view.getInt32(), //图层ID。int
+          szLayerName: view.getBytes(128), //图层名称。char[]
+          sLayerType: view.getUint16(),  //图层类型。（1-点、2-线、3-面、其他）short
+          iLayerNotesLen: view.getInt32(),		//图层附加属性长度。int
+          iUnitCount: view.getInt32(),  //图元个数。int
+          iUnitNotesLen: view.getInt32(),	//图元附加属性长度。int
+          iMapLevel: view.getInt32(),  //本图层所属层数。int
+          dMaximumScale: view.getFloat64(),  // double
+          dMinimumScale: view.getFloat64(),  //当Map Scale介于dMinimumScale和dMaximumScale之间时，才显示本图层。double
+          bScaleSymbols: view.getUint8(),  //图层中的Symbol是否随图层放大而放大、随图层缩小而缩小。bool
+          bVisible: view.getUint16(),  //图层是否显示。（1-全显示、2-部分显示、3-不显示）bool
+          bShowLable: view.getUint16(),  //图元标注显示与否。（1-全显示、2-部分显示、3-不显示）bool
+          layerTips:{ //图层标注（预留）。
+            x:view.getFloat64(),double
+            y:view.getFloat64(), //(x,y)指定标注位置。double
+            szTips:view.getBytes(128), //标注文本 char[]
+            bShowTips: view.getUint8() //是否显示图层标注 bool
+          },
+          spatialReference:{ //投影方式（预留）。
+            iProjectMethod: view.getInt32(), //投影方式（1－正圆锥投影、）int
+            dOrgLong: view.getFloat64(),		//投影坐标系坐标原点经度。/度 double
+            dOrgLat: view.getFloat64(),			//投影坐标系坐标原点纬度。/度 double
+            iOrgHeight: view.getInt32(),		//投影坐标系坐标原点高度。/米 int
+            szReserved:view.getBytes(512),	//预留。 char[]
+          },
+          layerSource:{ //图层数据源，（预留）。
+            sDataType:view.getUint16(),  //数据源类型（0―无源(可能是动态创建的)，1―文件，2―数据库）short
+            DataSource:view.getBytes(128), //数据源。（*.gis）char[]
+            szReserved:view.getBytes(128), //保留 char[]
+            iReserved:view.getInt32()  //保留 int
+          },
+          layerEffects:{ //图层显示效果，（预留）。
+            Brightness: view.getUint8(),  //明亮度（0～100）unsigned char
+            Constrast: view.getUint8(),  //对比度（0～100）unsigned char
+            Tranceparency: view.getUint8(),  //透明度（0～100）unsigned char
+            bSupportsBrightnessChange: view.getUint8(),  //是否支持明亮度变化 bool
+            bSupportsConstrastChange: view.getUint8(),  //是否支持对比度变化 bool
+            bSupportsTranceparency: view.getUint8(),  //是否支持透明度 bool
+            bSupportsInteractive: view.getUint8(),    //Indicates if the layer supports interactive effects changes bool
+          }
+        },
+      }
+      switch (result.tagLayerPara.sLayerType){
+        // case GISTYPE.GIS_POINT:
+        // case GISTYPE.GIS_POINT2:
+        //   layerPara.m_cLayerType = GIS_POINT;
+        //   bReadUnitOK = ReadPointLayer(rfile, pLayer, layerPara);
+        //   break;
+        // case GISTYPE.GIS_LINE:
+        case GISTYPE.GIS_LINE2://如岛屿
+          // layerPara.m_cLayerType = GIS_LINE;
+          // bReadUnitOK = ReadLineLayer(rfile, pLayer, layerPara);
+          console.log(view.getInt32())
+          break;
+        case GISTYPE.GIS_REGION:
+        case GISTYPE.GIS_REGION2:
+        //   layerPara.m_cLayerType = GIS_REGION;
+        //   bReadUnitOK = ReadRegionLayer(rfile, pLayer, layerPara);
+          const line:S_LineUnit = {
+            iID:view.getInt32(),
+            UnitName: d.decode(view.getBytes(10)),
+            LinePos:{
+              iPointNum:view.getInt32(),
+              reserve:view.getInt32(),
+            },
+            LineSymbol:{
+              Color:{
+                sRed:view.getUint8(),//1字节
+                sGreen:view.getUint8(),//1字节
+                sBlue:view.getUint8(),//1字节
+                sTransperancy:view.getUint8(),//1字节,透明度
+              },
+              sStyle:view.getUint8(),
+              iWidth:view.getUint16(),//2字节
+            },
+            TextSymbol:{
+              Angle:view.getInt32(),//2字节
+              Color:{
+                sRed:view.getUint8(),//1字节
+                sGreen:view.getUint8(),//1字节
+                sBlue:view.getUint8(),//1字节
+                sTransperancy:view.getUint8(),//1字节,透明度
+              },
+              Font:{
+                szFontName:d.decode(view.getBytes(32)),//32字节，字体名称
+                sFontSize:view.getUint16(),//2字节,字体大小
+                sFontBold:view.getUint16(),//2字节,字体磅值
+                sStyle:view.getUint8()//1字节,[1-1-000000]表示[斜体-下划线-000000]
+              },
+              AlignmentStyle:view.getUint8(),//1字节，文字横排风格，文字竖排风格，文字是否从右写到左
+              iTextSize:view.getUint16(),//2字节，文本长度
+              szText:d.decode(view.getBytes(128)),//128字节，文本
+              sTextPos:view.getUint8(),//1字节，标注位置
+              fLong:view.getFloat32(),//4字节，文本显示位置经度
+              fLat:view.getFloat32(),//4字节，文本显示位置纬度
+            },
+            sShow:view.getUint8()
+          }
+          console.log(line)
+          // for(let i=0;i<result.tagLayerPara.iUnitCount;i++){
+          //   let plane:S_RegionUnit = {
+          //     iID:view.getInt32(),
+          //     UnitName:d.decode(view.getBytes(10)),
+          //     LinePos:{
+          //       iPointNum:view.getInt32(),
+          //       reserve:view.getInt32(),
+          //     },
+          //     RegionSymbol:{
+          //       Line:{
+          //         Color:{
+          //           sRed:view.getUint8(),//1字节
+          //           sGreen:view.getUint8(),//1字节
+          //           sBlue:view.getUint8(),//1字节
+          //           sTransperancy:view.getUint8(),//1字节,透明度
+          //         },
+          //         sStyle:view.getUint8(),//1字节，线型[0000000-1|0]表示[0000000-虚线|实线]
+          //         iWidth:view.getInt32(),//2字节
+          //       },//面边线
+          //       FillColor:{
+          //         sRed:view.getUint8(),//1字节
+          //         sGreen:view.getUint8(),//1字节
+          //         sBlue:view.getUint8(),//1字节
+          //         sTransperancy:view.getUint8(),//1字节,透明度
+          //       },//面填充颜色
+          //       iStyle:view.getUint8(),//1字节，0不填充，1填充
+          //     },
+          //     TextSymbol:{
+          //       Angle:view.getInt32(),//2字节
+          //       Color:{
+          //         sRed:view.getUint8(),//1字节
+          //         sGreen:view.getUint8(),//1字节
+          //         sBlue:view.getUint8(),//1字节
+          //         sTransperancy:view.getUint8(),//1字节,透明度
+          //       },
+          //       Font:{
+          //         szFontName:d.decode(view.getBytes(32)),//32字节，字体名称
+          //         sFontSize:view.getUint16(),//2字节,字体大小
+          //         sFontBold:view.getUint16(),//2字节,字体磅值
+          //         sStyle:view.getUint8(),//1字节,[1-1-000000]表示[斜体-下划线-000000]
+          //       },
+          //       AlignmentStyle:view.getUint8(),//1字节，文字横排风格，文字竖排风格，文字是否从右写到左
+          //       iTextSize:view.getUint16(),//2字节，文本长度
+          //       szText:d.decode(view.getBytes(128)),//128字节，文本
+          //       sTextPos:view.getUint8(),//1字节，标注位置
+          //       fLong:view.getFloat32(),//4字节，文本显示位置经度
+          //       fLat:view.getFloat32(),//4字节，文本显示位置纬度
+          //     },
+          //     sShow:view.getUint8()
+          //   }
+          //   console.log(plane)
+          //   break;
+          // }
+          break;
+        case GISTYPE.GIS_AIRLINE:
+          // layerPara.m_cLayerType = GIS_AIRLINE;
+          // bReadUnitOK = ReadAirmapLayer(rfile, pLayer, layerPara);
+          console.log(view.getBytes(view.getInt32()))
+          break;
+        case GISTYPE.GIS_AIRMAPPOINT:
+          // layerPara.m_cLayerType = GIS_AIRMAPPOINT;
+          // bReadUnitOK = ReadAirmapLayer(rfile, pLayer, layerPara);
+          let iDataLen = view.getInt32()
+          if(iDataLen<=0){
+            return;
+          }
+          let utf8Decoder = new TextDecoder('utf8')
+          let tagPara = {
+            m_clearType:view.getUint16(),
+            m_strLayerName:utf8Decoder.decode(view.getBytes(view.getUint16())),
+            iUnitNum:view.getInt32(),
+          }
+          let vecUnit = []
+          for(let i=0;i<tagPara.iUnitNum;i++){//tagPara.iUnitNum
+            let pUnit = {
+              iID: view.getInt32(),//图元ID
+              strCode: utf8Decoder.decode(view.getBytes(view.getUint16())),//图元名称
+              tagRGB:{///图元颜色
+                sBlue: view.getUint8(),
+                sGreen: view.getUint8(),
+                sRed: view.getUint8(),
+              },
+              tagText:{///标注信息
+                strText:utf8Decoder.decode(view.getBytes(view.getUint16())),//标注内容
+                tagPos:{//标注位置
+                  dLong:view.getFloat64(),//Longitude 经度
+                  dLat:view.getFloat64(),//Latitude	纬度
+                  dHeight:view.getFloat64(),//Height 海拔高度 米
+                },
+              },
+              ubyType:view.getUint8(),///类型，0未知，1点，2线，3面
+              ubyShow:view.getUint8(),///是否显示
+              ubyLevel:view.getUint8(),///图元等级
+              tagPos:{//点的空间属性
+                dLong:view.getFloat64(),//Longitude 经度
+                dLat:view.getFloat64(),//Latitude	纬度
+                dHeight:view.getFloat64(),//Height 海拔高度 米
+              },
+              ubyPointStyle:view.getUint8(),///点的形状
+              ubyDataType:view.getUint8(),///地标类型，
+              ubyAirLinePt:view.getUint8(),///航线航路过点
+            }
+            // MinLng = MinLng<pUnit.tagPos.dLong?MinLng:pUnit.tagPos.dLong
+            // MinLat = MinLat<pUnit.tagPos.dLat?MinLat:pUnit.tagPos.dLat
+            // MaxLng = MinLng<pUnit.tagPos.dLong?MinLng:pUnit.tagPos.dLong
+            // MaxLat = MinLat<pUnit.tagPos.dLat?MinLng:pUnit.tagPos.dLat
+            vecUnit.push(pUnit)
+          }
+          // UNITS = vecUnit
+          // loadStatus = 'loaded'
+          // test(args);//第一次使用后台返回的数据
+          // for(let i=0;i<queue.length;i++){
+          //   let args = queue.splice(i--,1)[0]
+          //   test(args)
+          // }
+          break;
+        case GISTYPE.GIS_DATA_POINT:
+        case GISTYPE.GIS_DATA_LINE://如飞行管制分区
+        case GISTYPE.GIS_DATA_REGION://如禁区
+        //   layerPara.m_cLayerType = tagLayerPara.sLayerType;
+        //   bReadUnitOK = ReadAirmapLayer(rfile, pLayer, layerPara);
+          break;
+        default:
+          throw new Error('Unknow GISTYPE: '+result.tagLayerPara.sLayerType)
+      }
+    })
+    */
+    exec({
+      database:"host=127.0.0.1&port=3306&user=root&password=tanglei&database=union",
+      query:{sqls:["select * from `华北飞行区域`"]}
+    }).then(res=>{
+      let areas = []
+      let features = []
+      for(let i=0;i<res.data[0].length;i++){
+        let item = res.data[0][i]
+        let strPoints = d.decode(Uint8Array.from(item.points.data).buffer)
+        let area:Array<[number,number]> = []
+        let points = strPoints.split(' ').map(item=>{
+          let lngLat = getLngLat(item)
+          return wgs84togcj02(lngLat[0],lngLat[1])
+        })
+        let lngs:number[] = []
+        let lats:number[] = []
+        points.map((item:any)=>{
+          lngs.push(item[0])
+          lats.push(item[1])
+          area.push(item)
+        })
+        let minLng = Math.min(...lngs)
+        let maxLng = Math.max(...lngs)
+        let minLat = Math.min(...lats)
+        let maxLat = Math.max(...lats)
+
+        features.push({
+          'type': 'Feature',
+          'geometry': {
+            'type': 'Point',
+            'coordinates': [(minLng+maxLng)/2,(minLat+maxLat)/2]
+          },
+          'properties': {
+            'label': item.name,
+          }
+        })
+        areas.push([area])
+      }
+
+      map.addLayer({
+        id: "华北飞行区域baseLine",
+        type: "line",
+        source: {
+          type: "geojson",
+          data: {
+            type: "Feature",
+            geometry: {
+              type: "MultiPolygon",
+              coordinates: areas
+            },
+          },
+        },
+        layout: {
+          visibility: "visible",
+          'line-cap': 'round',
+          'line-join': 'round'
+        },
+        paint: {
+          "line-color": "#000",
+          "line-width": 3,
+          "line-opacity": 1,
+        },
+      });
+      map.addLayer({
+        id: "华北飞行区域line",
+        type: "line",
+        source: {
+          type: "geojson",
+          data: {
+            type: "Feature",
+            geometry: {
+              type: "MultiPolygon",
+              coordinates: areas
+            },
+          },
+        },
+        layout: {
+          visibility: "visible",
+          'line-cap': 'round',
+          'line-join': 'round'
+        },
+        paint: {
+          "line-color": "white",
+          "line-width": 1,
+          "line-opacity": 1,
+        },
+      });
+      map.addLayer({
+        id: "华北飞行区域标签",
+        type: "symbol",
+        source:  {
+        'type': 'geojson',
+        'data': {
+            'type': 'FeatureCollection',
+            'features':features
+          }
+        },
+        layout: {
+          visibility: props.zyd ? "visible" : "none",
+          // This icon is a part of the Mapbox Streets style.
+          // To view all images available in a Mapbox style, open
+          // the style in Mapbox Studio and click the "Images" tab.
+          // To add a new image to the style at runtime see
+          // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+          "text-pitch-alignment": "map",
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+          "text-field": ["get", "label"],
+          "text-font": ["simkai"],
+          "text-size": 25,
+          "text-transform": "uppercase",
+          // "text-letter-spacing": 0.05,
+          "text-anchor": "center",
+          "text-line-height": 1,
+          "text-justify": "center",
+          "text-offset": [0, 0],
+          "text-ignore-placement": false,
+          "text-allow-overlap": false,
+          "text-rotation-alignment": "map",
+          "text-max-width": 400,
+        },
+        paint: {
+          "icon-opacity": 1,
+          "text-color": "#ffaa00",
+          "text-halo-color": "black",
+          "text-halo-width": 1,
+        }
+      });
+    })
     await addFeatherImages(map);
     map.addLayer(new CustomLayer());
     map.addLayer({
@@ -548,7 +1248,8 @@ onMounted(() => {
               beginTime: moment().format("HH:mm:ss"),
               unitName: item.unitName,
               duration: 1,
-              "icon-image": "projectile-white",
+              // "icon-image": "projectile-white",
+              "icon-image": "火箭弹图标",
             },
             geometry: {
               type: "Point",
@@ -636,7 +1337,7 @@ onMounted(() => {
           // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
           "icon-anchor": "center",
           "icon-image": ["get", "icon-image"],
-          "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
+          // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
           "icon-rotate": 0,
           // "icon-offset": [10, 0],
           "icon-rotation-alignment": "map",
@@ -1242,13 +1943,13 @@ onMounted(() => {
       source: "飞机原数据",
       layout: {
         "icon-image": "airplane",
-        "icon-size": {
-          base: 1,
-          stops: [
-            [0, 0.5],
-            [22, 1],
-          ],
-        },
+        // "icon-size": {
+        //   base: 1,
+        //   stops: [
+        //     [0, 0.5],
+        //     [22, 1],
+        //   ],
+        // },
         "icon-rotate": ["get", "deg"],
         "icon-rotation-alignment": "map",
         "icon-allow-overlap": true,
@@ -1301,22 +2002,22 @@ onMounted(() => {
     //   },
     // });
 
-    // timer = setInterval(() => {
-    //   let source = map.getSource("飞机原数据");
-    //   if (source) {
-    //     let data = source.serialize().data;
-    //     data.features.map((item: any) => {
-    //       let coordinates = item.geometry.coordinates;
-    //       let deg = item.properties.deg;
-    //       let speed = item.properties.speed;
-    //       const pt = turf.destination(turf.point(coordinates), speed, deg, {
-    //         units: "meters",
-    //       });
-    //       item.geometry.coordinates = pt.geometry?.coordinates;
-    //     });
-    //     source.setData(data);
-    //   }
-    // }, 1000);
+    timer = setInterval(() => {
+      let source = map.getSource("飞机原数据");
+      if (source) {
+        let data = source.serialize().data;
+        data.features.map((item: any) => {
+          let coordinates = item.geometry.coordinates;
+          let deg = item.properties.deg;
+          let speed = item.properties.speed;
+          const pt = turf.destination(turf.point(coordinates), speed, deg, {
+            units: "meters",
+          });
+          item.geometry.coordinates = pt.geometry?.coordinates;
+        });
+        source.setData(data);
+      }
+    }, 1000);
 if(false){
 
   getMicapsData(plotUrl).then(async(result: any) => {

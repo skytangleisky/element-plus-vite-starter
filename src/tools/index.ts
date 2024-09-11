@@ -1,10 +1,9 @@
 import * as turf from '@turf/turf'
 const modules = import.meta.glob('~/**/*.vue')
+import axios from 'axios'
 import {v4 as uuid} from 'uuid'
 import imageUrl from "~/assets/feather.svg?url";
 import arrowUrl from "~/assets/arrow.svg?url";
-import planeUrl from "~/assets/plane.svg?url";
-import projectileUrl from "~/assets/projectile.svg?url";
 import droneUrl from "~/assets/aircraft.svg?url";
 import { useUserStore } from '~/stores/user';
 import { useSettingStore } from '~/stores/setting';
@@ -22,6 +21,11 @@ export function hasPermission(permissions:Array<String>){
     }
   }
   return recurse(setting.permissions)
+}
+export function getLngLat(v:string):[number,number]{
+  let lng = v.substring(0, v.indexOf("E"));
+  let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
+  return [Number(lng.substring(0, 3)) + Number(lng.substring(3, 5)) / 60 + Number(lng.substring(5, 9)) / 100 / 3600, Number(lat.substring(0, 2)) + Number(lat.substring(2, 4)) / 60 + Number(lat.substring(4, 8)) / 100 / 3600]
 }
 export function checkPermission(roles:string[]) {
   const user = useUserStore()
@@ -354,7 +358,110 @@ export class View{
 }
 let cvs = document.createElement('canvas')
 let ctx = cvs.getContext('2d') as unknown as CanvasRenderingContext2D
+export async function loadImage2Map(map:any,url:string,width:number,height:number,options:any){
+  let result = await loadImage(url, width, height, options) as {[key:string]:any};
+  for(let k in result){
+    map.addImage(k,result[k])
+  }
+}
+let parser = new DOMParser()
+let serializer = new XMLSerializer()
 export function loadImage(url:string,width:number,height:number,options:any){
+  let opts = JSON.parse(JSON.stringify(options))
+  return new Promise((resolve,reject)=>{
+    axios.get(url).then(res=>{
+      let xmlDoc = parser.parseFromString(res.data, "image/svg+xml");
+      let collections = xmlDoc.getElementsByTagName("svg");
+      let promises = []
+      for(let key in opts){
+        if(opts[key].style){
+          for(let i=0;i<collections.length;i++){
+            collections[i].setAttribute("style",opts[key].style)
+          }
+        }
+        let image = new Image();
+        promises.push(new Promise((resolve,reject)=>{
+          image.onload = () => {
+            resolve({key,image})
+          }
+          image.onerror = reject
+        }))
+        if(url.endsWith('.svg')){
+          width&&(image.width=Math.round(width*devicePixelRatio))
+          height&&(image.height=Math.round(height*devicePixelRatio))
+        }
+        image.crossOrigin = 'anonymous';
+        image.src = URL.createObjectURL(new File([serializer.serializeToString(xmlDoc)],uuid()+'.svg',{type:"image/svg+xml"}))
+      }
+      Promise.all(promises).then(results=>{
+        (results as Array<{key:string,image:any}>).forEach(({key,image})=>{
+          cvs.width = image.width
+          cvs.height = image.height
+          ctx.clearRect(0,0,cvs.width,cvs.height)
+          ctx.drawImage(image,0,0,image.width,image.height,0,0,cvs.width,cvs.height)
+          let v = opts[key]
+          v.x1==undefined&&(v.x1=0)
+          v.y1==undefined&&(v.y1=0)
+          v.x2==undefined&&(v.x2=1)
+          v.y2==undefined&&(v.y2=1)
+          let x = Math.round(v.x1*cvs.width)
+          let y = Math.round(v.y1*cvs.height)
+          let w = Math.round((v.x2-v.x1)*cvs.width)
+          let h = Math.round((v.y2-v.y1)*cvs.height)
+          let imageData = ctx.getImageData(x,y,w,h)
+          options[key] = imageData
+        })
+        resolve(options)
+      })
+      // let image = new Image();
+      // image.onload = function(){
+      //   if(opts){
+      //     cvs.width = image.width
+      //     cvs.height = image.height
+      //     ctx.clearRect(0,0,cvs.width,cvs.height)
+      //     ctx.drawImage(image,0,0,image.width,image.height,0,0,cvs.width,cvs.height)
+      //     let result:{[key:string]:any} = {}
+      //     for(let k in opts){
+      //       let v = opts[k]
+      //       v.x1==undefined&&(v.x1=0)
+      //       v.y1==undefined&&(v.y1=0)
+      //       v.x2==undefined&&(v.x2=1)
+      //       v.y2==undefined&&(v.y2=1)
+      //       let x = Math.round(v.x1*cvs.width)
+      //       let y = Math.round(v.y1*cvs.height)
+      //       let w = Math.round((v.x2-v.x1)*cvs.width)
+      //       let h = Math.round((v.y2-v.y1)*cvs.height)
+      //       // if(v.fill){
+      //       //   let preGlobalCompositeOperation = ctx.globalCompositeOperation
+      //       //   ctx.globalCompositeOperation = 'source-in'
+      //       //   ctx.fillStyle = v.fill
+      //       //   ctx.fillRect(0,0,cvs.width,cvs.height)
+      //       //   ctx.globalCompositeOperation = preGlobalCompositeOperation
+      //       // }
+      //       let imageData = ctx.getImageData(x,y,w,h)
+      //       result[k] = imageData
+      //     }
+      //     resolve(result)
+      //   }else{
+      //     resolve(image);
+      //   }
+      // }
+      // image.onerror = function(err){
+      //   reject(err);
+      // }
+      // image.onabort = function(err){
+      //   reject(err);
+      // }
+      // image.crossOrigin = 'anonymous';
+      // if(url.endsWith('.svg')){
+      //   width&&(image.width=Math.round(width*devicePixelRatio))
+      //   height&&(image.height=Math.round(height*devicePixelRatio))
+      // }
+      // image.src=svgUrl;
+    })
+  });
+}
+export function loadImage_bak(url:string,width:number,height:number,options:any){
   return new Promise((resolve,reject)=>{
     let image = new Image();
     image.onload = function(){
@@ -366,6 +473,10 @@ export function loadImage(url:string,width:number,height:number,options:any){
         let result:{[key:string]:any} = {}
         for(let k in options){
           let v = options[k]
+          v.x1==undefined&&(v.x1=0)
+          v.y1==undefined&&(v.y1=0)
+          v.x2==undefined&&(v.x2=1)
+          v.y2==undefined&&(v.y2=1)
           let x = Math.round(v.x1*cvs.width)
           let y = Math.round(v.y1*cvs.height)
           let w = Math.round((v.x2-v.x1)*cvs.width)
@@ -491,7 +602,7 @@ export const getCoord = (i:number, j:number, v:number) => ({
   y1: (j * (32 + 20)) / 188,
   x2: (i * (16 + 20)) / 340 + 16 / 340,
   y2: (j * (32 + 20)) / 188 + 32 / 188,
-  fill: getColor(v),
+  style: `fill:${getColor(v)};stroke:black;stroke-width:0.1px`,
 });
 export const addFeatherImages = async( map:any ) => {
   let result:{[key:string]:any} = await loadImage(imageUrl, 340, 188, {
@@ -539,37 +650,6 @@ export const addFeatherImages = async( map:any ) => {
       x2: 1,
       y2: 1,
       fill: 'yellow',
-    }
-  }) as unknown as {[key:string]:any}
-  for (let k in result) {
-    map.addImage(k, result[k]);
-  }
-  result = await loadImage(planeUrl,32,32,{
-    airplane:{
-      x1: 0,
-      y1: 0,
-      x2: 1,
-      y2: 1,
-      fill: 'yellow',
-    }
-  }) as unknown as {[key:string]:any}
-  for (let k in result) {
-    map.addImage(k, result[k]);
-  }
-  result = await loadImage(projectileUrl,16,32,{
-    'projectile-white':{
-      x1: 0,
-      y1: 0,
-      x2: 1,
-      y2: 1,
-      // fill: 'white',
-    },
-    'projectile-red':{
-      x1: 0,
-      y1: 0,
-      x2: 1,
-      y2: 1,
-      fill: 'red',
     }
   }) as unknown as {[key:string]:any}
   for (let k in result) {

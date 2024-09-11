@@ -7,6 +7,7 @@ export default class NullIslandLayer {
     onAdd(map, gl) {
         this.map = map
         const vertexSource2 = `
+        precision highp float;
         uniform mat4 u_projectionMatrix;
         uniform mat4 u_globeToMercMatrix;
         void main() {
@@ -15,6 +16,7 @@ export default class NullIslandLayer {
         }`;
         const fragmentSource = `
         void main() {
+            precision highp float;
             gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
         }`;
         const vertexShader2 = gl.createShader(gl.VERTEX_SHADER);
@@ -29,6 +31,7 @@ export default class NullIslandLayer {
         gl.linkProgram(this.program2);
 
         const vertexSource = `
+        precision highp float;
         uniform mat4 u_projectionMatrix;
         uniform mat4 u_globeToMercMatrix;
         void main() {

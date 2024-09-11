@@ -10,7 +10,6 @@
             box-sizing: margin-box;
             height: -webkit-fill-available;
             overflow: auto;
-            margin: 7px;
           "
         >
           <div
