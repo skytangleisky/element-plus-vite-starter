@@ -2,12 +2,13 @@
   <div v-dialogDrag class="planPanel z-1">
     <el-tabs
       type="border-card"
-      style="width: 578px; padding: 7px; border-radius: 8px; box-sizing: border-box"
+      style="width: 580px; padding: 7px; border-radius: 8px; box-sizing: border-box"
     >
       <el-tab-pane v-for="(v, k) in props" :label="k">
         <div
           style="
-            box-sizing: margin-box;
+            box-sizing: border-box;
+            margin: 10px;
             height: -webkit-fill-available;
             overflow: auto;
           "
@@ -80,7 +81,7 @@
               </div>
               <div class="flex h-full">
                 <div
-                  :class="`flex-1 flex justify-center items-center ${申请(item)}`"
+                  :class="`flex justify-center items-center ${申请(item)}`"
                   style="border: 1px solid grey; font-weight: bolder"
                 >
                   申请({{ moment(item.tmBeginApply).format("HH:mm:ss") }})

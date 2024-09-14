@@ -10,6 +10,16 @@ export default {
   },
   children:[
     {
+      path:'palette',
+      name:'034a1c75-c60d-4ff4-afdd-979c9e619b29',
+      component:'/src/myComponents/colorSelector/index.vue',
+      svg:'32390100-907d-47cf-850c-a8c5fa7983a7',
+      replace:true,
+      meta:{
+        label:'调色板',
+      }
+    },
+    {
       path:'nps',
       name:'22254d40-71a3-8406-b0d8-cc9eb3aed1ef',
       component:'/src/myComponents/echarts/nps.vue',

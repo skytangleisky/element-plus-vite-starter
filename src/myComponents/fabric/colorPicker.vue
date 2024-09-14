@@ -12,21 +12,13 @@
 </template>
 <script lang="js" setup>
 import { fabric } from "fabric";
+import convert from 'color-convert';
 import { onMounted, onBeforeUnmount, reactive, ref, computed, watch } from "vue";
-import { RGBtoHSB, HSBtoRGB, RGBtoHSL, HSLtoRGB } from "~/tools";
 
 const presentColorRef = reactive({
   H: 360,
   S: 89,
-  B: 43,
-});
-const presetRgb = computed(() => {
-  return HSBtoRGB(presentColorRef.H, presentColorRef.S, presentColorRef.B);
-});
-const color = computed(() => {
-  return new fabric.Color(
-    `rgb(${presetRgb.value[0]},${presetRgb.value[1]},${presetRgb.value[2]})`
-  ).toHex();
+  V: 43,
 });
 let canvas;
 onBeforeUnmount(() => {
@@ -250,20 +242,19 @@ onMounted(() => {
     selection: false,
   });
   canvas.add(group);
-  let rgb = HSBtoRGB(presentColorRef.H, presentColorRef.S, presentColorRef.B);
+  let rgb = convert.hsv.rgb(presentColorRef.H, presentColorRef.S, presentColorRef.V);
   let isLight = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255 > 0.5;
   circle.left = (group.width - 1) * presentColorRef.S / 100 + group.left + 0.5;
-  circle.top = (group.height - 1) * (1 - presentColorRef.B/ 100) + group.top + 0.5;
+  circle.top = (group.height - 1) * (1 - presentColorRef.V/ 100) + group.top + 0.5;
   circle.fill = `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
   source.fill = circle.fill;
   destination.fill = circle.fill;
   destination.on("mousedown",()=>{
     let rgb = new fabric.Color(destination.fill).getSource()
-    let hsb = RGBtoHSB(...rgb)
-    console.log(hsb)
-    presentColorRef.H = hsb[0]
-    presentColorRef.S = hsb[1]
-    presentColorRef.B = hsb[2]
+    let hsv = convert.rgb.hsv(...rgb)
+    presentColorRef.H = hsv[0]
+    presentColorRef.S = hsv[1]
+    presentColorRef.V = hsv[2]
   })
   circle.set("stroke", isLight ? "#000" : "#fff");
   group.on("mousedown", (opt) => {
@@ -281,8 +272,7 @@ onMounted(() => {
     }
     canvas._setupCurrentTransform(opt, circle, true);
     presentColorRef.S = (circle.left - group.left - 0.5) / (group.width - 1) * 100;
-    presentColorRef.B = (1 - (circle.top - group.top - 0.5) / (group.height - 1)) * 100
-    // console.log(circle.left - group.left,circle.top - group.top,presentColorRef.S,presentColorRef.B)
+    presentColorRef.V = (1 - (circle.top - group.top - 0.5) / (group.height - 1)) * 100
   });
   circle.on('modified',()=>{
     circle.isMoving = false
@@ -300,8 +290,7 @@ onMounted(() => {
       circle.top = group.top + group.height - 0.5;
     };
     presentColorRef.S = (circle.left - group.left - 0.5) / (group.width - 1) * 100;
-    presentColorRef.B = (1 - (circle.top - group.top - 0.5) / (group.height - 1)) * 100;
-    // console.log(circle.left - group.left,circle.top - group.top,presentColorRef.S,presentColorRef.B)
+    presentColorRef.V = (1 - (circle.top - group.top - 0.5) / (group.height - 1)) * 100;
   });
   canvas.add(circle);
   gradient.on("mousedown", (opt) => {
@@ -309,7 +298,6 @@ onMounted(() => {
     slider.top = gradient.top + (1 - presentColorRef.H / hRange)*(gradient.height-1)+0.5;
     canvas.setActiveObject(slider);
     canvas._setupCurrentTransform(opt, slider, true);
-    // console.log("gradient mousedown", presentColorRef.H, slider.top - gradient.top);
   });
   slider.left = gradient.left + gradient.width / 2;
   slider.top = gradient.top + (1 - presentColorRef.H / hRange)*(gradient.height-1)+0.5;
@@ -324,7 +312,6 @@ onMounted(() => {
       slider.top = gradient.top + gradient.height - 0.5;
     }
     presentColorRef.H = (1 - (slider.top - 0.5 - gradient.top) / (gradient.height - 1)) * hRange
-    // console.log("offsetY", slider.top - gradient.top, "H", Math.round(presentColorRef.H));
   });
 
   canvas.add(gradient);
@@ -343,12 +330,18 @@ onMounted(() => {
   canvas.add(
     HueText,
     SaturationText,
-    BrightnessText,
+    ValueText,
     RedText,
     GreenText,
     BlueText,
     HexText,
-    LightnessText,
+    LuminanceText,
+    aText,
+    bText,
+    CText,
+    MText,
+    YText,
+    KText,
     source,
     destination
   );
@@ -413,7 +406,7 @@ let SaturationText = new fabric.Textbox("100", {
 SaturationText.on("modified", () => {
   presentColorRef.S = Number(SaturationText.text);
 });
-let BrightnessText = new fabric.Textbox("100", {
+let ValueText = new fabric.Textbox("100", {
   width: 32,
   height: 15,
   fontSize: 12,
@@ -431,8 +424,8 @@ let BrightnessText = new fabric.Textbox("100", {
   left: 358,
   top: 218,
 });
-BrightnessText.on("modified", () => {
-  presentColorRef.B = Number(BrightnessText.text);
+ValueText.on("modified", () => {
+  presentColorRef.V = Number(ValueText.text);
 });
 let RedText = new fabric.Textbox("255", {
   width: 32,
@@ -453,12 +446,12 @@ let RedText = new fabric.Textbox("255", {
   top: 245,
 });
 RedText.on("modified", () => {
-  let rgb = HSBtoRGB(presentColorRef.H, presentColorRef.S, presentColorRef.B);
+  let rgb = convert.hsv.rgb(presentColorRef.H, presentColorRef.S, presentColorRef.V)
   rgb[0] = Number(RedText.text);
-  let hsb = RGBtoHSB(rgb[0], rgb[1], rgb[2]);
-  presentColorRef.H = hsb[0];
-  presentColorRef.S = hsb[1];
-  presentColorRef.B = hsb[2];
+  let hsv = convert.rgb.hsv(...rgb)
+  presentColorRef.H = hsv[0];
+  presentColorRef.S = hsv[1];
+  presentColorRef.V = hsv[2];
 });
 let GreenText = new fabric.Textbox("255", {
   width: 32,
@@ -479,12 +472,12 @@ let GreenText = new fabric.Textbox("255", {
   top: 268,
 });
 GreenText.on("modified", () => {
-  let rgb = HSBtoRGB(presentColorRef.H, presentColorRef.S, presentColorRef.B);
+  let rgb = convert.hsv.rgb(presentColorRef.H, presentColorRef.S, presentColorRef.V)
   rgb[1] = Number(GreenText.text);
-  let hsb = RGBtoHSB(rgb[0], rgb[1], rgb[2]);
-  presentColorRef.H = hsb[0];
-  presentColorRef.S = hsb[1];
-  presentColorRef.B = hsb[2];
+  let hsv = convert.rgb.hsv(...rgb)
+  presentColorRef.H = hsv[0];
+  presentColorRef.S = hsv[1];
+  presentColorRef.V = hsv[2];
 });
 let BlueText = new fabric.Textbox("255", {
   width: 32,
@@ -505,12 +498,12 @@ let BlueText = new fabric.Textbox("255", {
   top: 291,
 });
 BlueText.on("modified", () => {
-  let rgb = HSBtoRGB(presentColorRef.H, presentColorRef.S, presentColorRef.B);
+  let rgb = convert.hsv.rgb(presentColorRef.H, presentColorRef.S, presentColorRef.V)
   rgb[2] = Number(BlueText.text);
-  let hsb = RGBtoHSB(rgb[0], rgb[1], rgb[2]);
-  presentColorRef.H = hsb[0];
-  presentColorRef.S = hsb[1];
-  presentColorRef.B = hsb[2];
+  let hsv = convert.rgb.hsv(...rgb)
+  presentColorRef.H = hsv[0];
+  presentColorRef.S = hsv[1];
+  presentColorRef.V = hsv[2];
 });
 let HexText = new fabric.Textbox("FFFFFF", {
   width: 82,
@@ -531,13 +524,12 @@ let HexText = new fabric.Textbox("FFFFFF", {
   top: 318,
 });
 HexText.on("modified", () => {
-  let rgb = new fabric.Color("#" + HexText.text).getSource();
-  let hsb = RGBtoHSB(rgb[0], rgb[1], rgb[2]);
-  presentColorRef.H = hsb[0];
-  presentColorRef.S = hsb[1];
-  presentColorRef.B = hsb[2];
+  let hsv = convert.hex.hsv(HexText.text)
+  presentColorRef.H = hsv[0];
+  presentColorRef.S = hsv[1];
+  presentColorRef.V = hsv[2];
 });
-let LightnessText = new fabric.Textbox("50", {
+let LuminanceText = new fabric.Textbox("50", {
   width: 41,
   height: 15,
   fontSize: 12,
@@ -555,22 +547,148 @@ let LightnessText = new fabric.Textbox("50", {
   left: 462,
   top: 172,
 });
-LightnessText.on("modified", () => {
-  console.log(`hsl(${presentColorRef.H},${presentColorRef.S}%,${LightnessText.text})%`)
-  let rgb = new fabric.Color(`hsl(${presentColorRef.H},${presentColorRef.S}%,${LightnessText.text}%)`).getSource();
-  let hsb = RGBtoHSB(rgb[0], rgb[1], rgb[2]);
-  presentColorRef.H = hsb[0];
-  presentColorRef.S = hsb[1];
-  presentColorRef.B = hsb[2];
+LuminanceText.on("modified", () => {
+  let rgb = new fabric.Color(`hsl(${presentColorRef.H},${presentColorRef.S}%,${LuminanceText.text}%)`).getSource();
+  let hsv = convert.rgb.hsv(...rgb)
+  presentColorRef.H = hsv[0];
+  presentColorRef.S = hsv[1];
+  presentColorRef.V = hsv[2];
   // presentColorRef.S = Number(SaturationText.text);
 });
+let aText = new fabric.Textbox("", {
+  width: 41,
+  height: 15,
+  fontSize: 12,
+  fontFamily: "Menlo,Consolas,Monaco",
+  fill: "#ddd",
+  backgroundColor: "transparent",
+  lockMovementX: true,
+  lockMovementY: true,
+  selectable: true,
+  hasBorders: true,
+  hasControls: false,
+  moveCursor: "auto",
+  hoverCursor: "auto",
+  textAlign: "left",
+  left: 462,
+  top: 172+23,
+});
+aText.on("modified",()=>{
+
+})
+let bText = new fabric.Textbox("", {
+  width: 41,
+  height: 15,
+  fontSize: 12,
+  fontFamily: "Menlo,Consolas,Monaco",
+  fill: "#ddd",
+  backgroundColor: "transparent",
+  lockMovementX: true,
+  lockMovementY: true,
+  selectable: true,
+  hasBorders: true,
+  hasControls: false,
+  moveCursor: "auto",
+  hoverCursor: "auto",
+  textAlign: "left",
+  left: 462,
+  top: 172+23*2,
+});
+bText.on("modified",()=>{
+
+})
+let CText = new fabric.Textbox("", {
+  width: 32,
+  height: 15,
+  fontSize: 12,
+  fontFamily: "Menlo,Consolas,Monaco",
+  fill: "#ddd",
+  backgroundColor: "transparent",
+  lockMovementX: true,
+  lockMovementY: true,
+  selectable: true,
+  hasBorders: true,
+  hasControls: false,
+  moveCursor: "auto",
+  hoverCursor: "auto",
+  textAlign: "left",
+  left: 462,
+  top: 245,
+});
+
+CText.on("modified",()=>{
+
+})
+let MText = new fabric.Textbox("", {
+  width: 32,
+  height: 15,
+  fontSize: 12,
+  fontFamily: "Menlo,Consolas,Monaco",
+  fill: "#ddd",
+  backgroundColor: "transparent",
+  lockMovementX: true,
+  lockMovementY: true,
+  selectable: true,
+  hasBorders: true,
+  hasControls: false,
+  moveCursor: "auto",
+  hoverCursor: "auto",
+  textAlign: "left",
+  left: 462,
+  top: 245+23,
+});
+MText.on("modified",()=>{
+
+})
+let YText = new fabric.Textbox("", {
+  width: 32,
+  height: 15,
+  fontSize: 12,
+  fontFamily: "Menlo,Consolas,Monaco",
+  fill: "#ddd",
+  backgroundColor: "transparent",
+  lockMovementX: true,
+  lockMovementY: true,
+  selectable: true,
+  hasBorders: true,
+  hasControls: false,
+  moveCursor: "auto",
+  hoverCursor: "auto",
+  textAlign: "left",
+  left: 462,
+  top: 245+23*2,
+});
+YText.on("modified",()=>{
+
+})
+let KText = new fabric.Textbox("", {
+  width: 32,
+  height: 15,
+  fontSize: 12,
+  fontFamily: "Menlo,Consolas,Monaco",
+  fill: "#ddd",
+  backgroundColor: "transparent",
+  lockMovementX: true,
+  lockMovementY: true,
+  selectable: true,
+  hasBorders: true,
+  hasControls: false,
+  moveCursor: "auto",
+  hoverCursor: "auto",
+  textAlign: "left",
+  left: 462,
+  top: 245+23*3,
+});
+KText.on("modified",()=>{
+
+})
 watch(
   () => presentColorRef.H,
   (v) => {
     HueText.text = v.toFixed();
     let color = new fabric.Color(`hsl(${Math.round(presentColorRef.H)},100%,50%)`);
     rect.set("fill", color.toRgb());
-    let rgb = HSBtoRGB(presentColorRef.H, presentColorRef.S, presentColorRef.B);
+    let rgb = convert.hsv.rgb(presentColorRef.H, presentColorRef.S, presentColorRef.V)
     circle.set("fill", "rgb(" + rgb.join(",") + ")");
     source.set("fill", circle.fill);
     let isLight = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255 > 0.5;
@@ -582,18 +700,18 @@ watch(
   { deep: true,immediate:true }
 );
 watch(
-  [() => presentColorRef.S,()=>presentColorRef.B],
-  ([S,B]) => {
+  [() => presentColorRef.S,()=>presentColorRef.V],
+  ([S,V]) => {
     SaturationText.text = S.toFixed();
-    BrightnessText.text = B.toFixed();
-    let rgb = HSBtoRGB(presentColorRef.H, S, B);
+    ValueText.text = V.toFixed();
+    let rgb = convert.hsv.rgb(presentColorRef.H, S, V)
     circle.set("fill", "rgb(" + rgb.join(",") + ")");
     source.set("fill", circle.fill);
     let isLight = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255 > 0.5;
     circle.set("stroke", isLight ? "#000" : "#fff");
     if(!circle.isMoving){
       circle.left = (group.width - 1) * S / 100 + group.left + 0.5;
-      circle.top = (group.height - 1) * (1 - B/100) + group.top + 0.5;
+      circle.top = (group.height - 1) * (1 - V/100) + group.top + 0.5;
     }
   },
   { deep: true,immediate:true }
@@ -601,14 +719,21 @@ watch(
 watch(
   presentColorRef,
   (presentColorRef) => {
-    let rgb = HSBtoRGB(presentColorRef.H, presentColorRef.S, presentColorRef.B);
+    let rgb = convert.hsv.rgb(presentColorRef.H, presentColorRef.S, presentColorRef.V)
     RedText.text = rgb[0].toString();
     GreenText.text = rgb[1].toString();
     BlueText.text = rgb[2].toString();
     let color = new fabric.Color(`rgb(${rgb[0]},${rgb[1]},${rgb[2]})`)
     HexText.text = color.toHex();
-    let hsl = RGBtoHSL(...rgb)
-    LightnessText.text = hsl[2].toFixed()
+    let lab = convert.rgb.lab(...rgb)
+    LuminanceText.text = lab[0].toFixed()
+    aText.text = lab[1].toFixed()
+    bText.text = lab[2].toFixed()
+    let cmyk = convert.rgb.cmyk(...rgb)
+    CText.text = cmyk[0].toFixed()
+    MText.text = cmyk[1].toFixed()
+    YText.text = cmyk[2].toFixed()
+    KText.text = cmyk[3].toFixed()
   },
   { deep: true, immediate: true }
 );

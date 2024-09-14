@@ -35,63 +35,74 @@
       >
         <el-icon v-html="rightSvg"></el-icon>
       </div>
-      <div style="overflow: auto">
+      <div class="p-4px" style="overflow: auto">
         <selectTile v-model:list="tileList"></selectTile>
-        <span style="font-size: 20px; margin-top: 20px">图层设置</span>
-        <div style="display: flex; flex-direction: column; padding: 0 4px">
-          <el-checkbox
-            name="控制瓦片"
-            v-model="setting.人影.监控.loadmap"
-            label="显示瓦片地图"
-          ></el-checkbox>
-          <el-checkbox
-            name="控制区划"
-            v-model="setting.人影.监控.district"
-            label="显示行政区划"
-          ></el-checkbox>
-          <el-checkbox
-            name="控制航线"
-            v-model="setting.人影.监控.routeLine"
-            label="航路航线"
-          ></el-checkbox>
-          <el-checkbox
-            name="控制作业点"
-            v-model="setting.人影.监控.zyd"
-            label="显示作业点"
-          ></el-checkbox>
-          <el-checkbox
-            name="飞机"
-            v-model="setting.人影.监控.plane"
-            label="显示飞机"
-          ></el-checkbox>
-          <template v-if="checkPermission(['admin'])">
+        <fieldset class="b-solid b-1px rounded-lg">
+          <legend class="font-size-20px">图层设置</legend>
+          <div style="display: flex; flex-direction: column; padding: 0 4px">
             <el-checkbox
-              name="控制自动站"
-              v-model="setting.人影.监控.zdz"
-              label="自动站"
+              name="控制瓦片"
+              v-model="setting.人影.监控.loadmap"
+              label="显示瓦片地图"
             ></el-checkbox>
             <el-checkbox
-              name="控制网格点"
-              v-model="setting.人影.监控.gridPoint"
-              label="网格点"
+              name="控制区划"
+              v-model="setting.人影.监控.district"
+              label="显示行政区划"
             ></el-checkbox>
             <el-checkbox
-              name="控制网格值"
-              v-model="setting.人影.监控.gridValue"
-              label="网格值"
+              name="控制航线"
+              v-model="setting.人影.监控.routeLine"
+              label="航路航线"
             ></el-checkbox>
             <el-checkbox
-              name="控制等值线"
-              v-model="setting.人影.监控.isolines"
-              label="等值线"
+              name="控制作业点"
+              v-model="setting.人影.监控.zyd"
+              label="显示作业点"
             ></el-checkbox>
             <el-checkbox
-              name="控制等值带"
-              v-model="setting.人影.监控.isobands"
-              label="等值带"
+              name="飞机"
+              v-model="setting.人影.监控.plane"
+              label="显示飞机"
             ></el-checkbox>
-          </template>
-        </div>
+            <template v-if="checkPermission(['admin'])">
+              <el-checkbox
+                name="控制自动站"
+                v-model="setting.人影.监控.zdz"
+                label="自动站"
+              ></el-checkbox>
+              <el-checkbox
+                name="控制网格点"
+                v-model="setting.人影.监控.gridPoint"
+                label="网格点"
+              ></el-checkbox>
+              <el-checkbox
+                name="控制网格值"
+                v-model="setting.人影.监控.gridValue"
+                label="网格值"
+              ></el-checkbox>
+              <el-checkbox
+                name="控制等值线"
+                v-model="setting.人影.监控.isolines"
+                label="等值线"
+              ></el-checkbox>
+              <el-checkbox
+                name="控制等值带"
+                v-model="setting.人影.监控.isobands"
+                label="等值带"
+              ></el-checkbox>
+            </template>
+          </div>
+        </fieldset>
+        <fieldset class="b-solid b-1px rounded-lg">
+          <legend class="font-size-14px">人影飞行区域 显示风格</legend>
+          <div class="grid cols-3 rows-10">
+            <el-checkbox class="row-start-1 col-span-3" label="图层显示"></el-checkbox>
+            <div class="row-start-2 col-span-1">图层颜色</div><el-color-picker class="row-start-2 col-span-3" v-model="color" show-alpha :predefine="predefineColors" color-format="hex" />
+            <el-checkbox class="row-start-3 col-span-3" label="填充"></el-checkbox>
+            <el-checkbox class="row-start-4 col-span-3" label="比例尺显示控制"></el-checkbox>
+          </div>
+        </fieldset>
       </div>
     </div>
     <div
@@ -241,6 +252,23 @@ watch(
   },
   { immediate: true, deep: true }
 );
+const color = ref('rgba(255, 69, 0, 0.68)')
+const predefineColors = ref([
+  '#ff4500',
+  '#ff8c00',
+  '#ffd700',
+  '#90ee90',
+  '#00ced1',
+  '#1e90ff',
+  '#c71585',
+  'rgba(255, 69, 0, 0.68)',
+  'rgb(255, 120, 0)',
+  'hsv(51, 100, 98)',
+  'hsva(120, 40, 94, 0.5)',
+  'hsl(181, 100%, 37%)',
+  'hsla(209, 100%, 56%, 0.73)',
+  '#c7158577',
+])
 </script>
 <style scoped lang="scss">
 $time: 1s;

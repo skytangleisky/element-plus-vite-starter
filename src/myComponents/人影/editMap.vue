@@ -55,7 +55,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import planeUrl from "~/assets/plane.svg?url";
+import planeUrl from "~/assets/飞机.svg?url";
 import projectileUrl from "~/assets/projectile.svg?url";
 import 导航台图标 from '~/assets/navigationStation.svg?url'
 import 火箭弹图标 from '~/assets/火箭弹.svg?url'
@@ -228,7 +228,7 @@ import style from "./editMap.js";
 style.layers.map((v: any) => {
   if (v.id == "simple-tiles") {
     v.layout.visibility = props.loadmap ? "visible" : "none";
-  } else if (v.id == "districtLayer" || v.id == "districtOutline") {
+  } else if (v.id == "districtLineOver" || v.id == "districtLineBase") {
     v.layout.visibility = props.district ? "visible" : "none";
   }
 });
@@ -489,11 +489,7 @@ onMounted(() => {
   map.on("load", async () => {
     await loadImage2Map(map,planeUrl,32,32,{
       airplane:{
-        x1: 0,
-        y1: 0,
-        x2: 1,
-        y2: 1,
-        style: 'fill:yellow;stroke:black;stroke-width:30px;',
+        style: 'fill:yellow;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
       }
     })
     await loadImage2Map(map,projectileUrl,12,24,{
@@ -501,10 +497,6 @@ onMounted(() => {
         style:"fill:white;stroke:black;stroke-width:1px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       },
       'projectile-red':{
-        x1: 0,
-        y1: 0,
-        x2: 1,
-        y2: 1,
         fill: 'red',
       }
     })
@@ -1074,6 +1066,27 @@ onMounted(() => {
         areas.push([area])
       }
 
+      map.addLayer({
+        id: "华北飞行区域area",
+        type: "fill",
+        source: {
+          type: "geojson",
+          data: {
+            type: "Feature",
+            geometry: {
+              type: "MultiPolygon",
+              coordinates: areas
+            },
+          },
+        },
+        layout: {
+          visibility: "visible",
+        },
+        paint: {
+          "fill-color": "#000",
+          "fill-opacity": 0.5,
+        },
+      });
       map.addLayer({
         id: "华北飞行区域baseLine",
         type: "line",
@@ -1915,7 +1928,7 @@ onMounted(() => {
     //   });
     // });
     let airplanes = [];
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 60; i++) {
       airplanes.push({
         type: "Feature",
         properties: {
@@ -2804,7 +2817,7 @@ watch(
     s.layers.map((v: any) => {
       if (v.id == "simple-tiles") {
         v.layout.visibility = props.loadmap ? "visible" : "none";
-      } else if (v.id == "districtLayer" || v.id == "districtOutline") {
+      } else if (v.id == "districtLineBase" || v.id == "districtLineOver") {
         v.layout.visibility = props.district ? "visible" : "none";
       }
     });
@@ -2934,13 +2947,11 @@ watch(
   () => props.district,
   (newVal) => {
     if (newVal) {
-      map.getLayer("districtLayer") &&
-        map.setLayoutProperty("districtLayer", "visibility", "visible");
-      map.setLayoutProperty("districtOutline", "visibility", "visible");
+      map.setLayoutProperty("districtLineBase", "visibility", "visible");
+      map.setLayoutProperty("districtLineOver", "visibility", "visible");
     } else {
-      map.getLayer("districtLayer") &&
-        map.setLayoutProperty("districtLayer", "visibility", "none");
-      map.setLayoutProperty("districtOutline", "visibility", "none");
+      map.setLayoutProperty("districtLineBase", "visibility", "none");
+      map.setLayoutProperty("districtLineOver", "visibility", "none");
     }
   }
 );

@@ -1,6 +1,5 @@
 import { defineStore, acceptHMRUpdate2 } from "pinia"
 import moment from 'moment'
-import {type prevRequestDataType} from '../myComponents/dialog_plan_request.vue'
 import ry from "./subs/ry.js";
 import jx from "./subs/jx.js";
 import dev from "./subs/dev.js";
@@ -10,6 +9,7 @@ import cq_permission from "./permission/cq.js"
 export const useSettingStore = defineStore({
   id: 'setting',
   state:()=>({
+    channel:3,//调色板通道
     scrollTop:0,
     isCollapse:false,
     catalogue:{

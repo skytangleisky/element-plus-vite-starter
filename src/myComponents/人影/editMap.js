@@ -303,9 +303,9 @@ export default {
 		},
 	},
 	"terrain": { 'source': 'mapbox-dem', 'exaggeration': 1 },
-	"sprite_origin": "mapbox://sprites/tanglei201314/clons7b5v00dm01prgrblhncs/6iqitl5z21pbbxxwuij8b59i2",
-	"glyphs_origin": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
+	// "sprite_origin": "mapbox://sprites/tanglei201314/clons7b5v00dm01prgrblhncs/6iqitl5z21pbbxxwuij8b59i2",
 	"sprite": window.location.origin+"/resources/sprite",
+	// "glyphs_origin": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
 	"glyphs": window.location.origin+"/resources/glyphs/{fontstack}/{range}.pbf",
 	"projection": {"name": "mercator"},//albers, equalEarth, equirectangular, lambertConformalConic, mercator, naturalEarth, winkelTripel, globe
 	"layers": [
@@ -362,15 +362,27 @@ export default {
 			// 	}
 			// },
 			{
-				'id': 'districtOutline',
+				'id': 'districtLineBase',
 				'type': 'line',
 				'source': 'district',
 				'layout': {
 					'visibility':setting.district?'visible':'none'
 				},
 				'paint': {
-					'line-color': 'lightgrey',
-					'line-width': 1
+					'line-color': '#000',
+					'line-width': 3
+				}
+			},
+			{
+				'id': 'districtLineOver',
+				'type': 'line',
+				'source': 'district',
+				'layout': {
+					'visibility':setting.district?'visible':'none'
+				},
+				'paint': {
+					'line-color': '#fff',
+					'line-width': 2
 				}
 			},
 	],
