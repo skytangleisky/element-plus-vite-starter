@@ -349,28 +349,30 @@ export default {
 					visibility:setting.人影.监控.routeLine?'visible':'none'
 				}
 			},
-			// {
-			// 	'id': 'districtLayer',
-			// 	'type': 'fill',
-			// 	'source': 'district', // reference the data source
-			// 	'layout': {
-			// 		visibility:setting.district?'visible':'none'
-			// 	},
-			// 	'paint': {
-			// 		'fill-color': '#000',
-			// 		'fill-opacity': 0.2
-			// 	}
-			// },
+			{
+				'id': 'districtLayer',
+				'type': 'fill',
+				'source': 'district', // reference the data source
+				'layout': {
+					visibility:setting.人影.监控.district?'visible':'none'
+				},
+				'paint': {
+					'fill-color': setting.人影.监控.districtFillColor,
+					'fill-opacity': 0.2
+				}
+			},
 			{
 				'id': 'districtLineBase',
 				'type': 'line',
 				'source': 'district',
 				'layout': {
-					'visibility':setting.district?'visible':'none'
+					'visibility':setting.人影.监控.district?'visible':'none',
+					'line-join':'round',
+					'line-cap':'round',
 				},
 				'paint': {
 					'line-color': '#000',
-					'line-width': 3
+					'line-width': 2,
 				}
 			},
 			{
@@ -378,11 +380,14 @@ export default {
 				'type': 'line',
 				'source': 'district',
 				'layout': {
-					'visibility':setting.district?'visible':'none'
+					'visibility':setting.人影.监控.district?'visible':'none',
+					'line-join':'round',
+					'line-cap':'round',
 				},
 				'paint': {
-					'line-color': '#fff',
-					'line-width': 2
+					'line-color': setting.人影.监控.districtLineColor,
+					'line-width': 1,
+					// 'line-dasharray': [1,1],
 				}
 			},
 	],

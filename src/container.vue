@@ -4,11 +4,11 @@
     <my-header></my-header>
     <div
       class="relative w-full h-full b-solid b-red b-0px box-border"
-      style="overflow: auto"
+      style="overflow: visible"
     >
       <router-view v-slot="{ Component }">
         <keep-alive>
-          <component :key="$route.identify" :is="Component" />
+          <component :key="$route.identify" :is="Component"/>
         </keep-alive>
       </router-view>
     </div>

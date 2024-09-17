@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%; height: 100%; overflow: hidden; position: absolute">
+  <div style="width: 100%; height: 100%; overflow: hidden; position: absolute;">
     <edit-map
       v-model:prevRequestShow="setting.人影.监控.prevPlanRequestShow"
       v-model:prevRequestData="setting.人影.监控.prevPlanRequestData"
@@ -19,6 +19,7 @@
       v-model:gridValue="setting.人影.监控.gridValue"
       v-model:isolines="setting.人影.监控.isolines"
       v-model:isobands="setting.人影.监控.isobands"
+      v-model:districtLineColor="setting.人影.监控.districtLineColor"
     ></edit-map>
     <div
       class="absolute left-10px top-10px b-solid b-1px dark:b-gray-5 b-gray dark:bg-#2b2b2b bg-white dark:color-white color-black w-150px h-80px flex flex-col justify-between p-10px"
@@ -45,11 +46,13 @@
               v-model="setting.人影.监控.loadmap"
               label="显示瓦片地图"
             ></el-checkbox>
-            <el-checkbox
-              name="控制区划"
-              v-model="setting.人影.监控.district"
-              label="显示行政区划"
-            ></el-checkbox>
+            <div class="flex items-center">
+              <el-checkbox
+                name="控制区划"
+                v-model="setting.人影.监控.district"
+              ></el-checkbox>
+              <div class="p-l-8px">显示行政区划</div>
+            </div>
             <el-checkbox
               name="控制航线"
               v-model="setting.人影.监控.routeLine"
@@ -96,11 +99,15 @@
         </fieldset>
         <fieldset class="b-solid b-1px rounded-lg">
           <legend class="font-size-14px">人影飞行区域 显示风格</legend>
-          <div class="grid cols-3 rows-10">
-            <el-checkbox class="row-start-1 col-span-3" label="图层显示"></el-checkbox>
-            <div class="row-start-2 col-span-1">图层颜色</div><el-color-picker class="row-start-2 col-span-3" v-model="color" show-alpha :predefine="predefineColors" color-format="hex" />
-            <el-checkbox class="row-start-3 col-span-3" label="填充"></el-checkbox>
-            <el-checkbox class="row-start-4 col-span-3" label="比例尺显示控制"></el-checkbox>
+          <div class="flex flex-col">
+            <el-checkbox name="图层显示控制" class="row-start-1 col-span-3" label="图层显示"></el-checkbox>
+            <label class="flex"><input type="radio" class="m-0" name="选择颜色" :value="0" v-model="setting.人影.监控.showColorSelector">图层颜色<div :style="`background:${setting.人影.监控.districtLineColor};flex:1;`"></div></label>
+            <label class="flex"><input type="radio" class="m-0" name="选择颜色" :value="1" v-model="setting.人影.监控.showColorSelector">填充颜色<div :style="`background:${setting.人影.监控.districtFillColor};flex:1;`"></div></label>
+            <!-- <div class="row-start-2 col-span-1">图层颜色</div><el-color-picker class="row-start-2 col-span-3" v-model="color" show-alpha :predefine="predefineColors" color-format="hex" /> -->
+            <!-- <div class="row-start-2 col-span-1">省界颜色</div><div :style="`background:${setting.人影.监控.districtLineColor}`" @click="setting.人影.监控.districtLineColorSelector=!setting.人影.监控.districtLineColorSelector" tabindex="-1"></div>
+            <div class="row-start-2 col-span-1">填充颜色</div><div :style="`background:${setting.人影.监控.districtFillColor}`" @click="setting.人影.监控.districtFillColorSelector=!setting.人影.监控.districtFillColorSelector" tabindex="-1"></div> -->
+            <el-checkbox name="填充控制" class="row-start-3 col-span-3" label="填充"></el-checkbox>
+            <el-checkbox name="比例尺显示" class="row-start-4 col-span-3" label="比例尺显示控制"></el-checkbox>
           </div>
         </fieldset>
       </div>
@@ -135,7 +142,10 @@
     v-model:show="setting.人影.监控.prevPlanRequestShow"
     v-model:data="setting.人影.监控.prevPlanRequestData"
     @click="confirm"
+    style="z-index:2010"
   ></dialog-plan-request>
+  <ColorSelector v-if="setting.人影.监控.showColorSelector == 0" v-model:selectorColor="setting.人影.监控.districtLineColor" style="z-index: 2010;" @cancel="setting.人影.监控.showColorSelector=-1"></ColorSelector>
+  <ColorSelector v-if="setting.人影.监控.showColorSelector == 1" v-model:selectorColor="setting.人影.监控.districtFillColor" style="z-index: 2010;" @cancel="setting.人影.监控.showColorSelector=-1"></ColorSelector>
 </template>
 <script lang="ts" setup>
 import editMap from "../editMap.vue";
@@ -152,6 +162,7 @@ import { watch, ref, reactive } from "vue";
 import DialogPlanRequest, { prevRequestDataType } from "../../dialog_plan_request.vue";
 import { useSettingStore } from "~/stores/setting";
 import { eventbus } from "~/eventbus/index";
+import ColorSelector from "~/myComponents/colorSelector/index.vue"
 const setting = useSettingStore();
 import datatable from "~/myComponents/datatable/index.vue";
 const menus = reactive([
@@ -252,23 +263,6 @@ watch(
   },
   { immediate: true, deep: true }
 );
-const color = ref('rgba(255, 69, 0, 0.68)')
-const predefineColors = ref([
-  '#ff4500',
-  '#ff8c00',
-  '#ffd700',
-  '#90ee90',
-  '#00ced1',
-  '#1e90ff',
-  '#c71585',
-  'rgba(255, 69, 0, 0.68)',
-  'rgb(255, 120, 0)',
-  'hsv(51, 100, 98)',
-  'hsva(120, 40, 94, 0.5)',
-  'hsl(181, 100%, 37%)',
-  'hsla(209, 100%, 56%, 0.73)',
-  '#c7158577',
-])
 </script>
 <style scoped lang="scss">
 $time: 1s;

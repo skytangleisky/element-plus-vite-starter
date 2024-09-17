@@ -1,6 +1,6 @@
 <template>
-  <div class="ColorSelector" v-dialogDrag>
-    <div class="relative w-full h-30px bg-#333 box-border b-solid b-#000 b-0px b-b-1px flex justify-center items-center font-size-18px">调色板</div>
+  <div class="ColorSelector bg-white dark:bg-#535353" v-dialogDrag>
+    <div class="relative w-full h-30px bg-white dark:bg-#333 box-border b-solid b-#000 b-0px b-b-1px flex justify-center items-center font-size-18px">调色板</div>
     <div class="relative w-full h-full" tabindex="-1" @mousedown.stop>
       <div id="cssquareselector"><canvas id="cssquare" width="256" height="256"></canvas><svg id="cssquarecursor" height="268" width="268"><circle cx="7" cy="7" r="5" stroke="black" stroke-width="1" fill="none" /></svg></div>
       <label class="absolute left-10px top-300px flex items-center"><input type="checkbox" name="cspalette1" value="0">只有Web颜色</label>
@@ -20,28 +20,32 @@
           </div>
         </div></div>
       </div>
-      <div class="absolute left-310px top-155px grid cols-3 rows-3 gap-row-0 gap-col-0 gap-row-1" style="grid-template-columns: 35px auto auto">
-        <div class="first-col"><input type="radio" id="HSB_H" name="channel" value="3" v-model="setting.channel"><label for="HSB_H">H:</label></div><input autocomplete="off" class="w-32px h-15px" id="inHSB_H" type="text" maxlength="3" size="3"> 度
-        <div class="first-col"><input type="radio" id="HSB_S" name="channel" value="4" v-model="setting.channel"><label for="HSB_S">S:</label></div><input autocomplete="off" class="w-32px h-15px" id="inHSB_S" type="text" maxlength="3" size="3"> %
-        <div class="first-col"><input type="radio" id="HSB_B" name="channel" value="5" v-model="setting.channel"><label for="HSB_B">V:</label></div><input autocomplete="off" class="w-32px h-15px" id="inHSB_B" type="text" maxlength="3" size="3"> %
+      <div class="absolute left-310px top-155px grid cols-3 rows-3 gap-row-1" style="grid-template-columns: 35px auto auto">
+        <label class="first-col flex justify-between items-center"><input type="radio" name="channel" value="3" v-model="setting.channel">H:</label><input autocomplete="off" class="w-32px h-15px" id="inHSB_H" type="text" maxlength="3" size="3">度
+        <label class="first-col flex justify-between items-center"><input type="radio" name="channel" value="4" v-model="setting.channel">S:</label><input autocomplete="off" class="w-32px h-15px" id="inHSB_S" type="text" maxlength="3" size="3">%
+        <label class="first-col flex justify-between items-center"><input type="radio" name="channel" value="5" v-model="setting.channel">V:</label><input autocomplete="off" class="w-32px h-15px" id="inHSB_B" type="text" maxlength="3" size="3">%
       </div>
       <div class="absolute left-410px top-155px grid cols-2 rows-3 gap-row-1" style="grid-template-columns: 35px auto;">
-        <div class="first-col"><input type="radio" id="Lab_L" name="channel" value="6" v-model="setting.channel"><label for="Lab_L">L:</label></div><div><input autocomplete="off" class="w-41px h-15px" id="inLab_L" type="text" maxlength="3" size="4"></div>
-        <div class="first-col"><input type="radio" id="Lab_a" name="channel" value="7" v-model="setting.channel"><label for="Lab_a">a:</label></div><div><input autocomplete="off" class="w-41px h-15px" id="inLab_a" type="text" maxlength="4" size="4"></div>
-        <div class="first-col"><input type="radio" id="Lab_b" name="channel" value="8" v-model="setting.channel"><label for="Lab_b">b:</label></div><div><input autocomplete="off" class="w-41px h-15px" id="inLab_b" type="text" maxlength="4" size="4"></div>
+        <label class="first-col flex justify-between items-center"><input type="radio" name="channel" value="6" v-model="setting.channel">L:</label><input autocomplete="off" class="w-32px h-15px" id="inLab_L" type="text" maxlength="3" size="4">
+        <label class="first-col flex justify-between items-center"><input type="radio" name="channel" value="7" v-model="setting.channel">a:</label><input autocomplete="off" class="w-32px h-15px" id="inLab_a" type="text" maxlength="4" size="4">
+        <label class="first-col flex justify-between items-center"><input type="radio" name="channel" value="8" v-model="setting.channel">b:</label><input autocomplete="off" class="w-32px h-15px" id="inLab_b" type="text" maxlength="4" size="4">
       </div>
       <div class="absolute left-310px top-235px grid cols-2 rows-3 gap-row-1" style="grid-template-columns: 35px auto;">
-        <div class="first-col"><input type="radio" id="RGB_R" name="channel" value="0" v-model="setting.channel"><label for="RGB_R">R:</label></div><div><input autocomplete="off" class="w-32px h-15px" id="inRGB_R" type="text" maxlength="3" size="3"></div>
-        <div class="first-col"><input type="radio" id="RGB_G" name="channel" value="1" v-model="setting.channel"><label for="RGB_G">G:</label></div><div><input autocomplete="off" class="w-32px h-15px" id="inRGB_G" type="text" maxlength="3" size="3"></div>
-        <div class="first-col"><input type="radio" id="RGB_B" name="channel" value="2" v-model="setting.channel"><label for="RGB_B">B:</label></div><div><input autocomplete="off" class="w-32px h-15px" id="inRGB_B" type="text" maxlength="3" size="3"></div>
+        <label class="first-col flex justify-between items-center"><input type="radio" name="channel" value="0" v-model="setting.channel">R:</label><input autocomplete="off" class="w-32px h-15px" id="inRGB_R" type="text" maxlength="3" size="3">
+        <label class="first-col flex justify-between items-center"><input type="radio" name="channel" value="1" v-model="setting.channel">G:</label><input autocomplete="off" class="w-32px h-15px" id="inRGB_G" type="text" maxlength="3" size="3">
+        <label class="first-col flex justify-between items-center"><input type="radio" name="channel" value="2" v-model="setting.channel">B:</label><input autocomplete="off" class="w-32px h-15px" id="inRGB_B" type="text" maxlength="3" size="3">
       </div>
-      <div class="absolute left-430px top-235px grid cols-3 rows-3 gap-row-1" style="grid-template-columns: 15px auto auto;">
-        <div><label for="inCMYK_C">C:</label></div><input autocomplete="off" class="w-32px h-15px" id="inCMYK_C" type="text" maxlength="3" size="3"> %
-        <div><label for="inCMYK_M">M:</label></div><input autocomplete="off" class="w-32px h-15px" id="inCMYK_M" type="text" maxlength="3" size="3"> %
-        <div><label for="inCMYK_Y">Y:</label></div><input autocomplete="off" class="w-32px h-15px" id="inCMYK_Y" type="text" maxlength="3" size="3"> %
-        <div><label for="inCMYK_K">K:</label></div><input autocomplete="off" class="w-32px h-15px" id="inCMYK_K" type="text" maxlength="3" size="3"> %
+      <div class="absolute left-430px top-235px grid cols-2 rows-3 gap-row-1" style="grid-template-columns: 55px auto;place-items: center;justify-items: end;">
+        <label class="flex justify-between items-center">C:<input autocomplete="off" class="w-32px h-15px" id="inCMYK_C" type="text" maxlength="3" size="3"></label>%
+        <label class="flex justify-between items-center">M:<input autocomplete="off" class="w-32px h-15px" id="inCMYK_M" type="text" maxlength="3" size="3"></label>%
+        <label class="flex justify-between items-center">Y:<input autocomplete="off" class="w-32px h-15px" id="inCMYK_Y" type="text" maxlength="3" size="3"></label>%
+        <label class="flex justify-between items-center">K:<input autocomplete="off" class="w-32px h-15px" id="inCMYK_K" type="text" maxlength="3" size="3"></label>%
       </div>
-      <div id="cscolorzone"><div id="cscolor"></div><div id="csactive"></div><div id="cshtmlcolor"></div></div>
+      <div id="cscolorzone">
+        <div id="cscolor"><div style="position:absolute;top:-50%;transform: translateX(-50%);left:50%">新的</div></div>
+        <div id="csactive"><div style="position:absolute;bottom:-50%;left:50%;transform: translateX(-50%);">当前</div></div>
+        <div id="cshtmlcolor" class="hidden"></div>
+      </div>
       <div class="absolute left-310px top-310px"><label for="inHEX"># </label><input autocomplete="off" class="w-82px h-15px" style="font-family: menlo;" id="inHEX" type="text" maxlength="7" size="7"></div>
       <div class="absolute top-0 hidden"><label for="outHTML">HTML Color Name: </label><input id="outHTML" type="text" maxlength="20" size="15"></div>
 
@@ -52,14 +56,34 @@
     </div>
   </div>
 </template>
-<script setup>
+<script lang="ts" setup>
 // import './color.js'
 import {ColorSelector} from './colorselector.js'
-import { onMounted } from 'vue';
+import { onBeforeUnmount, onMounted,watch } from 'vue';
 import { useSettingStore } from '~/stores/setting';
 const setting = useSettingStore()
+const props = withDefaults(defineProps<{
+  selectorColor?:string,
+}>(),{
+  selectorColor:'#ffffff',
+});
+const emit = defineEmits(['update:selectorColor','cancel'])
+let colorSelector:ColorSelector;
 onMounted(()=>{
-  new ColorSelector();
+  $('#csactive').css('background-color',props.selectorColor)
+  colorSelector = new ColorSelector();
+})
+const confirm = ()=>{
+  let targetColor = $('#cscolor').css('background-color')
+  $('#csactive').css('background-color',targetColor)
+  emit('update:selectorColor',targetColor)
+  emit('cancel')
+}
+const cancel = ()=>{
+  emit('cancel')
+}
+onBeforeUnmount(()=>{
+  colorSelector.discard()
 })
 </script>
 <style lang="scss">
@@ -70,7 +94,6 @@ onMounted(()=>{
   left:calc(50% - var(--width) / 2);
   top:calc(50% - var(--height) / 2);
   // background-image: url(./colorSelectorBg.png);
-  background: #535353;
   width:var(--width);
   height:var(--height);
   font-family:Chicago, sans-serif;
@@ -100,6 +123,7 @@ onMounted(()=>{
     #cssquare {
       position:absolute;
       border:none;
+      box-shadow: 0 0 1px #00000088;
     }
     #cssquarecursor {
       position:absolute;
@@ -122,6 +146,7 @@ onMounted(()=>{
       position:absolute;
       box-sizing: border-box;
       border:0;
+      box-shadow: 0 0 1px #00000088;
     }
     #csbarcursor {
       position:absolute;
@@ -164,6 +189,7 @@ onMounted(()=>{
     height:67px;
     display: flex;
     flex-direction: column;
+    border:1px solid black;
     #cscolor {
       width:59px;
       height:35px;
@@ -182,7 +208,6 @@ onMounted(()=>{
       width:59px;
       height:32px;
       position:absolute;
-      background:red;
       top:35px;
       left:0;
     }
@@ -196,7 +221,6 @@ onMounted(()=>{
   background-color: transparent;
   border-radius: 12px;
   box-sizing: border-box;
-  color: #f0f0f0;
   display: flex;
   justify-content: center;
   align-items: center;

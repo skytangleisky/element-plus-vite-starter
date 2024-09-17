@@ -83,6 +83,8 @@ import { getMicapsData } from "../mapbox/data/plot/micaps";
 import { wgs84togcj02 } from "~/myComponents/map/workers/mapUtil";
 import { useStationStore } from "~/stores/station";
 const station = useStationStore();
+import { useSettingStore } from "~/stores/setting.js";
+const setting = useSettingStore();
 import * as turf from "@turf/turf";
 const dialogOptions = reactive({ menus: [] });
 const stationMenuRef = ref<HTMLDivElement>();
@@ -203,6 +205,7 @@ const props = withDefaults(
     gridValue?: boolean;
     feather?: boolean;
     equidistantRing?: boolean;
+    districtLineColor?:string;
   }>(),
   {
     routeLine: true,
@@ -222,6 +225,7 @@ const props = withDefaults(
     gridValue: true,
     feather: false,
     equidistantRing: false,
+    districtLineColor:'#ffffff',
   }
 );
 import style from "./editMap.js";
@@ -1027,6 +1031,28 @@ onMounted(() => {
       }
     })
     */
+    function calculatePolygonCentroid(vertices:Array<[number,number]>) {
+      let area = 0;
+      let Cx = 0;
+      let Cy = 0;
+      const n = vertices.length;
+      for (let i = 0; i < n; i++) {
+        const x1 = vertices[i][0];
+        const y1 = vertices[i][1];
+        const x2 = vertices[(i + 1) % n][0];
+        const y2 = vertices[(i + 1) % n][1];
+
+        const crossProduct = (x1 * y2) - (x2 * y1);
+        area += crossProduct;
+        Cx += (x1 + x2) * crossProduct;
+        Cy += (y1 + y2) * crossProduct;
+      }
+
+      area /= 2;
+      Cx = Cx / (6 * area);
+      Cy = Cy / (6 * area);
+      return { x: Cx, y: Cy };
+    }
     exec({
       database:"host=127.0.0.1&port=3306&user=root&password=tanglei&database=union",
       query:{sqls:["select * from `华北飞行区域`"]}
@@ -1036,34 +1062,22 @@ onMounted(() => {
       for(let i=0;i<res.data[0].length;i++){
         let item = res.data[0][i]
         let strPoints = d.decode(Uint8Array.from(item.points.data).buffer)
-        let area:Array<[number,number]> = []
         let points = strPoints.split(' ').map(item=>{
           let lngLat = getLngLat(item)
           return wgs84togcj02(lngLat[0],lngLat[1])
-        })
-        let lngs:number[] = []
-        let lats:number[] = []
-        points.map((item:any)=>{
-          lngs.push(item[0])
-          lats.push(item[1])
-          area.push(item)
-        })
-        let minLng = Math.min(...lngs)
-        let maxLng = Math.max(...lngs)
-        let minLat = Math.min(...lats)
-        let maxLat = Math.max(...lats)
-
+        }) as Array<[number,number]>
+        let centroid = calculatePolygonCentroid(points)
         features.push({
           'type': 'Feature',
           'geometry': {
             'type': 'Point',
-            'coordinates': [(minLng+maxLng)/2,(minLat+maxLat)/2]
+            'coordinates': [centroid.x,centroid.y]
           },
           'properties': {
             'label': item.name,
           }
         })
-        areas.push([area])
+        areas.push([points])
       }
 
       map.addLayer({
@@ -2015,22 +2029,22 @@ onMounted(() => {
     //   },
     // });
 
-    timer = setInterval(() => {
-      let source = map.getSource("飞机原数据");
-      if (source) {
-        let data = source.serialize().data;
-        data.features.map((item: any) => {
-          let coordinates = item.geometry.coordinates;
-          let deg = item.properties.deg;
-          let speed = item.properties.speed;
-          const pt = turf.destination(turf.point(coordinates), speed, deg, {
-            units: "meters",
-          });
-          item.geometry.coordinates = pt.geometry?.coordinates;
-        });
-        source.setData(data);
-      }
-    }, 1000);
+    // timer = setInterval(() => {
+    //   let source = map.getSource("飞机原数据");
+    //   if (source) {
+    //     let data = source.serialize().data;
+    //     data.features.map((item: any) => {
+    //       let coordinates = item.geometry.coordinates;
+    //       let deg = item.properties.deg;
+    //       let speed = item.properties.speed;
+    //       const pt = turf.destination(turf.point(coordinates), speed, deg, {
+    //         units: "meters",
+    //       });
+    //       item.geometry.coordinates = pt.geometry?.coordinates;
+    //     });
+    //     source.setData(data);
+    //   }
+    // }, 1000);
 if(false){
 
   getMicapsData(plotUrl).then(async(result: any) => {
@@ -2949,10 +2963,24 @@ watch(
     if (newVal) {
       map.setLayoutProperty("districtLineBase", "visibility", "visible");
       map.setLayoutProperty("districtLineOver", "visibility", "visible");
+      map.setLayoutProperty("districtLayer", "visibility", "visible");
     } else {
       map.setLayoutProperty("districtLineBase", "visibility", "none");
       map.setLayoutProperty("districtLineOver", "visibility", "none");
+      map.setLayoutProperty("districtLayer", "visibility", "none");
     }
+  }
+);
+watch(
+  () => props.districtLineColor,
+  (newVal) => {
+    map.setPaintProperty("districtLineOver","line-color",newVal)
+  }
+);
+watch(
+  () => setting.人影.监控.districtFillColor,
+  (newVal) => {
+    map.setPaintProperty("districtLayer","fill-color",newVal)
   }
 );
 watch(

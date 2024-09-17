@@ -316,6 +316,9 @@ export const useSettingStore = defineStore({
         zyd:true,
         plane:true,
         district:true,
+        districtLineColor:'#0ff',
+        showColorSelector:0,
+        districtFillColor:'#0f0',
         loadmap:true,
         disappear:false,//右侧菜单
         prevPlanRequestShow:false,
