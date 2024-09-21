@@ -62,6 +62,8 @@
           label="显示行政区划"
         ></el-checkbox>
         <el-checkbox v-model="setting.组网.监控.radar" label="天气雷达"></el-checkbox>
+        <el-checkbox v-model="setting.组网.监控.routeLine" label="航路航线"></el-checkbox>
+        <el-checkbox v-model="setting.组网.监控.feather" label="风羽绘制"></el-checkbox>
         <!-- <el-checkbox label="探测目标图层"></el-checkbox>
         <el-checkbox label="禁飞区图层"></el-checkbox>
         <el-checkbox label="备案空域图层"></el-checkbox> -->

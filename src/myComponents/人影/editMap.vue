@@ -16,9 +16,8 @@
     ></div>
     <Dialog
       v-dialogDrag
-      class="absolute"
+      class="stationDialog"
       v-model:menus="dialogOptions.menus"
-      style="left: 10px; top: 10px"
     ></Dialog>
     <plan-panel
       :当前作业进度="planProps.当前作业进度"
@@ -132,6 +131,7 @@ const getHue = (min: number, v: number, max: number) => {
   //hsl(60,100%,50%)～hsl(0,100%,50%)
   // return (1 - percent) * 60;
 };
+mapboxgl.accessToken = "pk.eyJ1IjoidGFuZ2xlaTIwMTMxNCIsImEiOiJjbGtmOTdyNWoxY2F1M3Jqczk4cGllYXp3In0.9N-H_79ehy4dJeuykZa0xA";
 const Map = mapboxgl.Map;
 const Marker = mapboxgl.Marker;
 const Popup = mapboxgl.Popup;
@@ -501,7 +501,7 @@ onMounted(() => {
         style:"fill:white;stroke:black;stroke-width:1px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       },
       'projectile-red':{
-        fill: 'red',
+        style:"fill:red;stroke:black;stroke-width:1px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       }
     })
     await loadImage2Map(map,导航台图标,18,18,{
@@ -1094,7 +1094,7 @@ onMounted(() => {
           },
         },
         layout: {
-          visibility: "visible",
+          visibility: setting.人影.监控.人影飞行区 ? "visible" : "none",
         },
         paint: {
           "fill-color": "#000",
@@ -1115,7 +1115,7 @@ onMounted(() => {
           },
         },
         layout: {
-          visibility: "visible",
+          visibility: setting.人影.监控.人影飞行区 ? "visible" : "none",
           'line-cap': 'round',
           'line-join': 'round'
         },
@@ -1139,7 +1139,7 @@ onMounted(() => {
           },
         },
         layout: {
-          visibility: "visible",
+          visibility: setting.人影.监控.人影飞行区 ? "visible" : "none",
           'line-cap': 'round',
           'line-join': 'round'
         },
@@ -1160,7 +1160,7 @@ onMounted(() => {
           }
         },
         layout: {
-          visibility: props.zyd ? "visible" : "none",
+          visibility: setting.人影.监控.人影飞行区 ? "visible" : "none",
           // This icon is a part of the Mapbox Streets style.
           // To view all images available in a Mapbox style, open
           // the style in Mapbox Studio and click the "Images" tab.
@@ -1192,7 +1192,8 @@ onMounted(() => {
       });
     })
     await addFeatherImages(map);
-    map.addLayer(new CustomLayer());
+    // map.addLayer(new CustomLayer());
+    map.addLayer(CustomLayer);
     map.addLayer({
       id: "maine",
       type: "fill",
@@ -2993,6 +2994,19 @@ watch(
     }
   }
 );
+watch(()=>setting.人影.监控.人影飞行区,(newVal)=>{
+  if(newVal){
+    map.setLayoutProperty("华北飞行区域baseLine","visibility","visible")
+    map.setLayoutProperty("华北飞行区域line","visibility","visible")
+    map.setLayoutProperty("华北飞行区域标签","visibility","visible")
+    map.setLayoutProperty("华北飞行区域area","visibility","visible")
+  }else{
+    map.setLayoutProperty("华北飞行区域baseLine","visibility","none")
+    map.setLayoutProperty("华北飞行区域line","visibility","none")
+    map.setLayoutProperty("华北飞行区域标签","visibility","none")
+    map.setLayoutProperty("华北飞行区域area","visibility","none")
+  }
+})
 </script>
 
 <style lang="scss">
@@ -3099,6 +3113,11 @@ watch(
 }
 </style>
 <style scoped lang="scss">
+.stationDialog{
+  position: absolute;
+  left:10px;
+  top:10px;
+}
 .mapboxgl-canvas:focus-visible {
   outline: none;
 }

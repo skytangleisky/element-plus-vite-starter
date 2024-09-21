@@ -268,7 +268,7 @@ isobands.features.forEach(function (layer1) {
 });
 let intersection = turf.featureCollection(features);
 mapboxgl.accessToken =
-  "pk.eyJ1Ijoic2hldmF3ZW4iLCJhIjoiY2lwZXN2OGlvMDAwMXR1bmh0aG5vbDFteiJ9.2fsD37adZ1hC2MUU-2xByA";
+  "pk.eyJ1IjoidGFuZ2xlaTIwMTMxNCIsImEiOiJjbGtmOTdyNWoxY2F1M3Jqczk4cGllYXp3In0.9N-H_79ehy4dJeuykZa0xA";
 const mapRef = ref(null);
 var map: mapboxgl.Map;
 // 可视化及交互部分

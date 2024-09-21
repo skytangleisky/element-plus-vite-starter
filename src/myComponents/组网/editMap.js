@@ -10,11 +10,21 @@ import { useSettingStore } from '~/stores/setting';
 const setting = useSettingStore()
 
 import { lngLat2XY,XY2LngLat } from '../map/js/core.js'
+// const result = {
+// 	minLng:116.13101482393752,
+// 	minLat:26.938309297788578,
+// 	cenLng:120.95777893066406,
+// 	cenLat:31.075000762939453,
+// }
+let dLng = 120.95777893066406 - 116.13101482393752
+let dLat = 31.075000762939453 - 26.938309297788578
+import { getLngLat } from '~/tools/index'
+let pos = getLngLat('101464100E36355700N')
 const result = {
-	minLng:116.13101482393752,
-	minLat:26.938309297788578,
-	cenLng:120.95777893066406,
-	cenLat:31.075000762939453,
+	minLng:pos[0]-dLng,
+	minLat:pos[1]-dLat,
+	cenLng:pos[0],
+	cenLat:pos[1],
 }
 let minLng = result.minLng;
 let minLat = result.minLat;
@@ -294,7 +304,7 @@ export default {
 	"sources": {
 		"irSource":{
 			type: "image",
-			url: 'https://dev.tanglei.top/backend/radar',
+			url: window.location.origin+'/backend/radar',
 
 			coordinates: [
 				[minLng, maxLat],
@@ -351,94 +361,94 @@ export default {
 	"glyphs": window.location.origin+"/resources/glyphs/{fontstack}/{range}.pbf",
 	"projection": {"name": "mercator"},//albers, equalEarth, equirectangular, lambertConformalConic, mercator, naturalEarth, winkelTripel, globe
 	"layers": [
-			// {
-			// 		"id": "land",
-			// 		"type": "background",
-			// 		"metadata": {
-			// 				"mapbox:featureComponent": "land-and-water",
-			// 				"mapbox:group": "Land & water, land"
-			// 		},
-			// 		"layout": {},
-			// 		"paint": {
-			// 				"background-color": [
-			// 						"interpolate",
-			// 						["linear"],
-			// 						["zoom"],
-			// 						9,
-			// 						"#2b2b2b",
-			// 						11,
-			// 						"#2b2b2b"
-			// 				]
-			// 		}
-			// },
-			{
-				"id": "simple-tiles",
-				"type": "raster",
-				"source": "raster-tiles",
-				"minzoom": 0,
-				"maxzoom": 22,
-				layout:{
-					visibility:setting.组网.模拟.loadmap?'visible':'none'
-				}
-			},
-			{
-				"id": "航路",
-				"type": "raster",
-				"source": "raster-route",
-				"minzoom": 0,
-				"maxzoom": 22,
-				layout:{
-					visibility:'visible'
-				}
-			},
-			{
-				"id": "等值线",
-				"type": "raster",
-				"source": "raster-isoline",
-				"minzoom": 0,
-				"maxzoom": 22,
-				layout:{
-					visibility:'none'
-				}
-			},
-			// {
-			// 	'id': 'districtLayer',
-			// 	'type': 'fill',
-			// 	'source': 'district', // reference the data source
-			// 	'layout': {
-			// 		visibility:setting.district?'visible':'none'
-			// 	},
-			// 	'paint': {
-			// 		'fill-color': '#000',
-			// 		'fill-opacity': 0.2
-			// 	}
-			// },
-			{
-				'id': 'districtOutline',
-				'type': 'line',
-				'source': 'district',
-				'layout': {
-					'visibility':setting.district?'visible':'none'
-				},
-				'paint': {
-					'line-color': 'lightgrey',
-					'line-width': 1
-				}
-			},
-			{
-				id: "irLayer",
-				type: "raster",
-				source: "irSource",
-				"maxzoom": 21,
-				paint: {
-					"raster-fade-duration": 0,
-					"raster-opacity": 1,
-					"raster-resampling": "nearest",
-				},
-				layout: {
-					visibility: setting.组网.监控.radar?'visible':'none',
-				},
+		// {
+		// 		"id": "land",
+		// 		"type": "background",
+		// 		"metadata": {
+		// 				"mapbox:featureComponent": "land-and-water",
+		// 				"mapbox:group": "Land & water, land"
+		// 		},
+		// 		"layout": {},
+		// 		"paint": {
+		// 				"background-color": [
+		// 						"interpolate",
+		// 						["linear"],
+		// 						["zoom"],
+		// 						9,
+		// 						"#2b2b2b",
+		// 						11,
+		// 						"#2b2b2b"
+		// 				]
+		// 		}
+		// },
+		{
+			"id": "simple-tiles",
+			"type": "raster",
+			"source": "raster-tiles",
+			"minzoom": 0,
+			"maxzoom": 22,
+			layout:{
+				visibility:setting.组网.模拟.loadmap?'visible':'none'
 			}
+		},
+		{
+			"id": "航路",
+			"type": "raster",
+			"source": "raster-route",
+			"minzoom": 0,
+			"maxzoom": 22,
+			layout:{
+				visibility:setting.组网.监控.routeLine?'visible':'none'
+			}
+		},
+		{
+			"id": "等值线",
+			"type": "raster",
+			"source": "raster-isoline",
+			"minzoom": 0,
+			"maxzoom": 22,
+			layout:{
+				visibility:'none'
+			}
+		},
+		{
+			'id': 'districtLayer',
+			'type': 'fill',
+			'source': 'district', // reference the data source
+			'layout': {
+				visibility:setting.district?'visible':'none'
+			},
+			'paint': {
+				'fill-color': '#000',
+				'fill-opacity': 0.2
+			}
+		},
+		{
+			'id': 'districtOutline',
+			'type': 'line',
+			'source': 'district',
+			'layout': {
+				'visibility':setting.district?'visible':'none'
+			},
+			'paint': {
+				'line-color': 'lightgrey',
+				'line-width': 1
+			}
+		},
+		{
+			id: "irLayer",
+			type: "raster",
+			source: "irSource",
+			"maxzoom": 21,
+			paint: {
+				"raster-fade-duration": 0,
+				"raster-opacity": 1,
+				"raster-resampling": "nearest",
+			},
+			layout: {
+				visibility: setting.组网.监控.radar?'visible':'none',
+			},
+		}
 	],
 	"created": "2023-11-07T03:38:34.435Z",
 	"modified": "2023-11-14T11:53:57.549Z",

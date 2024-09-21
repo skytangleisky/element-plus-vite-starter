@@ -78,6 +78,7 @@ import * as turf from "@turf/turf";
 import Circle from "@turf/circle";
 import { wgs84togcj02 } from "~/myComponents/map/workers/mapUtil";
 import { watch, ref, onMounted, onBeforeUnmount, reactive } from "vue";
+    import { getLngLat } from '~/tools/index'
 const chromatographyRef = ref<any>();
 const chromatographyArr = [
   -20,
@@ -113,6 +114,8 @@ import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.scss";
 import { 获取净空区, saveData, deleteData } from "~/api/enclosure.js";
 import { getDevice } from "~/api/组网/device.js";
 import { addFeatherImages, getFeather } from "~/tools";
+import { useSettingStore } from "~/stores/setting";
+const setting = useSettingStore();
 const bus = useBus();
 import theme from "./drawTheme/inactive.js";
 let timer = 0;
@@ -208,12 +211,17 @@ watch(
     }
   }
 );
+watch(()=>setting.组网.监控.routeLine,newVal=>{
+  if (newVal) {
+    map.setLayoutProperty("航路", "visibility", "visible");
+  } else {
+    map.setLayoutProperty("航路", "visibility", "none");
+  }
+})
 watch([() => props.zoom, () => props.center], ([zoom, center]) => {
   //无法通过监听变量的变化实时设置地图的视角
 });
 import { useStationStore } from "~/stores/station";
-import { useSettingStore } from "~/stores/setting";
-const setting = useSettingStore();
 let enclosureList = new Array<any>();
 const station = useStationStore();
 const mapRef = ref(null);
@@ -297,7 +305,8 @@ onMounted(() => {
       pitchAlignment: "map",
       rotationAlignment: "map",
     })
-      .setLngLat([120.95777893066406, 31.075000762939453])
+      // .setLngLat([120.95777893066406, 31.075000762939453])
+      .setLngLat(wgs84togcj02(...getLngLat('101464100E36355700N')))
       .addTo(map);
     //用于确定PPI位置是否正确
     new Marker({
@@ -305,7 +314,8 @@ onMounted(() => {
       pitchAlignment: "map",
       rotationAlignment: "map",
     })
-      .setLngLat(wgs84togcj02(...[120.477398, 36.16953]) as [number, number])
+      // .setLngLat(wgs84togcj02(...[120.477398, 36.16953]) as [number, number])
+      .setLngLat(wgs84togcj02(...getLngLat('102015755E36314538N')) as [number, number])
       .addTo(map);
     await addFeatherImages(map);
     map.addLayer({
@@ -483,7 +493,7 @@ onMounted(() => {
           },
         },
         layout: {
-          visibility: "visible",
+					visibility:setting.组网.监控.feather?'visible':'none',
           // This icon is a part of the Mapbox Streets style.
           // To view all images available in a Mapbox style, open
           // the style in Mapbox Studio and click the "Images" tab.
@@ -861,13 +871,15 @@ onMounted(() => {
             angle1 = radial.β - (360 - ((angle2 - angle1) % 360));
             angle2 = radial.β;
           }
+          let pt = getLngLat('102015755E36314538N')
           polygons.push({
             type: "Feature",
             geometry: {
               type: "Polygon",
               coordinates: [
                 calculateSectorPoints(
-                  wgs84togcj02(...[120.477398, 36.16953]) as [number, number],
+                  // wgs84togcj02(...[120.477398, 36.16953]) as [number, number],
+                  wgs84togcj02(...pt) as [number, number],
                   radial.list[i].distance - BinLength / 2,
                   radial.list[i].distance + BinLength / 2,
                   angle1,
@@ -1320,6 +1332,13 @@ watch(
     }
   }
 );
+watch(()=>setting.组网.监控.feather,newVal=>{
+  if (newVal) {
+    map.setLayoutProperty("绘制风羽", "visibility", "visible");
+  } else {
+    map.setLayoutProperty("绘制风羽", "visibility", "none");
+  }
+})
 watch(
   () => props.loadmap,
   (newVal) => {

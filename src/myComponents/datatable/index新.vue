@@ -1,7 +1,7 @@
 <template>
   <div class="mainContainer">
-    <div>
-      <el-input v-model="condition" style="width: 240px" placeholder="请输入过滤条件">
+    <div class="dark:bg-#212121" style="padding:8px 10px;">
+      <el-input v-model="condition" style="width: 300px" placeholder="请输入过滤条件">
         <template #prefix><el-icon><Search /></el-icon></template><template #append>
           <el-button type="primary" size="small" @click="getData()"
             >搜索</el-button
@@ -10,7 +10,7 @@
       >
     </div>
     <div class="flex flex-col relative" style="flex-grow: 1; overflow: auto">
-      <div class="flex flex-row z-11">
+      <div class="flex flex-row z-11 p-10px">
         <div class="listContainer z-1" tabindex="-1">
           <el-icon v-html="listSvg" class="svg" @click="listSvgClick"></el-icon>
           <draggable
@@ -675,6 +675,7 @@ const allChange = (val: CheckboxValueType) => {
   background-color: #fff;
   display: flex;
   flex-direction: column;
+  padding:20px 40px;
   table {
     table-layout: fixed;
     border-left: 1px solid #444;

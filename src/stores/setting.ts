@@ -187,7 +187,9 @@ export const useSettingStore = defineStore({
             117.04212403858509,
             28.1994655756006
         ],
+        feather:true,
         pitch:0,
+        routeLine:true,
         radar:true,
         district:true,
         loadmap:true,
@@ -316,6 +318,7 @@ export const useSettingStore = defineStore({
         zyd:true,
         plane:true,
         district:true,
+        人影飞行区:true,
         districtLineColor:'#0ff',
         showColorSelector:0,
         districtFillColor:'#0f0',

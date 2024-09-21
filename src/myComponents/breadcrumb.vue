@@ -34,7 +34,7 @@ const click = (crumb: any) => {
   white-space: nowrap;
   overflow: auto;
   list-style: none;
-  font-size: 16px;
+  font-size: 25px;
   line-height: 40px;
   padding-left: 0;
   margin: 0;

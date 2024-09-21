@@ -12,7 +12,7 @@ export default {
 					"android": "11.0.0",
 					"ios": "11.0.0"
 			},
-			"mapbox:autocomposite": true,
+			"mapbox:autocomposite": false,
 			"mapbox:groups": {
 					"Transit, transit-labels": {
 							"name": "Transit, transit-labels",
@@ -269,6 +269,11 @@ export default {
 	// 		]
 	// },
 	"sources": {
+		'mapbox-terrain': {
+			type: 'vector',
+			// url: 'mapbox://mapbox.mapbox-terrain-v2'
+			tiles: ['https://dem.tanglei.site?lyrs=d&x={x}&y={y}&z={z}'],
+		},
 		"district":{
 			"type":"geojson",
 			"data": city
@@ -294,12 +299,20 @@ export default {
 			],
 			"tileSize": 256
 		},
+		"raster-dem": {
+			"type": "raster",
+			"tiles": [window.location.origin+"/backend/demImage?lyrs=terrain&x={x}&y={y}&z={z}"],
+			// "tiles":["https://terrain.tanglei.site?lyrs=terrain&x={x}&y={y}&z={z}"],
+			"tileSize": 512,
+			"maxzoom":14
+		},
 		"mapbox-dem": {
 			"type": "raster-dem",
 			"url_origin": 'mapbox://mapbox.mapbox-terrain-dem-v1',
 			"tiles":["https://terrain.tanglei.site?lyrs=terrain&x={x}&y={y}&z={z}"],
+			// "tiles":[window.location.origin+"/backend/demImage?lyrs=terrain&x={x}&y={y}&z={z}"],
 			"tileSize": 512,
-			"maxzoom": 14
+			"maxzoom": 14,
 		},
 	},
 	"terrain": { 'source': 'mapbox-dem', 'exaggeration': 1 },
@@ -350,6 +363,16 @@ export default {
 				}
 			},
 			{
+				"id": "demLayer",
+				"type": "raster",
+				"source": "raster-dem",
+				"minzoom": 0,
+				"maxzoom": 22,
+				layout:{
+					visibility:'none'
+				}
+			},
+			{
 				'id': 'districtLayer',
 				'type': 'fill',
 				'source': 'district', // reference the data source
@@ -390,6 +413,20 @@ export default {
 					// 'line-dasharray': [1,1],
 				}
 			},
+			// {
+			// 	'id': 'terrain-data',
+			// 	'type': 'line',
+			// 	'source': 'mapbox-terrain',
+			// 	'source-layer': 'contour',
+			// 	'layout': {
+			// 			'line-join': 'round',
+			// 			'line-cap': 'round'
+			// 	},
+			// 	'paint': {
+			// 			'line-color': '#ff69b4',
+			// 			'line-width': 1
+			// 	}
+			// }
 	],
 	"created": "2023-11-07T03:38:34.435Z",
 	"modified": "2023-11-14T11:53:57.549Z",

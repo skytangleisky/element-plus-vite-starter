@@ -46,54 +46,17 @@
               v-model="setting.人影.监控.loadmap"
               label="显示瓦片地图"
             ></el-checkbox>
-            <div class="flex items-center">
-              <el-checkbox
-                name="控制区划"
-                v-model="setting.人影.监控.district"
-              ></el-checkbox>
-              <div class="p-l-8px">显示行政区划</div>
-            </div>
-            <el-checkbox
-              name="控制航线"
-              v-model="setting.人影.监控.routeLine"
-              label="航路航线"
-            ></el-checkbox>
-            <el-checkbox
-              name="控制作业点"
-              v-model="setting.人影.监控.zyd"
-              label="显示作业点"
-            ></el-checkbox>
-            <el-checkbox
-              name="飞机"
-              v-model="setting.人影.监控.plane"
-              label="显示飞机"
-            ></el-checkbox>
+            <div class="flex items-center"><el-checkbox name="控制区划" v-model="setting.人影.监控.district"></el-checkbox><div class="p-l-8px">显示行政区划</div></div>
+            <el-checkbox name="控制人影飞行区" v-model="setting.人影.监控.人影飞行区" label="人影飞行区"></el-checkbox>
+            <el-checkbox name="控制航线" v-model="setting.人影.监控.routeLine" label="航路航线"></el-checkbox>
+            <el-checkbox name="控制作业点" v-model="setting.人影.监控.zyd" label="显示作业点"></el-checkbox>
+            <el-checkbox name="飞机" v-model="setting.人影.监控.plane" label="显示飞机"></el-checkbox>
             <template v-if="checkPermission(['admin'])">
-              <el-checkbox
-                name="控制自动站"
-                v-model="setting.人影.监控.zdz"
-                label="自动站"
-              ></el-checkbox>
-              <el-checkbox
-                name="控制网格点"
-                v-model="setting.人影.监控.gridPoint"
-                label="网格点"
-              ></el-checkbox>
-              <el-checkbox
-                name="控制网格值"
-                v-model="setting.人影.监控.gridValue"
-                label="网格值"
-              ></el-checkbox>
-              <el-checkbox
-                name="控制等值线"
-                v-model="setting.人影.监控.isolines"
-                label="等值线"
-              ></el-checkbox>
-              <el-checkbox
-                name="控制等值带"
-                v-model="setting.人影.监控.isobands"
-                label="等值带"
-              ></el-checkbox>
+              <el-checkbox name="控制自动站" v-model="setting.人影.监控.zdz" label="自动站"></el-checkbox>
+              <el-checkbox name="控制网格点" v-model="setting.人影.监控.gridPoint" label="网格点"></el-checkbox>
+              <el-checkbox name="控制网格值" v-model="setting.人影.监控.gridValue" label="网格值"></el-checkbox>
+              <el-checkbox name="控制等值线" v-model="setting.人影.监控.isolines" label="等值线"></el-checkbox>
+              <el-checkbox name="控制等值带" v-model="setting.人影.监控.isobands" label="等值带"></el-checkbox>
             </template>
           </div>
         </fieldset>
@@ -190,6 +153,91 @@ const formatUrl = (url: string) => {
   return url.replace("{x}", "105").replace("{y}", "48").replace("{z}", "7");
 };
 const tileList = ref([
+  {
+    selected: false,
+    name: "天地图(地形)",
+    url: formatUrl(
+      "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c"
+    ),
+    tileData: [
+      "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t1.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t2.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t3.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t4.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t5.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t6.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t7.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+    ],
+  },
+  {
+    selected: false,
+    name: "天地图(影像)",
+    url: formatUrl(
+      "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c"
+    ),
+    tileData: [
+      "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t1.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t2.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t3.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t4.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t5.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t6.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t7.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+    ],
+  },
+  {
+    selected: false,
+    name: "天地图(矢量图)",
+    url: formatUrl(
+      "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c"
+    ),
+    tileData: [
+      "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t1.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t2.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t3.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t4.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t5.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t6.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t7.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+    ],
+  },
+  {
+    selected: false,
+    name: "天地图(标注)",
+    url: formatUrl(
+      "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c"
+    ),
+    tileData: [
+      "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t1.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t2.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t3.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t4.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t5.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t6.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t7.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+    ],
+  },
+  {
+    selected: false,
+    name: "天地图(网路)",
+    url: formatUrl(
+      "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c"
+    ),
+    tileData: [
+      "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t1.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t2.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t3.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t4.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t5.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t6.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+      "http://t7.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+    ],
+  },
   {
     selected: false,
     name: "高德街道地图",

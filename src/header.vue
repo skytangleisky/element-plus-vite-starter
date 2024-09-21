@@ -1,6 +1,6 @@
 <template>
   <div class="nav">
-    <div style="line-height: 40px" class="flex items-center">
+    <div style="line-height: 56px" class="flex items-center">
       <el-icon
         v-html="setting.isCollapse ? openSvg : collapseSvg"
         style="font-size: 25px; padding: 0 10px"
@@ -127,8 +127,8 @@ const logout = () => {
   position: relative;
   z-index: 5;
   width: 100%;
-  height: 40px;
-  line-height: 40px;
+  height: 56px;
+  line-height: 56px;
   background-color: aliceblue;
   display: flex;
   justify-content: space-between;
@@ -148,6 +148,6 @@ const logout = () => {
   }
 }
 .dark .nav {
-  background-color: #111;
+  background-color: #264b5d;
 }
 </style>
