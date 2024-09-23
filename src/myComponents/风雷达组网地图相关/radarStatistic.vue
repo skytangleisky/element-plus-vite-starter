@@ -92,7 +92,7 @@
           />
         </div>
         <div class="subitem">
-          <span>相对高度</span>
+          <span>海拔高度</span>
           <el-switch
             v-model="setting.风雷达组网地图相关.高度"
             inline-prompt

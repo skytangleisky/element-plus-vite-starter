@@ -37,18 +37,13 @@ watch(
   () => bus.avgWindData_重庆,
   (avgWindData) => {
     option.series[0].data = [];
-    option.series[1].data = [];
-    option.series[2].data = [];
-    option.series[3].data = [];
-    option.series[4].data = [];
-    option.series[5].data = [];
     avgWindData.data&&avgWindData.data.map((radial:any,key:number)=>{
       if(key==0){
         currentTime.value = moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
+        radial.list.map((lib:any)=>{
+          option.series[key].data.push([lib['MeanSNR'], lib['distance']]);
+        })
       }
-      radial.list.map((lib:any)=>{
-        option.series[key].data.push([lib['MeanSNR'], lib['distance']]);
-      })
     })
     myChart.setOption(option, false, true);
   }
@@ -79,7 +74,7 @@ var option = {
     boundaryGap: false,
   },
   legend: {
-    data: ["SNR1", "SNR2", "SNR3", "SNR4","SNR5","SNR6"],
+    data: ["SNR1"],
   },
   grid: {
     top: 60,
@@ -100,41 +95,6 @@ var option = {
   series: [
     {
       name: "SNR1",
-      data: new Array<number>(),
-      type: "line",
-      smooth: true,
-      yAxisIndex: 0,
-    },
-    {
-      name: "SNR2",
-      data: new Array<number>(),
-      type: "line",
-      smooth: true,
-      yAxisIndex: 0,
-    },
-    {
-      name: "SNR3",
-      data: new Array<number>(),
-      type: "line",
-      smooth: true,
-      yAxisIndex: 0,
-    },
-    {
-      name: "SNR4",
-      data: new Array<number>(),
-      type: "line",
-      smooth: true,
-      yAxisIndex: 0,
-    },
-    {
-      name: "SNR5",
-      data: new Array<number>(),
-      type: "line",
-      smooth: true,
-      yAxisIndex: 0,
-    },
-    {
-      name: "SNR6",
       data: new Array<number>(),
       type: "line",
       smooth: true,

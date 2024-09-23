@@ -311,7 +311,7 @@ var option = {
       {
         gte: 5.4,
         lt: 7.9,
-        color: "#f4e9a3",
+        color: "#ffaa00",
         label: "中风（5.4  ~ 7.9 m/s）",
       },
       {

@@ -1057,12 +1057,12 @@ function work(){
     pointDataFeatures.features.length=0
     inversionPPIData.features.length = 0
     polygons.length = 0
-    res.data[0].map((item:any,k:number) => {
-      if (item.hide !== "true") {
-        if(item.no==station.active){
+    res.data[0].map((Item:any,k:number) => {
+      if (Item.hide !== "true") {
+        if(Item.no==station.active){
           fetch最近风廓线数据()
         }
-        let position = wgs84togcj02(sixty2Float(item.lng), sixty2Float(item.lat)) as [
+        let position = wgs84togcj02(sixty2Float(Item.lng), sixty2Float(Item.lat)) as [
           number,
           number
         ];
@@ -1072,19 +1072,19 @@ function work(){
             lon:position[0],
             lat:position[1],
             type: "站点",
-            radar_id: item.no,
+            radar_id: Item.no,
             高度: NaN,
             风速: NaN,
             风向: NaN,
             垂直气流: NaN,
             时间:NaN,
             time: moment().format("YYYY-MM-DD HH:mm:ss"),
-            name: item.device_short_name,
+            name: Item.device_short_name,
             is_online: true,
             external_temperature: 25,
             external_humidity: 0.6,
             image: "feather" + getFeather(0),
-            color: item.status==1?'#0f0':item.status==2?'#f80':item.status==3?'#f00':(isDark.value?'#fff':'#000'),
+            color: Item.status==1?'#0f0':Item.status==2?'#f80':Item.status==3?'#f00':(isDark.value?'#fff':'#000'),
           },
           geometry: {
             type: "Point",
@@ -1155,7 +1155,7 @@ function work(){
         // })
         //   .setLngLat(position)
         //   .addTo(map);
-        let radar_id = item.no
+        let radar_id = Item.no
 
         // getSensorData({radar_id,dataTime:'20240716154908'}).then(res=>{
         //   if(res.data.data.sensor!==""){
@@ -1222,7 +1222,7 @@ function work(){
                       item.properties.风速 = Number(lib['WindSpeed'].toFixed(2));
                       item.properties.风向 = Number(lib['WindDirection'].toFixed(2));
                       item.properties.垂直气流 = lib['ZWind']<0?`\u2193${lib['ZWind'].toFixed(2)}`:`\u2191${lib['ZWind'].toFixed(2)}`
-                      item.properties.高度 = lib['distance']
+                      item.properties.高度 = Number(lib['distance'])+Number(Item.altitude)
                       item.properties.时间 = moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
                       item.properties.image = "feather" + getFeather(lib['WindSpeed']);
                     }
@@ -1391,11 +1391,11 @@ function work(){
             //用于确保两根径向之间夹角不大于180度
             if (data.length > 0) {
               let lastItem = data[data.length - 1];
-              if (Math.abs(item.Azimuth - lastItem.Azimuth) > 180) {
+              if (Math.abs(Item.Azimuth - lastItem.Azimuth) > 180) {
                 // item.Azimuth = 360 + item.Azimuth;
-                item.Azimuth =
+                Item.Azimuth =
                   lastItem.Azimuth +
-                  (360 - (Math.abs(item.Azimuth - lastItem.Azimuth) % 360));
+                  (360 - (Math.abs(Item.Azimuth - lastItem.Azimuth) % 360));
               }
             }
             for (let i = 11; i < thirdLine.length; i += 4) {
