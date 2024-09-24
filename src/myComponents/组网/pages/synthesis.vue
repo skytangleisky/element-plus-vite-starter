@@ -39,7 +39,7 @@
         @click.stop="setting.组网.监控.bottom_disappear = true"
       ></el-icon>
       <datatable
-        :database="'host=tanglei.top&port=3308&user=root&password=mysql&database=gis'"
+        :database="'host=192.168.0.240&port=3306&user=root&password=mysql&database=gis'"
         :table="'enclosure'"
       ></datatable>
     </div>

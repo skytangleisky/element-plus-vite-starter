@@ -353,7 +353,7 @@ onMounted(() => {
     });
     const datasource_zydpara = {
       database:
-        "host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
+        "host=192.168.0.240&port=3306&user=root&password=mysql&database=ryplat_bjry",
       table: "zydpara",
     };
     getAll(datasource_zydpara).then((res) => {
@@ -696,7 +696,7 @@ onMounted(() => {
       };
       const datasource_zyddata = {
         database:
-          "host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
+          "host=192.168.0.240&port=3306&user=root&password=mysql&database=ryplat_bjry",
         table: "zyddata",
       };
       getAll(datasource_zyddata).then((res) => {

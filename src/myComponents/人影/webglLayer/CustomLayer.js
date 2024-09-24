@@ -169,13 +169,39 @@ export default {
 
 
 
-
+function createShader(gl, source, type) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error(gl.getShaderInfoLog(shader));
+        gl.deleteShader(shader);
+        return null;
+    }
+    return shader;
+}
+function createProgram(gl, vertexSource, fragmentSource) {
+    const vertexShader = createShader(gl, vertexSource, gl.VERTEX_SHADER);
+    const fragmentShader = createShader(gl, fragmentSource, gl.FRAGMENT_SHADER);
+    const program = gl.createProgram();
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        console.error(gl.getProgramInfoLog(program));
+        gl.deleteProgram(program);
+        return null;
+    }
+    return program;
+}
 let mapInstance;
 export default{
     id: 'custom-image-layer',
     type: 'custom',
     renderingMode: '3d',
-    onAdd: function (map, gl) {
+    imageLoaded:false,
+    images: {texture1:'/01.png',texture2:'/02.png',texture3:'/03.png',texture4:'/04.png'},
+    onAdd(map, gl){
         // console.log(gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE))
         mapInstance = map
         gl.enable(gl.DEPTH_TEST);
@@ -202,15 +228,13 @@ export default{
                 }else if(u_shape==1){
                     gl_FragColor = vec4(1.0,1.0,0.0,1.0);
                 }else if(u_shape==2){
-                    vec4 color = texture2D(u_image, v_texCoord);
-                    gl_FragColor = vec4(color.rgb,color.a);
+                    gl_FragColor = texture2D(u_image, v_texCoord);
                 }else{
-                    gl_FragColor = vec4(0.0,0.0,0.0,1.0);
+                    gl_FragColor = vec4(0.0,0.0,0.0,0.0);
                 }
             }
         `;
         this.program = createProgram(gl, vertexSource, fragmentSource);
-
         this.posBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.posBuffer);
         let delta = 0.03;
@@ -321,124 +345,80 @@ export default{
             0,0,
         ]);
         gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
-
-        this.texture1 = gl.createTexture();
-        const image1 = new Image();
-        image1.src = '/01.png';
-        image1.onload = ()=>{
-            gl.bindTexture(gl.TEXTURE_2D, this.texture1);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image1);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-            map.triggerRepaint();
-        };
-        this.texture2 = gl.createTexture();
-        const image2 = new Image();
-        image2.src = '/02.png';
-        image2.onload = () => {
-            gl.bindTexture(gl.TEXTURE_2D, this.texture2);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image2);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-            map.triggerRepaint();
-        };
-        this.texture3 = gl.createTexture();
-        const image3 = new Image();
-        image3.src = '/03.png';
-        image3.onload = () => {
-            gl.bindTexture(gl.TEXTURE_2D, this.texture3);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image3);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-            map.triggerRepaint();
-        };
-        this.texture4 = gl.createTexture();
-        const image4 = new Image();
-        image4.src = '/04.png';
-        image4.onload = () => {
-            gl.bindTexture(gl.TEXTURE_2D, this.texture4);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image4);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-            map.triggerRepaint();
-        };
-
-
-        function createShader(gl, source, type) {
-            const shader = gl.createShader(type);
-            gl.shaderSource(shader, source);
-            gl.compileShader(shader);
-            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-                console.error(gl.getShaderInfoLog(shader));
-                gl.deleteShader(shader);
-                return null;
-            }
-            return shader;
+        let funcs = []
+        for(let key in this.images){
+            funcs.push(new Promise((resolve,reject)=>{
+                const texture = gl.createTexture();
+                const image = new Image();
+                image.src = this.images[key];
+                image.onload = ()=>{
+                    gl.bindTexture(gl.TEXTURE_2D, texture);
+                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                    resolve({[key]:texture})
+                };
+                image.onerror=()=>{
+                    reject()
+                }
+            }))
         }
+        Promise.all(funcs).then(values=>{
+            values.map((item)=>{
+                for(let key in item){
+                    this.images[key] = item[key]
+                }
+            })
+            this.imageLoaded = true;
+        })
 
-        function createProgram(gl, vertexSource, fragmentSource) {
-            const vertexShader = createShader(gl, vertexSource, gl.VERTEX_SHADER);
-            const fragmentShader = createShader(gl, fragmentSource, gl.FRAGMENT_SHADER);
-            const program = gl.createProgram();
-            gl.attachShader(program, vertexShader);
-            gl.attachShader(program, fragmentShader);
-            gl.linkProgram(program);
-            if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-                console.error(gl.getProgramInfoLog(program));
-                gl.deleteProgram(program);
-                return null;
-            }
-            return program;
-        }
+
+        gl.uniform1i(gl.getUniformLocation(this.program, 'u_shape'), -1);
     },
     render: function (gl, matrix) {
-        // gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        gl.useProgram(this.program);
+        if(this.imageLoaded){
+            // gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+            gl.useProgram(this.program);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.posBuffer);
-        const aPosLocation = gl.getAttribLocation(this.program, 'a_pos');
-        gl.vertexAttribPointer(aPosLocation, 3, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(aPosLocation);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.posBuffer);
+            const aPosLocation = gl.getAttribLocation(this.program, 'a_pos');
+            gl.vertexAttribPointer(aPosLocation, 3, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(aPosLocation);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.texCoordBuffer);
-        const aTexCoordLocation = gl.getAttribLocation(this.program, 'a_texCoord');
-        gl.vertexAttribPointer(aTexCoordLocation, 2, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(aTexCoordLocation);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.texCoordBuffer);
+            const aTexCoordLocation = gl.getAttribLocation(this.program, 'a_texCoord');
+            gl.vertexAttribPointer(aTexCoordLocation, 2, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(aTexCoordLocation);
 
 
 
-        gl.uniformMatrix4fv(gl.getUniformLocation(this.program, 'u_matrix'), false, matrix);
+            gl.uniformMatrix4fv(gl.getUniformLocation(this.program, 'u_matrix'), false, matrix);
 
-        gl.activeTexture(gl.TEXTURE0);
-        gl.uniform1i(gl.getUniformLocation(this.program, 'u_image'), 0);
+            gl.activeTexture(gl.TEXTURE0);
+            gl.uniform1i(gl.getUniformLocation(this.program, 'u_image'), 0);
 
-        gl.enable(gl.BLEND);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+            gl.enable(gl.BLEND);
+            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-        gl.uniform1i(gl.getUniformLocation(this.program, 'u_shape'), 2);
-        gl.bindTexture(gl.TEXTURE_2D, this.texture1);
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-        gl.bindTexture(gl.TEXTURE_2D, this.texture2);
-        gl.drawArrays(gl.TRIANGLE_STRIP,4,4);
-        gl.bindTexture(gl.TEXTURE_2D, this.texture3);
-        gl.drawArrays(gl.TRIANGLE_STRIP,8,4);
-        gl.bindTexture(gl.TEXTURE_2D, this.texture4);
-        gl.drawArrays(gl.TRIANGLE_STRIP,12,4);
-        gl.uniform1i(gl.getUniformLocation(this.program, 'u_shape'), 1);
+            gl.uniform1i(gl.getUniformLocation(this.program, 'u_shape'), 2);
+            gl.bindTexture(gl.TEXTURE_2D, this.images['texture1']);
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+            gl.bindTexture(gl.TEXTURE_2D, this.images['texture2']);
+            gl.drawArrays(gl.TRIANGLE_STRIP,4,4);
+            gl.bindTexture(gl.TEXTURE_2D, this.images['texture3']);
+            gl.drawArrays(gl.TRIANGLE_STRIP,8,4);
+            gl.bindTexture(gl.TEXTURE_2D, this.images['texture4']);
+            gl.drawArrays(gl.TRIANGLE_STRIP,12,4);
+            gl.uniform1i(gl.getUniformLocation(this.program, 'u_shape'), 1);
 
-        gl.drawArrays(gl.LINE_LOOP,16,4);
-        gl.drawArrays(gl.LINE_LOOP,20,4);
+            gl.drawArrays(gl.LINE_LOOP,16,4);
+            gl.drawArrays(gl.LINE_LOOP,20,4);
 
-        gl.drawArrays(gl.LINES,24,8);
+            gl.drawArrays(gl.LINES,24,8);
 
-        // mapInstance.triggerRepaint();
+            // mapInstance.triggerRepaint();
+        }
     }
 }

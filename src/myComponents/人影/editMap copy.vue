@@ -412,7 +412,7 @@ onMounted(() => {
       .setOffset([0, 0]);
     exec({
       database:
-        "host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
+        "host=192.168.0.240&port=3306&user=root&password=mysql&database=ryplat_bjry",
       query: {
         sqls: [
           "select z.*,u.strName as unitName FROM `zydpara` z left join `units` u on z.strMgrUnit = u.strID",
