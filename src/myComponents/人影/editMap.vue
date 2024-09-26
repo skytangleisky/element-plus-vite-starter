@@ -319,7 +319,7 @@ function 网络上报(data:prevRequestDataType){
         }
       }
       exec({
-        database:"host=192.168.0.240&port=3306&user=root&password=mysql&database=ryplat_bjry",
+        database:"host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
         query:{sqls:["INSERT INTO `ryplat_bjry`.`zyddata` ("+Object.keys(zyddata).join(',')+") VALUES ("+vals.join(',')+")"]}
       }).then(res=>{
         console.log(res.data)
@@ -1228,7 +1228,7 @@ onMounted(() => {
       .addTo(map);
     exec({
       database:
-        "host=192.168.0.240&port=3306&user=root&password=mysql&database=ryplat_bjry",
+        "host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
       query: {
         sqls: [
           "select z.*,u.strName as unitName FROM `zydpara` z left join `units` u on z.strMgrUnit = u.strID",

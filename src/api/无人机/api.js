@@ -6,15 +6,15 @@ function setConfig(){
   let filename = location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
   if(filename=='synthesis'||filename=='history'||filename=='simulate'||filename=='airspace'||filename=='networking'){
     tableName='enclosure'
-    options = '?host=192.168.0.240&port=3306&user=root&password=mysql&database=gis'
+    options = '?host=tanglei.top&port=3308&user=root&password=mysql&database=gis'
     url = 'backend/db/'+tableName+options
   }if(filename=='ry'){
     tableName='zydpara'
-    options = '?host=192.168.0.240&port=3306&user=root&password=mysql&database=ryplat_bjry'
+    options = '?host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry'
     url = 'backend/db/'+tableName+options
   }else{
     tableName = filename
-    options =  '?host=192.168.0.240&port=3306&user=root&password=tanglei&database=jiangxi';
+    options =  '?host=tanglei.top&port=3308&user=root&password=tanglei&database=jiangxi';
     url = 'backend/db/'+tableName+options
   }
 }

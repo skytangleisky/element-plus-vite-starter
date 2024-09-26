@@ -1,7 +1,7 @@
 <template>
   <datatable
     style="padding: 10px"
-    database="host=192.168.0.240&port=3306&user=root&password=mysql&database=weatherservice"
+    database="host=tanglei.top&port=3308&user=root&password=mysql&database=weatherservice"
     table="device_status"
   ></datatable>
 </template>

@@ -348,7 +348,7 @@ onMounted(() => {
       },
     });
     setConfig(
-      "host=192.168.0.240&port=3306&user=root&password=mysql&database=ryplat_bjry",
+      "host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
       "zydpara"
     );
     getAll().then((res) => {

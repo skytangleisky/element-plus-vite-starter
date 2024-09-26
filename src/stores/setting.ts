@@ -543,6 +543,15 @@ export const useSettingStore = defineStore({
       jx,
       cq,
       {
+        path: 'sx',
+        name: 'c4961e05-e574-0e1f-ae23-94f157b15abe',
+        component: '/src/myComponents/山西组网/index.vue',
+        svg:'ec24142a-78ac-4b58-9e4d-44d3e6c07835',
+        meta:{
+          label: '山西组网',
+        }
+      },
+      {
         path: 'qqlogin',
         name: '3c1f8a79-4fe6-2263-08fb-477f961fc946',
         component: '/src/qqlogin.vue', //最好是异步加载

@@ -10,6 +10,15 @@ export default {
   },
   children:[
     {
+      path: 'sx',
+      name: 'c4961e05-e574-0e1f-ae23-94f157b15aae',
+      component: '/src/myComponents/山西组网/index.vue',
+      svg:'ec24142a-78ac-4b58-9e4d-44d3e6c07835',
+      meta:{
+        label: '山西组网',
+      }
+    },
+    {
       path:'palette',
       name:'034a1c75-c60d-4ff4-afdd-979c9e619b29',
       component:'/src/myComponents/colorSelector/index.vue',

@@ -1,7 +1,7 @@
 <template>
   <div
-    class="timeline h-auto flex flex-row absolute dark:bg-#646464 bg-#fff"
-    style="width: 100%; bottom: 0"
+    class="timeline h-auto flex flex-row absolute dark:bg-#64646490 bg-#ffffff90"
+    style="width: 100%"
     tabindex="-1"
   >
     <el-icon
@@ -40,7 +40,7 @@
       <canvas
         v-resize="resize"
         ref="timeShaft"
-        class="dark:bg-#646464 bg-#eee absolute"
+        class="dark:bg-#64646490 bg-#eeeeee90 absolute"
         style="width: 100%; height: 100%"
       ></canvas>
     </div>
@@ -750,7 +750,7 @@ onBeforeUnmount(() => {
     padding: 4px;
     margin: 4px;
     border-radius: 4px;
-    background-color: #eee;
+    background-color: #ffffffa0;
     color: black;
     /* visibility: hidden; */
     &::before {
@@ -772,7 +772,7 @@ onBeforeUnmount(() => {
   }
   .currentTime {
     div {
-      background-color: #646464;
+      background-color: #646464a0;
       color: white;
       &::before {
         border-color: #646464 transparent transparent transparent;
