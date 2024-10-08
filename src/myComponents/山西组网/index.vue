@@ -15,12 +15,14 @@
       "
     />
     <border-box11 ref="dvBorder11" :color="['#8aaafb','transparent']" title="山西测风雷达组网" :title-width="400" :animate="true" style="width:100%;height:100%;pointer-events: none;"/>
+    <Header/>
+    <test class="absolute left-300px top-350px w-200px h-200px"/>
     <decoration-9 style="position:absolute;width:150px;height:150px;left:400px;top:400px;">
       <div color-green font-600 style="font-size:28px;text-shadow: 0 0 3px #7acaec;" bg="~ dark/0">
         117台
       </div>
     </decoration-9>
-    <decoration-12 style="width:150px;height:150px;position:absolute;right:0;top:0;" />
+    <decoration-12 style="width:150px;height:150px;position:absolute;right:0;top:100px;" />
     <div ref="popup" class="ol-popup" style="display: none">
       <div
         style="
@@ -58,9 +60,9 @@
       </div>
       <div ref="popup_closer" class="ol-popup-closer"></div>
     </div>
-    <Dialog class="absolute" style="left: 250px; top: 70px"></Dialog>
+    <Dialog class="absolute" style="left: 250px; top: 70px;width:400px"></Dialog>
     <div style="position: absolute;top:60px;left:10px;width:200px;height: 500px;box-sizing: border-box">
-      <BorderBox8/>
+      <!-- <BorderBox8/> -->
       <radar-statistic class="w-full h-full"></radar-statistic>
     </div>
     <Legend class="legend" style="z-index: 1;"></Legend>
@@ -142,6 +144,9 @@
   </div>
 </template>
 <script setup lang="ts">
+import test from './test.vue'
+import Header from './header.vue'
+import 城市图标 from '~/assets/city.svg?url'
 // import { BorderBox11,BorderBox8 } from '@kjgl77/datav-vue3';
 import {BorderBox11} from '~/../packages/dataV/src/components/BorderBox11';
 import {BorderBox8} from '~/../packages/dataV/src/components/BorderBox8';
@@ -153,6 +158,7 @@ const router = useRouter()
 const 单站数据 = ()=>{
   router.replace('/cq/device/'+$(stationMenu).data().radar_id)
 }
+import 山西省区划 from './山西省区划.geojson?raw'
 import chromatography from "../激光测风尾涡/chromatography.vue";
 import * as turf from "@turf/turf";
 // import ppiDataUrl from "../组网/CDL_S10000_Lidar10HKF00631450_PPI_FrmAzm30.00_ToAzm29.00_Pth3.00_Spd6.00_Res060_StartIdx003_Start003_Stop191_LOSWind_20230515 000240.csv?url";
@@ -160,7 +166,7 @@ import ppiDataUrl from "./level1/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToA
 import ppiInversionData from "./level2/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pth30.00_Spd6.00_Res030_StartIdx002_VADStart002_VADStop190_VADWind_Sec_20240715 203223.csv?raw";
 import { exec } from "~/api/index.js";
 import { getFkxRealData,getPPIGrid,getSensorData } from "../../api/重庆.ts";
-import {hasPermission,sixty2Float,addFeatherImages,addArrowImages,getFeather,View,calculateBlockPoints,calculateCirclePoints} from "~/tools";
+import {hasPermission,sixty2Float,addFeatherImages,addArrowImages,getFeather,View,calculateBlockPoints,calculateCirclePoints,loadImage2Map} from "~/tools";
 const decoder = new TextDecoder()
 const encoder = new TextEncoder()
 const stationMenuRef = ref<HTMLDivElement>();
@@ -594,6 +600,9 @@ function processData(result: any, position: [number, number]) {
   // });
 }
 const loadFunc = async () => {
+  await loadImage2Map(map,城市图标,24,24,{
+    城市图标:{style:"fill:white;stroke-width:20px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;"}
+  })
   await addFeatherImages(map);
   await addArrowImages(map);
   work()
@@ -1030,6 +1039,53 @@ const loadFunc = async () => {
   //   station.查询雷达离线列表接口({ user_id: route.query.user_id });
   // if (setting.风雷达组网地图相关.checks[3].select)
   //   station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
+
+  let source = {
+    type: "geojson",
+    data: {
+      type: 'FeatureCollection',
+      features: new Array<any>()
+    }
+  };
+  JSON.parse(山西省区划).features.map((feature:any)=>{
+    source.data.features.push({
+      type:'feature',
+      geometry:{
+        type:'Point',
+        coordinates:wgs84togcj02(feature.properties.center[0],feature.properties.center[1])
+      },
+      properties:{
+        name:feature.properties.name
+      }
+    })
+    // console.log(feature.properties.name,feature.properties.center)
+  })
+  map.addLayer({
+    id: 'cityLayer',
+    type: 'symbol',
+    source:source as any,
+    layout:{
+      "text-field": ["get", "name"],
+      "text-font": ["simkai"],
+      "text-size": 15,
+      "text-anchor": "bottom",
+      "text-allow-overlap": true,
+      "text-ignore-placement": true,
+      "text-rotation-alignment": "map",
+      "text-pitch-alignment": "map",
+      "icon-anchor": 'center',
+      "icon-image": '城市图标',
+      "icon-size": 1,
+      "icon-rotate": ["get", "风向"],
+      "icon-rotation-alignment": "map",
+      "icon-allow-overlap": true,
+      "icon-ignore-placement": true,
+    },
+    paint: {
+      'text-color':'white',
+      'text-halo-color':'black',
+    }
+  })
 };
 const flyTo = (item) => {
   try {
@@ -1055,7 +1111,7 @@ var marker:Marker;
 import {databaseRaw} from '~/api/重庆'
 function work(){
   exec({
-    // database: "host=127.0.0.1&port=3306&user=root&password=tanglei&database=weatherservice",
+    // database: "host=tanglei.top&port=3308&user=root&password=mysql&database=weatherservice",
     database: databaseRaw,
     query: {
       sqls: ["select * from `device`"],
@@ -1551,10 +1607,10 @@ onMounted(() => {
     // style: raster,
     performanceMetricsCollection: false,
     style,
-    dragRotate: false,
-    touchRotate: false,
-    touchPitch: false,
-    dragPitch: false,
+    // dragRotate: false,
+    // touchRotate: false,
+    // touchPitch: false,
+    // dragPitch: false,
     // bounds: turf.bbox(boundaries),
     // localIdeographFontFamily: "Microsoft YoHei",
     localIdeographFontFamily: "",

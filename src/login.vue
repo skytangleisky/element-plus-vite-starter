@@ -15,14 +15,15 @@
       />
       <!-- <div class="title">北京人影演示系统</div> -->
       <!-- <div class="title">珠海低空飞行监控系统</div> -->
-      <div class="title">重庆测风激光雷达组网系统</div>
+      <!-- <div class="title">重庆测风雷达组网系统</div> -->
+      <div class="title">山西测风雷达组网系统</div>
     </div>
-    <div class="rightPlane fourCorners">
+    <div class="rightPlane">
       <el-form
         ref="formEl"
         id="rightPlaneForm"
         :model="numberValidateForm"
-        class="demo-ruleForm"
+        class="demo-ruleForm fourCorners"
       >
         <el-form-item
           prop="username"
@@ -206,7 +207,10 @@ watch(
     flex-direction: colum;
     justify-content: center;
     align-items: center;
-    background-color: #ffffff66;
+    backdrop-filter:blur(5px);
+    border:1px solid #80808080;
+    border-radius: 10px;
+    box-sizing: border-box;
     .ep-input {
       .ep-input__wrapper {
         background: transparent;
@@ -242,19 +246,18 @@ watch(
 </style>
 <style lang="scss" scoped>
 .fourCorners::before {
-  --offset: 0px;
-  --borderWidth: 4px;
+  --offset: -2px;
+  --borderWidth: 3px;
   position: absolute;
   left: var(--offset);
   top: var(--offset);
   content: "";
   width: calc(100% - 2 * var(--offset));
   height: calc(100% - 2 * var(--offset));
-  border-radius: 0px;
+  border-radius: 10px;
   box-sizing: border-box;
   border: var(--borderWidth) solid #469dee;
   --len: 15px;
-  mask: conic-gradient(at var(--len) var(--len), transparent 270deg, red 270deg) 0 0 /
-    calc(100% - var(--len)) calc(100% - var(--len));
+  mask: conic-gradient(at var(--len) var(--len), transparent 270deg, red 270deg) 0 0 / calc(100% - var(--len)) calc(100% - var(--len));
 }
 </style>

@@ -654,6 +654,16 @@ export const useSettingStore = defineStore({
         }
       },
       {
+        path: '',
+        name: '99961e04-e574-0e1f-3e24-94f157b14a43',
+        redirect: '/sx',
+        hide:true,
+        meta:{
+          label:'山西',
+          roles:['sx']
+        }
+      },
+      {
         path: ':catchAll(.*)*',
         component: '/src/myComponents/404/index.vue',
         hide:true,

@@ -1,5 +1,5 @@
 <template>
-  <div v-dialogDrag class="!collapse radarDragDialog absolute w-300px" style="left: 20px; top: 20px;">
+  <div v-dialogDrag class="!collapse radarDragDialog absolute" style="left: 20px; top: 20px;">
     <border-box>
       <div class="p-14px">
         <div class="flex flex-row" style="align-items: center">
@@ -100,7 +100,7 @@
 </template>
 <script lang="ts" setup>
 // import { BorderBox2 as BorderBox } from '@kjgl77/datav-vue3';
-import {BorderBox9 as BorderBox} from '~/../packages/dataV/src/components/BorderBox9';
+import {BorderBox7 as BorderBox} from '~/../packages/dataV';
 import { reactive, onMounted, watch } from "vue";
 import { useStationStore } from "~/stores/station";
 import { eventbus } from "~/eventbus";
@@ -329,7 +329,9 @@ const toggleCollapse = () => {
   }
 }
 .dark .radarDragDialog {
-  background: var(--ep-bg-color-overlay);
+  backdrop-filter:blur(8px);
+  background:#00000088;
+  // background: var(--ep-bg-color-overlay);
   table {
     tbody{
       tr {

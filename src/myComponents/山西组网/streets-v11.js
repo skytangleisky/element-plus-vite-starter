@@ -367,6 +367,18 @@ export default {
 				'line-width': 2
 			}
 		},
+		{
+			'id': 'fence-layer',
+			'type': 'fill-extrusion',
+			'source': 'districtOutline',
+			'layout': {},
+			'paint': {
+					'fill-extrusion-color': '#088',
+					'fill-extrusion-height': 5000, // 高度设置为50
+					'fill-extrusion-base': 0,
+					'fill-extrusion-opacity': 0.6
+			}
+		}
 	],
 	"created": "2023-11-07T03:38:34.435Z",
 	"modified": "2023-11-14T11:53:57.549Z",

@@ -14,7 +14,7 @@ function setConfig(){
     url = 'backend/db/'+tableName+options
   }else{
     tableName = filename
-    options =  '?host=tanglei.top&port=3308&user=root&password=tanglei&database=jiangxi';
+    options =  '?host=tanglei.top&port=3308&user=root&password=mysql&database=jiangxi';
     url = 'backend/db/'+tableName+options
   }
 }
