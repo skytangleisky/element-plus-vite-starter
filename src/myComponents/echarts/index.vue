@@ -37,6 +37,7 @@
   </div>
 </template>
 <script setup>
+import * as echarts from 'echarts'
 import { onMounted, ref, onBeforeUnmount, watch } from "vue";
 import Showers from "./data/showers_128.png?url";
 import Sunny from "./data/sunny_128.png?url";

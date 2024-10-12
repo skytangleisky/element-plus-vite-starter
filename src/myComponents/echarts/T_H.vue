@@ -17,6 +17,7 @@
   </div>
 </template>
 <script lang="ts" setup>
+import * as echarts from 'echarts'
 import { ref, onMounted, watch } from "vue";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();

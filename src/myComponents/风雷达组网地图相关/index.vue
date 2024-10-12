@@ -3,7 +3,7 @@
     <div
       v-resize="resize"
       ref="mapRef"
-      class="map dark:bg-#2b2b2b bg-white"
+      class="map"
       style="
         position: absolute;
         left: 0;
@@ -315,6 +315,7 @@ const points = {
       {
         type: "Feature",
         properties: {
+          altitude:NaN,
           radar_id:'',
           风速: speed,
           image: "feather" + getFeather(speed),
@@ -581,7 +582,7 @@ const loadFunc = async () => {
   await addFeatherImages(map);
   await addArrowImages(map);
   work()
-  timer = setInterval(work,60e3)
+  timer = setInterval(work,10*60e3)
   map.addSource("radar", {
     type: "geojson",
     data: {
@@ -741,9 +742,9 @@ const loadFunc = async () => {
     },
     paint: {
       "text-opacity": setting.风雷达组网地图相关.站名 ? 1 : 0,
-      "text-color": isDark.value?"white":'black',
-      // "text-halo-width": 1,
-      // "text-halo-color": "black",
+      "text-color": isDark.value?'white':'black',
+      "text-halo-width": 0.5,
+      "text-halo-color": isDark.value?'black':'white',
     },
     filter: ["==", ["get", "type"], "站点"],
   });
@@ -769,8 +770,8 @@ const loadFunc = async () => {
     paint: {
       "text-opacity": setting.风雷达组网地图相关.站号 ? 1 : 0,
       "text-color": isDark.value?'white':'black',
-      // "text-halo-width": 1,
-      // "text-halo-color": "black",
+      "text-halo-width": 0.5,
+      "text-halo-color": isDark.value?'black':'white',
     },
     filter: ["==", ["get", "type"], "站点"],
   });
@@ -794,9 +795,9 @@ const loadFunc = async () => {
     },
     paint: {
       "text-opacity": setting.风雷达组网地图相关.factor[7].val ? 1 : 0,
-      "text-color": "white",
-      "text-halo-width": 1,
-      "text-halo-color": "black",
+      "text-color": isDark.value?'white':'black',
+      "text-halo-width": 0.5,
+      "text-halo-color": isDark.value?'black':'white',
     },
     filter: ["==", ["get", "type"], "站点"],
   });
@@ -820,9 +821,9 @@ const loadFunc = async () => {
     },
     paint: {
       "text-opacity": setting.风雷达组网地图相关.factor[9].val ? 1 : 0,
-      "text-color": "white",
-      "text-halo-width": 1,
-      "text-halo-color": "black",
+      "text-color": isDark.value?'white':'black',
+      "text-halo-width": 0.5,
+      "text-halo-color": isDark.value?'black':'white',
     },
     filter: ["==", ["get", "type"], "站点"],
   });
@@ -846,9 +847,9 @@ const loadFunc = async () => {
     },
     paint: {
       "text-opacity": setting.风雷达组网地图相关.高度?1:0,
-      "text-color": isDark.value?"white":'black',
-      // "text-halo-width": 1,
-      // "text-halo-color": "black",
+      "text-color": isDark.value?'white':'black',
+      "text-halo-width": 0.5,
+      "text-halo-color": isDark.value?'black':'white',
     },
     filter: ["==", ["get", "type"], "站点"],
   });
@@ -872,9 +873,9 @@ const loadFunc = async () => {
     },
     paint: {
       "text-opacity": setting.风雷达组网地图相关.风向?1:0,
-      "text-color": isDark.value?"white":'black',
-      // "text-halo-width": 1,
-      // "text-halo-color": "black",
+      "text-color": isDark.value?'white':'black',
+      "text-halo-width": 0.5,
+      "text-halo-color": isDark.value?'black':'white',
     },
     filter: ["==", ["get", "type"], "站点"],
   });
@@ -898,9 +899,9 @@ const loadFunc = async () => {
     },
     paint: {
       "text-opacity": setting.风雷达组网地图相关.风速?1:0,
-      "text-color": isDark.value?"white":'black',
-      // "text-halo-width": 1,
-      // "text-halo-color": "black",
+      "text-color": isDark.value?'white':'black',
+      "text-halo-width": 0.5,
+      "text-halo-color": isDark.value?'black':'white',
     },
     filter: ["==", ["get", "type"], "站点"],
   });
@@ -924,9 +925,9 @@ const loadFunc = async () => {
     },
     paint: {
       "text-opacity": setting.风雷达组网地图相关.垂直气流?1:0,
-      "text-color": isDark.value?"white":'black',
-      // "text-halo-width": 1,
-      // "text-halo-color": "black",
+      "text-color": isDark.value?'white':'black',
+      "text-halo-width": 0.5,
+      "text-halo-color": isDark.value?'black':'white',
     },
     filter: ["==", ["get", "type"], "站点"],
   });
@@ -950,9 +951,9 @@ const loadFunc = async () => {
     },
     paint: {
       "text-opacity": setting.风雷达组网地图相关.时间?1:0,
-      "text-color": isDark.value?"white":'black',
-      // "text-halo-width": 1,
-      // "text-halo-color": "black",
+      "text-color": isDark.value?'white':'black',
+      "text-halo-width": 0.5,
+      "text-halo-color": isDark.value?'black':'white',
     },
     filter: ["==", ["get", "type"], "站点"],
   });
@@ -1060,15 +1061,19 @@ function work(){
     res.data[0].map((Item:any,k:number) => {
       if (Item.hide !== "true") {
         if(Item.no==station.active){
+          //如果之前有设备被选中，应该获取一次最近风廓线数据
           fetch最近风廓线数据()
         }
+        console.log(Item)
         let position = wgs84togcj02(sixty2Float(Item.lng), sixty2Float(Item.lat)) as [
           number,
           number
         ];
+        //初始状态
         points.data.features.push({
           type: "Feature",
           properties: {
+            altitude:Number(Item.altitude),
             lon:position[0],
             lat:position[1],
             type: "站点",
@@ -1212,8 +1217,17 @@ function work(){
             result.data.unshift(radial)
           }
           dbsData[radar_id] = result
-          result.data.map((radial:any)=>{
-            let lib = radial.list[setting.风雷达组网地图相关.relativeHeight-1]
+          for(let radial of result.data){
+            // let lib = radial.list[setting.风雷达组网地图相关.relativeHeight-1]
+            let lib;
+            for(let i=radial.list.length-1;i>=1;i--){
+              let tmp = radial.list[i]
+              let altitude = Number(tmp['distance'])+Number(Item.altitude)
+              if(altitude<setting.风雷达组网地图相关.altitudeHeight&&setting.风雷达组网地图相关.altitudeHeight-altitude<=25){
+                lib = tmp
+                break;
+              }
+            }
             if(lib){
               points.data.features = points.data.features.map((item) => {
                 if(item.properties.color!=='#f00'){
@@ -1222,7 +1236,7 @@ function work(){
                       item.properties.风速 = Number(lib['WindSpeed'].toFixed(2));
                       item.properties.风向 = Number(lib['WindDirection'].toFixed(2));
                       item.properties.垂直气流 = lib['ZWind']<0?`\u2193${lib['ZWind'].toFixed(2)}`:`\u2191${lib['ZWind'].toFixed(2)}`
-                      item.properties.高度 = Number(lib['distance'])+Number(Item.altitude)
+                      item.properties.高度 = (Number(lib['distance'])+Number(Item.altitude)).toFixed(2)
                       item.properties.时间 = moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
                       item.properties.image = "feather" + getFeather(lib['WindSpeed']);
                     }
@@ -1231,7 +1245,7 @@ function work(){
                       item.properties.风速 = NaN;
                       item.properties.风向 = NaN;
                       item.properties.垂直气流 = NaN
-                      item.properties.高度 = lib['distance']
+                      item.properties.高度 = (Number(lib['distance'])+Number(Item.altitude)).toFixed(2)
                       item.properties.时间 = moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
                       item.properties.image = "feather";
                     }
@@ -1262,7 +1276,7 @@ function work(){
               });
             }
             (map.getSource("point") as any).setData(points.data);
-          })
+          }
         });
 
 
@@ -1601,12 +1615,19 @@ watch(isDark,isDark=>{
     map.setPaintProperty('等距环','line-color','white')
     map.setPaintProperty('等距环的单位','text-color','white')
     map.setPaintProperty('textLayer','text-color','white')
+    map.setPaintProperty('textLayer','text-halo-color','black')
     map.setPaintProperty('idLayer','text-color','white')
+    map.setPaintProperty('idLayer','text-halo-color','black')
     map.setPaintProperty('高度图层','text-color','white')
+    map.setPaintProperty('高度图层','text-halo-color','black')
     map.setPaintProperty('垂直气流图层','text-color','white')
+    map.setPaintProperty('垂直气流图层','text-halo-color','black')
     map.setPaintProperty('风向图层','text-color','white')
+    map.setPaintProperty('风向图层','text-halo-color','black')
     map.setPaintProperty('风速图层','text-color','white')
+    map.setPaintProperty('风速图层','text-halo-color','black')
     map.setPaintProperty('时间图层','text-color','white')
+    map.setPaintProperty('时间图层','text-halo-color','black')
     map.setPaintProperty('stationLayer','circle-stroke-color','white')
     points.data.features.forEach(feature=>{
       if(feature.properties.color == '#000'){
@@ -1617,12 +1638,19 @@ watch(isDark,isDark=>{
     map.setPaintProperty('等距环','line-color','black')
     map.setPaintProperty('等距环的单位','text-color','black')
     map.setPaintProperty('textLayer','text-color','black')
+    map.setPaintProperty('textLayer','text-halo-color','white')
     map.setPaintProperty('idLayer','text-color','black')
+    map.setPaintProperty('textLayer','text-halo-color','white')
     map.setPaintProperty('高度图层','text-color','black')
+    map.setPaintProperty('高度图层','text-halo-color','white')
     map.setPaintProperty('垂直气流图层','text-color','black')
+    map.setPaintProperty('垂直气流图层','text-halo-color','white')
     map.setPaintProperty('风向图层','text-color','black')
+    map.setPaintProperty('风向图层','text-halo-color','white')
     map.setPaintProperty('风速图层','text-color','black')
+    map.setPaintProperty('风速图层','text-halo-color','white')
     map.setPaintProperty('时间图层','text-color','black')
+    map.setPaintProperty('时间图层','text-halo-color','white')
     map.setPaintProperty('stationLayer','circle-stroke-color','black')
     points.data.features.forEach(feature=>{
       if(feature.properties.color == '#fff'){
@@ -1718,13 +1746,23 @@ watch(()=>setting.风雷达组网地图相关.时间,(val)=>{
   }
 })
 watch(
-  () => setting.风雷达组网地图相关.relativeHeight,
+  () => setting.风雷达组网地图相关.altitudeHeight,
   (rHeight) => {
     points.data.features = points.data.features.map((item:any) => {
+      console.log(item)
       for(let radar_id in dbsData){
         if(item.properties.radar_id == radar_id){
           dbsData[radar_id].data.map((radial:any)=>{
-            let lib = radial.list[rHeight-1];
+            // let lib = radial.list[rHeight-1];
+            let lib;
+            for(let i=radial.list.length-1;i>=1;i--){
+              let tmp = radial.list[i]
+              let altitude = Number(tmp['distance'])+Number(item.properties.altitude)
+              if(altitude<setting.风雷达组网地图相关.altitudeHeight&&setting.风雷达组网地图相关.altitudeHeight-altitude<=25){
+                lib = tmp
+                break;
+              }
+            }
             if(lib){
               points.data.features = points.data.features.map((item) => {
                 if(item.properties.color!=='#f00'){
@@ -1733,7 +1771,7 @@ watch(
                       item.properties.风速 = Number(lib['WindSpeed'].toFixed(2));
                       item.properties.风向 = Number(lib['WindDirection'].toFixed(2));
                       item.properties.垂直气流 = lib['ZWind']<0?`\u2193${lib['ZWind'].toFixed(2)}`:`\u2191${lib['ZWind'].toFixed(2)}`
-                      item.properties.高度 = lib['distance']
+                      item.properties.高度 = (Number(lib['distance'])+Number(item.properties.altitude)).toFixed(2)
                       item.properties.时间 = moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
                       item.properties.image = "feather" + getFeather(lib['WindSpeed']);
                     }
@@ -1742,7 +1780,7 @@ watch(
                       item.properties.风速 = NaN;
                       item.properties.风向 = NaN;
                       item.properties.垂直气流 = NaN
-                      item.properties.高度 = lib['distance']
+                      item.properties.高度 = (lib['distance']+Number(item.properties.altitude)).toFixed(2)
                       item.properties.时间 = moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
                       item.properties.image = "feather";
                     }

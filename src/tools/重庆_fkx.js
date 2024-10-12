@@ -1,3 +1,4 @@
+import * as echarts from 'echarts'
 import { getColor } from "~/tools"
 const getFeatherColor = (v)=>getColor(v)
 export default function DBS() {

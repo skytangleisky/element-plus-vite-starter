@@ -15,7 +15,7 @@
         min-height: 60px;
       "
     >
-      <div @click="click" style="position: relative;cursor:pointer">{{ item.device_name }}</div>
+      <div class="goToHisData" @click="click" style="position: relative;cursor:pointer">{{ item.device_name }}</div>
       <span style="font-size: small; color: grey; right: 0">{{ item.radar_id }}</span>
     </div>
   </div>
@@ -76,43 +76,7 @@ watch( [()=>bus.avgWindData_重庆,() => station.active],  ([avgWindData,active]
 });
 </script>
 <style lang="scss">
-.info_item {
-  display: flex;
-  justify-content: space-between;
-  flex-direction: row;
-  align-items: center;
-  border-radius: 8px;
-  margin: 8px 8px;
-  padding: 0 2px;
-  box-shadow: 0 0 4px 4px #00000011;
-  border-color: #00000011;
-}
-.battery {
-  --battery: 100%;
-  --batteryColor: grey;
-  box-sizing: border-box;
-  position: relative;
-  height: 18px;
-  width: 14px;
-  border: 1px solid grey;
-  margin: -1px;
-  .positiveElectrode {
-    position: absolute;
-    background-color: grey;
-    left: 50%;
-    top: -2px;
-    transform: translateX(-50%);
-    width: 6px;
-    height: 2px;
-  }
-  &::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    height: var(--battery);
-    background-color: var(--batteryColor);
-  }
+.goToHisData:hover{
+  text-decoration: underline;
 }
 </style>

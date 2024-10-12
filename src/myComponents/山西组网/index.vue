@@ -14,14 +14,6 @@
         outline: none;
       "
     />
-    <border-box11 ref="dvBorder11" :color="['#8aaafb','transparent']" title="山西测风雷达组网" :title-width="400" :animate="true" style="width:100%;height:100%;pointer-events: none;"/>
-    <Header/>
-    <test class="absolute left-300px top-350px w-200px h-200px"/>
-    <decoration-9 style="position:absolute;width:150px;height:150px;left:400px;top:400px;">
-      <div color-green font-600 style="font-size:28px;text-shadow: 0 0 3px #7acaec;" bg="~ dark/0">
-        117台
-      </div>
-    </decoration-9>
     <decoration-12 style="width:150px;height:150px;position:absolute;right:0;top:100px;" />
     <div ref="popup" class="ol-popup" style="display: none">
       <div
@@ -141,16 +133,15 @@
         <li @click="单站数据">单站数据</li>
       </ul>
     </div>
+    <test style="position:absolute;"/>
   </div>
 </template>
 <script setup lang="ts">
 import test from './test.vue'
-import Header from './header.vue'
 import 城市图标 from '~/assets/city.svg?url'
 // import { BorderBox11,BorderBox8 } from '@kjgl77/datav-vue3';
 import {BorderBox11} from '~/../packages/dataV/src/components/BorderBox11';
 import {BorderBox8} from '~/../packages/dataV/src/components/BorderBox8';
-import {Decoration9} from '~/../packages/dataV/src/components/Decoration9';
 import {Decoration12} from '~/../packages/dataV/src/components/Decoration12';
 import { isDark } from "~/composables/dark.ts";
 import { useRouter } from "vue-router";

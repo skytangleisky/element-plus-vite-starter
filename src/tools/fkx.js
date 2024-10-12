@@ -1,3 +1,4 @@
+import * as echarts from 'echarts'
 import {getColor} from '~/tools'
 export default function DBS() {
   var option = null

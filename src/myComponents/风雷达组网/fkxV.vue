@@ -8,6 +8,7 @@
   </div>
 </template>
 <script lang="ts" setup>
+import * as echarts from 'echarts'
 let radar_id = location.href.substring(location.href.lastIndexOf('/')+1,location.href.length)
 import { ref, onMounted, onBeforeUnmount, watch } from "vue";
 import DBS from "~/tools/fkxV.js";

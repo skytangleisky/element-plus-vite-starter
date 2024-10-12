@@ -18,12 +18,19 @@ export function debounce<T>(delay: number, callback: (...args: T[]) => void, vm:
     }, delay)
   }
 }
+// export function observerDomResize(dom: HTMLElement, callback: () => void) {
+//   const MutationObserver = window.MutationObserver
+
+//   const observer = new MutationObserver(callback)
+
+//   observer.observe(dom, { attributes: true, attributeFilter: ['style'], attributeOldValue: true })
+
+//   return observer
+// }
 export function observerDomResize(dom: HTMLElement, callback: () => void) {
-  const MutationObserver = window.MutationObserver
+  const observer = new ResizeObserver(callback)
 
-  const observer = new MutationObserver(callback)
-
-  observer.observe(dom, { attributes: true, attributeFilter: ['style'], attributeOldValue: true })
+  observer.observe(dom)
 
   return observer
 }

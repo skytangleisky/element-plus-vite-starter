@@ -8,7 +8,7 @@ function autoResize(dom: Ref<HTMLElement | null>, onResize?: () => void, afterAu
   const height = ref(0)
 
   let debounceInitWHFun: () => void
-  let domObserver: MutationObserver | null = null
+  let domObserver: ResizeObserver | null = null
   let domHtml: HTMLElement | null = null
 
   const initWH = (resize = true) => {
@@ -31,19 +31,19 @@ function autoResize(dom: Ref<HTMLElement | null>, onResize?: () => void, afterAu
     })
   }
   const getDebounceInitWHFun = () => {
-    debounceInitWHFun = useDebounceFn(initWH, 200)
+    debounceInitWHFun = useDebounceFn(initWH, 0)
   }
   const bindDomResizeCallback = () => {
     domObserver = observerDomResize(domHtml!, debounceInitWHFun)
 
-    useEventListener(window, 'resize', debounceInitWHFun)
+    // useEventListener(window, 'resize', debounceInitWHFun)
   }
   const unbindDomResizeCallback = () => {
     if (!domObserver)
       return
 
     domObserver.disconnect()
-    domObserver.takeRecords()
+    // domObserver.takeRecords()
     domObserver = null
   }
 

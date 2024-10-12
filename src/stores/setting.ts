@@ -34,6 +34,7 @@ export const useSettingStore = defineStore({
     },
     风雷达组网地图相关:{
       等距环:false,
+      altitudeHeight:100,
       relativeHeight:1,
       风场数据:"无",
       反演风场:"无",
@@ -549,6 +550,17 @@ export const useSettingStore = defineStore({
         svg:'ec24142a-78ac-4b58-9e4d-44d3e6c07835',
         meta:{
           label: '山西组网',
+          roles:['admin','sx']
+        }
+      },
+      {
+        path: 'device',
+        name: 'c4961e15-e574-0e1f-ae23-94f157b15abe',
+        component: '/src/myComponents/风雷达组网/pages/状态管理.vue',
+        svg:'ec24142a-78ac-4b58-9e4d-44d3e6c07835',
+        meta:{
+          label: '重庆组网',
+          roles:['admin','device']
         }
       },
       {
@@ -635,16 +647,6 @@ export const useSettingStore = defineStore({
       },
       {
         path: '',
-        name: '99961e0a-e574-0e1f-2e23-94f157b14b55',
-        redirect: '/cq/synthesis',
-        hide:true,
-        meta:{
-          label:'设备组网',
-          roles:['device']
-        }
-      },
-      {
-        path: '',
         name: '99961e04-e574-0e1f-3e23-94f157b14a43',
         redirect: '/ry/synthesis',
         hide:true,
@@ -661,6 +663,16 @@ export const useSettingStore = defineStore({
         meta:{
           label:'山西',
           roles:['sx']
+        }
+      },
+      {
+        path: '',
+        name: '99961a04-e574-0e1f-3e24-94f157b14a43',
+        redirect: '/device',
+        hide:true,
+        meta:{
+          label:'重庆组网',
+          roles:['device']
         }
       },
       {

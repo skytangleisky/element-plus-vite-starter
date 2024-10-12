@@ -59,7 +59,7 @@
     </div>
     <div class="item">
       <collapse-card title="风廓线" v-model:show="showDBS" :show-collapse="false">
-        <div class="subitem">
+        <!-- <div class="subitem">
           <span class="whitespace-nowrap">相对高度层</span>
           <el-select
             style="width: 80px"
@@ -78,6 +78,28 @@
             <svg t="1721356236932" class="icon hover:color-red active:color-inherit" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M600.064 119.68l342.336 730.24a64 64 0 0 1-88.064 83.584L544 768l-340.288 170.112a64 64 0 0 1-85.824-85.824l367.04-734.08a64 64 0 0 1 115.2 1.472z"></path></svg>
           </el-icon>
           <el-icon @click="downward()" style="font-size:large">
+            <svg t="1721356236932" class="icon hover:color-red active:color-inherit rotate-180deg" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M600.064 119.68l342.336 730.24a64 64 0 0 1-88.064 83.584L544 768l-340.288 170.112a64 64 0 0 1-85.824-85.824l367.04-734.08a64 64 0 0 1 115.2 1.472z"></path></svg>
+          </el-icon>
+        </div> -->
+        <div class="subitem">
+          <span class="whitespace-nowrap">海拔高度</span>
+          <el-select
+            style="width: 80px"
+            v-model="setting.风雷达组网地图相关.altitudeHeight"
+            placeholder=""
+            size="small"
+          >
+            <el-option
+              v-for="item in altitudeOptions"
+              :key="item.value"
+              :value="item.value"
+              :label="item.label"
+            ></el-option>
+          </el-select>
+          <el-icon @click="upward2()" style="font-size:large">
+            <svg t="1721356236932" class="icon hover:color-red active:color-inherit" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M600.064 119.68l342.336 730.24a64 64 0 0 1-88.064 83.584L544 768l-340.288 170.112a64 64 0 0 1-85.824-85.824l367.04-734.08a64 64 0 0 1 115.2 1.472z"></path></svg>
+          </el-icon>
+          <el-icon @click="downward2()" style="font-size:large">
             <svg t="1721356236932" class="icon hover:color-red active:color-inherit rotate-180deg" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M600.064 119.68l342.336 730.24a64 64 0 0 1-88.064 83.584L544 768l-340.288 170.112a64 64 0 0 1-85.824-85.824l367.04-734.08a64 64 0 0 1 115.2 1.472z"></path></svg>
           </el-icon>
         </div>
@@ -287,6 +309,10 @@ const heightOptions = reactive<Array<any>>([]);
 for (let i = 300; i >= 1; i --) {
   heightOptions.push({ value: i, label:"第" + i + "层" });
 }
+const altitudeOptions = reactive<Array<any>>([]);
+for (let i = 70; i >= 1; i --) {
+  altitudeOptions.push({ value: i*100, label:i*100+"米" });
+}
 const upward = () => {
   for(let i=heightOptions.length-1;i>=0;i--){
     if(heightOptions[i].value>setting.风雷达组网地图相关.relativeHeight){
@@ -299,6 +325,22 @@ const downward = () => {
   for(let i=0;i<heightOptions.length;i++){
     if(heightOptions[i].value<setting.风雷达组网地图相关.relativeHeight){
       setting.风雷达组网地图相关.relativeHeight = heightOptions[i].value
+      break
+    }
+  }
+}
+const upward2 = () => {
+  for(let i=altitudeOptions.length-1;i>=0;i--){
+    if(altitudeOptions[i].value>setting.风雷达组网地图相关.altitudeHeight){
+      setting.风雷达组网地图相关.altitudeHeight = altitudeOptions[i].value
+      break
+    }
+  }
+}
+const downward2 = () => {
+  for(let i=0;i<altitudeOptions.length;i++){
+    if(altitudeOptions[i].value<setting.风雷达组网地图相关.altitudeHeight){
+      setting.风雷达组网地图相关.altitudeHeight = altitudeOptions[i].value
       break
     }
   }
