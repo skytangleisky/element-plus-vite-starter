@@ -3,7 +3,7 @@
     <div
       v-resize="resize"
       ref="mapRef"
-      class="map"
+      class="map dark:bg-#2b2b2b bg-white"
       style="
         position: absolute;
         left: 0;

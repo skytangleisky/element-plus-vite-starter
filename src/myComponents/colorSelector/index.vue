@@ -90,12 +90,12 @@ onBeforeUnmount(()=>{
 .ColorSelector {
   --width:522px;
   --height:376px;
-  position: absolute;
-  left:calc(50% - var(--width) / 2);
-  top:calc(50% - var(--height) / 2);
-  // background-image: url(./colorSelectorBg.png);
   width:var(--width);
   height:var(--height);
+  left:calc(50% - var(--width) / 2);
+  top:calc(50% - var(--height) / 2);
+  position: absolute;
+  // background-image: url(./colorSelectorBg.png);
   font-family:Chicago, sans-serif;
   font-size:12px;
   border-radius: 10px;

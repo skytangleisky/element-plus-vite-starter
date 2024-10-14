@@ -1,6 +1,9 @@
 <template>
   <div class="page color-white">
-    <Header class="z-1"></Header>
+    <Header class="z-1" @alarm="settingShow = true" @edit-user="editUserShow = true"></Header>
+    <Alarm v-if="settingShow" v-model:show="settingShow"></Alarm>
+    <ChangePassword v-if="editUserShow" v-model:show="editUserShow"></ChangePassword>
+    <EditDevice v-if="editDeviceShow" v-model:show="editDeviceShow" :device="device"></EditDevice>
     <border-box-11 ref="dvBorder11" :color="['#8aaafb','transparent']" title="重庆测风雷达组网" :title-width="400" :animate="true" style="width:100%;height:100%;">
     <div class="absolute flex w-full h-full justify-around box-border p-20px p-t-60px">
       <div class="left">
@@ -8,15 +11,13 @@
           <div class="w-full h-full place-items-center p-10px box-border" style="display:grid;grid-template-rows: auto 1fr;grid-template-columns: 1fr 1fr;">
             <div class="flex flex-row justify-around row-start-1 row-span-1 col-start-1 col-span-2">
               <div class="m-r-20px font-size-18px">雷达状态分布</div>
-              <div class="online font-bold line-height-18px flex items-center">在线</div>
-              <div class="offline font-bold line-height-18px flex items-center">离线</div>
-              <div class="warning font-bold line-height-18px flex items-center">告警</div>
+              <div class="online font-bold line-height-18px flex items-center">正常</div>
+              <div class="offline font-bold line-height-18px flex items-center">故障</div>
             </div>
             <div ref="pieChart1"  class="row-start-2 row-span-1 col-start-1 col-span-1 w-full h-full"></div>
-            <div class="percents grid grid-cols-2 grid-rows-3 items-center col-start-2 col-span-1 row-start-2 row-span-1 h-100px font-size-20px">
-              <div class="online">在线</div>100%
-              <div class="offline">离线</div>0%
-              <div class="warning">告警</div>0%
+            <div class="percents grid grid-cols-2 grid-rows-3 items-center col-start-2 col-span-1 row-start-2 row-span-1 h-80px font-size-20px flex flex-col justify-between">
+              <div class="flex w-full"><div class="online">正常</div>100%</div>
+              <div class="flex" w-full><div class="offline">故障</div>0%</div>
             </div>
           </div>
         </border-box-7>
@@ -71,15 +72,13 @@
       </div>
       <div class="right">
         <border-box-7 :color="['#0154be', '#03f7fc']" style="box-sizing: border-box;backdrop-filter:blur(8px);">
-          <div class="w-full h-full grid cols-2 rows-4 place-items-center grid-gap-10px p-10px box-border">
-            <div ref="vocational" id="vocational" class="row-start-1 row-span-1 col-start-1 col-span-1 w-full h-full"></div>
-            <div ref="bl" id="bl" class="row-start-1 row-start-1 col-start-2 col-span-1 w-full h-full"></div>
-            <div ref="professionalCertificate" id="professionalCertificate" class="row-start-2 row-start-1 col-start-1 col-span-1 w-full h-full"></div>
-            <div ref="national" id="national" class="row-start-2 row-start-1 col-start-2 col-span-1 w-full h-full"></div>
-            <div ref="employmentCounterpart" id="employmentCounterpart" class="row-start-3 row-start-1 col-start-1 col-span-1 w-full h-full"></div>
-            <div ref="employmentNum" id="employmentNum" class="row-start-3 row-start-1 col-start-2 col-span-1 w-full h-full"></div>
-            <div ref="practiceBase" id="practiceBase" class="row-start-4 row-start-1 col-start-1 col-span-1 w-full h-full"></div>
-            <div ref="skill" id="skill" class="row-start-4 row-start-1 col-start-2 col-span-1 w-full h-full"></div>
+          <div class="w-full h-full grid cols-2 rows-3 place-items-center grid-gap-10px p-10px box-border">
+            <div ref="th1" class="row-start-1 row-start-1 col-start-1 col-span-1 w-full h-full"></div>
+            <div ref="th2" class="row-start-1 row-start-1 col-start-2 col-span-1 w-full h-full"></div>
+            <div ref="th3" class="row-start-2 row-start-1 col-start-1 col-span-1 w-full h-full"></div>
+            <div ref="th4" class="row-start-2 row-start-1 col-start-2 col-span-1 w-full h-full"></div>
+            <div ref="th5" class="row-start-3 row-start-1 col-start-1 col-span-1 w-full h-full"></div>
+            <div ref="th6" class="row-start-3 row-start-1 col-start-2 col-span-1 w-full h-full"></div>
           </div>
         </border-box-7>
       </div>
@@ -93,7 +92,15 @@ import Header from './header.vue'
 import { BorderBox7,Decoration9,BorderBox1,BorderBox11 } from '~/../packages/dataV';
 import echartsUtils from './echartsUtils'
 import { onBeforeUnmount, onMounted } from 'vue';
+import { eventbus } from '~/eventbus';
 import data from './data.json'
+const settingShow = ref(false)
+const editUserShow = ref(false)
+const editDeviceShow = ref(false)
+const device = ref("")
+import Alarm from './alarm.vue';
+import ChangePassword from './changePassword.vue';
+import EditDevice from './editDevice.vue';
 const pieChart1 = ref(null)
 const dataTrend1 = ref(null)
 const dataTrend2 = ref(null)
@@ -101,7 +108,19 @@ const dataTrend3 = ref(null)
 const dataTrend4 = ref(null)
 const dataTrend5 = ref(null)
 const dataTrend6 = ref(null)
+const th1 = ref(null)
+const th2 = ref(null)
+const th3 = ref(null)
+const th4 = ref(null)
+const th5 = ref(null)
+const th6 = ref(null)
+function editDevice(deviceName:string){
+  console.log(deviceName)
+  device.value = deviceName
+  editDeviceShow.value = true
+}
 onMounted(()=>{
+  eventbus.on('重庆测风雷达组网-设备编辑',editDevice)
   /*echartsUtils.initBarAndLineChart({
     chartName: "professionConstruct",
     data: {
@@ -134,13 +153,14 @@ onMounted(()=>{
     type: "bar",
     data: { d1: data.teacherFundsBuild },
   });*/
-  data.teacherBuildTime = [7,5,6,6,6,6,5,6,6,6,6,6]
+  data.teacherBuildTime = [7,5,6,6,6,6,5,6,6,6,6,6,7,5,6,6,6,6,5,6,6,6,6,6]
   echartsUtils.initLineOrBarChart({
+    type:'bar',
     chartName: dataTrend1.value,
     data: {
       d1: data.teacherBuildTime,
     },
-    title: "A6418当天数据获取数量",
+    title: "渝北当天每小时数据获取量",
     color: [
       "rgba(0, 187, 255, 1)",
       "rgba(0, 187, 255, 0.3)",
@@ -148,13 +168,14 @@ onMounted(()=>{
     ],
     unit: "(次数)",
   });
-  data.teacherBuildTime = [6,6,6,6,6,6,5,7,6,6,6,6]
+  data.teacherBuildTime = [6,6,6,6,6,6,5,7,6,6,6,6,6,6,6,6,6,6,5,7,6,6,6,6]
   echartsUtils.initLineOrBarChart({
+    type:'bar',
     chartName: dataTrend2.value,
     data: {
       d1: data.teacherBuildTime,
     },
-    title: "A6419当天数据获取数量",
+    title: "北碚当天每小时数据获取量",
     color: [
       "rgba(0, 187, 255, 1)",
       "rgba(0, 187, 255, 0.3)",
@@ -162,13 +183,14 @@ onMounted(()=>{
     ],
     unit: "(次数)",
   });
-  data.teacherBuildTime = [6,6,6,6,6,6,5,6,6,6,6,7]
+  data.teacherBuildTime = [6,6,6,6,6,6,5,6,6,6,6,7,6,6,6,6,6,6,5,7,6,6,6,6]
   echartsUtils.initLineOrBarChart({
+    type:'bar',
     chartName: dataTrend3.value,
     data: {
       d1: data.teacherBuildTime,
     },
-    title: "A6420当天数据获取数量",
+    title: "巴南当天每小时数据获取量",
     color: [
       "rgba(0, 187, 255, 1)",
       "rgba(0, 187, 255, 0.3)",
@@ -176,13 +198,14 @@ onMounted(()=>{
     ],
     unit: "(次数)",
   });
-  data.teacherBuildTime = [6,6,6,6,6,6,5,6,6,6,6,5]
+  data.teacherBuildTime = [6,6,6,6,6,6,5,6,6,6,6,5,6,6,6,6,6,6,5,7,6,6,6,6]
   echartsUtils.initLineOrBarChart({
+    type:'bar',
     chartName: dataTrend4.value,
     data: {
       d1: data.teacherBuildTime,
     },
-    title: "A6421当天数据获取数量",
+    title: "綦江当天每小时数据获取量",
     color: [
       "rgba(0, 187, 255, 1)",
       "rgba(0, 187, 255, 0.3)",
@@ -190,13 +213,14 @@ onMounted(()=>{
     ],
     unit: "(次数)",
   });
-  data.teacherBuildTime = [6,6,6,6,6,6,5,6,4,6,6,7]
+  data.teacherBuildTime = [6,6,6,6,6,6,5,6,4,6,6,7,6,6,6,6,6,6,5,7,6,6,6,6]
   echartsUtils.initLineOrBarChart({
+    type:'bar',
     chartName: dataTrend5.value,
     data: {
       d1: data.teacherBuildTime,
     },
-    title: "A6422当天数据获取数量",
+    title: "万州当天每小时数据获取量",
     color: [
       "rgba(0, 187, 255, 1)",
       "rgba(0, 187, 255, 0.3)",
@@ -204,13 +228,14 @@ onMounted(()=>{
     ],
     unit: "(次数)",
   });
-  data.teacherBuildTime = [6,6,6,6,6,6,5,6,6,6,6,3]
+  data.teacherBuildTime = [6,6,6,6,6,6,5,6,6,6,6,3,6,6,6,6,6,6,5,7,6,6,6,6]
   echartsUtils.initLineOrBarChart({
+    type:'bar',
     chartName: dataTrend6.value,
     data: {
       d1: data.teacherBuildTime,
     },
-    title: "A6423当天数据获取数量",
+    title: "城口当天每小时数据获取量",
     color: [
       "rgba(0, 187, 255, 1)",
       "rgba(0, 187, 255, 0.3)",
@@ -278,57 +303,20 @@ onMounted(()=>{
       ["90%", "30%"],
     ],
   });*/
-  echartsUtils.initRadarChart({
-    chartName: "vocational",
-    title: "报考高职原因分析",
-    data: data.vocational,
-  });
-  echartsUtils.initBarAndPieChart({
-    chartName: "bl",
-    title: "中高贯通培养比例",
-    data: data.bl,
-  });
-  // 职业资格证书获取情况
+  
+  // 温湿度曲线
   echartsUtils.initDoubleLineOrBarChart({
-    chartName: "professionalCertificate",
-    title: "职业资格证书获取情况",
-    yName1: "(万人)",
-    yAxisIndex: 1,
-    data: {
-      d1: data.professionalQualificationCertificate,
-    },
-    type: "bar",
-    grid: {
-      left: 40,
-      right: 10,
-      bottom: 30,
-      top: 43,
-      height: "60%",
-      width: "70%",
-    },
-  });
-  // 国家级技能竞赛获奖情况
-  echartsUtils.initBarTypeChart({
-    chartName: "national",
-    title: "国家级技能竞赛获奖情况",
-    xAxisName: "(万人)",
-    data: {
-      d1: data.national,
-    },
-  });
-  // 就业对口情况
-  echartsUtils.initDoubleLineOrBarChart({
-    chartName: "employmentCounterpart",
-    title: "就业对口情况",
+    chartName: th1.value,
+    title: "渝北温湿度曲线图",
     yName1: "(%)",
     legendShow: true,
     data: {
-      d1: data.employment,
-      d2: data.match,
+      d1: [20,25,30,27,26,20,18,17,16,15,16,20,10,15,18,20,22,19,20,26,30,31,25,20],
+      d2: [10,20,40,50,80,90,70,60,50,30,40,50,15,20,22,23,24,25,26,19,18,20,25,26],
     },
     // line: 2,
-    seriesName1: "就业率",
-    seriesName2: "对口率",
+    seriesName1: "温度（℃）",
+    seriesName2: "湿度（%）",
     grid: {
       left: 40,
       right: 10,
@@ -338,51 +326,110 @@ onMounted(()=>{
       width: "70%",
     },
   });
-  // 就业去向区域排名
-  echartsUtils.initBarTypeChart({
-    chartName: "employmentNum",
-    title: "就业去向区域排名",
-    xAxisName: "(万人)",
-    xAxisName1: "总就业人数",
-    xAxisName2: "本地区就业人数",
-    data: {
-      d1: data.totalEmployment,
-      d2: data.employmentRegion,
-    },
-    grid: {
-      left: 50,
-      right: 30,
-      top: 50,
-      bottom: 0,
-      // height: "60%",
-    },
-  });
-  // 实践基地设置
-  echartsUtils.initStackBarChart({
-    chartName: "practiceBase",
-    title: "实践基地设置",
-    data: {
-      d1: data.practiceBaseIn,
-      d2: data.practiceBaseOut,
-    },
-    name1: "校内实践基地",
-    name2: "校外实训基地",
-    unit: "(万个)",
-  });
-  //技能鉴定机构设置
   echartsUtils.initDoubleLineOrBarChart({
-    chartName: "skill",
-    type: "bar",
+    chartName: th2.value,
+    title: "北碚温湿度曲线图",
+    yName1: "(%)",
+    legendShow: true,
     data: {
-      d1: data.skil,
-      d2: data.skilStudent,
+      d1: [20,25,30,27,26,20,18,17,16,15,16,20,10,15,18,20,22,19,20,26,30,31,25,20],
+      d2: [10,20,40,50,80,90,70,60,50,30,40,50,15,20,22,23,24,25,26,19,18,20,25,26],
     },
-    // grid: {},
-    color2: "rgba(1, 211, 142, 1)",
-    yAxisNamePd: [-20, -40, 0, 0],
-    yName1: "鉴定机构数量(个)",
-    yName2: "鉴定学生数量(万人)",
-    title: "技能鉴定机构设置",
+    // line: 2,
+    seriesName1: "温度（℃）",
+    seriesName2: "湿度（%）",
+    grid: {
+      left: 40,
+      right: 10,
+      bottom: 30,
+      top: 43,
+      height: "60%",
+      width: "70%",
+    },
+  });
+  echartsUtils.initDoubleLineOrBarChart({
+    chartName: th3.value,
+    title: "巴南温湿度曲线图",
+    yName1: "(%)",
+    legendShow: true,
+    data: {
+      d1: [20,25,30,27,26,20,18,17,16,15,16,20,10,15,18,20,22,19,20,26,30,31,25,20],
+      d2: [10,20,40,50,80,90,70,60,50,30,40,50,15,20,22,23,24,25,26,19,18,20,25,26],
+    },
+    // line: 2,
+    seriesName1: "温度（℃）",
+    seriesName2: "湿度（%）",
+    grid: {
+      left: 40,
+      right: 10,
+      bottom: 30,
+      top: 43,
+      height: "60%",
+      width: "70%",
+    },
+  });
+  echartsUtils.initDoubleLineOrBarChart({
+    chartName: th4.value,
+    title: "綦江温湿度曲线图",
+    yName1: "(%)",
+    legendShow: true,
+    data: {
+      d1: [20,25,30,27,26,20,18,17,16,15,16,20,10,15,18,20,22,19,20,26,30,31,25,20],
+      d2: [10,20,40,50,80,90,70,60,50,30,40,50,15,20,22,23,24,25,26,19,18,20,25,26],
+    },
+    // line: 2,
+    seriesName1: "温度（℃）",
+    seriesName2: "湿度（%）",
+    grid: {
+      left: 40,
+      right: 10,
+      bottom: 30,
+      top: 43,
+      height: "60%",
+      width: "70%",
+    },
+  });
+  echartsUtils.initDoubleLineOrBarChart({
+    chartName: th5.value,
+    title: "万州温湿度曲线图",
+    yName1: "(%)",
+    legendShow: true,
+    data: {
+      d1: [20,25,30,27,26,20,18,17,16,15,16,20,10,15,18,20,22,19,20,26,30,31,25,20],
+      d2: [10,20,40,50,80,90,70,60,50,30,40,50,15,20,22,23,24,25,26,19,18,20,25,26],
+    },
+    // line: 2,
+    seriesName1: "温度（℃）",
+    seriesName2: "湿度（%）",
+    grid: {
+      left: 40,
+      right: 10,
+      bottom: 30,
+      top: 43,
+      height: "60%",
+      width: "70%",
+    },
+  });
+  echartsUtils.initDoubleLineOrBarChart({
+    chartName: th6.value,
+    title: "城口温湿度曲线图",
+    yName1: "(%)",
+    legendShow: true,
+    data: {
+      d1: [20,25,30,27,26,20,18,17,16,15,16,20,10,15,18,20,22,19,20,26,30,31,25,20],
+      d2: [10,20,40,50,80,90,70,60,50,30,40,50,15,20,22,23,24,25,26,19,18,20,25,26],
+    },
+    // line: 2,
+    seriesName1: "温度（℃）",
+    seriesName2: "湿度（%）",
+    grid: {
+      left: 40,
+      right: 10,
+      bottom: 30,
+      top: 43,
+      height: "60%",
+      width: "70%",
+    },
   });
   echartsUtils.initMapChart({
     chartName: "mapChart",
@@ -395,6 +442,7 @@ onMounted(()=>{
 })
 onBeforeUnmount(()=>{
   echartsUtils.destroy()
+  eventbus.off('重庆测风雷达组网-设备编辑',editDevice)
 })
 </script>
 <style lang="scss">

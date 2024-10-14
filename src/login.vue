@@ -18,10 +18,9 @@
       <div class="title">重庆测风雷达组网系统</div>
       <!-- <div class="title">山西测风雷达组网系统</div> -->
     </div>
-    <div class="rightPlane">
+    <div class="plane">
       <el-form
         ref="formEl"
-        id="rightPlaneForm"
         :model="numberValidateForm"
         class="demo-ruleForm fourCorners"
       >
@@ -44,7 +43,7 @@
           <el-input
             v-model.number="numberValidateForm.password"
             :type="hide ? 'password' : 'text'"
-            autocomplete="off"
+            autocomplete="new-password"
             placeholder="密码"
             :prefix-icon="Lock"
             @keyup.enter.native="submitForm(formEl)"
@@ -200,11 +199,11 @@ watch(
     display: inline-block;
     white-space: nowrap;
   }
-  .rightPlane {
+  .plane {
     position: relative;
     padding: 40px;
     display: flex;
-    flex-direction: colum;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     backdrop-filter:blur(5px);

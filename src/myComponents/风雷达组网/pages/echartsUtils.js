@@ -5,7 +5,8 @@ import { exec } from "~/api/index.js";
 import {databaseRaw} from '~/api/重庆';
 import { wgs84togcj02 } from "~/myComponents/map/workers/mapUtil";
 import { sixty2Float } from "~/tools";
-const years = ["1h", "2h", "3h", "4h", "5h", "6h", "7h", "8h", "9h", "10h", "11h", "12h"];
+import { eventbus } from "~/eventbus";
+const years = ["1h", "2h", "3h", "4h", "5h", "6h", "7h", "8h", "9h", "10h", "11h", "12h","13","14","15","16","17","18","19","20","21","22","23","24"];
 let observers = []
 let charts = []
 export default {
@@ -666,7 +667,7 @@ export default {
 
   // 双柱图 or 双折线图
   initDoubleLineOrBarChart(params) {
-    let chart = echarts.init(document.getElementById(params.chartName));
+    let chart = echarts.init(params.chartName);
     const option = {
       title: {
         text: params.title,
@@ -966,6 +967,7 @@ export default {
       } else {
         option.series = [
           {
+            smooth:true,
             type: "line",
             name: params.seriesName1 ? params.seriesName1 : "",
             data: params.data.d1,
@@ -1006,6 +1008,7 @@ export default {
             },
           },
           {
+            smooth:true,
             type: "line",
             name: params.seriesName2 ? params.seriesName2 : "",
             data: params.data.d2,
@@ -1051,7 +1054,7 @@ export default {
     let observer = new ResizeObserver(()=>{
       chart.resize()
     })
-    observer.observe(document.getElementById(params.chartName))
+    observer.observe(params.chartName)
     observers.push(observer)
     charts.push(chart)
   },
@@ -1843,7 +1846,6 @@ export default {
   },
   async initMapChart(params) {
     let res = await exec({
-      // database: "host=127.0.0.1&port=3306&user=root&password=tanglei&database=weatherservice",
       database: databaseRaw,
       query: {
         sqls: ["select * from `device`"],
@@ -1855,28 +1857,32 @@ export default {
       v.longitude = position[0];
       v.latitude = position[1];
       geoCoordMap[v.no] = [v.longitude,v.latitude];
-      //站点高亮提示
-      params.data.push({
-        "jsj": 49.62,
-        "ssb": "12.73 ",
-        "snum": "19",
-        "name": v.no,
-        "ze": 17668.32,
-        "tsl": 114.04,
-        "mj": 103.13,
-        "gnum": "90"
-      })
-      //地理区域高亮提示
-      params.data.push({
-        "jsj": 49.62,
-        "ssb": "12.73 ",
-        "snum": "19",
-        "name": v.address,
-        "ze": 17668.32,
-        "tsl": 114.04,
-        "mj": 103.13,
-        "gnum": "90"
-      })
+      console.log(v)
+      if(v.hide!=='true'){
+        //站点高亮提示
+        params.data.push({
+          ...v,
+          "jsj": 49.62,
+          "ssb": "12.73 ",
+          "snum": "19",
+          "name": v.no,
+          "ze": 17668.32,
+          "tsl": 114.04,
+          "mj": 103.13,
+          "gnum": "90"
+        })
+        //地理区域高亮提示
+        // params.data.push({
+        //   "jsj": 49.62,
+        //   "ssb": "12.73 ",
+        //   "snum": "19",
+        //   "name": v.address,
+        //   "ze": 17668.32,
+        //   "tsl": 114.04,
+        //   "mj": 103.13,
+        //   "gnum": "90"
+        // })
+      }
       return v;
     });
 
@@ -1912,12 +1918,15 @@ export default {
     };
     // 地图点击跳转省份
     chart.on("click", (param) => {
-      // if (param.name) {
-      //   this.$router.push({
-      //     path: "/province",
-      //     query: { province: param.name },
-      //   });
-      // }
+      if (param.name) {
+        // this.$router.push({
+        //   path: "/province",
+        //   query: { province: param.name },
+        // });
+      }
+      if(param.seriesType=='scatter'){
+        eventbus.emit('重庆测风雷达组网-设备编辑',param.name)
+      }
     });
     const option = {
       tooltip: {
@@ -1985,7 +1994,7 @@ export default {
         },
       },
       series: [
-        {
+        {//区域选中后高亮
           type: "map",
           geoIndex: 0,
           data: params.data,
@@ -2011,11 +2020,34 @@ export default {
             },
           },
         },
-        {
+        /*{
+          tooltip: {
+            trigger: "item",
+            backgroundColor: "rgba(50,50,50,0.5)",
+            textStyle: {
+              color: "white",
+            },
+            formatter: function (params) {
+              if(params.data){
+                const toolTiphtml = `${params.name}</br>
+                  雷达名称: <span style="color: #13F5FD;">${params.data.device_name}</span></br>
+                  雷达型号: <span style="color: #13F5FD;">${params.data.device_model}</span></br>
+                  雷达类型: <span style="color: #13F5FD;">${params.data.device_type}</span></br>
+                  经度: <span style="color: #13F5FD;">${params.data.lng}</span></br>
+                  纬度: <span style="color: #13F5FD;">${params.data.lat}</span></br>
+                  海拔高度: <span style="color: #13F5FD;">${params.data.altitude}米</span></br>
+                  生产厂商: <span style="color: #13F5FD;">${params.data.manufacturer}</span></br>
+                  更新时间: <span style="color: #13F5FD;">${params.data.updatetime}</span></br>
+                  `;
+                return toolTiphtml;
+              }
+            },
+          },
           name: "Top 10",
           type: "effectScatter",
+          symbolSize: [10, 10],
+          symbolOffset:[0,0],
           coordinateSystem: "geo",
-          symbolSize: 10,
           showEffectOn: "render",
           rippleEffect: {
             brushType: "stroke",
@@ -2023,13 +2055,68 @@ export default {
           hoverAnimation: true,
           label: {
             formatter: "{b}",
-            position: "right",
-            show: true,
+            position: "center",
+            show: false,
             color: "white",
+            offset:[10,0]
           },
           itemStyle: {
             normal: {
               color: "#00ebf7",
+              shadowBlur: 6,
+              shadowColor: "#3eaff",
+            },
+          },
+          // zlevel: 3,
+          geoIndex: 0,
+          data: convertData(params.data),
+        },*/
+        {
+          tooltip: {
+            trigger: "item",
+            backgroundColor: "rgba(50,50,50,0.5)",
+            textStyle: {
+              color: "white",
+            },
+            formatter: function (params) {
+              if(params.data){
+                const toolTiphtml = `<strong style="font-size:20px">${params.data.device_short_name}</strong></br>
+                  雷达编号: <span style="color: #13F5FD;">${params.data.no}</span></br>
+                  雷达名称: <span style="color: #13F5FD;">${params.data.device_name}</span></br>
+                  雷达型号: <span style="color: #13F5FD;">${params.data.device_model}</span></br>
+                  雷达类型: <span style="color: #13F5FD;">${params.data.device_type}</span></br>
+                  经度: <span style="color: #13F5FD;">${params.data.lng}</span></br>
+                  纬度: <span style="color: #13F5FD;">${params.data.lat}</span></br>
+                  海拔高度: <span style="color: #13F5FD;">${params.data.altitude}米</span></br>
+                  生产厂商: <span style="color: #13F5FD;">${params.data.manufacturer}</span></br>
+                  更新时间: <span style="color: #13F5FD;">${params.data.updatetime}</span></br>
+                  `;
+                return toolTiphtml;
+              }
+            },
+          },
+          name: "Top 10",
+          type: "scatter",
+          symbolSize: [46, 20],
+          symbolOffset:[18,-5],
+          symbol:"path://M28.9,29.42l-13.8,23.64c-.85-.22-1.73-.36-2.65-.36-5.7,0-10.32,4.62-10.32,10.32s4.62,10.32,10.32,10.32,10.32-4.62,10.32-10.32c0-3.71-1.96-6.95-4.89-8.77l12.92-21.84h67.07v-3H",
+          coordinateSystem: "geo",
+          showEffectOn: "render",
+          rippleEffect: {
+            brushType: "stroke",
+          },
+          hoverAnimation: true,
+          label: {
+            formatter: "{b}",
+            position: "center",
+            show: true,
+            color: "white",
+            offset:[14,-12]
+          },
+          itemStyle: {
+            normal: {
+              // color: "#00ebf7",
+              color: "#0f0",
               shadowBlur: 6,
               shadowColor: "#3eaff",
             },
@@ -2081,7 +2168,7 @@ export default {
         {
           name: '雷达状态分布',
           type: 'pie',
-          radius: ['40%', '80%'],
+          radius: ['50%', '80%'],
           avoidLabelOverlap: false,
           label: {
             show: false,
@@ -2106,9 +2193,8 @@ export default {
             show: false
           },
           data: [
-            { value: 3, name: '在线',itemStyle: {color: '#91CC75'} },
-            { value: 0, name: '离线',itemStyle: {color: '#EE6666'} },
-            { value: 0, name: '告警',itemStyle: {color: '#FAC858'} },
+            { value: 6, name: '正常',itemStyle: {color: '#91CC75'} },
+            { value: 0, name: '故障',itemStyle: {color: '#EE6666'} },
           ]
         }
       ]
