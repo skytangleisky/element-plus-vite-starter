@@ -33,7 +33,7 @@ class CSGLSquare {
     if (typeof amount === 'undefined') amount = 0;
     if (typeof web === 'undefined') web = 0;
     this.Canvas = canvas;
-    this.gl = this.Canvas.getContext("webgl2") || canvas.getContext("experimental-webgl");
+    this.gl = this.Canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
     if (!this.gl) {
       console.log('WebGL not supported');
       return;
@@ -124,7 +124,7 @@ class CSGLBar {
     if (typeof amount === 'undefined') amount = [0,0];
     if (typeof web === 'undefined') web = 0;
     this.Canvas = canvas;
-    this.gl = this.Canvas.getContext("webgl2") || canvas.getContext("experimental-webgl");
+    this.gl = this.Canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
     if (!this.gl) {
       console.log('WebGL not supported');
       return;

@@ -131,6 +131,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import discreteContour from "./discreteContour.ts";
 import { isDark } from "~/composables/dark.ts";
 import { useRouter } from "vue-router";
 const router = useRouter()
@@ -581,6 +582,7 @@ function processData(result: any, position: [number, number]) {
 const loadFunc = async () => {
   await addFeatherImages(map);
   await addArrowImages(map);
+  discreteContour(map,{isobands:true,isolines:true,gridPoint:false,gridValue:false,discrete:true})
   work()
   timer = setInterval(work,10*60e3)
   map.addSource("radar", {

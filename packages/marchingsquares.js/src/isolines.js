@@ -168,7 +168,7 @@ export function isoLines(input, threshold, options) {
       settings.successCallback(ret, t);
 
   });
-  ret = ret.map(lines=>lines.map(line=>BSpline(line,0)))
+  ret = ret.map(lines=>lines.map(line=>BSpline(line,options.interpolateCount||0)))
   return ret;
 }
 

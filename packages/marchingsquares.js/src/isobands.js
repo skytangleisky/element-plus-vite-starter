@@ -1243,7 +1243,7 @@ function isoBands(input, minV, bandWidth, options) {
     if(typeof settings.successCallback === 'function')
       settings.successCallback(ret, lowerBound, bandWidth[b]);
   });
-  ret = ret.map(lines=>lines.map(line=>BSpline(line,0)))
+  ret = ret.map(lines=>lines.map(line=>BSpline(line,options.interpolateCount||0)))
   return ret;
 }
 
