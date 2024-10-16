@@ -7,7 +7,7 @@ import { isoLines, isoBands } from "marchingsquares";
 import { area, pointInPolygon } from "~/tools/index.ts";
 import { sixty2Float } from "~/tools/index.ts";
 import { wgs84togcj02 } from "../map/workers/mapUtil";
-let LAT = (Math.atan(Math.sinh(Math.PI)) * 180) / Math.PI;
+let LAT = Math.atan(Math.sinh(Math.PI)) * 180 / Math.PI;
 let interpolateCount = 10;
 const getHue = (min: number, v: number, max: number) => {
   let value;
@@ -26,7 +26,7 @@ const getHue = (min: number, v: number, max: number) => {
   //hsl(60,100%,50%)～hsl(0,100%,50%)
   // return (1 - percent) * 60;
 };
-export default function(map:mapboxgl.Map,opts:{isobands:boolean,isolines:boolean,gridPoint:boolean,gridValue:boolean,discrete:boolean}){
+export default function(map:mapboxgl.Map,data:any,opts:{isobands:boolean,isolines:boolean,gridValue:boolean,discrete:boolean}){
   // getMicapsData(plotUrl).then(async(result: any) => {
   //   result.data.map((item: any) => {
   //     // if(item.温度!==9999&&item.经度>70&&item.经度<140&&15<item.纬度&&item.纬度<55){
@@ -48,19 +48,23 @@ export default function(map:mapboxgl.Map,opts:{isobands:boolean,isolines:boolean
   //     value: Number((Math.random() * 20).toFixed(2)),
   //   });
   // }
-  let convert;
-  convert = wgs84togcj02(sixty2Float('106°37′39″'),sixty2Float('29°44′28″'))
-  pts.push({lng: convert[0],lat: convert[1],value:Number((Math.random() * 20).toFixed(2))});
-  convert = wgs84togcj02(sixty2Float('106°26′36″'),sixty2Float('29°50′31″'))
-  pts.push({lng: convert[0],lat: convert[1],value:Number((Math.random() * 20).toFixed(2))});
-  convert = wgs84togcj02(sixty2Float('106°29′32″'),sixty2Float('29°20′28″'))
-  pts.push({lng: convert[0],lat: convert[1],value:Number((Math.random() * 20).toFixed(2))});
-  convert = wgs84togcj02(sixty2Float('106°38′55″'),sixty2Float('29°00′36″'))
-  pts.push({lng: convert[0],lat: convert[1],value:Number((Math.random() * 20).toFixed(2))});
-  convert = wgs84togcj02(sixty2Float('108°24′50″'),sixty2Float('30°48′12″'))
-  pts.push({lng: convert[0],lat: convert[1],value:Number((Math.random() * 20).toFixed(2))});
-  convert = wgs84togcj02(sixty2Float('108°39′48″'),sixty2Float('31°56′40″'))
-  pts.push({lng: convert[0],lat: convert[1],value:Number((Math.random() * 20).toFixed(2))});
+  console.log(data)
+  data.map((item:{lng:number,lat:number,speed:number,orientation:number})=>{
+    pts.push({lng:item.lng,lat:item.lat,value:item.speed})
+  })
+  // let convert;
+  // convert = wgs84togcj02(sixty2Float('106°37′39″'),sixty2Float('29°44′28″'))
+  // pts.push({lng: convert[0],lat: convert[1],value:Number((Math.random() * 20).toFixed(2))});
+  // convert = wgs84togcj02(sixty2Float('106°26′36″'),sixty2Float('29°50′31″'))
+  // pts.push({lng: convert[0],lat: convert[1],value:Number((Math.random() * 20).toFixed(2))});
+  // convert = wgs84togcj02(sixty2Float('106°29′32″'),sixty2Float('29°20′28″'))
+  // pts.push({lng: convert[0],lat: convert[1],value:Number((Math.random() * 20).toFixed(2))});
+  // convert = wgs84togcj02(sixty2Float('106°38′55″'),sixty2Float('29°00′36″'))
+  // pts.push({lng: convert[0],lat: convert[1],value:Number((Math.random() * 20).toFixed(2))});
+  // convert = wgs84togcj02(sixty2Float('108°24′50″'),sixty2Float('30°48′12″'))
+  // pts.push({lng: convert[0],lat: convert[1],value:Number((Math.random() * 20).toFixed(2))});
+  // convert = wgs84togcj02(sixty2Float('108°39′48″'),sixty2Float('31°56′40″'))
+  // pts.push({lng: convert[0],lat: convert[1],value:Number((Math.random() * 20).toFixed(2))});
 
 
   let breaks = new Array<number>();
@@ -79,15 +83,13 @@ export default function(map:mapboxgl.Map,opts:{isobands:boolean,isolines:boolean
     }
   }
 
-  let fillColors = [];
   let strokeColors = [];
   breaks=[]
-  for(let i=0;i<=20;i++){
-    breaks.push(i);
+  for(let i=0;i<=10;i++){
+    breaks.push(i*0.5);
   }
   for (let i = 0; i < breaks.length; i++) {
-    strokeColors.push(breaks[i]);
-    strokeColors.push(`hsl(${getHue(0, breaks[i], 20)},100%,50%)`);
+    strokeColors.push(`hsl(${getHue(0, breaks[i], 5)},100%,50%)`);
     // strokeColors.push(Color[breaks[i].toFixed()]);
   }
 
@@ -96,14 +98,9 @@ export default function(map:mapboxgl.Map,opts:{isobands:boolean,isolines:boolean
   //   // strokeColors.push(`hsl(${getHue(-36, breaks[i], 36)},100%,50%)`);
   //   strokeColors.push(Color[breaks[i].toFixed()]);
   // }
-  for (let i = 0; i < breaks.length - 1; i++) {
-    fillColors.push(`${breaks[i]}-${breaks[i + 1]}`);
-    fillColors.push(strokeColors[2*i+1]);
-    // fillColors.push(strokeColors[2*(i+1)+1]);
-  }
   let interpolateOptions = {
-    sizeU: 50,
-    sizeV: 50,
+    sizeU: 20,
+    sizeV: 20,
     boundary: {
       lng: 105,
       lat: 28,
@@ -150,7 +147,7 @@ export default function(map:mapboxgl.Map,opts:{isobands:boolean,isolines:boolean
   for (let j = 0; j < multiBands.length; j++) {
     let feature = {
       type: "Feature",
-      properties: { threshold: breaks[j] + "-" + breaks[j + 1] },
+      properties: { threshold: breaks[j] + "-" + breaks[j + 1],fillColor:strokeColors[j] },
       geometry: {
         type: "MultiPolygon",
         coordinates: new Array<any>(),
@@ -203,7 +200,7 @@ export default function(map:mapboxgl.Map,opts:{isobands:boolean,isolines:boolean
       visibility:opts.isobands?"visible":"none"
     },
     paint: {
-      "fill-color": ["match", ["get", "threshold"], ...fillColors, "transparent"],
+      "fill-color": ["get", "fillColor"],
       "fill-opacity": 0.5,
       "fill-outline-color": 'transparent'
     },
@@ -230,7 +227,7 @@ export default function(map:mapboxgl.Map,opts:{isobands:boolean,isolines:boolean
   for (let j = 0; j < multiLines.length; j++) {
     let feature = {
       type: "Feature",
-      properties: { threshold: breaks[j] },
+      properties: { threshold: breaks[j],textColor:strokeColors[j]},
       geometry: {
         type: "MultiLineString",
         coordinates: new Array<any>(),
@@ -238,7 +235,7 @@ export default function(map:mapboxgl.Map,opts:{isobands:boolean,isolines:boolean
     };
     let featureValue = {
       type: "Feature",
-      properties: { threshold: breaks[j] },
+      properties: { threshold: breaks[j],textColor: strokeColors[j]},
       geometry: {
         type: "MultiPoint",
         coordinates: new Array<any>(),
@@ -283,7 +280,7 @@ export default function(map:mapboxgl.Map,opts:{isobands:boolean,isolines:boolean
       visibility:opts.isolines?'visible':'none'
     },
     paint: {
-      "line-color": ["match", ["get", "threshold"], ...strokeColors, "transparent"],
+      "line-color": ['get','textColor'],
       "line-width": 1,
       "line-opacity": 1,
     },
@@ -306,7 +303,7 @@ export default function(map:mapboxgl.Map,opts:{isobands:boolean,isolines:boolean
       "text-rotation-alignment": "map",
     },
     paint: {
-      "text-color":  ["match", ["get", "threshold"], ...strokeColors, "transparent"],
+      "text-color":  ['get','textColor'],
       "text-halo-width": 1,
       "text-halo-color": "black",
     },
@@ -322,7 +319,6 @@ export default function(map:mapboxgl.Map,opts:{isobands:boolean,isolines:boolean
       type: "Feature",
       properties: {
         threshold: item.value,
-        color: "red" ,
       },
       geometry: {
         type: "Point",
@@ -345,7 +341,7 @@ export default function(map:mapboxgl.Map,opts:{isobands:boolean,isolines:boolean
       "text-rotation-alignment": "map",
     },
     paint: {
-      "text-color": ["get", "color"],
+      "text-color": "white",
       "text-halo-width": 1,
       "text-halo-color": "black",
     },
@@ -405,7 +401,7 @@ export default function(map:mapboxgl.Map,opts:{isobands:boolean,isolines:boolean
     type: "circle",
     source: { type: "geojson", data: gridPoints as any},
     layout:{
-      "visibility":opts.gridPoint?'visible':'none',
+      "visibility":opts.gridValue?'visible':'none',
     },
     paint: { "circle-radius": 3, "circle-color": "white", "circle-stroke-width": 1 },
   });

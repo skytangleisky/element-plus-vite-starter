@@ -131,6 +131,8 @@
   </div>
 </template>
 <script setup lang="ts">
+import uvUrl from "../mapbox/data/06040808.000?url";
+import CustomLayer from './CustomLayer.js'
 import discreteContour from "./discreteContour.ts";
 import { isDark } from "~/composables/dark.ts";
 import { useRouter } from "vue-router";
@@ -579,10 +581,214 @@ function processData(result: any, position: [number, number]) {
   //   },
   // });
 }
+let customLayer:any;
 const loadFunc = async () => {
   await addFeatherImages(map);
   await addArrowImages(map);
-  discreteContour(map,{isobands:true,isolines:true,gridPoint:false,gridValue:false,discrete:true})
+
+
+
+
+
+  let convert1 = wgs84togcj02(sixty2Float('106°37′39″'),sixty2Float('29°44′28″'))
+  let convert2 = wgs84togcj02(sixty2Float('106°26′36″'),sixty2Float('29°50′31″'))
+  let convert3 = wgs84togcj02(sixty2Float('106°29′32″'),sixty2Float('29°20′28″'))
+  let convert4 = wgs84togcj02(sixty2Float('106°38′55″'),sixty2Float('29°00′36″'))
+  let convert5 = wgs84togcj02(sixty2Float('108°24′50″'),sixty2Float('30°48′12″'))
+  let convert6 = wgs84togcj02(sixty2Float('108°39′48″'),sixty2Float('31°56′40″'))
+  let data = [
+    // {lng:convert1[0],lat:convert1[1],speed:Number((20*Math.random()).toFixed(2)),orientation:360*Math.random()},
+    // {lng:convert2[0],lat:convert2[1],speed:Number((20*Math.random()).toFixed(2)),orientation:360*Math.random()},
+    // {lng:convert3[0],lat:convert3[1],speed:Number((20*Math.random()).toFixed(2)),orientation:360*Math.random()},
+    // {lng:convert4[0],lat:convert4[1],speed:Number((20*Math.random()).toFixed(2)),orientation:360*Math.random()},
+    // {lng:convert5[0],lat:convert5[1],speed:Number((20*Math.random()).toFixed(2)),orientation:360*Math.random()},
+    // {lng:convert6[0],lat:convert6[1],speed:Number((20*Math.random()).toFixed(2)),orientation:360*Math.random()},
+
+    {lng:convert1[0],lat:convert1[1],speed:4.18,orientation:259},
+    {lng:convert2[0],lat:convert2[1],speed:2.985,orientation:209},
+    {lng:convert3[0],lat:convert3[1],speed:4.234,orientation:235.83},
+    {lng:convert4[0],lat:convert4[1],speed:1.312,orientation:349},
+    {lng:convert5[0],lat:convert5[1],speed:4.706,orientation:200.173},
+    {lng:convert6[0],lat:convert6[1],speed:5,orientation:0},
+  ];
+  discreteContour(map,data,{isobands:setting.风雷达组网地图相关.等值带,isolines:setting.风雷达组网地图相关.等值线,gridValue:setting.风雷达组网地图相关.格点,discrete:false})
+
+
+
+  let source = {
+    type: "geojson",
+    data: {
+      type: "FeatureCollection",
+      features: Array<any>(),
+    },
+  };
+  data.map((item:any)=>{
+    source.data.features.push({
+      type: "Feature",
+      properties: {
+        altitude:NaN,
+        radar_id:'',
+        风速: item.speed,
+        image: "feather" + getFeather(item.speed),
+        风向: item.orientation,
+        高度:NaN,
+        垂直气流:NaN,
+        时间:NaN,
+        color:isDark.value?'#fff':'#000'
+      },
+      geometry: {
+        type: "Point",
+        coordinates: [item.lng, item.lat],
+      },
+    })
+  })
+  map.addLayer({
+    id: "tmpLayer",
+    source,
+    type: "symbol",
+    layout: {
+      visibility: setting.station ? "visible" : "none",
+      // This icon is a part of the Mapbox Streets style.
+      // To view all images available in a Mapbox style, open
+      // the style in Mapbox Studio and click the "Images" tab.
+      // To add a new image to the style at runtime see
+      // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+      "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
+      "icon-image": ["get", "image"],
+      "icon-size": 1,
+      "icon-rotate": ["get", "风向"],
+      "icon-rotation-alignment": "map",
+      "icon-allow-overlap": true,
+      "icon-ignore-placement": true,
+      // "text-field": ["get", "风速"],
+      // "text-font": ["simkai"],
+      // "text-size": 14,
+      // "text-transform": "uppercase",
+      // // "text-letter-spacing": 0.05,
+      // "text-anchor": "center",
+      // "text-line-height": 1,
+      // // "text-justify": "center",
+      // "text-offset": [0, 0],
+      // "text-ignore-placement": true,
+      // "text-allow-overlap": true,
+      // "text-rotation-alignment": "map",
+    },
+    paint: {
+      "icon-opacity": setting.feather ? 1 : 0,
+    },
+  });
+
+  let interpolateOptions = {
+    sizeU: 20,
+    sizeV: 20,
+    boundary: {
+      lng: 105,
+      lat: 28,
+      width: 6,
+      height: 4.5,
+    },
+    power: 6,
+  };
+  let data1 = data.map((item:any)=>{
+    return {lng:item.lng,lat:item.lat,value:-item.speed*Math.sin(item.orientation/180*Math.PI)}
+  })
+  let grid1 = interpolate(data1,interpolateOptions)
+  let us :number[]= []
+  for(let j=0;j<interpolateOptions.sizeV;j++){
+    for(let i=0;i<interpolateOptions.sizeU;i++){
+      us.push(grid1[j][i])
+    }
+  }
+
+  let data2 = data.map((item:any)=>{
+    return {lng:item.lng,lat:item.lat,value:-item.speed*Math.cos(item.orientation/180*Math.PI)}
+  })
+  let grid2 = interpolate(data2,interpolateOptions)
+  let vs :number[]= []
+  for(let j=0;j<interpolateOptions.sizeV;j++){
+    for(let i=0;i<interpolateOptions.sizeU;i++){
+      vs.push(grid2[j][i])
+    }
+  }
+
+  const uMin = Math.min(...us);
+  let uMax = Math.max(...us);
+  const vMin = Math.min(...vs);
+  let vMax = Math.max(...vs);
+  let maxSpeed = 20
+  vMax = Math.sqrt(Math.pow(maxSpeed,2)/2)
+  uMax = Math.sqrt(Math.pow(maxSpeed,2)/2)
+  let cvs = document.createElement('canvas')
+  cvs.width = interpolateOptions.sizeU
+  cvs.height = interpolateOptions.sizeV
+  let ctx = cvs.getContext('2d')!
+  let imgData = ctx.getImageData(0,0,cvs.width,cvs.height)
+  for(let y = 0; y < imgData.height; y++){
+    for(let x = 0; x < imgData.width; x++){
+      let i = (y * 4) * imgData.width + x * 4
+      imgData.data[i + 0] = (us[imgData.width*(imgData.height - y - 1)+x]-uMin)/(uMax-uMin)*255
+      imgData.data[i + 1] = (vs[imgData.width*(imgData.height - y - 1)+x]-vMin)/(vMax-vMin)*255
+      imgData.data[i + 2] = 0
+      imgData.data[i + 3] = 255
+    }
+  }
+  ctx.putImageData(imgData,0,0)
+  let json = {
+    "source": "http://nomads.ncep.noaa.gov",
+    "date": "2016-11-20T00:00Z",
+    "width": cvs.width,
+    "height": cvs.height,
+    "uMin": uMin,
+    "uMax": uMax,
+    "vMin": vMin,
+    "vMax": vMax,
+    "boundaries":[interpolateOptions.boundary.lng,interpolateOptions.boundary.lng+interpolateOptions.boundary.width,interpolateOptions.boundary.lat,interpolateOptions.boundary.lat+interpolateOptions.boundary.height],
+    // "boundaries":[105,111,28,32.5]
+  }
+  customLayer = new CustomLayer(json,cvs.toDataURL(),setting.风雷达组网地图相关.流线)
+  map.addLayer(customLayer as any)
+
+  // getMicapsData(uvUrl).then(async(result:any)=>{
+  //   console.log("===>",result)
+  //   let cvs = document.createElement('canvas')
+  //   cvs.width = result.lngCount
+  //   cvs.height = result.latCount
+  //   let ctx = cvs.getContext('2d')!
+  //   let imgData = ctx.getImageData(0,0,cvs.width,cvs.height)
+  //   let us = result.data.slice(0,result.data.length/2)
+  //   let vs = result.data.slice(result.data.length/2)
+  //   const uMin = Math.min(...us);
+  //   const uMax = Math.max(...us);
+  //   const vMin = Math.min(...vs);
+  //   const vMax = Math.max(...vs);
+  //   for(let y = 0; y < imgData.height; y++){
+  //     for(let x = 0; x < imgData.width; x++){
+  //       let i = (y * 4) * imgData.width + x * 4
+  //       imgData.data[i + 0] = (us[imgData.width*y+x]-uMin)/(uMax-uMin)*255
+  //       imgData.data[i + 1] = (vs[imgData.width*y+x]-vMin)/(vMax-vMin)*255
+  //       imgData.data[i + 2] = 0
+  //       imgData.data[i + 3] = 255
+  //     }
+  //   }
+  //   ctx.putImageData(imgData,0,0)
+  //   let json = {
+  //     "source": "http://nomads.ncep.noaa.gov",
+  //     "date": "2016-11-20T00:00Z",
+  //     "width": cvs.width,
+  //     "height": cvs.height,
+  //     "uMin": uMin,
+  //     "uMax": uMax,
+  //     "vMin": vMin,
+  //     "vMax": vMax,
+  //     "boundaries":[result.beginLng,result.endLng,result.beginLat,result.endLat]
+  //     // "boundaries":[105,111,28,32.5]
+  //   }
+  //   let url = cvs.toDataURL()
+  //   //map.removeLayer("null-island");
+  //   map.addLayer(new CustomLayer(json,url))
+  // })
+
+
   work()
   timer = setInterval(work,10*60e3)
   map.addSource("radar", {
@@ -1040,6 +1246,8 @@ const resize = (entry) => {
 };
 var marker:Marker;
 import {databaseRaw} from '~/api/重庆'
+import { getMicapsData } from "../mapbox/data/plot/micaps.ts";
+import interpolate from "~/tools/idw.js";
 function work(){
   exec({
     // database: "host=127.0.0.1&port=3306&user=root&password=tanglei&database=weatherservice",
@@ -1547,10 +1755,10 @@ function fetch最近风廓线数据(){
 onMounted(() => {
   stationMenu = stationMenuRef.value as HTMLDivElement;
   map = new mapboxgl.Map({
-    container: mapRef.value,
+    container: mapRef.value as any,
     // style: raster,
     performanceMetricsCollection: false,
-    style,
+    style:style as any,
     dragRotate: false,
     touchRotate: false,
     touchPitch: false,
@@ -1571,7 +1779,7 @@ onMounted(() => {
     // center: [148.9819, -35.3981],
     // pitch: 60,
     zoom: setting.风雷达组网地图相关.zoom,
-    center: setting.风雷达组网地图相关.center,
+    center: setting.风雷达组网地图相关.center as any,
     pitch: 0,
   });
   marker = new mapboxgl.Marker({
@@ -1712,6 +1920,39 @@ watch(()=>setting.风雷达组网地图相关.等距环,(val=>{
     map.setPaintProperty("等距环的单位", "text-opacity", 0);
   }
 }))
+watch(()=>setting.风雷达组网地图相关.等值线,(val)=>{
+  if(val){
+    map.setLayoutProperty("等值线", "visibility", 'visible');
+    map.setLayoutProperty("等值线值", "visibility", 'visible');
+  }else{
+    map.setLayoutProperty("等值线", "visibility", 'none');
+    map.setLayoutProperty("等值线值", "visibility", 'none');
+  }
+})
+watch(()=>setting.风雷达组网地图相关.等值带,(val)=>{
+  if(val){
+    map.setLayoutProperty("等值带", "visibility", 'visible');
+  }else{
+    map.setLayoutProperty("等值带", "visibility", 'none');
+  }
+})
+watch(()=>setting.风雷达组网地图相关.格点,(val)=>{
+  if(val){
+    map.setLayoutProperty("网格点", "visibility", 'visible');
+    map.setLayoutProperty("网格值", "visibility", 'visible');
+  }else{
+    map.setLayoutProperty("网格点", "visibility", 'none');
+    map.setLayoutProperty("网格值", "visibility", 'none');
+  }
+})
+watch(()=>setting.风雷达组网地图相关.流线,(val)=>{
+  if(val){
+    customLayer.show = true
+    map.triggerRepaint()
+  }else{
+    customLayer.show = false
+  }
+})
 watch(()=>setting.风雷达组网地图相关.高度,(val)=>{
   if(val){
     map.setPaintProperty("高度图层", "text-opacity", 1);

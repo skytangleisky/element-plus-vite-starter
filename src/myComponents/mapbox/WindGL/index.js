@@ -6,11 +6,12 @@ import quadVert from './shaders/quad.vert.glsl?raw';
 import screenFrag from './shaders/screen.frag.glsl?raw';
 import updateFrag from './shaders/update.frag.glsl?raw';
 import * as util from './util.js';
+let LAT = Math.atan(Math.sinh(Math.PI)) * 180 / Math.PI;
 export default class WindGL{
-	constructor(gl) {
+	constructor(gl,opt) {
 		this.gl = gl;
 
-		this.fadeOpacity = 0.996;//  0.996; // how fast the particle trails fade on each frame
+		this.fadeOpacity = 0.996;// how fast the particle trails fade on each frame
 		this.speedFactor = 0.25; // how fast the particles move
 		this.dropRate = 0.003; // how often the particles move to a random place
 		this.dropRateBump = 0.01; // drop rate increase relative to individual particle speed
@@ -21,6 +22,8 @@ export default class WindGL{
 
 		this.quadBuffer = util.createBuffer(gl, new Float32Array([0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1]));
 		this.framebuffer = gl.createFramebuffer();
+		this.boundaries = opt.boundaries || [-180,180,-LAT,LAT];
+
 
 		this.defaultRampColors = {
 			0.0: '#3288bd',
@@ -133,7 +136,7 @@ export default class WindGL{
 		gl.uniform1f(program.u_particles_res, this.particleStateResolution);
 		gl.uniform2f(program.u_wind_min, this.windData.uMin, this.windData.vMin);
 		gl.uniform2f(program.u_wind_max, this.windData.uMax, this.windData.vMax);
-
+		gl.uniform4f(program.u_boundaries, ...this.boundaries);
 		gl.drawArrays(gl.POINTS, 0, this._numParticles);
 	}
 	updateParticles() {
@@ -153,6 +156,7 @@ export default class WindGL{
 		gl.uniform2f(program.u_wind_res, this.windData.width, this.windData.height);
 		gl.uniform2f(program.u_wind_min, this.windData.uMin, this.windData.vMin);
 		gl.uniform2f(program.u_wind_max, this.windData.uMax, this.windData.vMax);
+		gl.uniform4f(program.u_boundaries, ...this.boundaries);
 		gl.uniform1f(program.u_speed_factor, this.speedFactor);
 		gl.uniform1f(program.u_drop_rate, this.dropRate);
 		gl.uniform1f(program.u_drop_rate_bump, this.dropRateBump);

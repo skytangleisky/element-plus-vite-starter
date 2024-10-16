@@ -22,7 +22,7 @@
       </collapse-card>
     </div> -->
     <div class="item">
-      <collapse-card title="雷达设备" v-model:show="show2" :show-collapse="false">
+      <collapse-card title="雷达设备" v-model:show="show2" :show-collapse="true">
         <div class="subitem">
           <span>站名</span>
           <el-switch
@@ -58,7 +58,7 @@
       </collapse-card>
     </div>
     <div class="item">
-      <collapse-card title="风廓线" v-model:show="showDBS" :show-collapse="false">
+      <collapse-card title="风廓线" v-model:show="showDBS" :show-collapse="true">
         <!-- <div class="subitem">
           <span class="whitespace-nowrap">相对高度层</span>
           <el-select
@@ -166,8 +166,52 @@
         </div> -->
       </collapse-card>
     </div>
+    <div class="item">
+      <collapse-card title="数据融合" v-model:show="showDataFusion" :show-collapse="true">
+        <div class="subitem">
+          <span>格点</span>
+          <el-switch
+            v-model="setting.风雷达组网地图相关.格点"
+            inline-prompt
+            :active-icon="Check"
+            :inactive-icon="Close"
+            size="small"
+          />
+        </div>
+        <div class="subitem">
+          <span>等值线</span>
+          <el-switch
+            v-model="setting.风雷达组网地图相关.等值线"
+            inline-prompt
+            :active-icon="Check"
+            :inactive-icon="Close"
+            size="small"
+          />
+        </div>
+        <div class="subitem">
+          <span>等值带</span>
+          <el-switch
+            v-model="setting.风雷达组网地图相关.等值带"
+            inline-prompt
+            :active-icon="Check"
+            :inactive-icon="Close"
+            size="small"
+          />
+        </div>
+        <div class="subitem">
+          <span>流线</span>
+          <el-switch
+            v-model="setting.风雷达组网地图相关.流线"
+            inline-prompt
+            :active-icon="Check"
+            :inactive-icon="Close"
+            size="small"
+          />
+        </div>
+      </collapse-card>
+    </div>
     <div class="item" v-if="hasPermission(['da4ce7c7-3aa9-4b9b-8d8b-ce44241794d5'])">
-      <collapse-card title="PPI" v-model:show="showPPI" :show-collapse="false">
+      <collapse-card title="PPI" v-model:show="showPPI" :show-collapse="true">
         <div class="subitem">
           <span class="whitespace-nowrap">风场透明度</span>
           <el-slider
@@ -215,10 +259,7 @@
     </div>
     <div class="item">
       <collapse-card
-        title="图层管理"
-        v-model:show="showMapSetting"
-        :show-collapse="false"
-      >
+        title="图层管理" v-model:show="showMapSetting" :show-collapse="true">
         <div class="subitem">
           <span class="whitespace-nowrap">地图透明度</span>
           <el-slider
@@ -360,6 +401,7 @@ watch(()=>setting.风雷达组网地图相关.站号,val=>{
 const show2 = ref(true);
 const showPPI = ref(true);
 const showDBS = ref(true);
+const showDataFusion = ref(true);
 const showMapSetting = ref(true);
 const resetLocation = () => {
   setting.$resetFields("风雷达组网地图相关.center");

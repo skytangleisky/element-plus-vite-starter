@@ -68,6 +68,7 @@ uniform float u_particles_res;
 uniform int projection;
 varying vec2 uv_pos;
 uniform mat4 u_matrix;  // update by limz
+uniform vec4 u_boundaries;// boundaries
 void main() {
     gl_PointSize = 1.0;
     vec4 color = texture2D(u_particles, vec2(fract(a_index / u_particles_res),floor(a_index / u_particles_res) / u_particles_res));
@@ -78,17 +79,17 @@ void main() {
         0,1,uv_pos.y,
         0,0,1
     );
-    /*和卫星云图位置对应
-    float startLng = 100.57;
-    float stopLng = 169.42999999999998;
-    float startLat = -10.38;
-    float stopLat = 50.30088389285023;
-    */
-    /*真实流场位置*/
-    float startLng = 32.0;
-    float stopLng = 160.0;
-    float startLat = 12.0;
-    float stopLat = 80.0;
+    /*真实流场位置,和micaps数据位置对应*/
+    // float startLng = 32.0;
+    // float stopLng = 160.0;
+    // float startLat = 12.0;
+    // float stopLat = 80.0;
+
+    //真实风场数据，和重庆组网对应
+    float startLng = u_boundaries[0];
+    float stopLng = u_boundaries[1];
+    float startLat = u_boundaries[2];
+    float stopLat = u_boundaries[3];
 
     // float LAT = atan(sinh(PI))*RAD_TO_DEG;
     // float startLng = -180.0;
