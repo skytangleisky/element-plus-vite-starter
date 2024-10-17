@@ -7,9 +7,9 @@ export default {
   children:[
     {
       name:'da4ce7c7-3aa9-4b9b-8d8b-ce44241794d5',
-      checked:true,
+      checked:false,
       meta:{
-        label:'重庆组网Plan Position Indicator'
+        label:'重庆组网Plan Position Indicator',
       }
     },
     {

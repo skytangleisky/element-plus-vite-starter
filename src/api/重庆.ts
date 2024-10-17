@@ -44,6 +44,26 @@ export function getFkxRealData(query:{radar_id:string,dateTime:string,num:number
   })
 }
 
+export function getFkxData(query:{dataTime:string}){
+  let data = {
+    "version": "1.0",
+    "secretKey": "904c396f6956d02c59a6ad35c08f5678",
+    "dataTime": query.dataTime,
+    "altitude": 600,
+    "dataTime_interval":600,
+    "alt_interval": 50,
+    "level": 3
+  }
+  return request({
+    url: '/qt/dbsNet',
+    method: 'post',
+    headers:{
+      'content-type':'application/json'
+    },
+    data
+  })
+}
+
 export function getPPIRadial(query:{radar_id:string,dataTime:string}){
   let data = {
     "version":"1.0",

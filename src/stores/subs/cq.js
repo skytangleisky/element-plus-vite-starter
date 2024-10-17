@@ -116,15 +116,15 @@ export default {
             roles:['admin']
           }
         },
-        {
-          path: 'status',
-          name: 'da20fee1-5ad7-51e1-2754-5e0933011a11',
-          component: '/src/myComponents/风雷达组网/pages/状态管理.vue',
-          svg:'b7741b77-afe3-4ceb-bdec-dbefdc570f07',
-          meta:{
-            label: '状态管理',
-          }
-        },
+        // {
+        //   path: 'status',
+        //   name: 'da20fee1-5ad7-51e1-2754-5e0933011a11',
+        //   component: '/src/myComponents/风雷达组网/pages/状态管理.vue',
+        //   svg:'b7741b77-afe3-4ceb-bdec-dbefdc570f07',
+        //   meta:{
+        //     label: '状态管理',
+        //   }
+        // },
       ]
     },
     {

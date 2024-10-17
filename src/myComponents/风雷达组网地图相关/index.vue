@@ -146,7 +146,7 @@ import * as turf from "@turf/turf";
 import ppiDataUrl from "./level1/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pth30.00_Spd6.00_Res030_StartIdx002_Start002_Stop190_LOSWind_20240715 203223.csv?url";
 import ppiInversionData from "./level2/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pth30.00_Spd6.00_Res030_StartIdx002_VADStart002_VADStop190_VADWind_Sec_20240715 203223.csv?raw";
 import { exec } from "~/api/index.js";
-import { getFkxRealData,getPPIGrid,getSensorData } from "../../api/重庆.ts";
+import { getFkxRealData,getPPIGrid,getSensorData,getFkxData } from "../../api/重庆.ts";
 import {hasPermission,sixty2Float,addFeatherImages,addArrowImages,getFeather,View,calculateBlockPoints,calculateCirclePoints} from "~/tools";
 const decoder = new TextDecoder()
 const encoder = new TextEncoder()
@@ -585,169 +585,6 @@ let customLayer:any;
 const loadFunc = async () => {
   await addFeatherImages(map);
   await addArrowImages(map);
-
-
-
-
-
-  let convert1 = wgs84togcj02(sixty2Float('106°37′39″'),sixty2Float('29°44′28″'))
-  let convert2 = wgs84togcj02(sixty2Float('106°26′36″'),sixty2Float('29°50′31″'))
-  let convert3 = wgs84togcj02(sixty2Float('106°29′32″'),sixty2Float('29°20′28″'))
-  let convert4 = wgs84togcj02(sixty2Float('106°38′55″'),sixty2Float('29°00′36″'))
-  let convert5 = wgs84togcj02(sixty2Float('108°24′50″'),sixty2Float('30°48′12″'))
-  let convert6 = wgs84togcj02(sixty2Float('108°39′48″'),sixty2Float('31°56′40″'))
-  let data = [
-    // {lng:convert1[0],lat:convert1[1],speed:Number((20*Math.random()).toFixed(2)),orientation:360*Math.random()},
-    // {lng:convert2[0],lat:convert2[1],speed:Number((20*Math.random()).toFixed(2)),orientation:360*Math.random()},
-    // {lng:convert3[0],lat:convert3[1],speed:Number((20*Math.random()).toFixed(2)),orientation:360*Math.random()},
-    // {lng:convert4[0],lat:convert4[1],speed:Number((20*Math.random()).toFixed(2)),orientation:360*Math.random()},
-    // {lng:convert5[0],lat:convert5[1],speed:Number((20*Math.random()).toFixed(2)),orientation:360*Math.random()},
-    // {lng:convert6[0],lat:convert6[1],speed:Number((20*Math.random()).toFixed(2)),orientation:360*Math.random()},
-
-    {lng:convert1[0],lat:convert1[1],speed:4.18,orientation:259},
-    {lng:convert2[0],lat:convert2[1],speed:2.985,orientation:209},
-    {lng:convert3[0],lat:convert3[1],speed:4.234,orientation:235.83},
-    {lng:convert4[0],lat:convert4[1],speed:1.312,orientation:349},
-    {lng:convert5[0],lat:convert5[1],speed:4.706,orientation:200.173},
-    {lng:convert6[0],lat:convert6[1],speed:5,orientation:0},
-  ];
-  discreteContour(map,data,{isobands:setting.风雷达组网地图相关.等值带,isolines:setting.风雷达组网地图相关.等值线,gridValue:setting.风雷达组网地图相关.格点,discrete:false})
-
-
-
-  let source = {
-    type: "geojson",
-    data: {
-      type: "FeatureCollection",
-      features: Array<any>(),
-    },
-  };
-  data.map((item:any)=>{
-    source.data.features.push({
-      type: "Feature",
-      properties: {
-        altitude:NaN,
-        radar_id:'',
-        风速: item.speed,
-        image: "feather" + getFeather(item.speed),
-        风向: item.orientation,
-        高度:NaN,
-        垂直气流:NaN,
-        时间:NaN,
-        color:isDark.value?'#fff':'#000'
-      },
-      geometry: {
-        type: "Point",
-        coordinates: [item.lng, item.lat],
-      },
-    })
-  })
-  map.addLayer({
-    id: "tmpLayer",
-    source,
-    type: "symbol",
-    layout: {
-      visibility: setting.station ? "visible" : "none",
-      // This icon is a part of the Mapbox Streets style.
-      // To view all images available in a Mapbox style, open
-      // the style in Mapbox Studio and click the "Images" tab.
-      // To add a new image to the style at runtime see
-      // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-      "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
-      "icon-image": ["get", "image"],
-      "icon-size": 1,
-      "icon-rotate": ["get", "风向"],
-      "icon-rotation-alignment": "map",
-      "icon-allow-overlap": true,
-      "icon-ignore-placement": true,
-      // "text-field": ["get", "风速"],
-      // "text-font": ["simkai"],
-      // "text-size": 14,
-      // "text-transform": "uppercase",
-      // // "text-letter-spacing": 0.05,
-      // "text-anchor": "center",
-      // "text-line-height": 1,
-      // // "text-justify": "center",
-      // "text-offset": [0, 0],
-      // "text-ignore-placement": true,
-      // "text-allow-overlap": true,
-      // "text-rotation-alignment": "map",
-    },
-    paint: {
-      "icon-opacity": setting.feather ? 1 : 0,
-    },
-  });
-
-  let interpolateOptions = {
-    sizeU: 20,
-    sizeV: 20,
-    boundary: {
-      lng: 105,
-      lat: 28,
-      width: 6,
-      height: 4.5,
-    },
-    power: 6,
-  };
-  let data1 = data.map((item:any)=>{
-    return {lng:item.lng,lat:item.lat,value:-item.speed*Math.sin(item.orientation/180*Math.PI)}
-  })
-  let grid1 = interpolate(data1,interpolateOptions)
-  let us :number[]= []
-  for(let j=0;j<interpolateOptions.sizeV;j++){
-    for(let i=0;i<interpolateOptions.sizeU;i++){
-      us.push(grid1[j][i])
-    }
-  }
-
-  let data2 = data.map((item:any)=>{
-    return {lng:item.lng,lat:item.lat,value:-item.speed*Math.cos(item.orientation/180*Math.PI)}
-  })
-  let grid2 = interpolate(data2,interpolateOptions)
-  let vs :number[]= []
-  for(let j=0;j<interpolateOptions.sizeV;j++){
-    for(let i=0;i<interpolateOptions.sizeU;i++){
-      vs.push(grid2[j][i])
-    }
-  }
-
-  const uMin = Math.min(...us);
-  let uMax = Math.max(...us);
-  const vMin = Math.min(...vs);
-  let vMax = Math.max(...vs);
-  let maxSpeed = 20
-  vMax = Math.sqrt(Math.pow(maxSpeed,2)/2)
-  uMax = Math.sqrt(Math.pow(maxSpeed,2)/2)
-  let cvs = document.createElement('canvas')
-  cvs.width = interpolateOptions.sizeU
-  cvs.height = interpolateOptions.sizeV
-  let ctx = cvs.getContext('2d')!
-  let imgData = ctx.getImageData(0,0,cvs.width,cvs.height)
-  for(let y = 0; y < imgData.height; y++){
-    for(let x = 0; x < imgData.width; x++){
-      let i = (y * 4) * imgData.width + x * 4
-      imgData.data[i + 0] = (us[imgData.width*(imgData.height - y - 1)+x]-uMin)/(uMax-uMin)*255
-      imgData.data[i + 1] = (vs[imgData.width*(imgData.height - y - 1)+x]-vMin)/(vMax-vMin)*255
-      imgData.data[i + 2] = 0
-      imgData.data[i + 3] = 255
-    }
-  }
-  ctx.putImageData(imgData,0,0)
-  let json = {
-    "source": "http://nomads.ncep.noaa.gov",
-    "date": "2016-11-20T00:00Z",
-    "width": cvs.width,
-    "height": cvs.height,
-    "uMin": uMin,
-    "uMax": uMax,
-    "vMin": vMin,
-    "vMax": vMax,
-    "boundaries":[interpolateOptions.boundary.lng,interpolateOptions.boundary.lng+interpolateOptions.boundary.width,interpolateOptions.boundary.lat,interpolateOptions.boundary.lat+interpolateOptions.boundary.height],
-    // "boundaries":[105,111,28,32.5]
-  }
-  customLayer = new CustomLayer(json,cvs.toDataURL(),setting.风雷达组网地图相关.流线)
-  map.addLayer(customLayer as any)
-
   // getMicapsData(uvUrl).then(async(result:any)=>{
   //   console.log("===>",result)
   //   let cvs = document.createElement('canvas')
@@ -1248,464 +1085,661 @@ var marker:Marker;
 import {databaseRaw} from '~/api/重庆'
 import { getMicapsData } from "../mapbox/data/plot/micaps.ts";
 import interpolate from "~/tools/idw.js";
-function work(){
-  exec({
+async function work(){
+  let res = await exec({
     // database: "host=127.0.0.1&port=3306&user=root&password=tanglei&database=weatherservice",
     database: databaseRaw,
     query: {
       sqls: ["select * from `device`"],
     },
-  }).then((res) => {
-    res.data[0] = res.data[0].map((v: any) => {
-      let position = wgs84togcj02(sixty2Float(v.lng), sixty2Float(v.lat));
-      v.longitude = position[0];
-      v.latitude = position[1];
-      return v;
-    });
-    bus.风雷达组网地图相关雷达站点信息 = res.data[0];
-    points.data.features.length=0;
-    circleDataFeatures.features.length=0
-    pointDataFeatures.features.length=0
-    inversionPPIData.features.length = 0
-    polygons.length = 0
-    res.data[0].map((Item:any,k:number) => {
-      if (Item.hide !== "true") {
-        if(Item.no==station.active){
-          //如果之前有设备被选中，应该获取一次最近风廓线数据
-          fetch最近风廓线数据()
+  })
+  await getFkxData({dataTime:'20240729054058'}).then(result=>{
+    res.data[0].map((device:any,k:number)=>{
+      for(let key in result.data.data){
+        if(device.no === result.data.data[key].radar_id){
+          res.data[0][k].wind = result.data.data[key]
         }
-        console.log(Item)
-        let position = wgs84togcj02(sixty2Float(Item.lng), sixty2Float(Item.lat)) as [
-          number,
-          number
-        ];
-        //初始状态
-        points.data.features.push({
-          type: "Feature",
-          properties: {
-            altitude:Number(Item.altitude),
-            lon:position[0],
-            lat:position[1],
-            type: "站点",
-            radar_id: Item.no,
-            高度: NaN,
-            风速: NaN,
-            风向: NaN,
-            垂直气流: NaN,
-            时间:NaN,
-            time: moment().format("YYYY-MM-DD HH:mm:ss"),
-            name: Item.device_short_name,
-            is_online: true,
-            external_temperature: 25,
-            external_humidity: 0.6,
-            image: "feather" + getFeather(0),
-            color: Item.status==1?'#0f0':Item.status==2?'#f80':Item.status==3?'#f00':(isDark.value?'#fff':'#000'),
-          },
-          geometry: {
-            type: "Point",
-            coordinates: position,
-          },
-        });
-        for (let i = 1; i <= 6; i++) {
-          let circle = calculateCirclePoints(position, i * 1000, 64, 'meters');
-          circleDataFeatures.features.push({
-            type:'Feature',
-            geometry: {
-              type: "Polygon",
-              coordinates: [circle],
-            },
-          });
-
-          if(i==1||i==3||i==6){
-            let pts: any = [];
-            const pt1 = turf.destination(
-              turf.point(position),
-              1000 * i,
-              0,
-              { units: "meters" }
-            );
-            const pt2 = turf.destination(
-              turf.point(position),
-              1000 * i,
-              90,
-              { units: "meters" }
-            );
-            const pt3 = turf.destination(
-              turf.point(position),
-              1000 * i,
-              180,
-              { units: "meters" }
-            );
-            const pt4 = turf.destination(
-              turf.point(position),
-              1000 * i,
-              270,
-              { units: "meters" }
-            );
-            pts.push(
-              pt1.geometry?.coordinates,
-              pt2.geometry?.coordinates,
-              pt3.geometry?.coordinates,
-              pt4.geometry?.coordinates
-            );
-            pointDataFeatures.features.push({
-              type: "Feature",
-              geometry: {
-                type: "MultiPoint",
-                coordinates: pts,
-              },
-              properties: {
-                units: i + "km",
-              },
-            });
-          }
-        }
-        map.getSource('等距环的单位Source').setData(pointDataFeatures)
-        map.getSource('等距环Source').setData(circleDataFeatures)
-
-        // new Marker({
-        //   draggable: false,
-        //   pitchAlignment: "map",
-        //   rotationAlignment: "map",
-        // })
-        //   .setLngLat(position)
-        //   .addTo(map);
-        let radar_id = Item.no
-
-        // getSensorData({radar_id,dataTime:'20240716154908'}).then(res=>{
-        //   if(res.data.data.sensor!==""){
-        //     let result:{[key:string]:any} = {}
-        //     result.list = []
-        //     const view = new View(encoder.encode(res.data.data.sensor).buffer)
-        //     let firstLine = decoder.decode(view.getLine()).trim().replace(/,$/g,'').split(',')
-        //     while(!view.reachEnd()){
-        //       let secondLine = decoder.decode(view.getLine()).trim().replace(/,$/g,'').split(',')
-        //       firstLine.map((key,index)=>{
-        //         // result.list.push({[key]:secondLine[index]})
-        //       })
-        //     }
-        //     console.log(result)
-        //   }
-        // })
-        let time = moment()
-        setting.风雷达组网地图相关.请求时间 = time.format("HH:mm:ss")
-        getFkxRealData({
-          radar_id,
-          dateTime: time.format("YYYYMMDDHHmmss"),
-          num:1
-        }).then((res) => {
-          let view:View|null = new View(encoder.encode(res.data.data.file.file_data).buffer)
-          let result:{[key:string]:any} = {HeaderInfo:{},data:[]}
-          let firstLine = decoder.decode(view.getLine()).trim().replace(/,$/,'').split(',')
-          for(let i=1;i<firstLine.length;i++){
-            let item = firstLine[i].split(':')
-            if(item.length==2){
-              result.HeaderInfo[item[0]] = item[1]
-            }
-          }
-          let secondLine = decoder.decode(view.getLine()).trim().replace(/,$/,'').split(',')
-          while(!view.reachEnd()){
-            let radial:{[key:string]:any} = {list:[]}
-            let thirdLine = decoder.decode(view.getLine()).trim().replace(/,$/g,'').split(',')
-            for(let i=0;i<9;i++){
-              radial[secondLine[i]] = thirdLine[i]
-            }
-            for(let i=9;i<secondLine.length;i+=9){
-              radial.list.push({
-                distance:Number(secondLine[i].split(' ')[0].substring(0,secondLine[i].split(' ')[0].length-1)),
-                [secondLine[i+0].split(' ').slice(1).join(' ')]:Number(thirdLine[i+0]),
-                [secondLine[i+1].split(' ').slice(1).join(' ')]:Number(thirdLine[i+1]),
-                [secondLine[i+2].split(' ').slice(1).join(' ')]:Number(thirdLine[i+2]),
-                [secondLine[i+3].split(' ').slice(1).join(' ')]:Number(thirdLine[i+3]),
-                [secondLine[i+4].split(' ').slice(1).join(' ')]:Number(thirdLine[i+4]),
-                [secondLine[i+5].split(' ').slice(1).join(' ')]:Number(thirdLine[i+5]),
-                [secondLine[i+6].split(' ').slice(1).join(' ')]:Number(thirdLine[i+6]),
-                [secondLine[i+7].split(' ').slice(1).join(' ')]:Number(thirdLine[i+7]),
-                [secondLine[i+8].split(' ').slice(1).join(' ')]:Number(thirdLine[i+8]),
-              })
-            }
-            result.data.unshift(radial)
-          }
-          dbsData[radar_id] = result
-          for(let radial of result.data){
-            // let lib = radial.list[setting.风雷达组网地图相关.relativeHeight-1]
-            let lib;
-            for(let i=radial.list.length-1;i>=1;i--){
-              let tmp = radial.list[i]
-              let altitude = Number(tmp['distance'])+Number(Item.altitude)
-              if(altitude<setting.风雷达组网地图相关.altitudeHeight&&setting.风雷达组网地图相关.altitudeHeight-altitude<=25){
-                lib = tmp
-                break;
-              }
-            }
-            if(lib){
-              points.data.features = points.data.features.map((item) => {
-                if(item.properties.color!=='#f00'){
-                  if(lib['WindSpeed']!==999){
-                    if (item.properties.radar_id === radar_id) {
-                      item.properties.风速 = Number(lib['WindSpeed'].toFixed(2));
-                      item.properties.风向 = Number(lib['WindDirection'].toFixed(2));
-                      item.properties.垂直气流 = lib['ZWind']<0?`\u2193${lib['ZWind'].toFixed(2)}`:`\u2191${lib['ZWind'].toFixed(2)}`
-                      item.properties.高度 = (Number(lib['distance'])+Number(Item.altitude)).toFixed(2)
-                      item.properties.时间 = moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
-                      item.properties.image = "feather" + getFeather(lib['WindSpeed']);
-                    }
-                  }else{
-                    if (item.properties.radar_id === radar_id) {
-                      item.properties.风速 = NaN;
-                      item.properties.风向 = NaN;
-                      item.properties.垂直气流 = NaN
-                      item.properties.高度 = (Number(lib['distance'])+Number(Item.altitude)).toFixed(2)
-                      item.properties.时间 = moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
-                      item.properties.image = "feather";
-                    }
-                  }
-                }else{
-                  if (item.properties.radar_id === radar_id) {
-                    item.properties.风速 = NaN;
-                    item.properties.风向 = NaN;
-                    item.properties.垂直气流 = NaN
-                    item.properties.高度 = NaN
-                    item.properties.时间 = moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
-                    item.properties.image = "feather";
-                  }
-                }
-                return item
-              });
-            }else{
-              points.data.features = points.data.features.map((item) => {
-                if (item.properties.radar_id === radar_id) {
-                  item.properties.风速 = NaN;
-                  item.properties.风向 = NaN;
-                  item.properties.垂直气流 = NaN
-                  item.properties.高度 = NaN
-                  item.properties.时间 = NaN
-                  item.properties.image = "feather";
-                }
-                return item;
-              });
-            }
-            (map.getSource("point") as any).setData(points.data);
-          }
-        });
-
-
-
-        var xhr = new XMLHttpRequest();
-        xhr.addEventListener("load", function () {
-          /*S10000
-          const d = new TextDecoder("utf8");
-          let v = new View(this.response),
-            result: { [key: string]: any } = {};
-          let firstLine = d
-            .decode(v.getLine())
-            .trim()
-            .replace(/,$/, "")
-            .split(",");
-          let secondLine = d
-            .decode(v.getLine())
-            .trim()
-            .replace(/,$/, "")
-            .split(",");
-          type HeaderInfo = {
-            AllGates: 200;
-            Altitude: 40;
-            BKGates: 9;
-            FrequencyShift: 120;
-            Latitude: 36.16953;
-            Location: "榆林机场";
-            Longitude: 120.477398;
-            Model: "S10000";
-            NorthOffset: 0;
-            ProjectMemo: "Test";
-            ProjectName: "榆林机场风切变";
-            PulseWidth: 400;
-            ReShotsTimes: 1;
-            Resolution: 60;
-            SCanMode: "Script";
-            SN: "10HKF00631450";
-            SNRThreshold: 8;
-            SamplesPerGate: 100;
-            Script: '<ppi cycles="1" interval="0" avelostimes="1" pitch="3" fromAzimuth="30" toAzimuth="29" speed="6" direction="1" vadwind="1" ScanBack="0" vadisslide="2" IsSecTick="0" shots="10000" NewFilePerCycle="1" />';
-            Shots: 10000;
-            SpetralEnd: 131;
-            SpetralStart: 32;
-            StartIndex: 3;
-            TriggerDelayTime: 1000;
-            Version: "1.0.1.6";
-            ZeroFreq: 49.31;
-          };
-          let headerInfo: HeaderInfo = (result.headerInfo = {} as HeaderInfo);
-          for (let i = 1; i < firstLine.length; i++) {
-            let kv = firstLine[i].split(":");
-            if (kv.length == 2) {
-              Object.defineProperty(headerInfo, kv[0], { value: kv[1] });
-            } else {
-              throw Error("invalid " + firstLine[i]);
-            }
-          }
-          let data: Array<any> = (result.data = []);
-
-          while (!v.reachEnd()) {
-            let thirdLine = d
-              .decode(v.getLine())
-              .trim()
-              .replace(/,$/, "")
-              .split(",");
-            let item = { EarthAzimuth: 0, list: new Array<any>() };
-            for (let i = 0; i < 23; i++) {
-              Object.defineProperty(item, secondLine[i], { value: thirdLine[i] });
-            }
-            item.EarthAzimuth = Number(item.EarthAzimuth);
-            //用于确保两根径向之间夹角不大于180度
-            if (data.length > 0) {
-              let lastItem = data[data.length - 1];
-              if (Math.abs(item.EarthAzimuth - lastItem.EarthAzimuth) > 180) {
-                // item.EarthAzimuth = 360 + item.EarthAzimuth;
-                item.EarthAzimuth =
-                  lastItem.EarthAzimuth +
-                  (360 - (Math.abs(item.EarthAzimuth - lastItem.EarthAzimuth) % 360));
-              }
-            }
-            for (let i = 23; i < thirdLine.length; i += 4) {
-              let obj = {
-                [secondLine[i + 0].split(" ")[1]]: Number(thirdLine[i + 0]),
-                [secondLine[i + 1].split(" ")[1]]: Number(thirdLine[i + 1]),
-                [secondLine[i + 2].split(" ")[1]]: Number(thirdLine[i + 2]),
-                [secondLine[i + 3].split(" ")[1]]: Number(thirdLine[i + 3]),
-                distance: Number(secondLine[i + 3].split(" ")[0].replace(/m$/, "")),
-              };
-              item.list.push(obj);
-            }
-            data.push(item);
-          }*/
-          /* S4000 */
-          const d = new TextDecoder("utf8");
-          let v = new View(this.response),
-            result: { [key: string]: any } = {};
-          let firstLine = d
-            .decode(v.getLine())
-            .trim()
-            .replace(/,$/, "")
-            .split(",");
-          result.HeaderInfo = {};
-          for (let i = 1; i < firstLine.length; i++) {
-            let kv = firstLine[i].split(":");
-            if (kv.length == 2) {
-              result.HeaderInfo[kv[0]] = kv[1]
-            }
-          }
-          let secondLine = d
-            .decode(v.getLine())
-            .trim()
-            .replace(/,$/, "")
-            .split(",");
-          let data: Array<any> = (result.data = []);
-          while (!v.reachEnd()) {
-            let thirdLine = d
-              .decode(v.getLine())
-              .trim()
-              .replace(/,$/, "")
-              .split(",");
-            let radial:{[key:string]:any} = { Azimuth: 0, list: new Array<any>() };
-            for (let i = 0; i < 11; i++) {
-              radial[secondLine[i]] = thirdLine[i]
-            }
-            radial.Azimuth = Number(radial.Azimuth);
-            //用于确保两根径向之间夹角不大于180度
-            if (data.length > 0) {
-              let lastItem = data[data.length - 1];
-              if (Math.abs(Item.Azimuth - lastItem.Azimuth) > 180) {
-                // item.Azimuth = 360 + item.Azimuth;
-                Item.Azimuth =
-                  lastItem.Azimuth +
-                  (360 - (Math.abs(Item.Azimuth - lastItem.Azimuth) % 360));
-              }
-            }
-            for (let i = 11; i < thirdLine.length; i += 4) {
-              let obj = {
-                [secondLine[i + 0].split(" ")[1]]: Number(thirdLine[i + 0]),
-                [secondLine[i + 1].split(" ")[1]]: Number(thirdLine[i + 1]),
-                [secondLine[i + 2].split(" ")[1]]: Number(thirdLine[i + 2]),
-                [secondLine[i + 3].split(" ")[1]]: Number(thirdLine[i + 3]),
-                distance: Number(secondLine[i + 3].split(" ")[0].replace(/m$/, "")),
-              };
-              radial.list.push(obj);
-            }
-            data.push(radial);
-          }
-          ppiData[radar_id] = {result,position}
-          processData(result, position);
-          map.getSource("radar").setData({
-            type: "FeatureCollection",
-            features: polygons,
-          });
-        });
-        xhr.responseType = "arraybuffer";
-        xhr.open("GET", ppiDataUrl);
-        xhr.send();
-
-
-
-
-        /* PPI数据处理并显示 */
-        let inversionResult:{[key:string]:any} = {HeaderInfo:{}}
-        const view = new View(encoder.encode(ppiInversionData).buffer)
-        let firstLine = decoder.decode(view.getLine()).trim().replace(/,$/, "").split(",");
-        for(let i=1;i<firstLine.length;i++){
-          let item = firstLine[i].split(':')
-          if(item.length==2){
-            inversionResult.HeaderInfo[item[0]]=item[1]
-          }
-        }
-        let secondLine = decoder.decode(view.getLine()).trim().replace(/,$/, "").split(",");
-        inversionResult.data = []
-        while(!view.reachEnd()){
-          let radial:{[key:string]:any} = {list:[]}
-          let thirdLine = decoder.decode(view.getLine()).trim().replace(/,$/, "").split(",");
-          for(let i=0;i<12;i++){
-            radial[secondLine[i]] = thirdLine[i]
-          }
-          for(let i=12;i<thirdLine.length;i+=4){
-            radial.list.push({
-              distance:Number(secondLine[i].split(' ')[0].substring(0,secondLine[i].split(' ')[0].length-1)),
-              [secondLine[i+0].split(' ')[1]]:Number(thirdLine[i+0]),
-              [secondLine[i+1].split(' ')[1]]:Number(thirdLine[i+1]),
-              [secondLine[i+2].split(' ')[1]]:Number(thirdLine[i+2]),
-              [secondLine[i+3].split(' ')[1]]:Number(thirdLine[i+3]),
-            })
-          }
-          inversionResult.data.push(radial)
-        }
-        inversionResult.data.map((radial:any)=>{
-          radial.list.map((lib:any)=>{
-            if(lib.WindSpeed!==999){
-              const pt = turf.destination(
-                turf.point(position),
-                lib.distance/Math.tan(Number(radial.Pitch)/180*Math.PI),
-                Number(radial.Azimuth),
-                { units: "meters" }
-              );
-              inversionPPIData.features.push({
-                type: "Feature",
-                geometry: {
-                  type: "Point",
-                  coordinates: pt.geometry?.coordinates,
-                },
-                properties: {
-                  风向:Number(lib.WindDirection),
-                  风速:Number(lib.WindSpeed),
-                  image:`${setting.风雷达组网地图相关.反演风场=='风矢'?'arrow':'feather'}${getFeather(Math.abs(lib.WindSpeed))}`
-                },
-              })
-            }
-          })
-        })
-        map.getSource('inversionPPIData').setData(inversionPPIData)
       }
-    });
-    (map.getSource("point") as any).setData(points.data);
+    })
+  })
+  let data: Array<any> = []
+  res.data[0].map((item:any)=>{
+    let convert = wgs84togcj02(sixty2Float(item.lng),sixty2Float(item.lat))
+    data.push({
+      lng:convert[0],
+      lat:convert[1],
+      speed:item.wind.WindSpeed,
+      orientation:item.wind.WindDirection,
+    })
+  })
+  /*模拟数据
+  let convert1 = wgs84togcj02(sixty2Float('106°37′39″'),sixty2Float('29°44′28″'))
+  let convert2 = wgs84togcj02(sixty2Float('106°26′36″'),sixty2Float('29°50′31″'))
+  let convert3 = wgs84togcj02(sixty2Float('106°29′32″'),sixty2Float('29°20′28″'))
+  let convert4 = wgs84togcj02(sixty2Float('106°38′55″'),sixty2Float('29°00′36″'))
+  let convert5 = wgs84togcj02(sixty2Float('108°24′50″'),sixty2Float('30°48′12″'))
+  let convert6 = wgs84togcj02(sixty2Float('108°39′48″'),sixty2Float('31°56′40″'))
+  let data = [
+    // {lng:convert1[0],lat:convert1[1],speed:Number((20*Math.random()).toFixed(2)),orientation:360*Math.random()},
+    // {lng:convert2[0],lat:convert2[1],speed:Number((20*Math.random()).toFixed(2)),orientation:360*Math.random()},
+    // {lng:convert3[0],lat:convert3[1],speed:Number((20*Math.random()).toFixed(2)),orientation:360*Math.random()},
+    // {lng:convert4[0],lat:convert4[1],speed:Number((20*Math.random()).toFixed(2)),orientation:360*Math.random()},
+    // {lng:convert5[0],lat:convert5[1],speed:Number((20*Math.random()).toFixed(2)),orientation:360*Math.random()},
+    // {lng:convert6[0],lat:convert6[1],speed:Number((20*Math.random()).toFixed(2)),orientation:360*Math.random()},
+
+    {lng:convert1[0],lat:convert1[1],speed:4.18,orientation:259},
+    {lng:convert2[0],lat:convert2[1],speed:2.985,orientation:209},
+    {lng:convert3[0],lat:convert3[1],speed:4.234,orientation:235.83},
+    {lng:convert4[0],lat:convert4[1],speed:1.312,orientation:349},
+    {lng:convert5[0],lat:convert5[1],speed:4.706,orientation:200.173},
+    {lng:convert6[0],lat:convert6[1],speed:5,orientation:0},
+  ];
+  */
+  discreteContour(map,data,{isobands:setting.风雷达组网地图相关.等值带,isolines:setting.风雷达组网地图相关.等值线,gridValue:setting.风雷达组网地图相关.格点,discrete:false})
+  let source = {
+    type: "geojson",
+    data: {
+      type: "FeatureCollection",
+      features: Array<any>(),
+    },
+  };
+  data.map((item:any)=>{
+    source.data.features.push({
+      type: "Feature",
+      properties: {
+        altitude:NaN,
+        radar_id:'',
+        风速: item.speed,
+        image: "feather" + getFeather(item.speed),
+        风向: item.orientation,
+        高度:NaN,
+        垂直气流:NaN,
+        时间:NaN,
+        color:isDark.value?'#fff':'#000'
+      },
+      geometry: {
+        type: "Point",
+        coordinates: [item.lng, item.lat],
+      },
+    })
+  })
+  map.addLayer({
+    id: "tmpLayer",
+    source: source as any,
+    type: "symbol",
+    layout: {
+      visibility: setting.station ? "visible" : "none",
+      // This icon is a part of the Mapbox Streets style.
+      // To view all images available in a Mapbox style, open
+      // the style in Mapbox Studio and click the "Images" tab.
+      // To add a new image to the style at runtime see
+      // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+      "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
+      "icon-image": ["get", "image"],
+      "icon-size": 1,
+      "icon-rotate": ["get", "风向"],
+      "icon-rotation-alignment": "map",
+      "icon-allow-overlap": true,
+      "icon-ignore-placement": true,
+      // "text-field": ["get", "风速"],
+      // "text-font": ["simkai"],
+      // "text-size": 14,
+      // "text-transform": "uppercase",
+      // // "text-letter-spacing": 0.05,
+      // "text-anchor": "center",
+      // "text-line-height": 1,
+      // // "text-justify": "center",
+      // "text-offset": [0, 0],
+      // "text-ignore-placement": true,
+      // "text-allow-overlap": true,
+      // "text-rotation-alignment": "map",
+    },
+    paint: {
+      "icon-opacity": setting.feather ? 1 : 0,
+    },
   });
+
+  let interpolateOptions = {
+    sizeU: 20,
+    sizeV: 20,
+    boundary: {
+      lng: 105,
+      lat: 28,
+      width: 6,
+      height: 4.5,
+    },
+    power: 6,
+  };
+  let data1 = data.map((item:any)=>{
+    return {lng:item.lng,lat:item.lat,value:-item.speed*Math.sin(item.orientation/180*Math.PI)}
+  })
+  let grid1 = interpolate(data1,interpolateOptions)
+  let us :number[]= []
+  for(let j=0;j<interpolateOptions.sizeV;j++){
+    for(let i=0;i<interpolateOptions.sizeU;i++){
+      us.push(grid1[j][i])
+    }
+  }
+
+  let data2 = data.map((item:any)=>{
+    return {lng:item.lng,lat:item.lat,value:-item.speed*Math.cos(item.orientation/180*Math.PI)}
+  })
+  let grid2 = interpolate(data2,interpolateOptions)
+  let vs :number[]= []
+  for(let j=0;j<interpolateOptions.sizeV;j++){
+    for(let i=0;i<interpolateOptions.sizeU;i++){
+      vs.push(grid2[j][i])
+    }
+  }
+
+  const uMin = Math.min(...us);
+  let uMax = Math.max(...us);
+  const vMin = Math.min(...vs);
+  let vMax = Math.max(...vs);
+  let maxSpeed = 20
+  vMax = Math.sqrt(Math.pow(maxSpeed,2)/2)
+  uMax = Math.sqrt(Math.pow(maxSpeed,2)/2)
+  let cvs = document.createElement('canvas')
+  cvs.width = interpolateOptions.sizeU
+  cvs.height = interpolateOptions.sizeV
+  let ctx = cvs.getContext('2d')!
+  let imgData = ctx.getImageData(0,0,cvs.width,cvs.height)
+  for(let y = 0; y < imgData.height; y++){
+    for(let x = 0; x < imgData.width; x++){
+      let i = (y * 4) * imgData.width + x * 4
+      imgData.data[i + 0] = (us[imgData.width*(imgData.height - y - 1)+x]-uMin)/(uMax-uMin)*255
+      imgData.data[i + 1] = (vs[imgData.width*(imgData.height - y - 1)+x]-vMin)/(vMax-vMin)*255
+      imgData.data[i + 2] = 0
+      imgData.data[i + 3] = 255
+    }
+  }
+  ctx.putImageData(imgData,0,0)
+  let json = {
+    "source": "http://nomads.ncep.noaa.gov",
+    "date": "2016-11-20T00:00Z",
+    "width": cvs.width,
+    "height": cvs.height,
+    "uMin": uMin,
+    "uMax": uMax,
+    "vMin": vMin,
+    "vMax": vMax,
+    "boundaries":[interpolateOptions.boundary.lng,interpolateOptions.boundary.lng+interpolateOptions.boundary.width,interpolateOptions.boundary.lat,interpolateOptions.boundary.lat+interpolateOptions.boundary.height],
+    // "boundaries":[105,111,28,32.5]
+  }
+  customLayer = new CustomLayer(json,cvs.toDataURL(),setting.风雷达组网地图相关.流线)
+  map.addLayer(customLayer as any)
+
+
+
+
+
+
+
+
+
+
+
+
+  // exec({
+  //   // database: "host=127.0.0.1&port=3306&user=root&password=tanglei&database=weatherservice",
+  //   database: databaseRaw,
+  //   query: {
+  //     sqls: ["select * from `device`"],
+  //   },
+  // }).then((res) => {
+  //   res.data[0] = res.data[0].map((v: any) => {
+  //     let position = wgs84togcj02(sixty2Float(v.lng), sixty2Float(v.lat));
+  //     v.longitude = position[0];
+  //     v.latitude = position[1];
+  //     return v;
+  //   });
+  //   bus.风雷达组网地图相关雷达站点信息 = res.data[0];
+  //   points.data.features.length=0;
+  //   circleDataFeatures.features.length=0
+  //   pointDataFeatures.features.length=0
+  //   inversionPPIData.features.length = 0
+  //   polygons.length = 0
+  //   res.data[0].map((Item:any,k:number) => {
+  //     if (Item.hide !== "true") {
+  //       if(Item.no==station.active){
+  //         //如果之前有设备被选中，应该获取一次最近风廓线数据
+  //         fetch最近风廓线数据()
+  //       }
+  //       console.log(Item)
+  //       let position = wgs84togcj02(sixty2Float(Item.lng), sixty2Float(Item.lat)) as [
+  //         number,
+  //         number
+  //       ];
+  //       //初始状态
+  //       points.data.features.push({
+  //         type: "Feature",
+  //         properties: {
+  //           altitude:Number(Item.altitude),
+  //           lon:position[0],
+  //           lat:position[1],
+  //           type: "站点",
+  //           radar_id: Item.no,
+  //           高度: NaN,
+  //           风速: NaN,
+  //           风向: NaN,
+  //           垂直气流: NaN,
+  //           时间:NaN,
+  //           time: moment().format("YYYY-MM-DD HH:mm:ss"),
+  //           name: Item.device_short_name,
+  //           is_online: true,
+  //           external_temperature: 25,
+  //           external_humidity: 0.6,
+  //           image: "feather" + getFeather(0),
+  //           color: Item.status==1?'#0f0':Item.status==2?'#f80':Item.status==3?'#f00':(isDark.value?'#fff':'#000'),
+  //         },
+  //         geometry: {
+  //           type: "Point",
+  //           coordinates: position,
+  //         },
+  //       });
+  //       for (let i = 1; i <= 6; i++) {
+  //         let circle = calculateCirclePoints(position, i * 1000, 64, 'meters');
+  //         circleDataFeatures.features.push({
+  //           type:'Feature',
+  //           geometry: {
+  //             type: "Polygon",
+  //             coordinates: [circle],
+  //           },
+  //         });
+
+  //         if(i==1||i==3||i==6){
+  //           let pts: any = [];
+  //           const pt1 = turf.destination(
+  //             turf.point(position),
+  //             1000 * i,
+  //             0,
+  //             { units: "meters" }
+  //           );
+  //           const pt2 = turf.destination(
+  //             turf.point(position),
+  //             1000 * i,
+  //             90,
+  //             { units: "meters" }
+  //           );
+  //           const pt3 = turf.destination(
+  //             turf.point(position),
+  //             1000 * i,
+  //             180,
+  //             { units: "meters" }
+  //           );
+  //           const pt4 = turf.destination(
+  //             turf.point(position),
+  //             1000 * i,
+  //             270,
+  //             { units: "meters" }
+  //           );
+  //           pts.push(
+  //             pt1.geometry?.coordinates,
+  //             pt2.geometry?.coordinates,
+  //             pt3.geometry?.coordinates,
+  //             pt4.geometry?.coordinates
+  //           );
+  //           pointDataFeatures.features.push({
+  //             type: "Feature",
+  //             geometry: {
+  //               type: "MultiPoint",
+  //               coordinates: pts,
+  //             },
+  //             properties: {
+  //               units: i + "km",
+  //             },
+  //           });
+  //         }
+  //       }
+  //       map.getSource('等距环的单位Source').setData(pointDataFeatures)
+  //       map.getSource('等距环Source').setData(circleDataFeatures)
+
+  //       // new Marker({
+  //       //   draggable: false,
+  //       //   pitchAlignment: "map",
+  //       //   rotationAlignment: "map",
+  //       // })
+  //       //   .setLngLat(position)
+  //       //   .addTo(map);
+  //       let radar_id = Item.no
+
+  //       // getSensorData({radar_id,dataTime:'20240716154908'}).then(res=>{
+  //       //   if(res.data.data.sensor!==""){
+  //       //     let result:{[key:string]:any} = {}
+  //       //     result.list = []
+  //       //     const view = new View(encoder.encode(res.data.data.sensor).buffer)
+  //       //     let firstLine = decoder.decode(view.getLine()).trim().replace(/,$/g,'').split(',')
+  //       //     while(!view.reachEnd()){
+  //       //       let secondLine = decoder.decode(view.getLine()).trim().replace(/,$/g,'').split(',')
+  //       //       firstLine.map((key,index)=>{
+  //       //         // result.list.push({[key]:secondLine[index]})
+  //       //       })
+  //       //     }
+  //       //     console.log(result)
+  //       //   }
+  //       // })
+  //       let time = moment()
+  //       setting.风雷达组网地图相关.请求时间 = time.format("HH:mm:ss")
+  //       getFkxRealData({
+  //         radar_id,
+  //         // dateTime: time.format("YYYYMMDDHHmmss"),
+  //         dateTime: time.format("20240729054058"),
+  //         num:1
+  //       }).then((res) => {
+
+
+  //         let view:View|null = new View(encoder.encode(res.data.data.file.file_data).buffer)
+  //         let result:{[key:string]:any} = {HeaderInfo:{},data:[]}
+  //         let firstLine = decoder.decode(view.getLine()).trim().replace(/,$/,'').split(',')
+  //         for(let i=1;i<firstLine.length;i++){
+  //           let item = firstLine[i].split(':')
+  //           if(item.length==2){
+  //             result.HeaderInfo[item[0]] = item[1]
+  //           }
+  //         }
+  //         let secondLine = decoder.decode(view.getLine()).trim().replace(/,$/,'').split(',')
+  //         while(!view.reachEnd()){
+  //           let radial:{[key:string]:any} = {list:[]}
+  //           let thirdLine = decoder.decode(view.getLine()).trim().replace(/,$/g,'').split(',')
+  //           for(let i=0;i<9;i++){
+  //             radial[secondLine[i]] = thirdLine[i]
+  //           }
+  //           for(let i=9;i<secondLine.length;i+=9){
+  //             radial.list.push({
+  //               distance:Number(secondLine[i].split(' ')[0].substring(0,secondLine[i].split(' ')[0].length-1)),
+  //               [secondLine[i+0].split(' ').slice(1).join(' ')]:Number(thirdLine[i+0]),
+  //               [secondLine[i+1].split(' ').slice(1).join(' ')]:Number(thirdLine[i+1]),
+  //               [secondLine[i+2].split(' ').slice(1).join(' ')]:Number(thirdLine[i+2]),
+  //               [secondLine[i+3].split(' ').slice(1).join(' ')]:Number(thirdLine[i+3]),
+  //               [secondLine[i+4].split(' ').slice(1).join(' ')]:Number(thirdLine[i+4]),
+  //               [secondLine[i+5].split(' ').slice(1).join(' ')]:Number(thirdLine[i+5]),
+  //               [secondLine[i+6].split(' ').slice(1).join(' ')]:Number(thirdLine[i+6]),
+  //               [secondLine[i+7].split(' ').slice(1).join(' ')]:Number(thirdLine[i+7]),
+  //               [secondLine[i+8].split(' ').slice(1).join(' ')]:Number(thirdLine[i+8]),
+  //             })
+  //           }
+  //           result.data.unshift(radial)
+  //         }
+  //         dbsData[radar_id] = result
+  //         for(let radial of result.data){
+  //           // let lib = radial.list[setting.风雷达组网地图相关.relativeHeight-1]
+  //           let lib;
+  //           for(let i=radial.list.length-1;i>=1;i--){
+  //             let tmp = radial.list[i]
+  //             let altitude = Number(tmp['distance'])+Number(Item.altitude)
+  //             if(altitude<setting.风雷达组网地图相关.altitudeHeight&&setting.风雷达组网地图相关.altitudeHeight-altitude<=25){
+  //               lib = tmp
+  //               break;
+  //             }
+  //           }
+  //           if(lib){
+  //             points.data.features = points.data.features.map((item) => {
+  //               if(item.properties.color!=='#f00'){
+  //                 if(lib['WindSpeed']!==999){
+  //                   if (item.properties.radar_id === radar_id) {
+  //                     item.properties.风速 = Number(lib['WindSpeed'].toFixed(2));
+  //                     item.properties.风向 = Number(lib['WindDirection'].toFixed(2));
+  //                     item.properties.垂直气流 = lib['ZWind']<0?`\u2193${lib['ZWind'].toFixed(2)}`:`\u2191${lib['ZWind'].toFixed(2)}`
+  //                     item.properties.高度 = (Number(lib['distance'])+Number(Item.altitude)).toFixed(2)
+  //                     item.properties.时间 = moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
+  //                     item.properties.image = "feather" + getFeather(lib['WindSpeed']);
+  //                   }
+  //                 }else{
+  //                   if (item.properties.radar_id === radar_id) {
+  //                     item.properties.风速 = NaN;
+  //                     item.properties.风向 = NaN;
+  //                     item.properties.垂直气流 = NaN
+  //                     item.properties.高度 = (Number(lib['distance'])+Number(Item.altitude)).toFixed(2)
+  //                     item.properties.时间 = moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
+  //                     item.properties.image = "feather";
+  //                   }
+  //                 }
+  //               }else{
+  //                 if (item.properties.radar_id === radar_id) {
+  //                   item.properties.风速 = NaN;
+  //                   item.properties.风向 = NaN;
+  //                   item.properties.垂直气流 = NaN
+  //                   item.properties.高度 = NaN
+  //                   item.properties.时间 = moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
+  //                   item.properties.image = "feather";
+  //                 }
+  //               }
+  //               return item
+  //             });
+  //           }else{
+  //             points.data.features = points.data.features.map((item) => {
+  //               if (item.properties.radar_id === radar_id) {
+  //                 item.properties.风速 = NaN;
+  //                 item.properties.风向 = NaN;
+  //                 item.properties.垂直气流 = NaN
+  //                 item.properties.高度 = NaN
+  //                 item.properties.时间 = NaN
+  //                 item.properties.image = "feather";
+  //               }
+  //               return item;
+  //             });
+  //           }
+  //           (map.getSource("point") as any).setData(points.data);
+  //         }
+  //       });
+
+
+
+  //       var xhr = new XMLHttpRequest();
+  //       xhr.addEventListener("load", function () {
+  //         /*S10000
+  //         const d = new TextDecoder("utf8");
+  //         let v = new View(this.response),
+  //           result: { [key: string]: any } = {};
+  //         let firstLine = d
+  //           .decode(v.getLine())
+  //           .trim()
+  //           .replace(/,$/, "")
+  //           .split(",");
+  //         let secondLine = d
+  //           .decode(v.getLine())
+  //           .trim()
+  //           .replace(/,$/, "")
+  //           .split(",");
+  //         type HeaderInfo = {
+  //           AllGates: 200;
+  //           Altitude: 40;
+  //           BKGates: 9;
+  //           FrequencyShift: 120;
+  //           Latitude: 36.16953;
+  //           Location: "榆林机场";
+  //           Longitude: 120.477398;
+  //           Model: "S10000";
+  //           NorthOffset: 0;
+  //           ProjectMemo: "Test";
+  //           ProjectName: "榆林机场风切变";
+  //           PulseWidth: 400;
+  //           ReShotsTimes: 1;
+  //           Resolution: 60;
+  //           SCanMode: "Script";
+  //           SN: "10HKF00631450";
+  //           SNRThreshold: 8;
+  //           SamplesPerGate: 100;
+  //           Script: '<ppi cycles="1" interval="0" avelostimes="1" pitch="3" fromAzimuth="30" toAzimuth="29" speed="6" direction="1" vadwind="1" ScanBack="0" vadisslide="2" IsSecTick="0" shots="10000" NewFilePerCycle="1" />';
+  //           Shots: 10000;
+  //           SpetralEnd: 131;
+  //           SpetralStart: 32;
+  //           StartIndex: 3;
+  //           TriggerDelayTime: 1000;
+  //           Version: "1.0.1.6";
+  //           ZeroFreq: 49.31;
+  //         };
+  //         let headerInfo: HeaderInfo = (result.headerInfo = {} as HeaderInfo);
+  //         for (let i = 1; i < firstLine.length; i++) {
+  //           let kv = firstLine[i].split(":");
+  //           if (kv.length == 2) {
+  //             Object.defineProperty(headerInfo, kv[0], { value: kv[1] });
+  //           } else {
+  //             throw Error("invalid " + firstLine[i]);
+  //           }
+  //         }
+  //         let data: Array<any> = (result.data = []);
+
+  //         while (!v.reachEnd()) {
+  //           let thirdLine = d
+  //             .decode(v.getLine())
+  //             .trim()
+  //             .replace(/,$/, "")
+  //             .split(",");
+  //           let item = { EarthAzimuth: 0, list: new Array<any>() };
+  //           for (let i = 0; i < 23; i++) {
+  //             Object.defineProperty(item, secondLine[i], { value: thirdLine[i] });
+  //           }
+  //           item.EarthAzimuth = Number(item.EarthAzimuth);
+  //           //用于确保两根径向之间夹角不大于180度
+  //           if (data.length > 0) {
+  //             let lastItem = data[data.length - 1];
+  //             if (Math.abs(item.EarthAzimuth - lastItem.EarthAzimuth) > 180) {
+  //               // item.EarthAzimuth = 360 + item.EarthAzimuth;
+  //               item.EarthAzimuth =
+  //                 lastItem.EarthAzimuth +
+  //                 (360 - (Math.abs(item.EarthAzimuth - lastItem.EarthAzimuth) % 360));
+  //             }
+  //           }
+  //           for (let i = 23; i < thirdLine.length; i += 4) {
+  //             let obj = {
+  //               [secondLine[i + 0].split(" ")[1]]: Number(thirdLine[i + 0]),
+  //               [secondLine[i + 1].split(" ")[1]]: Number(thirdLine[i + 1]),
+  //               [secondLine[i + 2].split(" ")[1]]: Number(thirdLine[i + 2]),
+  //               [secondLine[i + 3].split(" ")[1]]: Number(thirdLine[i + 3]),
+  //               distance: Number(secondLine[i + 3].split(" ")[0].replace(/m$/, "")),
+  //             };
+  //             item.list.push(obj);
+  //           }
+  //           data.push(item);
+  //         }*/
+  //         /* S4000 */
+  //         const d = new TextDecoder("utf8");
+  //         let v = new View(this.response),
+  //           result: { [key: string]: any } = {};
+  //         let firstLine = d
+  //           .decode(v.getLine())
+  //           .trim()
+  //           .replace(/,$/, "")
+  //           .split(",");
+  //         result.HeaderInfo = {};
+  //         for (let i = 1; i < firstLine.length; i++) {
+  //           let kv = firstLine[i].split(":");
+  //           if (kv.length == 2) {
+  //             result.HeaderInfo[kv[0]] = kv[1]
+  //           }
+  //         }
+  //         let secondLine = d
+  //           .decode(v.getLine())
+  //           .trim()
+  //           .replace(/,$/, "")
+  //           .split(",");
+  //         let data: Array<any> = (result.data = []);
+  //         while (!v.reachEnd()) {
+  //           let thirdLine = d
+  //             .decode(v.getLine())
+  //             .trim()
+  //             .replace(/,$/, "")
+  //             .split(",");
+  //           let radial:{[key:string]:any} = { Azimuth: 0, list: new Array<any>() };
+  //           for (let i = 0; i < 11; i++) {
+  //             radial[secondLine[i]] = thirdLine[i]
+  //           }
+  //           radial.Azimuth = Number(radial.Azimuth);
+  //           //用于确保两根径向之间夹角不大于180度
+  //           if (data.length > 0) {
+  //             let lastItem = data[data.length - 1];
+  //             if (Math.abs(Item.Azimuth - lastItem.Azimuth) > 180) {
+  //               // item.Azimuth = 360 + item.Azimuth;
+  //               Item.Azimuth =
+  //                 lastItem.Azimuth +
+  //                 (360 - (Math.abs(Item.Azimuth - lastItem.Azimuth) % 360));
+  //             }
+  //           }
+  //           for (let i = 11; i < thirdLine.length; i += 4) {
+  //             let obj = {
+  //               [secondLine[i + 0].split(" ")[1]]: Number(thirdLine[i + 0]),
+  //               [secondLine[i + 1].split(" ")[1]]: Number(thirdLine[i + 1]),
+  //               [secondLine[i + 2].split(" ")[1]]: Number(thirdLine[i + 2]),
+  //               [secondLine[i + 3].split(" ")[1]]: Number(thirdLine[i + 3]),
+  //               distance: Number(secondLine[i + 3].split(" ")[0].replace(/m$/, "")),
+  //             };
+  //             radial.list.push(obj);
+  //           }
+  //           data.push(radial);
+  //         }
+  //         ppiData[radar_id] = {result,position}
+  //         processData(result, position);
+  //         map.getSource("radar").setData({
+  //           type: "FeatureCollection",
+  //           features: polygons,
+  //         });
+  //       });
+  //       xhr.responseType = "arraybuffer";
+  //       xhr.open("GET", ppiDataUrl);
+  //       xhr.send();
+
+
+
+
+  //       /* PPI数据处理并显示 */
+  //       let inversionResult:{[key:string]:any} = {HeaderInfo:{}}
+  //       const view = new View(encoder.encode(ppiInversionData).buffer)
+  //       let firstLine = decoder.decode(view.getLine()).trim().replace(/,$/, "").split(",");
+  //       for(let i=1;i<firstLine.length;i++){
+  //         let item = firstLine[i].split(':')
+  //         if(item.length==2){
+  //           inversionResult.HeaderInfo[item[0]]=item[1]
+  //         }
+  //       }
+  //       let secondLine = decoder.decode(view.getLine()).trim().replace(/,$/, "").split(",");
+  //       inversionResult.data = []
+  //       while(!view.reachEnd()){
+  //         let radial:{[key:string]:any} = {list:[]}
+  //         let thirdLine = decoder.decode(view.getLine()).trim().replace(/,$/, "").split(",");
+  //         for(let i=0;i<12;i++){
+  //           radial[secondLine[i]] = thirdLine[i]
+  //         }
+  //         for(let i=12;i<thirdLine.length;i+=4){
+  //           radial.list.push({
+  //             distance:Number(secondLine[i].split(' ')[0].substring(0,secondLine[i].split(' ')[0].length-1)),
+  //             [secondLine[i+0].split(' ')[1]]:Number(thirdLine[i+0]),
+  //             [secondLine[i+1].split(' ')[1]]:Number(thirdLine[i+1]),
+  //             [secondLine[i+2].split(' ')[1]]:Number(thirdLine[i+2]),
+  //             [secondLine[i+3].split(' ')[1]]:Number(thirdLine[i+3]),
+  //           })
+  //         }
+  //         inversionResult.data.push(radial)
+  //       }
+  //       inversionResult.data.map((radial:any)=>{
+  //         radial.list.map((lib:any)=>{
+  //           if(lib.WindSpeed!==999){
+  //             const pt = turf.destination(
+  //               turf.point(position),
+  //               lib.distance/Math.tan(Number(radial.Pitch)/180*Math.PI),
+  //               Number(radial.Azimuth),
+  //               { units: "meters" }
+  //             );
+  //             inversionPPIData.features.push({
+  //               type: "Feature",
+  //               geometry: {
+  //                 type: "Point",
+  //                 coordinates: pt.geometry?.coordinates,
+  //               },
+  //               properties: {
+  //                 风向:Number(lib.WindDirection),
+  //                 风速:Number(lib.WindSpeed),
+  //                 image:`${setting.风雷达组网地图相关.反演风场=='风矢'?'arrow':'feather'}${getFeather(Math.abs(lib.WindSpeed))}`
+  //               },
+  //             })
+  //           }
+  //         })
+  //       })
+  //       map.getSource('inversionPPIData').setData(inversionPPIData)
+  //     }
+  //   });
+  //   (map.getSource("point") as any).setData(points.data);
+  // });
 }
 let circleDataFeatures = {
   type: "FeatureCollection",
@@ -1771,10 +1805,10 @@ onMounted(() => {
     // maxZoom: 17,
     maxZoom: 18,
     // minZoom: 1,
-    maxBounds: [
-      [102.0, 27.5],
-      [114.0, 32.7],
-    ],
+    // maxBounds: [
+    //   [102.0, 27.5],
+    //   [114.0, 32.7],
+    // ],
     // zoom: 18,
     // center: [148.9819, -35.3981],
     // pitch: 60,

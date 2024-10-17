@@ -2023,7 +2023,7 @@ onMounted(() => {
     //     source.setData(data);
     //   }
     // }, 1000);
-    if(false){
+    if(true){
       contour2(map,{
         isobands:props.isobands,
         isolines:props.isolines,
@@ -2038,7 +2038,6 @@ onMounted(() => {
         gridValue:props.gridValue,
         gridPoint:props.gridPoint
       })
-
     }
   });
 

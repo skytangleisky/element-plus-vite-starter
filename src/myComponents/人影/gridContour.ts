@@ -27,17 +27,10 @@ export default function(map:mapboxgl.Map,opts:{isobands:boolean,isolines:boolean
             .slice(1);
       }
     }
-    let fillColors = [];
     let strokeColors = [];
     for (let i = 0; i < breaks.length; i++) {
-      strokeColors.push(breaks[i]);
       // strokeColors.push(`hsl(${getHue(-36, breaks[i], 36)},100%,50%)`);
       strokeColors.push(Color[breaks[i].toFixed()]);
-    }
-    for (let i = 0; i < breaks.length - 1; i++) {
-      fillColors.push(`${breaks[i]}-${breaks[i + 1]}`);
-      fillColors.push(strokeColors[2 * i + 1]);
-      // fillColors.push(strokeColors[2*(i+1)+1]);
     }
     let interpolateOptions = {
       sizeU: 33,
@@ -74,7 +67,7 @@ export default function(map:mapboxgl.Map,opts:{isobands:boolean,isolines:boolean
     for (let j = 0; j < multiBands.length; j++) {
       let feature = {
         type: "Feature",
-        properties: { threshold: breaks[j] + "-" + breaks[j + 1] },
+        properties: { threshold: breaks[j] + "-" + breaks[j + 1],fillColor:strokeColors[j] },
         geometry: {
           type: "MultiPolygon",
           coordinates: new Array<any>(),
@@ -132,7 +125,7 @@ export default function(map:mapboxgl.Map,opts:{isobands:boolean,isolines:boolean
         visibility: opts.isobands ? "visible" : "none",
       },
       paint: {
-        "fill-color": ["match", ["get", "threshold"], ...fillColors, "transparent"],
+        "fill-color": ["get", "fillColor"],
         "fill-opacity": 0.5,
       },
     });
@@ -156,7 +149,7 @@ export default function(map:mapboxgl.Map,opts:{isobands:boolean,isolines:boolean
     for (let j = 0; j < multiLines.length; j++) {
       let feature = {
         type: "Feature",
-        properties: { threshold: breaks[j] },
+        properties: { threshold: breaks[j],textColor:strokeColors[j] },
         geometry: {
           type: "MultiLineString",
           coordinates: new Array<any>(),
@@ -164,7 +157,7 @@ export default function(map:mapboxgl.Map,opts:{isobands:boolean,isolines:boolean
       };
       let featureValue = {
         type: "Feature",
-        properties: { threshold: breaks[j] },
+        properties: { threshold: breaks[j],textColor:strokeColors[j] },
         geometry: {
           type: "MultiPoint",
           coordinates: new Array<any>(),
@@ -211,7 +204,7 @@ export default function(map:mapboxgl.Map,opts:{isobands:boolean,isolines:boolean
         "line-cap": "round",
       },
       paint: {
-        "line-color": ["match", ["get", "threshold"], ...strokeColors, "transparent"],
+        "line-color": ["get", "textColor"],
         "line-width": 2,
         "line-opacity": 1,
       },
@@ -234,7 +227,7 @@ export default function(map:mapboxgl.Map,opts:{isobands:boolean,isolines:boolean
         "text-rotation-alignment": "map",
       },
       paint: {
-        "text-color": "yellow",
+        "text-color": ['get','textColor'],
         "text-halo-width": 1,
         "text-halo-color": "black",
       },
