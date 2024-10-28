@@ -44,12 +44,12 @@ export function getFkxRealData(query:{radar_id:string,dateTime:string,num:number
   })
 }
 
-export function getFkxData(query:{dataTime:string}){
+export function getFkxData(query:{dataTime:string,altitude:number}){
   let data = {
     "version": "1.0",
     "secretKey": "904c396f6956d02c59a6ad35c08f5678",
     "dataTime": query.dataTime,
-    "altitude": 600,
+    "altitude": query.altitude,
     "dataTime_interval":600,
     "alt_interval": 50,
     "level": 3
@@ -108,22 +108,6 @@ export function getRHIRadial(query:{radar_id:string,dataTime:string}){
     method: 'post',
     headers:{
     'content-type':'application/json'
-    },
-    data
-  })
-}
-export function getSensorData(query:{radar_id:string,dataTime:string}){
-  let data = {
-    "version":"1.0",
-    "secretKey":"904c396f6956d02c59a6ad35c08f5678",
-    "radar_id":query.radar_id,
-    "dataTime":query.dataTime,
-  }
-  return request({
-    url: '/qt/sensor',
-    method: 'post',
-    headers:{
-      'content-type':'application/json'
     },
     data
   })

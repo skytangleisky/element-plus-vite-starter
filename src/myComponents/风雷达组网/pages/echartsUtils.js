@@ -6,6 +6,7 @@ import {databaseRaw} from '~/api/重庆';
 import { wgs84togcj02 } from "~/myComponents/map/workers/mapUtil";
 import { sixty2Float } from "~/tools";
 import { eventbus } from "~/eventbus";
+import superOption from './mapbox'
 const years = ["1h", "2h", "3h", "4h", "5h", "6h", "7h", "8h", "9h", "10h", "11h", "12h","13","14","15","16","17","18","19","20","21","22","23","24"];
 let observers = []
 let charts = []
@@ -1888,7 +1889,7 @@ export default {
 
 
 
-    let chart = echarts.init(document.getElementById(params.chartName));
+    let chart = echarts.init(params.chartName);
     echarts.registerMap("chongqing", chongqing);
     // chongqing["features"].forEach((e,k) => {
     //   geoCoordMap[e.properties.name] = e.properties.center;
@@ -1970,14 +1971,27 @@ export default {
         roam: true,
         itemStyle: {
           normal: {
-            areaColor: "rgba(0,134,255,0.0)",
-            borderColor: "#92e9f7",
-            shadowBlur: 20,
-            shadowColor: "rgba(147, 235, 248, .8)",
+              areaColor: '#21729a',
+              borderColor: '#68ebf0', //线
+              borderWidth: 0,
+              borderJoin: 'round',
+              shadowColor: 'rgba(18, 216, 250, 1)', //外发光
+              shadowOffsetX: -3,
+              shadowOffsetY: 5,
+              shadowBlur: 2, //图形阴影的模糊大小
           },
           emphasis: {
-            areaColor: "#f9c242", //鼠标移入
+              areaColor: '#2f9eff', //悬浮区背景
           },
+          // normal: {
+          //   areaColor: "rgba(0,134,255,0.0)",
+          //   borderColor: "#92e9f7",
+          //   shadowBlur: 20,
+          //   shadowColor: "rgba(147, 235, 248, .8)",
+          // },
+          // emphasis: {
+          //   areaColor: "#f9c242", //鼠标移入
+          // },
         },
         select:{
           label:{
@@ -2128,10 +2142,11 @@ export default {
       ],
     };
     chart.setOption(option);
+    // chart.setOption(superOption)
     let observer = new ResizeObserver(()=>{
       chart.resize()
     })
-    observer.observe(document.getElementById(params.chartName))
+    observer.observe(params.chartName)
     observers.push(observer)
     charts.push(chart)
   },

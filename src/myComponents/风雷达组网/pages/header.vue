@@ -22,6 +22,54 @@
       <el-icon v-html="settingSvg" style="font-size:20px; color:#00f3ff;margin-right:10px" @click="settingClick"/>
       <el-icon v-html="logoutSvg" @click="logout" style="font-size:20px; color:#00f3ff;margin-right:10px"/>
     </div>
+    <div class="menuItem absolute top-35px left-50% flex w-110px h-20px justify-center" style="transform: translateX(-50%) translateX(-550px);" @click.native="menuClick(0)">
+      <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-0 top-0 w-full h-full">
+        <polygon points="0,0 100,0 110,20 10,20" fill="none" stroke="gray" stroke-width="1"/>
+      </svg>
+      <svg v-if="menuIndex==0" xmlns="http://www.w3.org/2000/svg" class="absolute left-0 top-0 w-full h-full">
+        <polygon points="0,0 100,0 110,20 10,20" fill="none" stroke="cyan" stroke-width="1"/>
+        <polygon points="0,0 10,0 20,20 10,20" fill="cyan" stroke="cyan" stroke-width="1"/>
+      </svg>
+      <div class="color-cyan z-1" style="font-weight: bolder;">
+        首页
+      </div>
+    </div>
+    <div class="menuItem absolute top-35px left-50% flex w-110px justify-center" style="transform: translateX(-50%) translateX(-400px);" @click="menuClick(1)">
+      <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-0 top-0 w-full h-full">
+        <polygon points="0,0 100,0 110,20 10,20" fill="none" stroke="gray" stroke-width="1"/>
+      </svg>
+      <svg v-if="menuIndex==1" xmlns="http://www.w3.org/2000/svg" class="absolute left-0 top-0 w-full h-full">
+        <polygon points="0,0 100,0 110,20 10,20" fill="none" stroke="cyan" stroke-width="1"/>
+        <polygon points="0,0 10,0 20,20 10,20" fill="cyan" stroke="cyan" stroke-width="1"/>
+      </svg>
+      <div class="color-cyan z-1" style="font-weight: bolder;">
+        数据产品
+      </div>
+    </div>
+    <div class="menuItem absolute top-35px left-50% flex w-110px justify-center" style="transform: translateX(-50%) translateX(+400px);" @click="menuClick(2)">
+      <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-0 top-0 w-full h-full">
+        <polygon points="10,0 100,0 90,20 0,20" fill="none" stroke="gray" stroke-width="1"/>
+      </svg>
+      <svg v-if="menuIndex==2" xmlns="http://www.w3.org/2000/svg" class="absolute left-0 top-0 w-full h-full">
+        <polygon points="10,0 100,0 90,20 0,20" fill="none" stroke="cyan" stroke-width="1"/>
+        <polygon points="10,0 20,0 10,20 0,20" fill="cyan" stroke="cyan" stroke-width="1"/>
+      </svg>
+      <div class="color-cyan z-1" style="font-weight: bolder;">
+        设备管理
+      </div>
+    </div>
+    <div class="menuItem absolute top-35px left-50% flex w-110px justify-center" style="transform: translateX(-50%) translateX(+550px);" @click="menuClick(3)">
+      <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-0 top-0 w-full h-full">
+        <polygon points="10,0 100,0 90,20 0,20" fill="none" stroke="gray" stroke-width="1"/>
+      </svg>
+      <svg v-if="menuIndex==3" xmlns="http://www.w3.org/2000/svg" class="absolute left-0 top-0 w-full h-full">
+        <polygon points="10,0 100,0 90,20 0,20" fill="none" stroke="gray" stroke-width="1"/>
+        <polygon points="10,0 20,0 10,20 0,20" fill="cyan" stroke="cyan" stroke-width="1"/>
+      </svg>
+      <div class="color-cyan z-1" style="font-weight: bolder;">
+        气象服务
+      </div>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -31,7 +79,11 @@ import logoutSvg from '~/assets/logout.svg?raw'
 import alarmSvg from '~/assets/alarm.svg?raw'
 import Lock from './lock.svg?raw'
 import { useUserStore } from '~/stores/user';
-const emits = defineEmits(['setting','editUser','alarm'])
+const props = withDefaults(defineProps<{menuIndex:number}>(),{menuIndex:0})
+function menuClick(index:number){
+  emits('update:menuIndex',index)
+}
+const emits = defineEmits(['setting','editUser','alarm','update:menuIndex'])
 function settingClick(){
   emits('setting')
 }
@@ -55,4 +107,9 @@ function logout(){
 }
 </script>
 <style lang="scss">
+.menuItem:hover svg{
+  polygon{
+    stroke:cyan;
+  }
+}
 </style>

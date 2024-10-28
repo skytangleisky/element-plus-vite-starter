@@ -738,3 +738,12 @@ export function sixty2Float(val:number|string){
     }
   }
 }
+export function removeLayerAndSource(map:any, layerId:string) {
+  let layer = map.getLayer(layerId)
+  if(layer) {
+    map.removeLayer(layerId);
+    if (map.getSource(layerId)) {
+      map.removeSource(layerId);
+    }
+  }
+}

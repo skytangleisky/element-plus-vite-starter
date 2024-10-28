@@ -249,6 +249,7 @@ const disappear = (e) => {
 };
 let timer, map;
 let mock;
+let minuteTimer;
 let speed = 20;
 const points = {
   type: "geojson",
@@ -275,14 +276,14 @@ const clickFunc = (e) => {
     setting.disappear = false;
     for (let i = 0; i < bus.result.length; i++) {
       if (bus.result[i].radar_id == e.features[0].properties.radar_id) {
+        station.active = bus.result[i].radar_id.replaceAll('-','');
         station
           .查询雷达最新的径向风数据接口({
-            "radar_id": e.features[0].properties.radar_id.replaceAll("-", ""),
+            "radar_id": station.active,
           })
           .then((res) => {
             bus.avgWindData = [res.data.data];
           });
-        station.active = bus.result[i].radar_id.replaceAll('-','');
         $(`#${station.active}`)[0].scrollIntoView({
           block: "nearest",
           behavior: "smooth",
@@ -499,6 +500,17 @@ const loadFunc = () => {
     // graphArgs.memory.value = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
     // graphArgs.memory.max = Math.round(performance.memory.jsHeapSizeLimit / 1024 / 1024);
   }, 1000);
+  minuteTimer = setInterval(()=>{
+    if(station.active){
+      station
+      .查询雷达最新的径向风数据接口({
+        "radar_id": station.active,
+      })
+      .then((res) => {
+        bus.avgWindData = [res.data.data];
+      });
+    }
+  },60e3)
   // if (setting.checks[0].select)
   //   station.查询雷达列表接口({ user_id: route.query.user_id });
   // if (setting.checks[1].select)
@@ -624,6 +636,7 @@ onBeforeUnmount(() => {
   eventbus.off("光恒-将站点移动到屏幕中心", flyTo);
   clearInterval(timer);
   clearInterval(mock);
+  clearInterval(minuteTimer);
   map.off("zoom", zoomFunc);
   map.off("move", moveFunc);
   map.off("load", loadFunc);

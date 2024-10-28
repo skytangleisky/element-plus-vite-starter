@@ -82,7 +82,7 @@
           </el-icon>
         </div> -->
         <div class="subitem">
-          <span class="whitespace-nowrap">海拔高度</span>
+          <span class="whitespace-nowrap">高度层</span>
           <el-select
             style="width: 80px"
             v-model="setting.风雷达组网地图相关.altitudeHeight"
@@ -113,7 +113,7 @@
             size="small"
           />
         </div>
-        <div class="subitem">
+        <!-- <div class="subitem">
           <span>海拔高度</span>
           <el-switch
             v-model="setting.风雷达组网地图相关.高度"
@@ -122,7 +122,7 @@
             :inactive-icon="Close"
             size="small"
           />
-        </div>
+        </div> -->
         <!-- <div class="subitem">
           <span>风向</span>
           <el-switch
@@ -189,7 +189,7 @@
           />
         </div>
         <div class="subitem">
-          <span>等值带</span>
+          <span>等值线填色</span>
           <el-switch
             v-model="setting.风雷达组网地图相关.等值带"
             inline-prompt
@@ -301,7 +301,7 @@
             size="small"
           />
         </div>
-        <div class="subitem">
+        <div class="subitem" v-if="hasPermission(['da4ce7c7-3aa9-4b9b-8d8b-ce44241794d5'])">
           <span>等距环</span>
           <el-switch
             v-model="setting.风雷达组网地图相关.等距环"

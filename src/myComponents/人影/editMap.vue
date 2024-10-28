@@ -54,6 +54,7 @@
   </div>
 </template>
 <script lang="ts" setup>
+import banSvg from '~/assets/ban.svg?url'
 import planeUrl from "~/assets/飞机.svg?url";
 import projectileUrl from "~/assets/projectile.svg?url";
 import 导航台图标 from '~/assets/navigationStation.svg?url'
@@ -176,6 +177,7 @@ const props = withDefaults(
     bearing?: number;
     zdz?: boolean;
     plane?: boolean;
+    airport?: boolean;
     isolines?: boolean;
     isobands?: boolean;
     gridPoint?: boolean;
@@ -194,8 +196,9 @@ const props = withDefaults(
     zoom: 4,
     pitch: 0,
     bearing: 0,
-    zdz: true,
+    zdz: false,
     plane: true,
+    airport: false,
     isolines: true,
     isobands: true,
     gridPoint: true,
@@ -382,6 +385,58 @@ function 网络上报(data:prevRequestDataType){
     });
   })
 }
+function 处理飞机实时位置(d:Array<{
+  "uiTrackNo": 7,
+  "uiAdsAddress": 0,
+  "ubyTrackState": 1,
+  "ubyTrackQuality": 0,
+  "fLongitude": 116.90878295898438,
+  "fLatitude": 47.65209197998047,
+  "ubyAltitudeMCValid": 0,
+  "iAltitudeMC": 0,
+  "ubyAltitudeADSValid": 1,
+  "iAltitudeADS": 2590,
+  "unSsrCode": 5,
+  "ubyRadarDataType": 2,
+  "ubySim": 0,
+  "ubyFixTarget": 0,
+  "ubySpiFlag": 0,
+  "ubyEmergencyType": 0,
+  "fSpeedZ": 0,
+  "fSpeed": 302.3819885253906,
+  "fHeading": 0.9228208065032959,
+  "ubyFlyingState": 0,
+  "ubyEmitterCat": 5,
+  "strCallCode": ""
+}>){
+  let source = map.getSource("飞机原数据");
+  if (source) {
+    let data = source.serialize().data;
+    for(let j=0;j<d.length;j++){
+      let has = false,i=0;
+      for(;i<data.features.length;i++){
+        if(d[j].uiTrackNo===data.features[i].properties.uiTrackNo){
+          has = true;
+          break;
+        }
+      }
+      if(has){
+        Object.assign(data.features[i].properties,d[j])
+        data.features[i].geometry.coordinates = wgs84togcj02(d[j].fLongitude,d[j].fLatitude)
+      }else{
+        data.features.push({
+          type: "Feature",
+          properties: d[j],
+          geometry: {
+            type: "Point",
+            coordinates: wgs84togcj02(d[j].fLongitude,d[j].fLatitude),
+          },
+        })
+      }
+    }
+    source.setData(data);
+  }
+}
 const flyTo = (item: any) => {
   try {
     active();
@@ -427,7 +482,7 @@ onMounted(() => {
     // style: raster,
     // performanceMetricsCollection: false,
     style: style as mapboxgl.Style,
-    // fadeDuration: 0,
+    fadeDuration: 0,
     // dragRotate: false,
     // touchRotate: false,
     // touchPitch: false,
@@ -468,9 +523,20 @@ onMounted(() => {
     GIS_DATA_REGION: 33,//新的面图元数据
   }
   map.on("load", async () => {
+    map.removeImage('airport');
+    await loadImage2Map(map,banSvg,16,16,{
+      airport:{
+        style: 'fill:#0f0;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
+      }
+    })
     await loadImage2Map(map,planeUrl,32,32,{
       airplane:{
         style: 'fill:yellow;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
+      }
+    })
+    await loadImage2Map(map,planeUrl,32,32,{
+      airplaneMock:{
+        style: 'fill:white;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
       }
     })
     await loadImage2Map(map,projectileUrl,12,24,{
@@ -1166,6 +1232,75 @@ onMounted(() => {
           "text-halo-color": "black",
           "text-halo-width": 1,
         }
+      });
+    })
+    exec({
+      database:"host=127.0.0.1&port=3306&user=root&password=tanglei&database=union",
+      query:{sqls:["select * from `airport`"]}
+    }).then(res=>{
+      let data = res.data[0]
+      let airports = [];
+      for (let i = 0; i < data.length; i++) {
+        airports.push({
+          type: "Feature",
+          properties: {
+            name: data[i].name,
+            code:data[i].code,
+            deg: 0,
+          },
+          geometry: {
+            type: "Point",
+            coordinates: wgs84togcj02(...getLngLat(data[i].strLonLat)),
+            // coordinates: [0, 0],
+          },
+        });
+      }
+      map.addSource("机场数据", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: airports,
+        },
+      });
+      map.addLayer({
+        id: "机场图层",
+        type: "symbol",
+        source: "机场数据",
+        layout: {
+          "icon-image": "airport",
+          // "icon-size": {
+          //   base: 1,
+          //   stops: [
+          //     [0, 0.5],
+          //     [22, 1],
+          //   ],
+          // },
+          "icon-rotate": ["get", "deg"],
+          "icon-rotation-alignment": "map",
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+          visibility: props.airport?"visible":'none',
+          "text-pitch-alignment": "map",
+          "text-field": ["get", "name"],
+          "text-font": ["simkai"],
+          "text-size": 16,
+          "text-transform": "uppercase",
+          // "text-letter-spacing": 0.05,
+          "text-anchor": "left",
+          "text-line-height": 1,
+          "text-justify": "left",
+          "text-offset": [1, 0],
+          "text-ignore-placement": true,
+          "text-allow-overlap": true,
+          "text-rotation-alignment": "map",
+          "text-max-width": 400,
+        },
+        paint: {
+          "icon-opacity": 1,
+          "text-color": "white",
+          "text-halo-color": "black",
+          "text-halo-width": 1,
+        },
       });
     })
     await addFeatherImages(map);
@@ -1919,29 +2054,31 @@ onMounted(() => {
     //     },
     //   });
     // });
-    let airplanes = [];
-    for (let i = 0; i < 60; i++) {
-      airplanes.push({
-        type: "Feature",
-        properties: {
-          name: "Example Point",
-          deg: 360 * Math.random(),
-          speed: ((800 + 200 * Math.random()) / 3.6 / 1000) * 33,
-        },
-        geometry: {
-          type: "Point",
-          coordinates: [100 + 3 * Math.random(), 35 + 3 * Math.random()],
-          // coordinates: [0, 0],
-        },
-      });
-    }
-    map.addSource("飞机原数据", {
-      type: "geojson",
-      data: {
+    let airplanesData = {
         type: "FeatureCollection",
-        features: airplanes,
-      },
-    });
+        features: new Array<any>(),
+    }
+    let airplanesMockData = {
+        type: "FeatureCollection",
+        features: new Array<any>(),
+    }
+    // 模拟飞机
+    // for (let i = 0; i < 60; i++) {
+    //   airplanesMockData.features.push({
+    //     type: "Feature",
+    //     properties: {
+    //       name: "Example Point",
+    //       fHeading: 360 * Math.random(),
+    //       speed: ((800 + 200 * Math.random()) / 3.6 / 1000) * 33,
+    //     },
+    //     geometry: {
+    //       type: "Point",
+    //       coordinates: [115 + 3 * Math.random(), 36 + 3 * Math.random()],
+    //       // coordinates: [0, 0],
+    //     },
+    //   });
+    // }
+    map.addSource("飞机原数据", {type:'geojson',data:airplanesData});
     map.addLayer({
       id: "飞机",
       type: "symbol",
@@ -1955,7 +2092,28 @@ onMounted(() => {
         //     [22, 1],
         //   ],
         // },
-        "icon-rotate": ["get", "deg"],
+        "icon-rotate": ["get", "fHeading"],
+        "icon-rotation-alignment": "map",
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+        visibility: props.plane ? "visible" : "none",
+      },
+    });
+    map.addSource("模拟飞机", {type:'geojson',data:airplanesMockData});
+    map.addLayer({
+      id: "模拟飞机图层",
+      type: "symbol",
+      source: "模拟飞机",
+      layout: {
+        "icon-image": "airplaneMock",
+        // "icon-size": {
+        //   base: 1,
+        //   stops: [
+        //     [0, 0.5],
+        //     [22, 1],
+        //   ],
+        // },
+        "icon-rotate": ["get", "fHeading"],
         "icon-rotation-alignment": "map",
         "icon-allow-overlap": true,
         "icon-ignore-placement": true,
@@ -2007,29 +2165,30 @@ onMounted(() => {
     //   },
     // });
 
-    // timer = setInterval(() => {
-    //   let source = map.getSource("飞机原数据");
-    //   if (source) {
-    //     let data = source.serialize().data;
-    //     data.features.map((item: any) => {
-    //       let coordinates = item.geometry.coordinates;
-    //       let deg = item.properties.deg;
-    //       let speed = item.properties.speed;
-    //       const pt = turf.destination(turf.point(coordinates), speed, deg, {
-    //         units: "meters",
-    //       });
-    //       item.geometry.coordinates = pt.geometry?.coordinates;
-    //     });
-    //     source.setData(data);
-    //   }
-    // }, 1000);
-    if(true){
+    //模拟飞机移动
+    timer = setInterval(() => {
+      let source = map.getSource("模拟飞机");
+      if (source) {
+        let data = source.serialize().data;
+        data.features.map((item: any) => {
+          let coordinates = item.geometry.coordinates;
+          let deg = item.properties.fHeading;
+          let speed = item.properties.speed;
+          const pt = turf.destination(turf.point(coordinates), speed, deg, {
+            units: "meters",
+          });
+          item.geometry.coordinates = pt.geometry?.coordinates;
+        });
+        source.setData(data);
+      }
+    }, 1000);
+    if(false){
       contour2(map,{
         isobands:props.isobands,
         isolines:props.isolines,
         gridValue:props.gridValue,
         gridPoint:props.gridPoint,
-        discrete:props.zyd
+        discrete:props.zdz
       })
     }else{
       contour(map,{
@@ -2047,6 +2206,7 @@ onMounted(() => {
   map.on("bearing", bearingFunc);
   eventbus.on("人影-将站点移动到屏幕中心", flyTo);
   eventbus.on("人影-地面作业申请-网络上报", 网络上报);
+  eventbus.on("人影-飞机位置", 处理飞机实时位置);
 });
 onBeforeUnmount(() => {
   console.log("onBeforeUnmount");
@@ -2054,6 +2214,7 @@ onBeforeUnmount(() => {
   clearInterval(graphTimer);
   eventbus.off("人影-将站点移动到屏幕中心", flyTo);
   eventbus.off("人影-地面作业申请-网络上报", 网络上报);
+  eventbus.off("人影-飞机位置", 处理飞机实时位置);
   map.off("zoom", zoomFunc);
   map.off("move", moveFunc);
   map.off("pitch", pitchFunc);
@@ -2211,6 +2372,16 @@ watch(
       map.setLayoutProperty("飞机", "visibility", "visible");
     } else {
       map.setLayoutProperty("飞机", "visibility", "none");
+    }
+  }
+);
+watch(
+  () => props.airport,
+  (newVal) => {
+    if (newVal) {
+      map.setLayoutProperty("机场图层", "visibility", "visible");
+    } else {
+      map.setLayoutProperty("机场图层", "visibility", "none");
     }
   }
 );

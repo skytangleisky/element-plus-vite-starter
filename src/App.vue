@@ -8,11 +8,13 @@
   </el-config-provider>
   <websocket v-if="checkPermission(['admin', 'zh'])"></websocket>
   <debug v-if="checkPermission(['admin', 'zh'])"></debug>
+  <AircraftPos v-if="checkPermission(['admin', 'ry'])"></AircraftPos>
 </template>
 <script lang="ts" setup>
 import { checkPermission } from "./tools";
 import websocket from "~/myComponents/websocket/index.vue";
 import debug from "~/myComponents/websocket/debug.vue";
+import AircraftPos from "~/myComponents/websocket/aircraftPosition.vue";
 import { useUserStore } from "./stores/user";
 const user = useUserStore();
 import { useExclude } from "./myComponents/bus";

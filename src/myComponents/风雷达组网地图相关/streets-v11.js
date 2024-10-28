@@ -344,15 +344,45 @@ export default {
 			// 	}
 			// },
 			{
+				'id': 'districtLineBase',
+				'type': 'line',
+				'source': 'district',
+				'layout': {
+					'visibility':setting.district?'visible':'none',
+					'line-join':'round',
+					'line-cap':'round'
+				},
+				'paint': {
+					'line-color': 'white',
+					'line-width': 3,
+				}
+			},
+			{
 				'id': 'districtLine',
 				'type': 'line',
 				'source': 'district',
 				'layout': {
-					'visibility':setting.district?'visible':'none'
+					'visibility':setting.district?'visible':'none',
+					'line-join':'round',
+					'line-cap':'round'
 				},
 				'paint': {
-					'line-color': 'lightgrey',
+					'line-color': 'black',
 					'line-width': 1
+				}
+			},
+			{
+				'id': 'districtOutlineBase',
+				'type': 'line',
+				'source': 'districtOutline',
+				'layout': {
+					'visibility':setting.district?'visible':'none',
+					'line-join':'round',
+					'line-cap':'round'
+				},
+				'paint': {
+					'line-color': 'white',
+					'line-width': 6
 				}
 			},
 			{
@@ -360,11 +390,13 @@ export default {
 				'type': 'line',
 				'source': 'districtOutline',
 				'layout': {
-					'visibility':setting.district?'visible':'none'
+					'visibility':setting.district?'visible':'none',
+					'line-join':'round',
+					'line-cap':'round'
 				},
 				'paint': {
-					'line-color': 'lightgrey',
-					'line-width': 2
+					'line-color': 'black',
+					'line-width': 3
 				}
 			},
 	],

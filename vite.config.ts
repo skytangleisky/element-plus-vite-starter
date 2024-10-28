@@ -149,8 +149,8 @@ export default defineConfig({
         changeOrigin:true,
       },
       '/qt':{
-        target:'http://192.168.0.114:9090',//替换的服务端地址
-        // target:'http://qt.tanglei.top',//替换的服务端地址
+        // target:'http://192.168.0.114:9090',//替换的服务端地址
+        target:'http://qt.tanglei.top',//替换的服务端地址
         changeOrigin:true,
         rewrite:path=>path.replace(/^\/qt/,'') // 设置重写的路径
       },
@@ -159,7 +159,14 @@ export default defineConfig({
         // target:'http://192.168.0.133:8000',//替换的服务端地址
         changeOrigin:true,
         rewrite:path=>path.replace(/^\/amap/,'') // 设置重写的路径
-      }
+      },
+      '/aircraft_position':{
+        target:'http://192.168.0.131:8081',
+        rewrite:path=>path.replace(/^\/aircraft_position/,''), // 设置重写的路径
+        secure:false,
+        changeOrigin:true,
+        ws:true,
+      },
     }
   }
 })

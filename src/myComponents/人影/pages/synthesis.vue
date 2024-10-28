@@ -15,6 +15,7 @@
       v-model:bearing="setting.人影.监控.bearing"
       v-model:zdz="setting.人影.监控.zdz"
       v-model:plane="setting.人影.监控.plane"
+      v-model:airport="setting.人影.监控.airport"
       v-model:gridPoint="setting.人影.监控.gridPoint"
       v-model:gridValue="setting.人影.监控.gridValue"
       v-model:isolines="setting.人影.监控.isolines"
@@ -51,6 +52,7 @@
             <el-checkbox name="控制航线" v-model="setting.人影.监控.routeLine" label="航路航线"></el-checkbox>
             <el-checkbox name="控制作业点" v-model="setting.人影.监控.zyd" label="显示作业点"></el-checkbox>
             <el-checkbox name="飞机" v-model="setting.人影.监控.plane" label="显示飞机"></el-checkbox>
+            <el-checkbox name="机场" v-model="setting.人影.监控.airport" label="显示机场"></el-checkbox>
             <template v-if="checkPermission(['admin'])">
               <el-checkbox name="控制自动站" v-model="setting.人影.监控.zdz" label="自动站"></el-checkbox>
               <el-checkbox name="控制网格点" v-model="setting.人影.监控.gridPoint" label="网格点"></el-checkbox>

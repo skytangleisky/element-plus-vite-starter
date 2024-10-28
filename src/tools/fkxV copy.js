@@ -79,14 +79,438 @@ export default function DBS() {
     return v <= -5.4 ? colors[0] : v <= -4.8 ? colors[1] : v <= -4.2 ? colors[2] : v <= -3.6 ? colors[3] : v <= -3 ? colors[4] : v <= -2.4 ? colors[5] : v <= -1.8 ? colors[6] : v <= -1.2 ? colors[7] : v <= -0.6 ? colors[8] : v <= 0 ? colors[9] : v <= 0.6 ? colors[10] : v <= 1.2 ? colors[11] : v <= 1.8 ? colors[12] : v <= 2.4 ? colors[13] : v <= 3 ? colors[14] : v <= 3.6 ? colors[15] : v <= 4.2 ? colors[16] : v <= 4.8 ? colors[17] : v <= 5.4 ? colors[18] : colors[19]
   }
   var getFeather = v => v <= 0 ? 0 : v <= 1 ? 1 : v <= 2 ? 2 : v <= 4 ? 3 : v <= 6 ? 4 : v <= 8 ? 5 : v <= 10 ? 6 : v <= 12 ? 7 : v <= 14 ? 8 : v <= 16 ? 9 : v <= 18 ? 10 : v <= 20 ? 11 : v <= 22 ? 12 : v <= 24 ? 13 : v <= 26 ? 14 : v <= 28 ? 15 : v <= 30 ? 16 : v <= 32 ? 17 : v <= 34 ? 18 : v <= 36 ? 19 : v <= 38 ? 20 : v <= 40 ? 21 : v <= 42 ? 22 : v <= 44 ? 23 : v <= 46 ? 24 : v <= 48 ? 25 : v <= 50 ? 26 : v <= 52 ? 27 : v <= 54 ? 28 : v <= 56 ? 29 : v <= 58 ? 30 : 31
-
-  let data = []
+  var data = [
+    [0, 0, 0],
+    [0, 1, 1],
+    [0, 2, 2],
+    [0, 3, 3],
+    [0, 4, 4],
+    [0, 5, 5],
+    [0, 6, 6],
+    [0, 7, 7],
+    [0, 8, 8],
+    [0, 9, 9],
+    [0, 10, 10],
+    [0, 11, 11],
+    [0, 12, 12],
+    [0, 13, 13],
+    [0, 14, 14],
+    [0, 15, 15],
+    [0, 16, 16],
+    [0, 17, 17],
+    [0, 18, 18],
+    [0, 19, 19],
+    [0, 20, 20],
+    [0, 21, 21],
+    [0, 22, 22],
+    [0, 23, 23],
+    [1, 0, 24],
+    [1, 1, 25],
+    [1, 2, 26],
+    [1, 3, 27],
+    [1, 4, 28],
+    [1, 5, 29],
+    [1, 6, 30],
+    [1, 7, 31],
+    [1, 8, 32],
+    [1, 9, 33],
+    [1, 10, 34],
+    [1, 11, 35],
+    [1, 12, 36],
+    [1, 13, 37],
+    [1, 14, 38],
+    [1, 15, 39],
+    [1, 16, 40],
+    [1, 17, 41],
+    [1, 18, 42],
+    [1, 19, 43],
+    [1, 20, 44],
+    [1, 21, 45],
+    [1, 22, 46],
+    [1, 23, 47],
+    [2, 0, 48],
+    [2, 1, 49],
+    [2, 2, 50],
+    [2, 3, 51],
+    [2, 4, 52],
+    [2, 5, 53],
+    [2, 6, 54],
+    [2, 7, 55],
+    [2, 8, 56],
+    [2, 9, 57],
+    [2, 10, 58],
+    [2, 11, 59],
+    [2, 12, 60],
+    [2, 13, undefined],
+    [2, 14, 8],
+    [2, 15, 10],
+    [2, 16, 6],
+    [2, 17, 5],
+    [2, 18, 5],
+    [2, 19, 5],
+    [2, 20, 7],
+    [2, 21, 4],
+    [2, 22, 2],
+    [2, 23, 4],
+    [3, 0, 7],
+    [3, 1, 3],
+    [3, 2, 0],
+    [3, 3, 0],
+    [3, 4, 0],
+    [3, 5, 0],
+    [3, 6, 0],
+    [3, 7, 0],
+    [3, 8, 1],
+    [3, 9, 0],
+    [3, 10, 5],
+    [3, 11, 4],
+    [3, 12, 7],
+    [3, 13, 14],
+    [3, 14, 13],
+    [3, 15, 12],
+    [3, 16, 9],
+    [3, 17, 5],
+    [3, 18, 5],
+    [3, 19, 10],
+    [3, 20, 6],
+    [3, 21, 4],
+    [3, 22, 4],
+    [3, 23, 1],
+    [4, 0, 1],
+    [4, 1, 3],
+    [4, 2, 0],
+    [4, 3, 0],
+    [4, 4, 0],
+    [4, 5, 1],
+    [4, 6, 0],
+    [4, 7, 0],
+    [4, 8, 0],
+    [4, 9, 2],
+    [4, 10, 4],
+    [4, 11, 4],
+    [4, 12, 2],
+    [4, 13, 4],
+    [4, 14, 4],
+    [4, 15, 14],
+    [4, 16, 12],
+    [4, 17, 1],
+    [4, 18, 8],
+    [4, 19, 5],
+    [4, 20, 3],
+    [4, 21, 7],
+    [4, 22, 3],
+    [4, 23, 0],
+    [5, 0, 2],
+    [5, 1, 1],
+    [5, 2, 0],
+    [5, 3, 3],
+    [5, 4, 0],
+    [5, 5, 0],
+    [5, 6, 0],
+    [5, 7, 0],
+    [5, 8, 2],
+    [5, 9, 0],
+    [5, 10, 4],
+    [5, 11, 1],
+    [5, 12, 5],
+    [5, 13, 10],
+    [5, 14, 5],
+    [5, 15, 7],
+    [5, 16, 11],
+    [5, 17, 6],
+    [5, 18, 0],
+    [5, 19, 5],
+    [5, 20, 3],
+    [5, 21, 4],
+    [5, 22, 2],
+    [5, 23, 0],
+    [6, 0, 1],
+    [6, 1, 0],
+    [6, 2, 0],
+    [6, 3, 0],
+    [6, 4, 0],
+    [6, 5, 0],
+    [6, 6, 0],
+    [6, 7, 0],
+    [6, 8, 0],
+    [6, 9, 0],
+    [6, 10, 1],
+    [6, 11, 0],
+    [6, 12, 2],
+    [6, 13, 1],
+    [6, 14, 3],
+    [6, 15, 4],
+    [6, 16, 0],
+    [6, 17, 0],
+    [6, 18, 0],
+    [6, 19, 0],
+    [6, 20, 1],
+    [6, 21, 2],
+    [6, 22, 2],
+    [6, 23, 6]
+  ].map(function(item) {
+    return [item[1], item[0], item[2] === undefined ? '-' : item[2]]
+  })
+  data = []
+  // data[0] = ["2017-06-27T11:00:00.000Z",8,"NNW",2.64]
+  // data[1] = ["2017-06-27T11:00:00.000Z",9,"NNW",2.64]
+  // data[2] = ["2017-06-27T11:00:00.000Z",10,"NNW",2.64]
+  // weatherData[0] = ["2017-06-28", 0, "images/cloudy_128.png", 4, 13]
+  const colors = ['#0000FF', '#001BFE', '#0135FF', '#0054FF', '#006FFF', '#008CFF', '#00A8FF', '#00C4FE', '#00E0FF', '#14D473', '#A6DC00', '#FFE600', '#FFBE00', '#FF9800', '#FF7100', '#FF4A00', '#FF2300', '#FB0000', '#D40000', '#AD0000']
+  option = {
+    animation: false,
+    visualMap: [{
+      type: 'piecewise',
+      show: false,
+      orient: 'vertical',
+      top: 'center',
+      left: 10,
+      itemGap: 0,
+      itemWidth: 40,
+      itemHeight: 20,
+      itemSymbol: 'rect',
+      pieces: [
+        {
+          gte: 0,
+          lt: 1,
+          color: colors[0],
+          label: '1'
+        },
+        {
+          gte: 1,
+          lt: 2,
+          color: colors[1],
+          label: '2'
+        },
+        {
+          gte: 2,
+          lt: 3,
+          color: colors[2],
+          label: '3'
+        },
+        {
+          gte: 3,
+          lt: 4,
+          color: colors[3],
+          label: '4'
+        },
+        {
+          gte: 4,
+          lt: 5,
+          color: colors[4],
+          label: '5'
+        },
+        {
+          gte: 5,
+          lt: 6,
+          color: colors[5],
+          label: '6'
+        },
+        {
+          gte: 6,
+          lt: 7,
+          color: colors[6],
+          label: '7'
+        },
+        {
+          gte: 7,
+          lt: 8,
+          color: colors[7],
+          label: '8'
+        },
+        {
+          gte: 8,
+          lt: 9,
+          color: colors[8],
+          label: '9'
+        },
+        {
+          gte: 9,
+          lt: 10,
+          color: colors[9],
+          label: '10'
+        },
+        {
+          gte: 10,
+          lt: 12,
+          color: colors[10],
+          label: '12'
+        },
+        {
+          gte: 12,
+          lt: 14,
+          color: colors[11],
+          label: '14'
+        },
+        {
+          gte: 14,
+          lt: 16,
+          color: colors[12],
+          label: '16'
+        },
+        {
+          gte: 16,
+          lt: 18,
+          color: colors[13],
+          label: '18'
+        },
+        {
+          gte: 18,
+          lt: 20,
+          color: colors[14],
+          label: '20'
+        },
+        {
+          gte: 20,
+          lt: 22,
+          color: colors[15],
+          label: '22'
+        },
+        {
+          gte: 22,
+          lt: 24,
+          color: colors[16],
+          label: '24'
+        },
+        {
+          gte: 24,
+          lt: 26,
+          color: colors[17],
+          label: '26'
+        },
+        {
+          gte: 26,
+          lt: 28,
+          color: colors[18],
+          label: '28'
+        },
+        {
+          gte: 28,
+          lt: 30,
+          color: colors[19],
+          label: '30'
+        }
+      ],
+      textStyle: {}
+    }],
+    title: {
+      text: '标题',
+      subtext: '副标题',
+      left: 'center'
+    },
+    toolbox: {
+      feature: {
+        saveAsImage: {}
+      }
+    },
+    tooltip: {
+      trigger: 'item',
+      formatter: function(params) {
+        return [
+          echarts.format.formatTime('yyyy-MM-dd hh:mm:ss', params.value[0]),
+          '高度：' + params.value[1].toFixed(2) + 'm',
+          '风向：' + params.value[2].toFixed(2) + '°',
+          '风速：' + params.value[3].toFixed(2) + 'm/s'
+        ].join('<br />')
+      }
+    },
+    // grid: {
+    // 	top: 100,
+    // 	bottom: 50,
+    // 	right:60,
+    // 	left:50,
+    // },
+    xAxis: {
+      type: 'time',
+      boundaryGap: true,
+      minInterval: 5000,
+      maxInterval: 5000,
+      interval: 5000,
+      inverse: true,
+      // min: function(value) {
+      // 	return value.min - 1000;
+      // },
+      // max: function(value) {
+      // 	return value.max + 1000;
+      // },
+      splitLine: {
+        show: true,
+        lineStyle: {
+          color: '#ddd'
+        },
+        interval: '5000'
+      },
+      axisLabel: {
+        rotate: 360,
+        // formatter: function(value, index){
+        // 	return echarts.format.formatTime('hh:mm:ss', new Date(value));
+        // }
+      }
+    },
+    yAxis: [{
+      name: '高度（米）',
+      nameLocation: 'end',
+      nameGap: 35,
+      axisLine: {
+        lineStyle: {
+          color: '#666'
+        }
+      },
+      splitLine: {
+        lineStyle: {
+          color: '#ddd'
+        }
+      }
+    }],
+    dataZoom: [
+      // {
+      // type: 'inside',
+      // xAxisIndex: 0,
+      // minSpan: 5
+      // },
+      // {
+      // 	type: 'slider',
+      // 	xAxisIndex: 0,
+      // 	minSpan: 5,
+      // 	height: 20,
+      // 	bottom: 50,
+      // 	handleIcon: 'M10.7,11.9H9.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4h1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
+      // 	handleSize: '120%'
+      // },
+      {
+        type: 'inside',
+        zoomOnMouseWheel:'ctrl',
+        yAxisIndex: 0,
+        minSpan: 1,
+      },
+      {
+        type: 'slider',
+        right: 10,
+        yAxisIndex: 0
+      }
+    ],
+    series: [{
+      name: 'Punch Card',
+      type: 'heatmap',
+      data: data,
+      label: {
+        show: true
+      },
+      emphasis: {
+        itemStyle: {
+          shadowBlur: 10,
+          shadowColor: 'rgba(0, 0, 0, 0.5)'
+        }
+      }
+    }]
+  }
   var hours = [
     '0', '1', '2', '3', '4', '5', '6',
     '7', '8', '9', '10', '11',
     '12', '13', '14', '15', '16', '17',
     '18', '19', '20'
   ]
+
   function height(val) {
     if (val === '-') return 0
     return Number(val) * 0.75 + 6
@@ -166,227 +590,220 @@ export default function DBS() {
         show: true
       }
     }],
-    visualMap: [
-      {
-        seriesIndex: [0],
-        type: 'piecewise',
-        show: false,
-        orient: 'vertical',
-        top: 'center',
-        left: 10,
-        dimension: 2, // 对应 encode 中的 value 所在的维度
-        itemGap: -2,
-        itemWidth: 20,
-        itemHeight: 20,
-        itemSymbol: 'rect',
-        pieces: [
-          {
-            gte: -6,
-            lt: -4.8,
-            color: verticalFlowColor(-4.8),
-            label: '-4.8'
-          },
-          {
-            gte: -4.8,
-            lt: -4.2,
-            color: verticalFlowColor(-4.2),
-            label: '-4.2'
-          },
-          {
-            gte: -4.2,
-            lt: -3.6,
-            color: verticalFlowColor(-3.6),
-            label: '-3.6'
-          },
-          {
-            gte: -3.6,
-            lt: -3,
-            color: verticalFlowColor(-3),
-            label: '-3'
-          },
-          {
-            gte: -3,
-            lt: -2.4,
-            color: verticalFlowColor(-2.4),
-            label: '-2.4'
-          },
-          {
-            gte: -2.4,
-            lt: -1.8,
-            color: verticalFlowColor(-1.8),
-            label: '-1.8'
-          },
-          {
-            gte: -1.8,
-            lt: -1.2,
-            color: verticalFlowColor(-1.2),
-            label: '-1.2'
-          },
-          {
-            gte: -1.2,
-            lt: -0.6,
-            color: verticalFlowColor(-0.6),
-            label: '-0.6'
-          },
-          {
-            gte: -0.6,
-            lt: 0,
-            color: verticalFlowColor(0),
-            label: '0'
-          },
-          {
-            gte: 0,
-            lt: 0.6,
-            color: verticalFlowColor(0.6),
-            label: '0.6'
-          },
-          {
-            gte: 0.6,
-            lt: 1.2,
-            color: verticalFlowColor(1.2),
-            label: '1.2'
-          },
-          {
-            gte: 1.2,
-            lt: 1.8,
-            color: verticalFlowColor(1.8),
-            label: '1.8'
-          },
-          {
-            gte: 1.8,
-            lt: 2.4,
-            color: verticalFlowColor(2.4),
-            label: '2.4'
-          },
-          {
-            gte: 2.4,
-            lt: 3,
-            color: verticalFlowColor(3),
-            label: '3'
-          },
-          {
-            gte: 3,
-            lt: 3.6,
-            color: verticalFlowColor(3.6),
-            label: '3.6'
-          },
-          {
-            gte: 3.6,
-            lt: 4.2,
-            color: verticalFlowColor(4.2),
-            label: '4.2'
-          },
-          {
-            gte: 4.2,
-            lt: 4.8,
-            color: verticalFlowColor(4.8),
-            label: '4.8'
-          },
-          {
-            gte: 4.8,
-            lt: 5.4,
-            color: verticalFlowColor(5.4),
-            label: '5.4'
-          },
-          {
-            gte: 5.4,
-            lt: 6,
-            color: verticalFlowColor(6),
-            label: '6'
-          }
-        ],
-        textStyle: {}
+    visualMap: [{
+      seriesIndex: [-1],
+      type: 'piecewise',
+      show: true,
+      orient: 'vertical',
+      bottom: 'center',
+      itemGap: -2,
+      itemWidth: 20,
+      itemHeight: 40,
+      itemSymbol: 'rect',
+      pieces: [{
+        gte: 0,
+        lt: 1,
+        color: getFeatherColor(1),
+        label: '1'
       },
       {
-        seriesIndex: [-1],
-        type: 'piecewise',
-        show: true,
-        orient: 'vertical',
-        bottom: 'center',
-        itemGap: -2,
-        itemWidth: 20,
-        itemHeight: 40,
-        itemSymbol: 'rect',
-        pieces: [{
+        gte: 1,
+        lt: 2,
+        color: getFeatherColor(2),
+        label: '2'
+      },
+      {
+        gte: 2,
+        lt: 4,
+        color: getFeatherColor(4),
+        label: '4'
+      },
+      {
+        gte: 4,
+        lt: 6,
+        color: getFeatherColor(6),
+        label: '6'
+      },
+      {
+        gte: 6,
+        lt: 8,
+        color: getFeatherColor(8),
+        label: '8'
+      },
+      {
+        gte: 8,
+        lt: 10,
+        color: getFeatherColor(10),
+        label: '10'
+      },
+      {
+        gte: 10,
+        lt: 12,
+        color: getFeatherColor(12),
+        label: '12'
+      },
+      {
+        gte: 12,
+        lt: 14,
+        color: getFeatherColor(14),
+        label: '14'
+      },
+      {
+        gte: 14,
+        lt: 16,
+        color: getFeatherColor(16),
+        label: '16'
+      },
+      {
+        gte: 16,
+        lt: 18,
+        color: getFeatherColor(18),
+        label: '18'
+      },
+      {
+        gte: 18,
+        lt: 20,
+        color: getFeatherColor(20),
+        label: '20'
+      }
+      ],
+      textStyle: {}
+    },
+    {
+      seriesIndex: [-1],
+      type: 'piecewise',
+      show: false,
+      orient: 'vertical',
+      top: 'center',
+      left: 10,
+      itemGap: -2,
+      itemWidth: 20,
+      itemHeight: 20,
+      itemSymbol: 'rect',
+      pieces: [
+        {
+          gte: -6,
+          lt: -4.8,
+          color: verticalFlowColor(-4.8),
+          label: '-4.8'
+        },
+        {
+          gte: -4.8,
+          lt: -4.2,
+          color: verticalFlowColor(-4.2),
+          label: '-4.2'
+        },
+        {
+          gte: -4.2,
+          lt: -3.6,
+          color: verticalFlowColor(-3.6),
+          label: '-3.6'
+        },
+        {
+          gte: -3.6,
+          lt: -3,
+          color: verticalFlowColor(-3),
+          label: '-3'
+        },
+        {
+          gte: -3,
+          lt: -2.4,
+          color: verticalFlowColor(-2.4),
+          label: '-2.4'
+        },
+        {
+          gte: -2.4,
+          lt: -1.8,
+          color: verticalFlowColor(-1.8),
+          label: '-1.8'
+        },
+        {
+          gte: -1.8,
+          lt: -1.2,
+          color: verticalFlowColor(-1.2),
+          label: '-1.2'
+        },
+        {
+          gte: -1.2,
+          lt: -0.6,
+          color: verticalFlowColor(-0.6),
+          label: '-0.6'
+        },
+        {
+          gte: -0.6,
+          lt: 0,
+          color: verticalFlowColor(0),
+          label: '0'
+        },
+        {
           gte: 0,
-          lt: 1,
-          color: getFeatherColor(1),
-          label: '1'
+          lt: 0.6,
+          color: verticalFlowColor(0.6),
+          label: '0.6'
         },
         {
-          gte: 1,
-          lt: 2,
-          color: getFeatherColor(2),
-          label: '2'
+          gte: 0.6,
+          lt: 1.2,
+          color: verticalFlowColor(1.2),
+          label: '1.2'
         },
         {
-          gte: 2,
-          lt: 4,
-          color: getFeatherColor(4),
-          label: '4'
+          gte: 1.2,
+          lt: 1.8,
+          color: verticalFlowColor(1.8),
+          label: '1.8'
         },
         {
-          gte: 4,
+          gte: 1.8,
+          lt: 2.4,
+          color: verticalFlowColor(2.4),
+          label: '2.4'
+        },
+        {
+          gte: 2.4,
+          lt: 3,
+          color: verticalFlowColor(3),
+          label: '3'
+        },
+        {
+          gte: 3,
+          lt: 3.6,
+          color: verticalFlowColor(3.6),
+          label: '3.6'
+        },
+        {
+          gte: 3.6,
+          lt: 4.2,
+          color: verticalFlowColor(4.2),
+          label: '4.2'
+        },
+        {
+          gte: 4.2,
+          lt: 4.8,
+          color: verticalFlowColor(4.8),
+          label: '4.8'
+        },
+        {
+          gte: 4.8,
+          lt: 5.4,
+          color: verticalFlowColor(5.4),
+          label: '5.4'
+        },
+        {
+          gte: 5.4,
           lt: 6,
-          color: getFeatherColor(6),
+          color: verticalFlowColor(6),
           label: '6'
-        },
-        {
-          gte: 6,
-          lt: 8,
-          color: getFeatherColor(8),
-          label: '8'
-        },
-        {
-          gte: 8,
-          lt: 10,
-          color: getFeatherColor(10),
-          label: '10'
-        },
-        {
-          gte: 10,
-          lt: 12,
-          color: getFeatherColor(12),
-          label: '12'
-        },
-        {
-          gte: 12,
-          lt: 14,
-          color: getFeatherColor(14),
-          label: '14'
-        },
-        {
-          gte: 14,
-          lt: 16,
-          color: getFeatherColor(16),
-          label: '16'
-        },
-        {
-          gte: 16,
-          lt: 18,
-          color: getFeatherColor(18),
-          label: '18'
-        },
-        {
-          gte: 18,
-          lt: 20,
-          color: getFeatherColor(20),
-          label: '20'
         }
-        ],
-        textStyle: {}
-      },
+      ],
+      textStyle: {}
+    }
     ],
     series: [{
       type: 'heatmap',
-      data,
+      data: data,
       label: {
         // show: true
-      },
-      encode: {
-        x: 0,
-        y: 1,
-        value: 2,
       },
       emphasis: {
         itemStyle: {
@@ -394,17 +811,17 @@ export default function DBS() {
           shadowColor: 'rgba(0, 0, 0, 0.5)'
         }
       },
-      // itemStyle: {
-      //   color: function(params) {
-      //     const obj = params.value[3]
-      //     let color = (obj.fVSpeed === undefined||obj.fVSpeed==999) ? 'transparent' : verticalFlowColor(Number(obj.fVSpeed))
-      //     return  color
-      //   }
-      // }
+      itemStyle: {
+        color: function(params) {
+          const obj = params.value[3]
+          let color = (obj.fVSpeed === undefined||obj.fVSpeed==999) ? 'transparent' : verticalFlowColor(Number(obj.fVSpeed))
+          return  color
+        }
+      }
     },
     {
       type: 'scatter',
-      data,
+      data: data,
       label: {
         show: true
       },
@@ -520,7 +937,8 @@ export default function DBS() {
 
   this.process = function(fData, type1, diejia, type2) {
     showType = type2
-    data.length = 0
+    option.series[1].data = []
+    option.series[0].data = []
     if (!Array.isArray(fData)) {
       fData = [fData]
     }
@@ -531,12 +949,11 @@ export default function DBS() {
           var fHei = fData[i]. data[index].fHei
           var fHSpeed = fData[i].data[index].fHSpeed
           var fVSpeed = fData[i].data[index].fVSpeed
-          data.push([i, fHei, fVSpeed, fData[i].data[index]])
           if (type1 === '垂直气流') {
-            option.series[0].data = data
+            option.series[0].data.push([i, fHei, fVSpeed, fData[i].data[index]])
           }
           if (type1 === '水平风' || (diejia && type1 !== '水平风')) {
-            option.series[1].data = data
+            option.series[1].data.push([i, fHei, fVSpeed, fData[i]. data[index]])
           }
           option.xAxis.data[i] = fData[i].timestamp.substring(9,18)
         }
@@ -545,11 +962,11 @@ export default function DBS() {
       }
     }
     if(type1==='水平风'){
-      option.visualMap[0].show = false
-      option.visualMap[1].show = true
-    }else{
       option.visualMap[0].show = true
       option.visualMap[1].show = false
+    }else{
+      option.visualMap[0].show = false
+      option.visualMap[1].show = true
     }
     if (myChart) {
       myChart.setOption({

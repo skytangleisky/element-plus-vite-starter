@@ -385,6 +385,7 @@ onMounted(() => {
       paint: {
         "fill-color": ["get", "fill"],
         "fill-opacity": 0.8,
+        "fill-outline-color":"transparent"
       },
     });
     map.addLayer({

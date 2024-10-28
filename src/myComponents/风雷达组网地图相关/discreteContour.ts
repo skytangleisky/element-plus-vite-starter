@@ -4,7 +4,7 @@ import plotUrl from "../mapbox/data/plot/06040802.000?url";
 import { getMicapsData } from "../mapbox/data/plot/micaps";
 import interpolate from "~/tools/idw.js";
 import { isoLines, isoBands } from "marchingsquares";
-import { area, pointInPolygon } from "~/tools/index.ts";
+import { area, pointInPolygon,removeLayerAndSource } from "~/tools/index.ts";
 import { sixty2Float } from "~/tools/index.ts";
 import { wgs84togcj02 } from "../map/workers/mapUtil";
 let LAT = Math.atan(Math.sinh(Math.PI)) * 180 / Math.PI;
@@ -48,7 +48,6 @@ export default function(map:mapboxgl.Map,data:any,opts:{isobands:boolean,isoline
   //     value: Number((Math.random() * 20).toFixed(2)),
   //   });
   // }
-  console.log(data)
   data.map((item:{lng:number,lat:number,speed:number,orientation:number})=>{
     pts.push({lng:item.lng,lat:item.lat,value:item.speed})
   })
@@ -66,6 +65,27 @@ export default function(map:mapboxgl.Map,data:any,opts:{isobands:boolean,isoline
   // convert = wgs84togcj02(sixty2Float('108°39′48″'),sixty2Float('31°56′40″'))
   // pts.push({lng: convert[0],lat: convert[1],value:Number((Math.random() * 20).toFixed(2))});
 
+  let colors = {
+    0.0: '#3288bd',
+    0.1: '#66c2a5',
+    0.2: '#abdda4',
+    0.3: '#e6f598',
+    0.4: '#fee08b',
+    0.5: '#fdae61',
+    0.6: '#f46d43',
+    1.0: '#d53e4f',
+  };
+  var canvas = document.createElement('canvas') as HTMLCanvasElement;
+  var ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+  canvas.width = 256;
+  canvas.height = 1;
+  var gradient = ctx.createLinearGradient(0, 0, 256, 0);
+  for (var stop in colors) {
+    gradient.addColorStop(+stop, colors[stop]);
+  }
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 256, 1);
+  let imgData = ctx.getImageData(0, 0, 256, 1);
 
   let breaks = new Array<number>();
   var Color: { [key: string]: any } = {};
@@ -85,11 +105,18 @@ export default function(map:mapboxgl.Map,data:any,opts:{isobands:boolean,isoline
 
   let strokeColors = [];
   breaks=[]
-  for(let i=0;i<=10;i++){
+  for(let i=0;i<=40;i++){
     breaks.push(i*0.5);
   }
   for (let i = 0; i < breaks.length; i++) {
-    strokeColors.push(`hsl(${getHue(0, breaks[i], 5)},100%,50%)`);
+    let min = 0;
+    let max = 20;
+    let index = Math.round((breaks[i]-min)/(max-min)*imgData.width)
+    let r = imgData.data[4*index+0]
+    let g = imgData.data[4*index+1]
+    let b = imgData.data[4*index+2]
+    strokeColors.push(`rgb(${r},${g},${b})`)
+    // strokeColors.push(`hsl(${getHue(0, breaks[i], 20)},100%,50%)`);
     // strokeColors.push(Color[breaks[i].toFixed()]);
   }
 
@@ -120,9 +147,7 @@ export default function(map:mapboxgl.Map,data:any,opts:{isobands:boolean,isoline
   //   },
   //   power: 6,
   // };
-  console.time()
   let grid = interpolate(pts, interpolateOptions)
-  console.timeEnd()
   var bandWidths = breaks.reduce(function (bw, upperBand, i, intervals) {
     if (i > 0) {
       var lowerBand = intervals[i - 1];
@@ -189,6 +214,7 @@ export default function(map:mapboxgl.Map,data:any,opts:{isobands:boolean,isoline
     }
     isobands.features.push(feature);
   }
+  removeLayerAndSource(map,'等值带')
   map.addLayer({
     id: "等值带",
     type: "fill",
@@ -269,6 +295,8 @@ export default function(map:mapboxgl.Map,data:any,opts:{isobands:boolean,isoline
     isolines.features.push(feature);
     isolineValues.features.push(featureValue);
   }
+
+  removeLayerAndSource(map,'等值线')
   map.addLayer({
     id: "等值线",
     type: "line",
@@ -285,6 +313,8 @@ export default function(map:mapboxgl.Map,data:any,opts:{isobands:boolean,isoline
       "line-opacity": 1,
     },
   });
+
+  removeLayerAndSource(map,'等值线值')
   map.addLayer({
     id: "等值线值",
     type: "symbol",
@@ -326,6 +356,8 @@ export default function(map:mapboxgl.Map,data:any,opts:{isobands:boolean,isoline
       },
     });
   })
+
+  removeLayerAndSource(map,'离散值')
   map.addLayer({
     id: "离散值",
     type: "symbol",
@@ -346,6 +378,8 @@ export default function(map:mapboxgl.Map,data:any,opts:{isobands:boolean,isoline
       "text-halo-color": "black",
     },
   });
+
+  removeLayerAndSource(map,'离散点')
   map.addLayer({
     id: "离散点",
     type: "circle",
@@ -377,6 +411,8 @@ export default function(map:mapboxgl.Map,data:any,opts:{isobands:boolean,isoline
       });
     }
   }
+
+  removeLayerAndSource(map,'网格值')
   map.addLayer({
     id: "网格值",
     type: "symbol",
@@ -396,6 +432,8 @@ export default function(map:mapboxgl.Map,data:any,opts:{isobands:boolean,isoline
       "text-halo-color": "black",
     },
   });
+
+  removeLayerAndSource(map,'网格点')
   map.addLayer({
     id: "网格点",
     type: "circle",
@@ -405,6 +443,8 @@ export default function(map:mapboxgl.Map,data:any,opts:{isobands:boolean,isoline
     },
     paint: { "circle-radius": 3, "circle-color": "white", "circle-stroke-width": 1 },
   });
+
+  // removeLayerAndSource(map,'等值线边界')
   // map.addLayer({
   //   id: "等值线边界",
   //   type: "fill",

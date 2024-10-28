@@ -74,9 +74,9 @@ function draw(canvas: HTMLCanvasElement, isDark: boolean) {
   // context.textBaseline = "middle";
   // context.fillText("高度", 0, -15 * devicePixelRatio);
 
-  context.textAlign = "right";
-  context.textBaseline = "middle";
-  context.fillText("高度(m)", -20 * devicePixelRatio, 0);
+  // context.textAlign = "right";
+  // context.textBaseline = "middle";
+  // context.fillText("高度(m)", -20 * devicePixelRatio, 0);
 
   context.textAlign = "left";
   context.textBaseline = "middle";

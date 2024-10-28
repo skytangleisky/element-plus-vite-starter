@@ -8,7 +8,6 @@ export default class CustomLayer {
     this.renderingMode = '3d';
     this.json = json
     this.png = png
-    console.log('->',show)
     this.show = show
   }
   onAdd(map, gl) {

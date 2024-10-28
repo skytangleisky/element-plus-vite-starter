@@ -322,6 +322,7 @@ export const useSettingStore = defineStore({
         routeLine:true,
         zyd:true,
         plane:true,
+        airport:true,
         district:true,
         人影飞行区:true,
         districtLineColor:'#0ff',
