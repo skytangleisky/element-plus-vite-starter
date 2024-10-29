@@ -146,7 +146,7 @@ import * as turf from "@turf/turf";
 import ppiDataUrl from "./level1/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pth30.00_Spd6.00_Res030_StartIdx002_Start002_Stop190_LOSWind_20240715 203223.csv?url";
 import ppiInversionData from "./level2/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pth30.00_Spd6.00_Res030_StartIdx002_VADStart002_VADStop190_VADWind_Sec_20240715 203223.csv?raw";
 import { exec } from "~/api/index.js";
-import { getFkxRealData,getPPIGrid,getFkxData } from "../../api/重庆.ts";
+import { getFkxRealData,getFkxData } from "../../api/重庆.ts";
 import {hasPermission,sixty2Float,addFeatherImages,addArrowImages,getFeather,View,calculateBlockPoints,calculateCirclePoints,removeLayerAndSource} from "~/tools";
 const decoder = new TextDecoder()
 const encoder = new TextEncoder()
@@ -1042,8 +1042,7 @@ const resize = (entry) => {
   map && map.resize();
 };
 var marker:Marker;
-import {databaseRaw} from '~/api/重庆'
-import { getMicapsData } from "../mapbox/data/plot/micaps.ts";
+import {databaseRaw,getPPIData} from '~/api/重庆'
 import interpolate from "~/tools/idw.js";
 let res:any
 async function work(){
@@ -1239,7 +1238,10 @@ async function updateData(altitude:number){
 
 
 
-  bus.风雷达组网地图相关雷达站点信息 = res.data[0];
+  bus.风雷达组网地图相关雷达站点信息 = res.data[0].map((item:any)=>{
+    let pos = wgs84togcj02(sixty2Float(item.lng), sixty2Float(item.lat)) as [number,number]
+    return Object.assign(item,{longitude:pos[0],latitude:pos[1]})
+  });
   points.data.features.length=0;
   circleDataFeatures.features.length=0
   pointDataFeatures.features.length=0
@@ -1252,7 +1254,7 @@ async function updateData(altitude:number){
       if(Item.no==station.active){
         fetch最近风廓线数据()
       }
-      let position = wgs84togcj02(sixty2Float(Item.lng), sixty2Float(Item.lat)) as [number,number]
+      let position = [Item.longitude,Item.latitude]
       //初始状态
       points.data.features.push({
         type: "Feature",
@@ -1339,8 +1341,79 @@ async function updateData(altitude:number){
         (map.getSource('等距环的单位Source') as any).setData(pointDataFeatures);
         (map.getSource('等距环Source') as any).setData(circleDataFeatures);
       }
+
+      getPPIData({radar_id:Item.no,dataTime:moment().format('YYYYMMDDHHmmss')},2).then(res=>{//数据格式错误
+        return;
+        console.log(res.data.data.file)
+        if(res.data.data.file.file_data!=''){
+          const d = new TextDecoder("utf8");
+          const e = new TextEncoder();
+          let v = new View(e.encode(res.data.data.file.file_data).buffer),
+            result: { [key: string]: any } = {};
+          let firstLine = d
+            .decode(v.getLine())
+            .trim()
+            .replace(/,$/, "")
+            .split(",");
+          result.HeaderInfo = {};
+          for (let i = 1; i < firstLine.length; i++) {
+            let kv = firstLine[i].split(":");
+            if (kv.length == 2) {
+              result.HeaderInfo[kv[0]] = kv[1]
+            }
+          }
+          let secondLine = d
+            .decode(v.getLine())
+            .trim()
+            .replace(/,$/, "")
+            .split(",");
+          let data: Array<any> = (result.data = []);
+          // while (!v.reachEnd()) {
+            let thirdLine = d
+              .decode(v.getLine())
+              .trim()
+              .replace(/,$/, "")
+              .split(",");
+            let radial:{[key:string]:any} = { Azimuth: 0, list: new Array<any>() };
+            for (let i = 0; i < 11; i++) {
+              radial[secondLine[i]] = thirdLine[i]
+            }
+            radial.Azimuth = Number(radial.Azimuth);
+            //用于确保两根径向之间夹角不大于180度
+            if (data.length > 0) {
+              let lastItem = data[data.length - 1];
+              if (Math.abs(Item.Azimuth - lastItem.Azimuth) > 180) {
+                // item.Azimuth = 360 + item.Azimuth;
+                Item.Azimuth =
+                  lastItem.Azimuth +
+                  (360 - (Math.abs(Item.Azimuth - lastItem.Azimuth) % 360));
+              }
+            }
+            console.log(result)
+            for (let i = 11; i < thirdLine.length; i += 4) {
+              let obj = {
+                [secondLine[i + 0].split(" ")[1]]: Number(thirdLine[i + 0]),
+                [secondLine[i + 1].split(" ")[1]]: Number(thirdLine[i + 1]),
+                [secondLine[i + 2].split(" ")[1]]: Number(thirdLine[i + 2]),
+                [secondLine[i + 3].split(" ")[1]]: Number(thirdLine[i + 3]),
+                distance: Number(secondLine[i + 3].split(" ")[0].replace(/m$/, "")),
+              };
+              radial.list.push(obj);
+            }
+            data.push(radial);
+          // }
+          // ppiData[radar_id] = {result,position}
+          // processData(result, position);
+          // (map.getSource("radar") as any).setData({
+          //   type: "FeatureCollection",
+          //   features: polygons,
+          // });
+        }
+      })
+
       //绘制PPI
-      if(true){
+      if(false){
+        
 
         /* PPI数据处理并显示 */
         let inversionResult:{[key:string]:any} = {HeaderInfo:{}}
