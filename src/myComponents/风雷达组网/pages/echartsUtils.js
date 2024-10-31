@@ -1,12 +1,11 @@
 import * as echarts from "echarts";
 import 'echarts-liquidfill';
 import chongqing from './重庆市.json'
-import { exec } from "~/api/index.js";
-import {databaseRaw} from '~/api/重庆';
 import { wgs84togcj02 } from "~/myComponents/map/workers/mapUtil";
 import { sixty2Float } from "~/tools";
 import { eventbus } from "~/eventbus";
 import superOption from './mapbox'
+mapboxgl.accessToken = "pk.eyJ1IjoidGFuZ2xlaTIwMTMxNCIsImEiOiJjbGtmOTdyNWoxY2F1M3Jqczk4cGllYXp3In0.9N-H_79ehy4dJeuykZa0xA";
 const years = ["1h", "2h", "3h", "4h", "5h", "6h", "7h", "8h", "9h", "10h", "11h", "12h","13","14","15","16","17","18","19","20","21","22","23","24"];
 let observers = []
 let charts = []
@@ -1845,45 +1844,37 @@ export default {
     observers.push(observer)
     charts.push(chart)
   },
-  async initMapChart(params) {
-    let res = await exec({
-      database: databaseRaw,
-      query: {
-        sqls: ["select * from `device`"],
-      },
-    })
+  initMapChart(params) {
+    let data = []
     var geoCoordMap = {};
-    res.data[0].map((v) => {
+    params.data.map((v) => {
       let position = wgs84togcj02(sixty2Float(v.lng), sixty2Float(v.lat));
       v.longitude = position[0];
       v.latitude = position[1];
       geoCoordMap[v.no] = [v.longitude,v.latitude];
-      console.log(v)
-      if(v.hide!=='true'){
-        //站点高亮提示
-        params.data.push({
-          ...v,
-          "jsj": 49.62,
-          "ssb": "12.73 ",
-          "snum": "19",
-          "name": v.no,
-          "ze": 17668.32,
-          "tsl": 114.04,
-          "mj": 103.13,
-          "gnum": "90"
-        })
-        //地理区域高亮提示
-        // params.data.push({
-        //   "jsj": 49.62,
-        //   "ssb": "12.73 ",
-        //   "snum": "19",
-        //   "name": v.address,
-        //   "ze": 17668.32,
-        //   "tsl": 114.04,
-        //   "mj": 103.13,
-        //   "gnum": "90"
-        // })
-      }
+      //站点高亮提示
+      data.push({
+        ...v,
+        "jsj": 49.62,
+        "ssb": "12.73 ",
+        "snum": "19",
+        "name": v.no,
+        "ze": 17668.32,
+        "tsl": 114.04,
+        "mj": 103.13,
+        "gnum": "90"
+      })
+      //地理区域高亮提示
+      // data.push({
+      //   "jsj": 49.62,
+      //   "ssb": "12.73 ",
+      //   "snum": "19",
+      //   "name": v.address,
+      //   "ze": 17668.32,
+      //   "tsl": 114.04,
+      //   "mj": 103.13,
+      //   "gnum": "90"
+      // })
       return v;
     });
 
@@ -1926,10 +1917,10 @@ export default {
         // });
       }
       if(param.seriesType=='scatter'){
-        eventbus.emit('重庆测风雷达组网-设备编辑',param.name)
+        eventbus.emit('重庆测风雷达组网-设备编辑',param.data)
       }
     });
-    const option = {
+    let option = {
       tooltip: {
         trigger: "item",
         backgroundColor: "rgba(50,50,50,0.5)",
@@ -1969,16 +1960,32 @@ export default {
       geo: {
         map: "chongqing",
         roam: true,
+        aspectScale:1,
+        rotation:[0,60,0],
         itemStyle: {
           normal: {
-              areaColor: '#21729a',
-              borderColor: '#68ebf0', //线
-              borderWidth: 0,
-              borderJoin: 'round',
-              shadowColor: 'rgba(18, 216, 250, 1)', //外发光
-              shadowOffsetX: -3,
-              shadowOffsetY: 5,
-              shadowBlur: 2, //图形阴影的模糊大小
+            areaColor: 'rgb(10,60,83)',
+            borderColor: 'rgba(147, 235, 248, 1)',
+            borderWidth: 1,
+            borderJoin: 'round',
+            shadowOffsetX: 4,
+            shadowOffsetY: 4,
+            shadowBlur: 4, //图形阴影的模糊大小
+            areaColor: {
+              type: 'radial',
+              x: 0.5,
+              y: 0.5,
+              r: 1,
+              colorStops: [{
+                offset: 0,
+                color: 'rgba(143, 235, 231, 0)' // 0% 处的颜色
+              }, {
+                offset: 1,
+                color: 'rgba(143, 235, 231, .2)' // 100% 处的颜色
+              }],
+               globalCoord: false // 缺省为 false
+            },
+            shadowColor: 'rgba(128, 217, 248, 1)',
           },
           emphasis: {
               areaColor: '#2f9eff', //悬浮区背景
@@ -2011,7 +2018,7 @@ export default {
         {//区域选中后高亮
           type: "map",
           geoIndex: 0,
-          data: params.data,
+          data,
           showLegendSymbol: true, // 存在legend时显示
           itemStyle: {
             normal: {
@@ -2121,23 +2128,53 @@ export default {
           },
           hoverAnimation: true,
           label: {
-            formatter: "{b}",
+            formatter: function(params){
+              if(params.data.status==1){
+                return `{a|${params.data.device_short_name}}`
+              }else{
+                return `{b|${params.data.device_short_name}}`
+              }
+            },
+            rich:{
+              a:{
+                color:'#0f0',
+                fontSize:14,
+                fontStyle:'normal',
+                fontWeight:'bold',
+                textBorderColor:'#000',
+                textBorderWidth:3,
+              },
+              b:{
+                color:'#f00',
+                fontSize:14,
+                fontStyle:'normal',
+                fontWeight:'bold',
+                textBorderColor:'#000',
+                textBorderWidth:3,
+              }
+            },
+            color:'white',
             position: "center",
             show: true,
-            color: "white",
-            offset:[14,-12]
+            offset:[14,-15]
           },
           itemStyle: {
             normal: {
               // color: "#00ebf7",
-              color: "#0f0",
+              color: function(params){
+                if(params.data.status == 1){
+                  return '#0f0'
+                }else{
+                  return '#f00'
+                }
+              },
               shadowBlur: 6,
               shadowColor: "#3eaff",
             },
           },
           // zlevel: 3,
           geoIndex: 0,
-          data: convertData(params.data),
+          data: convertData(data),
         },
       ],
     };
@@ -2208,8 +2245,8 @@ export default {
             show: false
           },
           data: [
-            { value: 6, name: '正常',itemStyle: {color: '#91CC75'} },
-            { value: 0, name: '故障',itemStyle: {color: '#EE6666'} },
+            { value: params.data.正常, name: '正常',itemStyle: {color: '#91CC75'} },
+            { value: params.data.异常, name: '故障',itemStyle: {color: '#EE6666'} },
           ]
         }
       ]

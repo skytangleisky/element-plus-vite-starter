@@ -160,9 +160,16 @@ export default defineConfig({
         changeOrigin:true,
         rewrite:path=>path.replace(/^\/amap/,'') // 设置重写的路径
       },
-      '/aircraft_position':{
+      '/aircraft_position':{//人影飞机
         target:'http://192.168.0.131:8081',
         rewrite:path=>path.replace(/^\/aircraft_position/,''), // 设置重写的路径
+        secure:false,
+        changeOrigin:true,
+        ws:true,
+      },
+      '/python':{//ppi实时数据
+        target:'http://192.168.0.114:8000',
+        rewrite:path=>path.replace(/^\/python/,''), // 设置重写的路径
         secure:false,
         changeOrigin:true,
         ws:true,

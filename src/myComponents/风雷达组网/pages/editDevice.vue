@@ -104,19 +104,19 @@ const router = useRouter();
 const formEl = ref<FormInstance>();
 
 const formData = reactive({
-  "id": 11,
+  "id": '',
   "uuid": null,
-  "no": "A6420",
+  "no": null,
   "device_no": null,
-  "device_name": "巴南激光测风雷达",
-  "device_short_name": "巴南",
-  "device_type": "激光测风雷达",
-  "device_model": "S4000",
-  "address": "巴南区",
-  "manufacturer": "青岛华航",
-  "lng": "106°29′32″",
-  "lat": "29°20′28″",
-  "altitude": "506.1",
+  "device_name": null,
+  "device_short_name": null,
+  "device_type": null,
+  "device_model": null,
+  "address": null,
+  "manufacturer": null,
+  "lng": "",
+  "lat": "",
+  "altitude": "",
   "height": "",
   "data_path": null,
   "color": null,
@@ -125,10 +125,8 @@ const formData = reactive({
   "orientation": null,
   "data_overtime": 600,
   "status": 1,
-  "createtime": "2024-10-13 14:22:49",
-  "updatetime": "2024-10-13 14:23:12",
-  "longitude": 106.49608157884492,
-  "latitude": 29.33831482383271
+  "createtime": null,
+  "updatetime": null,
 });
 const loading = ref(false);
 const submitForm = (formEl: FormInstance | undefined) => {
@@ -139,20 +137,21 @@ const submitForm = (formEl: FormInstance | undefined) => {
       exec({
         database: databaseRaw,
         query: {
-          sqls: ["update `userinfo` set `password`=? where `username`=?"],
-          vals:[[formData.newPassword,user.username]]
+          sqls: ["update `device` set `device_name`=?,`device_model`=?,`device_type`=?,`lng`=?,`lat`=?,`altitude`=?,`manufacturer`=? where `id`=?"],
+          vals:[[formData.device_name,formData.device_model,formData.device_type,formData.lng,formData.lat,formData.altitude,formData.manufacturer,formData.id]]
         },
       }).then((res) => {
         loading.value = false
         ElMessage({
           message: h("p", null, [
             // h('span', null, 'Message can be '),
-            h("i", { style: "color: teal" }, '密码修改成功'),
+            h("i", { style: "color: teal" }, '数据修改成功'),
           ]),
           type: "success",
         });
       }).catch(res=>{
-        openVn('密码修改失败')
+        loading.value = false
+        openVn('数据修改失败')
       })
     } else {
       loading.value = false;

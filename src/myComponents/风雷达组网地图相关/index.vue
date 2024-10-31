@@ -142,13 +142,13 @@ const 单站数据 = ()=>{
 }
 import chromatography from "../激光测风尾涡/chromatography.vue";
 import * as turf from "@turf/turf";
-// import ppiDataUrl from "../组网/CDL_S10000_Lidar10HKF00631450_PPI_FrmAzm30.00_ToAzm29.00_Pth3.00_Spd6.00_Res060_StartIdx003_Start003_Stop191_LOSWind_20230515 000240.csv?url";
+// import ppiDataUrl from "../组网/CDL_S10000_Lidar10HKF00631450_PPI_FrmAzm30.00_ToAzm29.00_Pth3.00_Spd6.00_Res060_StartIdx003_Start003_Stop191_LOSWind_20230515 000240.csv?url";//S10000
 import ppiDataUrl from "./level1/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pth30.00_Spd6.00_Res030_StartIdx002_Start002_Stop190_LOSWind_20240715 203223.csv?url";
-import ppiInversionData from "./level2/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pth30.00_Spd6.00_Res030_StartIdx002_VADStart002_VADStop190_VADWind_Sec_20240715 203223.csv?raw";
+import ppiInversionData from "./level2/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pth30.00_Spd6.00_Res030_StartIdx002_VADStart002_VADStop190_VADWind_Sec_20240715 203223.csv?url";
 import { exec } from "~/api/index.js";
 import { getFkxRealData,getFkxData } from "../../api/重庆.ts";
 import {hasPermission,sixty2Float,addFeatherImages,addArrowImages,getFeather,View,calculateBlockPoints,calculateCirclePoints,removeLayerAndSource} from "~/tools";
-const decoder = new TextDecoder()
+const decoder = new TextDecoder('gbk')
 const encoder = new TextEncoder()
 const stationMenuRef = ref<HTMLDivElement>();
 let stationMenu: HTMLDivElement;
@@ -1342,136 +1342,10 @@ async function updateData(altitude:number){
         (map.getSource('等距环Source') as any).setData(circleDataFeatures);
       }
 
-      getPPIData({radar_id:Item.no,dataTime:moment().format('YYYYMMDDHHmmss')},2).then(res=>{//数据格式错误
-        return;
-        console.log(res.data.data.file)
-        if(res.data.data.file.file_data!=''){
-          const d = new TextDecoder("utf8");
-          const e = new TextEncoder();
-          let v = new View(e.encode(res.data.data.file.file_data).buffer),
-            result: { [key: string]: any } = {};
-          let firstLine = d
-            .decode(v.getLine())
-            .trim()
-            .replace(/,$/, "")
-            .split(",");
-          result.HeaderInfo = {};
-          for (let i = 1; i < firstLine.length; i++) {
-            let kv = firstLine[i].split(":");
-            if (kv.length == 2) {
-              result.HeaderInfo[kv[0]] = kv[1]
-            }
-          }
-          let secondLine = d
-            .decode(v.getLine())
-            .trim()
-            .replace(/,$/, "")
-            .split(",");
-          let data: Array<any> = (result.data = []);
-          // while (!v.reachEnd()) {
-            let thirdLine = d
-              .decode(v.getLine())
-              .trim()
-              .replace(/,$/, "")
-              .split(",");
-            let radial:{[key:string]:any} = { Azimuth: 0, list: new Array<any>() };
-            for (let i = 0; i < 11; i++) {
-              radial[secondLine[i]] = thirdLine[i]
-            }
-            radial.Azimuth = Number(radial.Azimuth);
-            //用于确保两根径向之间夹角不大于180度
-            if (data.length > 0) {
-              let lastItem = data[data.length - 1];
-              if (Math.abs(Item.Azimuth - lastItem.Azimuth) > 180) {
-                // item.Azimuth = 360 + item.Azimuth;
-                Item.Azimuth =
-                  lastItem.Azimuth +
-                  (360 - (Math.abs(Item.Azimuth - lastItem.Azimuth) % 360));
-              }
-            }
-            console.log(result)
-            for (let i = 11; i < thirdLine.length; i += 4) {
-              let obj = {
-                [secondLine[i + 0].split(" ")[1]]: Number(thirdLine[i + 0]),
-                [secondLine[i + 1].split(" ")[1]]: Number(thirdLine[i + 1]),
-                [secondLine[i + 2].split(" ")[1]]: Number(thirdLine[i + 2]),
-                [secondLine[i + 3].split(" ")[1]]: Number(thirdLine[i + 3]),
-                distance: Number(secondLine[i + 3].split(" ")[0].replace(/m$/, "")),
-              };
-              radial.list.push(obj);
-            }
-            data.push(radial);
-          // }
-          // ppiData[radar_id] = {result,position}
-          // processData(result, position);
-          // (map.getSource("radar") as any).setData({
-          //   type: "FeatureCollection",
-          //   features: polygons,
-          // });
-        }
-      })
-
-      //绘制PPI
-      if(false){
-        
-
-        /* PPI数据处理并显示 */
-        let inversionResult:{[key:string]:any} = {HeaderInfo:{}}
-        const view = new View(encoder.encode(ppiInversionData).buffer)
-        let firstLine = decoder.decode(view.getLine()).trim().replace(/,$/, "").split(",");
-        for(let i=1;i<firstLine.length;i++){
-          let item = firstLine[i].split(':')
-          if(item.length==2){
-            inversionResult.HeaderInfo[item[0]]=item[1]
-          }
-        }
-        let secondLine = decoder.decode(view.getLine()).trim().replace(/,$/, "").split(",");
-        inversionResult.data = []
-        while(!view.reachEnd()){
-          let radial:{[key:string]:any} = {list:[]}
-          let thirdLine = decoder.decode(view.getLine()).trim().replace(/,$/, "").split(",");
-          for(let i=0;i<12;i++){
-            radial[secondLine[i]] = thirdLine[i]
-          }
-          for(let i=12;i<thirdLine.length;i+=4){
-            radial.list.push({
-              distance:Number(secondLine[i].split(' ')[0].substring(0,secondLine[i].split(' ')[0].length-1)),
-              [secondLine[i+0].split(' ')[1]]:Number(thirdLine[i+0]),
-              [secondLine[i+1].split(' ')[1]]:Number(thirdLine[i+1]),
-              [secondLine[i+2].split(' ')[1]]:Number(thirdLine[i+2]),
-              [secondLine[i+3].split(' ')[1]]:Number(thirdLine[i+3]),
-            })
-          }
-          inversionResult.data.push(radial)
-        }
-        inversionResult.data.map((radial:any)=>{
-          radial.list.map((lib:any)=>{
-            if(lib.WindSpeed!==999){
-              const pt = turf.destination(
-                turf.point(position),
-                lib.distance/Math.tan(Number(radial.Pitch)/180*Math.PI),
-                Number(radial.Azimuth),
-                { units: "meters" }
-              );
-              inversionPPIData.features.push({
-                type: "Feature",
-                geometry: {
-                  type: "Point",
-                  coordinates: pt.geometry?.coordinates,
-                },
-                properties: {
-                  风向:Number(lib.WindDirection),
-                  风速:Number(lib.WindSpeed),
-                  image:`${setting.风雷达组网地图相关.反演风场=='风矢'?'arrow':'feather'}${getFeather(Math.abs(lib.WindSpeed))}`
-                },
-              })
-            }
-          })
-        })
-        map.getSource('inversionPPIData').setData(inversionPPIData)
-
-        var xhr = new XMLHttpRequest();
-        xhr.addEventListener("load", function () {
+      getPPIData({radar_id:Item.no,dataTime:moment().format('YYYYMMDDHHmmss')},1).then(res=>{
+      // getPPIData({radar_id:Item.no,dataTime:'20240716105055'},1).then(res=>{
+        if(res.data.code==200){
+          //绘制PPI
           /*S10000
           const d = new TextDecoder("utf8");
           let v = new View(this.response),
@@ -1560,7 +1434,8 @@ async function updateData(altitude:number){
           }*/
           /* S4000 */
           const d = new TextDecoder("utf8");
-          let v = new View(this.response),
+          // let v = new View(this.response),
+          let v = new View(encoder.encode(res.data.data.file.file_data).buffer),
             result: { [key: string]: any } = {};
           let firstLine = d
             .decode(v.getLine())
@@ -1619,12 +1494,67 @@ async function updateData(altitude:number){
             type: "FeatureCollection",
             features: polygons,
           });
-        });
-        xhr.responseType = "arraybuffer";
-        xhr.open("GET", ppiDataUrl);
-        xhr.send();
-      }
-
+        }
+      })
+      getPPIData({radar_id:Item.no,dataTime:moment().format('YYYYMMDDHHmmss')},2).then(res=>{
+      // getPPIData({radar_id:Item.no,dataTime:'20240716105055'},2).then(res=>{
+        if(res.data.code==200){
+          /* PPI反演风场 */
+          let inversionResult:{[key:string]:any} = {HeaderInfo:{}}
+          const view = new View(encoder.encode(res.data.data.file.file_data).buffer)
+          let firstLine = decoder.decode(view.getLine()).trim().replace(/,$/, "").split(",");
+          for(let i=1;i<firstLine.length;i++){
+            let item = firstLine[i].split(':')
+            if(item.length==2){
+              inversionResult.HeaderInfo[item[0]]=item[1]
+            }
+          }
+          let secondLine = decoder.decode(view.getLine()).trim().replace(/,$/, "").split(",");
+          inversionResult.data = []
+          while(!view.reachEnd()){
+            let radial:{[key:string]:any} = {list:[]}
+            let thirdLine = decoder.decode(view.getLine()).trim().replace(/,$/, "").split(",");
+            for(let i=0;i<12;i++){
+              radial[secondLine[i]] = thirdLine[i]
+            }
+            for(let i=12;i<thirdLine.length;i+=4){
+              radial.list.push({
+                distance:Number(secondLine[i].split(' ')[0].substring(0,secondLine[i].split(' ')[0].length-1)),
+                [secondLine[i+0].split(' ')[1]]:Number(thirdLine[i+0]),
+                [secondLine[i+1].split(' ')[1]]:Number(thirdLine[i+1]),
+                [secondLine[i+2].split(' ')[1]]:Number(thirdLine[i+2]),
+                [secondLine[i+3].split(' ')[1]]:Number(thirdLine[i+3]),
+              })
+            }
+            inversionResult.data.push(radial)
+          }
+          inversionResult.data.map((radial:any)=>{
+            radial.list.map((lib:any)=>{
+              if(lib.WindSpeed!==999){
+                const pt = turf.destination(
+                  turf.point(position),
+                  lib.distance/Math.tan(Number(radial.Pitch)/180*Math.PI),
+                  Number(radial.Azimuth),
+                  { units: "meters" }
+                );
+                inversionPPIData.features.push({
+                  type: "Feature",
+                  geometry: {
+                    type: "Point",
+                    coordinates: pt.geometry?.coordinates,
+                  },
+                  properties: {
+                    风向:Number(lib.WindDirection),
+                    风速:Number(lib.WindSpeed),
+                    image:`${setting.风雷达组网地图相关.反演风场=='风矢'?'arrow':'feather'}${getFeather(Math.abs(lib.WindSpeed))}`
+                  },
+                })
+              }
+            })
+          })
+          map.getSource('inversionPPIData').setData(inversionPPIData)
+        }
+      })
       let time = moment()
       setting.风雷达组网地图相关.请求时间 = time.format("HH:mm:ss")
       let lib = Item.wind
@@ -1730,10 +1660,10 @@ onMounted(() => {
     // maxZoom: 17,
     maxZoom: 18,
     // minZoom: 1,
-    // maxBounds: [
-    //   [102.0, 27.5],
-    //   [114.0, 32.7],
-    // ],
+    maxBounds: [
+      [102.0, 27.5],
+      [114.0, 32.7],
+    ],
     // zoom: 18,
     // center: [148.9819, -35.3981],
     // pitch: 60,

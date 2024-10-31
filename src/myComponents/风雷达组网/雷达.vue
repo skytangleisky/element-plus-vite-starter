@@ -36,7 +36,7 @@ function windowToCanvas(x, y, canvas) {
   };
 }
 import {View} from '~/tools'
-import { getPPIRadial, getRHIRadial } from "~/api/重庆.ts";
+import { getRHIRadial } from "~/api/重庆.ts";
 const decoder = new TextDecoder()
 const encoder = new TextEncoder()
 // import 雷达数据 from './雷达PPI数据.js'
@@ -280,9 +280,9 @@ export default {
         res = (await getRHIRadial({ dataTime: this.radar_time, radar_id: this.device }))
           .data;
       } else if (this.type == "ppi") {
-        res = (await getPPIRadial({ dataTime: this.radar_time, radar_id: this.device }))
-          .data;
-        console.log(">", res);
+        // res = (await getPPIRadial({ dataTime: this.radar_time, radar_id: this.device }))
+        //   .data;
+        // console.log(">", res);
       } else {
         return;
       }

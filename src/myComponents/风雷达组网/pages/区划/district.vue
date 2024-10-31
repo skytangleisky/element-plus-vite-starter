@@ -1,6 +1,12 @@
 <template>
   <div class="absolute top-0px left-0 h-full w-full pointer-events-auto overflow-auto">
-    <el-tree class="districtTree" node-key="adcode" style="background-color: transparent;" :props="props" :load="loadNode" lazy highlight-current empty-text="" :render-content="renderContent" :default-expanded-keys="['500000']"/>
+    <el-tree class="districtTree" node-key="adcode" style="background-color: transparent;" :expand-on-click-node="false" :props="props" :load="loadNode" lazy highlight-current empty-text="" :default-expanded-keys="['500000']" current-node-key="500000">
+      <template #default="{ node, data }">
+        <span class="custom-tree-node">
+          <span>{{ node.label }}</span>
+        </span>
+      </template>
+    </el-tree>
   </div>
 </template>
 
@@ -21,11 +27,10 @@ const props = {
   isLeaf: 'leaf',
 }
 
-const renderContent = (h: any,{node,data}: {node: Node,data: Tree}
-) => {
-  console.log(node)
-  return node.label
-};
+// const renderContent = (h: any,{node,data}: {node: Node,data: Tree}
+// ) => {
+//   return node.label
+// };
 
 const loadNode = (node: Node,resolve: (data: Tree[]) => void,reject: () => void) => {
   if(node.level === 0){
@@ -48,12 +53,18 @@ const loadNode = (node: Node,resolve: (data: Tree[]) => void,reject: () => void)
 
 
 .districtTree{
+  font-weight:bolder;
+  font-size:18px;
   .ep-tree-node.is-current > .ep-tree-node__content{
-    background-color: #e6f7ff80; /* 激活背景色 */
+    box-sizing:border-box;
+    border:1px solid lightgray;
     color: inherit; /* 激活文字颜色 */
+    border-radius:4px;
   }
   .ep-tree-node:not(.is-current) > .ep-tree-node__content:hover{
-    background-color: #e6f7ff40;
+    box-sizing:border-box;
+    border:1px solid gray;
+    border-radius:4px;
   }
 }
 </style>

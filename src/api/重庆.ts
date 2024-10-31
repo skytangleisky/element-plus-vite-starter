@@ -1,4 +1,5 @@
 import request from '../utils/request'
+import moment from 'moment';
 // export const databaseRaw = 'host=127.0.0.1&port=3306&user=root&password=tanglei&database=weatherservice';
 // export const databaseRaw = 'host=tanglei.top&port=3306&user=root&password=tanglei&database=union';
 export const databaseRaw = 'host=tanglei.top&port=3308&user=root&password=mysql&database=weatherservice';
@@ -64,15 +65,16 @@ export function getFkxData(query:{dataTime:string,altitude:number}){
   })
 }
 
-export function getPPIRadial(query:{radar_id:string,dataTime:string}){
+export function getPPIData(query:{radar_id:string,dataTime:string},level=1){
   let data = {
     "version":"1.0",
     "secretKey":"904c396f6956d02c59a6ad35c08f5678",
     "radar_id":query.radar_id,
     "dataTime":query.dataTime,
+    "level":level//1,径向数据，2,风场数据
   }
   return request({
-    url: '/qt/hisCSV/ppi',
+    url: '/python/api/weather/realCSV/ppi',
     method: 'post',
     headers:{
     'content-type':'application/json'
@@ -80,22 +82,7 @@ export function getPPIRadial(query:{radar_id:string,dataTime:string}){
     data
   })
 }
-export function getPPIGrid(query:{radar_id:string,dataTime:string}){
-  let data = {
-    "version":"1.0",
-    "secretKey":"904c396f6956d02c59a6ad35c08f5678",
-    "radar_id":"A6418",
-    "dataTime":'20240715203223',
-  }
-  return request({
-    url: '/qt/realCSV/ppi',
-    method: 'post',
-    headers:{
-    'content-type':'application/json'
-    },
-    data
-  })
-}
+
 export function getRHIRadial(query:{radar_id:string,dataTime:string}){
   let data = {
     "version":"1.0",
@@ -112,3 +99,58 @@ export function getRHIRadial(query:{radar_id:string,dataTime:string}){
     data
   })
 }
+
+export function getSensorData(query:{radar_id:string,dataTime:string}){
+  let data = {
+    "version":"1.0",
+    "secretKey":"904c396f6956d02c59a6ad35c08f5678",
+    "radar_id":query.radar_id,//''表示返回所有
+    "dataTime":query.dataTime
+  }
+  return request({
+    url: '/python/api/weather/statistics/sensor',
+    method: 'post',
+    headers:{
+    'content-type':'application/json'
+    },
+    data
+  })
+}
+
+export function getDbsData(query:{radar_id:string,dataTime:string}){
+  let data = {
+    "version":"1.0",
+    "secretKey":"904c396f6956d02c59a6ad35c08f5678",
+    "radar_id":query.radar_id,//''表示返回所有
+    "dataTime":query.dataTime
+  }
+  return request({
+    url: '/python/api/weather/statistics/dbs',
+    method: 'post',
+    headers:{
+    'content-type':'application/json'
+    },
+    data
+  })
+}
+
+// export function get10minWindAvgData(query:{radar_id:string,dataTime:string}){
+//   let data = {
+//     "version":"1.0",
+//     "secretKey":"904c396f6956d02c59a6ad35c08f5678",
+//     "radar_id":query.radar_id,//''表示返回所有
+//     "dataTime":query.dataTime,
+//     "dataTime_interval":60,
+//   }
+//   return request({
+//     url: '/qt/statistics/dbs',
+//     method: 'post',
+//     headers:{
+//     'content-type':'application/json'
+//     },
+//     data
+//   })
+// }
+// get10minWindAvgData({radar_id:'',dataTime:moment().format('YYYYMMDD')}).then((res)=>{
+//   console.log(res.data)//结果不符合预期
+// })

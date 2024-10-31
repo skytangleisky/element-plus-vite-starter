@@ -3,12 +3,12 @@
     <Header class="z-1" @alarm="settingShow = true" @edit-user="editUserShow = true" v-model:menuIndex="menuIndex"></Header>
     <Alarm v-if="settingShow" v-model:show="settingShow"></Alarm>
     <ChangePassword v-if="editUserShow" v-model:show="editUserShow"></ChangePassword>
-    <EditDevice v-if="editDeviceShow" v-model:show="editDeviceShow" :device="device"></EditDevice>
+    <SensorView v-if="sensorViewShow" v-model:show="sensorViewShow" :device="device"></SensorView>
     <div ref="mapChart" style="position:absolute;width:100%;height:100%;"/>
     <border-box-11 ref="dvBorder11" :color="['#8aaafb','transparent']" title="重庆测风雷达组网" :title-width="400" :animate="true" style="width:100%;height:100%;pointer-events: none;">
       <div v-show="menuIndex==2" class="absolute flex w-full h-full justify-around box-border p-20px p-t-60px">
         <div class="left">
-          <border-box-7 :color="['#0154be', '#03f7fc']" style="height:calc(30% - 5px);box-sizing: border-box;backdrop-filter:blur(8px);">
+          <border-box-7 :color="['#0154be', '#03f7fc']" style="height:calc(30% - 5px);box-sizing: border-box;backdrop-filter:blur(20px);">
             <div class="w-full h-full place-items-center p-10px box-border" style="display:grid;grid-template-rows: auto 1fr;grid-template-columns: 1fr 1fr;">
               <div class="flex flex-row justify-around row-start-1 row-span-1 col-start-1 col-span-2">
                 <div class="m-r-20px font-size-18px">雷达状态分布</div>
@@ -17,42 +17,34 @@
               </div>
               <div ref="pieChart1"  class="row-start-2 row-span-1 col-start-1 col-span-1 w-full h-full"></div>
               <div class="percents grid grid-cols-2 grid-rows-3 items-center col-start-2 col-span-1 row-start-2 row-span-1 h-80px font-size-20px flex flex-col justify-between">
-                <div class="flex w-full"><div class="online">正常</div>100%</div>
-                <div class="flex" w-full><div class="offline">异常</div>0%</div>
+                <div class="flex w-full"><div class="online">正常</div>{{(radars.filter((item:any)=>item.status==1).length/radars.length*100).toFixed()}}%</div>
+                <div class="flex" w-full><div class="offline">异常</div>{{(radars.filter((item:any)=>item.status!=1).length/radars.length*100).toFixed()}}%</div>
               </div>
             </div>
           </border-box-7>
-          <border-box-7 :color="['#0154be', '#03f7fc']" style="height: calc(70% - 5px);box-sizing: border-box;backdrop-filter:blur(8px);">
+          <border-box-7 :color="['#0154be', '#03f7fc']" style="height: calc(70% - 5px);box-sizing: border-box;backdrop-filter:blur(20px);">
             <District></District>
-            <div class="w-full h-full grid grid-rows-3 grid-cols-2 place-items-center grid-gap-10px p-10px box-border hidden">
-              <div ref="dataTrend1" class="row-start-1 row-span-1 col-start-1 col-span-1 w-full h-full"/>
-              <div ref="dataTrend2" class="row-start-1 row-span-1 col-start-2 col-span-1 w-full h-full"/>
-              <div ref="dataTrend3" class="row-start-2 row-span-1 col-start-1 col-span-1 w-full h-full"/>
-              <div ref="dataTrend4" class="row-start-2 row-span-1 col-start-2 col-span-1 w-full h-full"/>
-              <div ref="dataTrend5" class="row-start-3 row-span-1 col-start-1 col-span-1 w-full h-full"/>
-              <div ref="dataTrend6" class="row-start-3 row-span-1 col-start-2 col-span-1 w-full h-full"/>
-            </div>
           </border-box-7>
         </div>
         <div class="center">
             <div class="w-full h-full box-border flex flex-col color-white">
-              <border-box-1 :color="['#0154be', '#03f7fc']" style="height: 200px; box-sizing: border-box;backdrop-filter:blur(8px);pointer-events: auto;">
+              <border-box-1 :color="['#0154be', '#03f7fc']" style="height: 200px; box-sizing: border-box;backdrop-filter:blur(20px);pointer-events: auto;">
                 <div class="w-full h-full p-20px box-border grid-gap-10px" style="display: grid;grid-template-columns: repeat(4,minmax(0,1fr)); grid-template-rows: 1fr auto;">
                     <decoration-9 class="w-full h-full col-start-1 col-span-1 row-start-1 row-span-1">
-                      <div color-green font-600 style="font-size:20px;text-shadow: 0 0 3px #7acaec;text-decoration:underline;">
-                        6台
+                      <div color-white font-600 style="font-size:20px;text-shadow: 0 0 3px #7acaec;text-decoration:underline;">
+                        {{ radars.length }}台
                       </div>
                     </decoration-9>
-                    <div class="w-full h-full col-start-1 col-span-1 row-start-2 row-span-1">全部雷达</div>
+                    <div class="w-full h-full col-start-1 col-span-1 row-start-2 row-span-1">雷达总数</div>
                     <decoration-9 class="w-full h-full col-start-2 col-span-1 row-start-1 row-span-1">
                       <div color-green font-600 style="font-size:20px;text-shadow: 0 0 3px #7acaec;">
-                        6台
+                        {{ radars.filter((item:any)=>item.status==1).length }}台
                       </div>
                     </decoration-9>
                     <div class="w-full h-full col-start-2 col-span-1 row-start-2 row-span-1">在线雷达</div>
                     <decoration-9 class="w-full h-full col-start-3 col-span-1 row-start-1 row-span-1">
-                      <div color-gray font-600 style="font-size:20px;text-shadow: 0 0 3px #7acaec;">
-                        0台
+                      <div :class="`${radars.filter((item:any)=>item.status!=1).length>0?'color-#f00':'color-gray'}`+' font-600'" style="font-size:20px;text-shadow: 0 0 3px #7acaec;">
+                        {{ radars.filter((item:any)=>item.status!=1).length }}台
                       </div>
                     </decoration-9>
                     <div class="w-full h-full col-start-3 col-span-1 row-start-2 row-span-1">离线雷达</div>
@@ -67,8 +59,17 @@
             </div>
         </div>
         <div class="right">
-          <border-box-7 :color="['#0154be', '#03f7fc']" style="box-sizing: border-box;backdrop-filter:blur(100px);pointer-events: auto;">
-            <div class="w-full h-full grid cols-2 rows-3 place-items-center grid-gap-10px p-10px box-border">
+          <border-box-7 :color="['#0154be', '#03f7fc']" style="box-sizing: border-box;backdrop-filter:blur(20px);pointer-events: auto;">
+            <div class="flex justify-center"><strong style="line-height: 40px;font-size: 20px;">雷达当天每小时10分钟平均风廓线数据获取量</strong></div>
+            <div class="w-full grid grid-rows-3 grid-cols-2 place-items-center grid-gap-10px p-10px box-border" style="height: calc(100% - 40px);">
+              <div ref="dataTrend1" class="row-start-1 row-span-1 col-start-1 col-span-1 w-full h-full"/>
+              <div ref="dataTrend2" class="row-start-1 row-span-1 col-start-2 col-span-1 w-full h-full"/>
+              <div ref="dataTrend3" class="row-start-2 row-span-1 col-start-1 col-span-1 w-full h-full"/>
+              <div ref="dataTrend4" class="row-start-2 row-span-1 col-start-2 col-span-1 w-full h-full"/>
+              <div ref="dataTrend5" class="row-start-3 row-span-1 col-start-1 col-span-1 w-full h-full"/>
+              <div ref="dataTrend6" class="row-start-3 row-span-1 col-start-2 col-span-1 w-full h-full"/>
+            </div>
+            <div class="w-full grid cols-2 rows-3 place-items-center grid-gap-10px p-10px box-border hidden">
               <div ref="th1" class="row-start-1 row-start-1 col-start-1 col-span-1 w-full h-full"></div>
               <div ref="th2" class="row-start-1 row-start-1 col-start-2 col-span-1 w-full h-full"></div>
               <div ref="th3" class="row-start-2 row-start-1 col-start-1 col-span-1 w-full h-full"></div>
@@ -83,6 +84,8 @@
   </div>
 </template>
 <script lang="ts" setup>
+import { exec } from "~/api/index.js";
+import {databaseRaw,getDbsData,getSensorData} from '~/api/重庆';
 import {ref} from 'vue'
 import District from './区划/district.vue'
 import Header from './header.vue'
@@ -93,12 +96,13 @@ import { eventbus } from '~/eventbus';
 import data from './data.json'
 const settingShow = ref(false)
 const editUserShow = ref(false)
-const editDeviceShow = ref(false)
-const device = ref("")
+const sensorViewShow = ref(false)
+const device = ref()
 import Alarm from './alarm.vue';
 import ChangePassword from './changePassword.vue';
-import EditDevice from './editDevice.vue';
-const menuIndex = ref(0)
+import SensorView from './sensorView.vue';
+import moment from "moment";
+const menuIndex = ref(2)
 const mapChart = ref(null)
 const pieChart1 = ref(null)
 const dataTrend1 = ref(null)
@@ -113,13 +117,20 @@ const th3 = ref(null)
 const th4 = ref(null)
 const th5 = ref(null)
 const th6 = ref(null)
-function editDevice(deviceName:string){
-  console.log(deviceName)
-  device.value = deviceName
-  editDeviceShow.value = true
+function radarClick(data:Object){
+  device.value = data
+  sensorViewShow.value = true
 }
-onMounted(()=>{
-  eventbus.on('重庆测风雷达组网-设备编辑',editDevice)
+let radars = ref([])
+onMounted(async()=>{
+  const dbsData = (await getDbsData({radar_id:'',dataTime:moment().format('YYYYMMDD')})).data.data
+  eventbus.on('重庆测风雷达组网-设备编辑',radarClick)
+  radars.value = (await exec({
+    database: databaseRaw,
+    query: {
+      sqls: ["select * from `device`"],
+    },
+  })).data[0].filter((item:any)=>item.hide!=='true')
   /*echartsUtils.initBarAndLineChart({
     chartName: "professionConstruct",
     data: {
@@ -152,14 +163,25 @@ onMounted(()=>{
     type: "bar",
     data: { d1: data.teacherFundsBuild },
   });*/
-  data.teacherBuildTime = [7,5,6,6,6,6,5,6,6,6,6,6,7,5,6,6,6,6,5,6,6,6,6,6]
+  data.teacherBuildTime = new Array(24).fill(0)
+  dbsData.map((item:any)=>{
+    if(item.radar_id=='A6418'){
+      for(let i=0;i<24;i++){
+        if(item.data[i]){
+          data.teacherBuildTime[i] = item.data[i].count
+        }else{
+          data.teacherBuildTime[i] = 0
+        }
+      }
+    }
+  })
   echartsUtils.initLineOrBarChart({
     type:'bar',
     chartName: dataTrend1.value,
     data: {
       d1: data.teacherBuildTime,
     },
-    title: "渝北当天数据获取量",
+    title: "渝北",
     color: [
       "rgba(0, 187, 255, 1)",
       "rgba(0, 187, 255, 0.3)",
@@ -167,14 +189,25 @@ onMounted(()=>{
     ],
     unit: "(次数)",
   });
-  data.teacherBuildTime = [6,6,6,6,6,6,5,7,6,6,6,6,6,6,6,6,6,6,5,7,6,6,6,6]
+  data.teacherBuildTime = new Array(24).fill(0)
+  dbsData.map((item:any)=>{
+    if(item.radar_id=='A6419'){
+      for(let i=0;i<24;i++){
+        if(item.data[i]){
+          data.teacherBuildTime[i] = item.data[i].count
+        }else{
+          data.teacherBuildTime[i] = 0
+        }
+      }
+    }
+  })
   echartsUtils.initLineOrBarChart({
     type:'bar',
     chartName: dataTrend2.value,
     data: {
       d1: data.teacherBuildTime,
     },
-    title: "北碚每天数据获取量",
+    title: "北碚",
     color: [
       "rgba(0, 187, 255, 1)",
       "rgba(0, 187, 255, 0.3)",
@@ -182,14 +215,25 @@ onMounted(()=>{
     ],
     unit: "(次数)",
   });
-  data.teacherBuildTime = [6,6,6,6,6,6,5,6,6,6,6,7,6,6,6,6,6,6,5,7,6,6,6,6]
+  data.teacherBuildTime = new Array(24).fill(0)
+  dbsData.map((item:any)=>{
+    if(item.radar_id=='A6420'){
+      for(let i=0;i<24;i++){
+        if(item.data[i]){
+          data.teacherBuildTime[i] = item.data[i].count
+        }else{
+          data.teacherBuildTime[i] = 0
+        }
+      }
+    }
+  })
   echartsUtils.initLineOrBarChart({
     type:'bar',
     chartName: dataTrend3.value,
     data: {
       d1: data.teacherBuildTime,
     },
-    title: "巴南每天数据获取量",
+    title: "巴南",
     color: [
       "rgba(0, 187, 255, 1)",
       "rgba(0, 187, 255, 0.3)",
@@ -197,14 +241,25 @@ onMounted(()=>{
     ],
     unit: "(次数)",
   });
-  data.teacherBuildTime = [6,6,6,6,6,6,5,6,6,6,6,5,6,6,6,6,6,6,5,7,6,6,6,6]
+  data.teacherBuildTime = new Array(24).fill(0)
+  dbsData.map((item:any)=>{
+    if(item.radar_id=='A6421'){
+      for(let i=0;i<24;i++){
+        if(item.data[i]){
+          data.teacherBuildTime[i] = item.data[i].count
+        }else{
+          data.teacherBuildTime[i] = 0
+        }
+      }
+    }
+  })
   echartsUtils.initLineOrBarChart({
     type:'bar',
     chartName: dataTrend4.value,
     data: {
       d1: data.teacherBuildTime,
     },
-    title: "綦江每天数据获取量",
+    title: "綦江",
     color: [
       "rgba(0, 187, 255, 1)",
       "rgba(0, 187, 255, 0.3)",
@@ -212,14 +267,25 @@ onMounted(()=>{
     ],
     unit: "(次数)",
   });
-  data.teacherBuildTime = [6,6,6,6,6,6,5,6,4,6,6,7,6,6,6,6,6,6,5,7,6,6,6,6]
+  data.teacherBuildTime = new Array(24).fill(0)
+  dbsData.map((item:any)=>{
+    if(item.radar_id=='A6422'){
+      for(let i=0;i<24;i++){
+        if(item.data[i]){
+          data.teacherBuildTime[i] = item.data[i].count
+        }else{
+          data.teacherBuildTime[i] = 0
+        }
+      }
+    }
+  })
   echartsUtils.initLineOrBarChart({
     type:'bar',
     chartName: dataTrend5.value,
     data: {
       d1: data.teacherBuildTime,
     },
-    title: "万州每天数据获取量",
+    title: "万州",
     color: [
       "rgba(0, 187, 255, 1)",
       "rgba(0, 187, 255, 0.3)",
@@ -227,14 +293,25 @@ onMounted(()=>{
     ],
     unit: "(次数)",
   });
-  data.teacherBuildTime = [6,6,6,6,6,6,5,6,6,6,6,3,6,6,6,6,6,6,5,7,6,6,6,6]
+  data.teacherBuildTime = new Array(24).fill(0)
+  dbsData.map((item:any)=>{
+    if(item.radar_id=='A6423'){
+      for(let i=0;i<24;i++){
+        if(item.data[i]){
+          data.teacherBuildTime[i] = item.data[i].count
+        }else{
+          data.teacherBuildTime[i] = 0
+        }
+      }
+    }
+  })
   echartsUtils.initLineOrBarChart({
     type:'bar',
     chartName: dataTrend6.value,
     data: {
       d1: data.teacherBuildTime,
     },
-    title: "城口每天数据获取量",
+    title: "城口",
     color: [
       "rgba(0, 187, 255, 1)",
       "rgba(0, 187, 255, 0.3)",
@@ -432,16 +509,19 @@ onMounted(()=>{
   });
   echartsUtils.initMapChart({
     chartName: mapChart.value,
-    data:[]
+    data:radars.value
   })
   echartsUtils.initPieChart1({
     chartName: pieChart1.value,
-    data:6
+    data:{
+      正常:radars.value.filter((item:any)=>item.status==1).length,
+      异常:radars.value.filter((item:any)=>item.status!=1).length,
+    }
   })
 })
 onBeforeUnmount(()=>{
   echartsUtils.destroy()
-  eventbus.off('重庆测风雷达组网-设备编辑',editDevice)
+  eventbus.off('重庆测风雷达组网-设备编辑',radarClick)
 })
 </script>
 <style lang="scss">
