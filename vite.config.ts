@@ -168,7 +168,8 @@ export default defineConfig({
         ws:true,
       },
       '/python':{//ppi实时数据
-        target:'http://192.168.0.114:8000',
+        // target:'http://192.168.0.114:8000',
+        target:'http://tanglei.top:8000',
         rewrite:path=>path.replace(/^\/python/,''), // 设置重写的路径
         secure:false,
         changeOrigin:true,

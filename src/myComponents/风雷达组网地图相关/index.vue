@@ -143,8 +143,8 @@ const 单站数据 = ()=>{
 import chromatography from "../激光测风尾涡/chromatography.vue";
 import * as turf from "@turf/turf";
 // import ppiDataUrl from "../组网/CDL_S10000_Lidar10HKF00631450_PPI_FrmAzm30.00_ToAzm29.00_Pth3.00_Spd6.00_Res060_StartIdx003_Start003_Stop191_LOSWind_20230515 000240.csv?url";//S10000
-import ppiDataUrl from "./level1/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pth30.00_Spd6.00_Res030_StartIdx002_Start002_Stop190_LOSWind_20240715 203223.csv?url";
-import ppiInversionData from "./level2/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pth30.00_Spd6.00_Res030_StartIdx002_VADStart002_VADStop190_VADWind_Sec_20240715 203223.csv?url";
+// import ppiDataUrl from "./level1/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pth30.00_Spd6.00_Res030_StartIdx002_Start002_Stop190_LOSWind_20240715 203223.csv?url";//S4000
+// import ppiInversionData from "./level2/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pth30.00_Spd6.00_Res030_StartIdx002_VADStart002_VADStop190_VADWind_Sec_20240715 203223.csv?url";
 import { exec } from "~/api/index.js";
 import { getFkxRealData,getFkxData } from "../../api/重庆.ts";
 import {hasPermission,sixty2Float,addFeatherImages,addArrowImages,getFeather,View,calculateBlockPoints,calculateCirclePoints,removeLayerAndSource} from "~/tools";
@@ -164,7 +164,7 @@ const chromatographyOption=reactive<{arr:Array<number>}>({
   arr:[]
 })
 switch(setting.风雷达组网地图相关.风场数据){
-  case '无':
+  case '不显示':
     chromatographyOption.arr=[]
     break;
   case '径向速度':
@@ -259,7 +259,6 @@ const info = ref({
   deg: "",
 });
 
-let dbsData: { [key: string]: any } = {};
 let ppiData: { [key: string]: any } = {};
 import { useStationStore } from "~/stores/station";
 import chartTh from "~/myComponents/echarts/重庆_T_H.vue";
@@ -522,7 +521,7 @@ function processData(result: any, position: [number, number]) {
       // });
       let fillColor:string|null = 'black';
       switch(setting.风雷达组网地图相关.风场数据){
-        case '无':
+        case '不显示':
           chromatographyOption.arr=[]
           fillColor = 'black'
           break;
@@ -605,7 +604,7 @@ const loadFunc = async () => {
       "fill-outline-color": "transparent",
     },
     layout:{
-      visibility:setting.风雷达组网地图相关.风场数据=='无'?'none':'visible'
+      visibility:setting.风雷达组网地图相关.风场数据=='不显示'?'none':'visible'
     }
   });
   map.addSource('等距环Source',{type:'geojson',data:circleDataFeatures})
@@ -614,7 +613,7 @@ const loadFunc = async () => {
     type: "line",
     source: '等距环Source',
     paint: {
-      "line-opacity":setting.风雷达组网地图相关.等距环?0.3:0,
+      "line-opacity":setting.风雷达组网地图相关.等距环?0.8:0,
       "line-color": isDark.value?"#fff":'#000',
       "line-width": 2,
       "line-dasharray": [2, 2],
@@ -636,7 +635,7 @@ const loadFunc = async () => {
       "text-pitch-alignment": "map",
     },
     paint: {
-      "text-opacity":setting.风雷达组网地图相关.等距环?0.3:0,
+      "text-opacity":setting.风雷达组网地图相关.等距环?0.8:0,
       "text-color": isDark.value?"#fff":'#000',
       // "text-halo-color": "black",
       // "text-halo-width": 1,
@@ -655,7 +654,7 @@ const loadFunc = async () => {
     source: "inversionPPIData",
     type: "symbol",
     layout: {
-      visibility: setting.风雷达组网地图相关.反演风场==='无' ? "none":"visible",
+      visibility: setting.风雷达组网地图相关.反演风场==='不显示' ? "none":"visible",
       // This icon is a part of the Mapbox Streets style.
       // To view all images available in a Mapbox style, open
       // the style in Mapbox Studio and click the "Images" tab.
@@ -1058,6 +1057,7 @@ async function work(){
 async function updateData(altitude:number){
   //20240729054058
   await getFkxData({dataTime:moment().format('YYYYMMDDHHmmss'),altitude}).then(result=>{
+    console.log('---->',result.data)
     res.data[0].map((device:any,k:number)=>{
       for(let key in result.data.data){
         if(device.no === result.data.data[key].radar_id){
@@ -1069,7 +1069,7 @@ async function updateData(altitude:number){
   let data: Array<any> = []
   res.data[0].map((item:any)=>{
     let convert = wgs84togcj02(sixty2Float(item.lng),sixty2Float(item.lat))
-    if(item.wind&&item.wind.WindSpeed!=null){
+    if(item.wind&&item.wind.WindSpeed!=null&&item.wind.WindSpeed!=999){
       data.push({
         lng:convert[0],
         lat:convert[1],
@@ -1163,7 +1163,6 @@ async function updateData(altitude:number){
       "icon-opacity": setting.feather ? 1 : 0,
     },
   });*/
-
   let interpolateOptions = {
     sizeU: 20,
     sizeV: 20,
@@ -1231,12 +1230,10 @@ async function updateData(altitude:number){
     "boundaries":[interpolateOptions.boundary.lng,interpolateOptions.boundary.lng+interpolateOptions.boundary.width,interpolateOptions.boundary.lat,interpolateOptions.boundary.lat+interpolateOptions.boundary.height],
     // "boundaries":[105,111,28,32.5]
   }
-  mapboxgl.clearStorage();
+  // mapboxgl.clearStorage();
   removeLayerAndSource(map,'null-island')
   customLayer = new CustomLayer(json,cvs.toDataURL(),setting.风雷达组网地图相关.流线)
   map.addLayer(customLayer as any)
-
-
 
   bus.风雷达组网地图相关雷达站点信息 = res.data[0].map((item:any)=>{
     let pos = wgs84togcj02(sixty2Float(item.lng), sixty2Float(item.lat)) as [number,number]
@@ -1489,6 +1486,7 @@ async function updateData(altitude:number){
             data.push(radial);
           }
           ppiData[radar_id] = {result,position}
+          result.data = result.data.slice(1)//由于第一条径向和第二条径向之间方位角跨度太大，鼠标选取会出现异常（所以删除第一条径向）
           processData(result, position);
           (map.getSource("radar") as any).setData({
             type: "FeatureCollection",
@@ -1657,8 +1655,7 @@ onMounted(() => {
     localIdeographFontFamily: "",
     antialias: true,
     renderWorldCopies: true,
-    // maxZoom: 17,
-    maxZoom: 18,
+    maxZoom: 17,
     // minZoom: 1,
     maxBounds: [
       [102.0, 27.5],
@@ -1766,7 +1763,7 @@ watch(isDark,isDark=>{
 })
 watch(()=>setting.风雷达组网地图相关.风场数据,风场数据=>{
   switch(风场数据){
-    case '无':
+    case '不显示':
       map.setLayoutProperty('雷达','visibility','none')
       chromatographyOption.arr=[]
       break;
@@ -1805,8 +1802,8 @@ watch(()=>setting.风雷达组网地图相关.风场数据,风场数据=>{
 })
 watch(()=>setting.风雷达组网地图相关.等距环,(val=>{
   if(val){
-    map.setPaintProperty("等距环", "line-opacity", 0.3);
-    map.setPaintProperty("等距环的单位", "text-opacity", 0.3);
+    map.setPaintProperty("等距环", "line-opacity", 0.8);
+    map.setPaintProperty("等距环的单位", "text-opacity", 0.8);
   }else{
     map.setPaintProperty("等距环", "line-opacity", 0);
     map.setPaintProperty("等距环的单位", "text-opacity", 0);
@@ -1887,7 +1884,7 @@ watch(
   }
 );
 watch(()=>setting.风雷达组网地图相关.反演风场,(val)=>{
-  if(val=='无'){
+  if(val=='不显示'){
     map.setLayoutProperty('inversionLayer','visibility','none')
   }else{
     map.setLayoutProperty('inversionLayer','visibility','visible')

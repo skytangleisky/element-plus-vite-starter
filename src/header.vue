@@ -26,16 +26,14 @@
             <el-dropdown-menu>
               <!-- <el-dropdown-item @click="login" :icon="Select">登陆</el-dropdown-item> -->
               <!-- <el-dropdown-item :icon="ColdDrink">捐赠</el-dropdown-item> -->
-              <el-dropdown-item @click="toggleDark()" :icon="isDark ? Moon : Sunny"
-                >主题</el-dropdown-item
+              <el-dropdown-item @click="toggleDark()"><el-icon v-html="isDark ? Moon : Sunny"/>主题</el-dropdown-item
               >
-              <el-dropdown-item :icon="Switch" @click="Reset">重置</el-dropdown-item>
+              <el-dropdown-item @click="Reset"><el-icon v-html="ResetSvg" style="font-size: 1em;"/>重置</el-dropdown-item>
               <el-dropdown-item
                 v-if="user.logined"
                 divided
                 @click="logout"
-                :icon="SwitchButton"
-                >退出</el-dropdown-item
+                ><el-icon v-html="ExitSvg"/>退出</el-dropdown-item
               >
             </el-dropdown-menu>
           </template>
@@ -45,10 +43,14 @@
   </div>
 </template>
 <script lang="ts" setup>
+import ResetSvg from '~/assets/reset.svg?raw'
 import openSvg from "~/assets/expand.svg?raw";
 import collapseSvg from "~/assets/collapse.svg?raw";
 import breadcrumb from "./myComponents/breadcrumb.vue";
 import logoutRaw from "~/assets/logout.svg?raw";
+import Moon from '~/assets/moon.svg?raw'
+import Sunny from '~/assets/sun.svg?raw'
+import ExitSvg from '~/assets/exit.svg?raw'
 import {
   Select,
   Setting,
@@ -57,9 +59,6 @@ import {
   ColdDrink,
   User,
   CloseBold,
-  Switch,
-  Moon,
-  Sunny,
 } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
 const router = useRouter();

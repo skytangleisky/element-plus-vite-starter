@@ -264,39 +264,41 @@ const 完成 = (item: planDataType) => {
 };
 </script>
 <style lang="scss">
-.ep-tabs.ep-tabs--border-card {
-  --ep-border-color: gray;
-  --ep-border-color-light: gray;
-  margin-top: 0;
-  & > .ep-tabs__header {
-    border-bottom: 0;
-    background-color: transparent;
-  }
-  & > .ep-tabs__header .ep-tabs__item {
-    transition-duration: 0s;
+.planPanel{
+  .ep-tabs.ep-tabs--border-card {
+    --ep-border-color: gray;
+    --ep-border-color-light: gray;
     margin-top: 0;
-    &.is-active {
-      border-radius: 6px 6px 0 0;
+    & > .ep-tabs__header {
+      border-bottom: 0;
+      background-color: transparent;
+    }
+    & > .ep-tabs__header .ep-tabs__item {
+      transition-duration: 0s;
       margin-top: 0;
-      border-top: 1px solid var(--ep-border-color);
-      border-left: 1px solid var(--ep-border-color);
+      &.is-active {
+        border-radius: 6px 6px 0 0;
+        margin-top: 0;
+        border-top: 1px solid var(--ep-border-color);
+        border-left: 1px solid var(--ep-border-color);
+      }
+      &:first-child {
+        margin-left: 0;
+      }
     }
-    &:first-child {
-      margin-left: 0;
-    }
-  }
-  & > .ep-tabs__content {
-    border: 1px solid var(--ep-border-color);
-    padding: 0;
-    height: 400px;
-    display: flex;
-    border-radius: 0 6px 6px 6px;
-    .ep-tab-pane {
-      width: 100%;
+    & > .ep-tabs__content {
+      border: 1px solid var(--ep-border-color);
+      padding: 0;
+      height: 400px;
+      display: flex;
+      border-radius: 0 6px 6px 6px;
+      .ep-tab-pane {
+        width: 100%;
+      }
     }
   }
 }
-.dark .ep-tabs.ep-tabs--border-card {
+.dark .planPanel .ep-tabs.ep-tabs--border-card {
   .ep-tabs__item.is-active {
     background: #304156;
   }

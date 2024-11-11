@@ -1,10 +1,8 @@
 <template>
   <div class="absolute top-0px left-0 h-full w-full pointer-events-auto overflow-auto">
-    <el-tree class="districtTree" node-key="adcode" style="background-color: transparent;" :expand-on-click-node="false" :props="props" :load="loadNode" lazy highlight-current empty-text="" :default-expanded-keys="['500000']" current-node-key="500000">
+    <el-tree class="districtTree" node-key="adcode" style="background-color: transparent;" :expand-on-click-node="false" :props="{label: 'name',children: 'zones',isLeaf: 'leaf'}" :load="loadNode" lazy highlight-current empty-text="" :default-expanded-keys="[500000]" :current-node-key="500000">
       <template #default="{ node, data }">
-        <span class="custom-tree-node">
-          <span>{{ node.label }}</span>
-        </span>
+        <span>{{ node.label }}</span>
       </template>
     </el-tree>
   </div>
@@ -17,14 +15,15 @@ import type Node from 'element-plus/es/components/tree/src/model/node'
 
 interface Tree {
   name: string
-  adcode: string
+  adcode: number
   leaf?: boolean
 }
 
-const props = {
-  label: 'name',
-  children: 'zones',
-  isLeaf: 'leaf',
+const customNodeClass = (data: Tree, node: Node) => {
+  console.log(data)
+  if (data) {
+    return 'custom-tree-node'
+  }
 }
 
 // const renderContent = (h: any,{node,data}: {node: Node,data: Tree}
@@ -34,7 +33,7 @@ const props = {
 
 const loadNode = (node: Node,resolve: (data: Tree[]) => void,reject: () => void) => {
   if(node.level === 0){
-    resolve([{name:'重庆市',adcode:'500000'}])
+    resolve([{name:'重庆',adcode:500000}])
   }else if (node.level >= 1) {
     axios.get(`/backend/region/${node.data.adcode}_full.json`).then(res=>{
       let arr = new Array<any>();
@@ -55,6 +54,12 @@ const loadNode = (node: Node,resolve: (data: Tree[]) => void,reject: () => void)
 .districtTree{
   font-weight:bolder;
   font-size:18px;
+  .custom-tree-node{
+    position: relative;
+    line-height: 100px;
+    height: 100px;
+    border:1px solid red;
+  }
   .ep-tree-node.is-current > .ep-tree-node__content{
     box-sizing:border-box;
     border:1px solid lightgray;

@@ -1,5 +1,5 @@
 <template>
-  <div class="!collapse dragDialog absolute w-300px" style="left: 20px; top: 20px">
+  <div class="!collapse dragDialog absolute w-320px" style="left: 20px; top: 20px">
     <div class="flex flex-row" style="align-items: center">
       <input
         @mousedown.stop
@@ -55,6 +55,7 @@
               <th>序号</th>
               <th>编号</th>
               <th>名称</th>
+              <th>海拔高度(米)</th>
               <th>状态</th>
             </tr>
           </thead>
@@ -69,6 +70,7 @@
                 <td>{{ k + 1 }}</td>
                 <td>{{ v.no }}</td>
                 <td>{{ v.device_name }}</td>
+                <td>{{ v.altitude }}</td>
                 <td :class="v.status==0 ? '未知' : v.status == 1 ? 'color-#0f0' : v.status == 2 ? 'color-#f80' : v.status == 3 ? 'color-#f00' : 'color-inherit'">
                   {{ v.status==0 ? '未知' : v.status==1 ? '正常' : v.status==2 ? '延迟' : v.status==3 ? '缺失' : v.status }}
                 </td>

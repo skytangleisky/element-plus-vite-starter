@@ -82,7 +82,7 @@
           </el-icon>
         </div> -->
         <div class="subitem">
-          <span class="whitespace-nowrap">高度层</span>
+          <span class="whitespace-nowrap">海拔高度</span>
           <el-select
             style="width: 80px"
             v-model="setting.风雷达组网地图相关.altitudeHeight"
@@ -168,7 +168,7 @@
     </div>
     <div class="item">
       <collapse-card title="数据融合" v-model:show="showDataFusion" :show-collapse="true">
-        <div class="subitem">
+        <div class="subitem" v-if="hasPermission(['5dd862f4-112f-46cf-a843-98c3f5aba1cf'])">
           <span>格点</span>
           <el-switch
             v-model="setting.风雷达组网地图相关.格点"
@@ -178,7 +178,7 @@
             size="small"
           />
         </div>
-        <div class="subitem">
+        <div class="subitem" v-if="hasPermission(['df127f84-1983-42c1-b718-a0d04fc92720'])">
           <span>等值线</span>
           <el-switch
             v-model="setting.风雷达组网地图相关.等值线"
@@ -188,7 +188,7 @@
             size="small"
           />
         </div>
-        <div class="subitem">
+        <div class="subitem" v-if="hasPermission(['182392d2-6928-4add-b006-784e9fde0213'])">
           <span>等值线填色</span>
           <el-switch
             v-model="setting.风雷达组网地图相关.等值带"
@@ -335,14 +335,14 @@ import { ElMessage } from "element-plus";
 import { useRoute } from "vue-router";
 import { eventbus } from "~/eventbus";
 const options = reactive([
-  { value: "无", label: "无" },
+  { value: "不显示", label: "不显示" },
   { value: "径向速度", label: "径向速度" },
   { value: "谱宽", label: "谱宽" },
   { value: "信噪比", label: "信噪比" },
   { value: "频谱强度", label: "频谱强度" },
 ]);
 const options2 = reactive([
-  { value: "无", label: "无" },
+  { value: "不显示", label: "不显示" },
   { value: "风羽", label: "风羽" },
   { value: "风矢", label: "风矢" },
 ]);

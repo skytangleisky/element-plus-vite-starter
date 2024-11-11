@@ -6,24 +6,20 @@ import { sixty2Float } from "~/tools";
 import { eventbus } from "~/eventbus";
 import superOption from './mapbox'
 mapboxgl.accessToken = "pk.eyJ1IjoidGFuZ2xlaTIwMTMxNCIsImEiOiJjbGtmOTdyNWoxY2F1M3Jqczk4cGllYXp3In0.9N-H_79ehy4dJeuykZa0xA";
-const years = ["1h", "2h", "3h", "4h", "5h", "6h", "7h", "8h", "9h", "10h", "11h", "12h","13","14","15","16","17","18","19","20","21","22","23","24"];
-let observers = []
-let charts = []
+const years = ["0h","1h", "2h", "3h", "4h", "5h", "6h", "7h", "8h", "9h", "10h", "11h", "12h","13","14","15","16","17","18","19","20","21","22","23"];
+let observers = new Map()
 export default {
   destroy(){
-    for(let i=0;i<observers.length;i++){
-      observers[i].disconnect()
-      observers.splice(i--,1)
+    for(let [dom,observer] of observers){
+      observer.disconnect()
+      echarts.getInstanceByDom(dom).dispose()
     }
-    for(let i=0;i<charts.length;i++){
-      charts[i].dispose()
-      charts.splice(i--,1)
-    }
+    observers.clear()
   },
   // 柱状图 and 折线图结合
   initBarAndLineChart(params) {
     console.log(params)
-    let chart = echarts.init(document.getElementById(params.chartName));
+    let chart = echarts.getInstanceByDom(params.chartName)||echarts.init(params.chartName);
     const option = {
       color: ["#605BFF", "#07B2EF"],
       title: {
@@ -248,17 +244,18 @@ export default {
       ],
     };
     chart.setOption(option);
-    let observer = new ResizeObserver(()=>{
-      chart.resize()
-    })
-    observer.observe(document.getElementById(params.chartName))
-    observers.push(observer)
-    charts.push(chart)
+    if(!observers.get(params.chartName)){
+      let observer = new ResizeObserver(()=>{
+        chart.resize()
+      })
+      observer.observe(params.chartName)
+      observers.set(params.chartName,observer)
+    }
 
   },
   // 柱状图 or 线图 （x时间）
   initLineOrBarChart(params) {
-    let chart = echarts.init(params.chartName);
+    let chart = echarts.getInstanceByDom(params.chartName)||echarts.init(params.chartName);
     const option = {
       title: {
         text: params.title,
@@ -413,18 +410,19 @@ export default {
       ];
     }
     chart.setOption(option);
-    let observer = new ResizeObserver(()=>{
-      chart.resize()
-    })
-    observer.observe(params.chartName)
-    observers.push(observer)
-    charts.push(chart)
+    if(!observers.get(params.chartName)){
+      let observer = new ResizeObserver(()=>{
+        chart.resize()
+      })
+      observer.observe(params.chartName)
+      observers.set(params.chartName,observer)
+    }
   },
   // 单柱状图 （x名称）
   initBarChart(params) {
     const keys = params.data ? params.data.map((item) => item.name) : "";
     const values = params.data ? params.data.map((item) => item.value) : "";
-    let chart = echarts.init(document.getElementById(params.chartName));
+    let chart = echarts.getInstanceByDom(params.chartName)||echarts.init(params.chartName);
     const option = {
       title: {
         text: params.title,
@@ -523,17 +521,17 @@ export default {
       color: [params.color],
     };
     chart.setOption(option);
-    let observer = new ResizeObserver(()=>{
-      chart.resize()
-    })
-    observer.observe(document.getElementById(params.chartName))
-    observers.push(observer)
-    charts.push(chart)
+    if(!observers.get(params.chartName)){
+      let observer = new ResizeObserver(()=>{
+        chart.resize()
+      })
+      observer.observe(params.chartName)
+      observers.set(params.chartName,observer)
+    }
   },
-
   // 堆叠柱状图
   initStackBarChart(params) {
-    let chart = echarts.init(document.getElementById(params.chartName));
+    let chart = echarts.getInstanceByDom(params.chartName)||echarts.init(params.chartName);
     const option = {
       title: {
         text: params.title,
@@ -657,17 +655,17 @@ export default {
       ],
     };
     chart.setOption(option);
-    let observer = new ResizeObserver(()=>{
-      chart.resize()
-    })
-    observer.observe(document.getElementById(params.chartName))
-    observers.push(observer)
-    charts.push(chart)
+    if(!observers.get(params.chartName)){
+      let observer = new ResizeObserver(()=>{
+        chart.resize()
+      })
+      observer.observe(params.chartName)
+      observers.set(params.chartName,observer)
+    }
   },
-
   // 双柱图 or 双折线图
   initDoubleLineOrBarChart(params) {
-    let chart = echarts.init(params.chartName);
+    let chart = echarts.getInstanceByDom(params.chartName)||echarts.init(params.chartName);
     const option = {
       title: {
         text: params.title,
@@ -1050,13 +1048,14 @@ export default {
         ];
       }
     }
-    chart.setOption(option);
-    let observer = new ResizeObserver(()=>{
-      chart.resize()
-    })
-    observer.observe(params.chartName)
-    observers.push(observer)
-    charts.push(chart)
+    chart.setOption(option)
+    if(!observers.get(params.chartName)){
+      let observer = new ResizeObserver(()=>{
+        chart.resize()
+      })
+      observer.observe(params.chartName)
+      observers.set(params.chartName,observer)
+    }
   },
   // 条形图复合框
   initCompositeBarChart(params) {
@@ -1069,7 +1068,7 @@ export default {
       params.border ? borderArr.push(480) : borderArr.push(100);
       // borderArr.push(480);
     }
-    let chart = echarts.init(document.getElementById(params.chartName));
+    let chart = echarts.getInstanceByDom(params.chartName)||echarts.init(params.chartName);
     const option = {
       title: {
         text: params.title,
@@ -1202,14 +1201,14 @@ export default {
       ],
     };
     chart.setOption(option);
-    let observer = new ResizeObserver(()=>{
-      chart.resize()
-    })
-    observer.observe(document.getElementById(params.chartName))
-    observers.push(observer)
-    charts.push(chart)
+    if(!observers.get(params.chartName)){
+      let observer = new ResizeObserver(()=>{
+        chart.resize()
+      })
+      observer.observe(params.chartName)
+      observers.set(params.chartName,observer)
+    }
   },
-
   // 条形图
   initBarTypeChart(params) {
     // console.log(params.data);
@@ -1226,7 +1225,7 @@ export default {
     });
     // console.log(nationalName);
     // console.log(nationalValue);
-    let chart = echarts.init(document.getElementById(params.chartName));
+    let chart = echarts.getInstanceByDom(params.chartName)||echarts.init(params.chartName);
     const option = {
       title: {
         text: params.title,
@@ -1440,18 +1439,19 @@ export default {
       ];
     }
     chart.setOption(option);
-    let observer = new ResizeObserver(()=>{
-      chart.resize()
-    })
-    observer.observe(document.getElementById(params.chartName))
-    observers.push(observer)
-    charts.push(chart)
+    if(!observers.get(params.chartName)){
+      let observer = new ResizeObserver(()=>{
+        chart.resize()
+      })
+      observer.observe(params.chartName)
+      observers.set(params.chartName,observer)
+    }
   },
   // 水球图
   initLiquidfill(params) {
     // console.log(params.data.d1[1]);
     // const data = [parseFloat(params.data.d1[i].replace("%", "")) / 100];
-    let chart = echarts.init(document.getElementById(params.chartName));
+    let chart = echarts.getInstanceByDom(params.chartName)||echarts.init(params.chartName);
     const option = {
       title: [],
       xAxis: {
@@ -1541,15 +1541,16 @@ export default {
       );
     }
     chart.setOption(option);
-    let observer = new ResizeObserver(()=>{
-      chart.resize()
-    })
-    observer.observe(document.getElementById(params.chartName))
-    observers.push(observer)
-    charts.push(chart)
+    if(!observers.get(params.chartName)){
+      let observer = new ResizeObserver(()=>{
+        chart.resize()
+      })
+      observer.observe(params.chartName)
+      observers.set(params.chartName,observer)
+    }
   },
   initRadarChart(params){
-    let chart = echarts.init(document.getElementById(params.chartName));
+    let chart = echarts.getInstanceByDom(params.chartName)||echarts.init(params.chartName);
     const preValue = [
       params.data[0].xxpp,
       params.data[0].trtj,
@@ -1650,15 +1651,16 @@ export default {
       ],
     };
     chart.setOption(option);
-    let observer = new ResizeObserver(()=>{
-      chart.resize()
-    })
-    observer.observe(document.getElementById(params.chartName))
-    observers.push(observer)
-    charts.push(chart)
+    if(!observers.get(params.chartName)){
+      let observer = new ResizeObserver(()=>{
+        chart.resize()
+      })
+      observer.observe(params.chartName)
+      observers.set(params.chartName,observer)
+    }
   },
   initBarAndPieChart(params) {
-    let chart = echarts.init(document.getElementById(params.chartName));
+    let chart = echarts.getInstanceByDom(params.chartName)||echarts.init(params.chartName);
     const option = {
       title: [
         {
@@ -1837,12 +1839,13 @@ export default {
       top: "42%",
     });
     chart.setOption(option);
-    let observer = new ResizeObserver(()=>{
-      chart.resize()
-    })
-    observer.observe(document.getElementById(params.chartName))
-    observers.push(observer)
-    charts.push(chart)
+    if(!observers.get(params.chartName)){
+      let observer = new ResizeObserver(()=>{
+        chart.resize()
+      })
+      observer.observe(params.chartName)
+      observers.set(params.chartName,observer)
+    }
   },
   initMapChart(params) {
     let data = []
@@ -1880,8 +1883,10 @@ export default {
 
 
 
-    let chart = echarts.init(params.chartName);
-    echarts.registerMap("chongqing", chongqing);
+    let chart = echarts.getInstanceByDom(params.chartName)||echarts.init(params.chartName);
+    if(!echarts.getMap('chongqing')){
+      echarts.registerMap("chongqing", chongqing);
+    }
     // chongqing["features"].forEach((e,k) => {
     //   geoCoordMap[e.properties.name] = e.properties.center;
     //   params.data.push({
@@ -2018,7 +2023,9 @@ export default {
         {//区域选中后高亮
           type: "map",
           geoIndex: 0,
+          roam:false,
           data,
+          coordinateSystem:'geo',
           showLegendSymbol: true, // 存在legend时显示
           itemStyle: {
             normal: {
@@ -2180,15 +2187,16 @@ export default {
     };
     chart.setOption(option);
     // chart.setOption(superOption)
-    let observer = new ResizeObserver(()=>{
-      chart.resize()
-    })
-    observer.observe(params.chartName)
-    observers.push(observer)
-    charts.push(chart)
+    if(!observers.get(params.chartName)){
+      let observer = new ResizeObserver(()=>{
+        chart.resize()
+      })
+      observer.observe(params.chartName)
+      observers.set(params.chartName,observer)
+    }
   },
   initPieChart1(params){
-    let chart = echarts.init(params.chartName);
+    let chart = echarts.getInstanceByDom(params.chartName)||echarts.init(params.chartName);
     let option = {
       tooltip: {
         trigger: 'item',
@@ -2252,11 +2260,12 @@ export default {
       ]
     }
     chart.setOption(option);
-    let observer = new ResizeObserver(()=>{
-      chart.resize()
-    })
-    observer.observe(params.chartName)
-    observers.push(observer)
-    charts.push(chart)
+    if(!observers.get(params.chartName)){
+      let observer = new ResizeObserver(()=>{
+        chart.resize()
+      })
+      observer.observe(params.chartName)
+      observers.set(params.chartName,observer)
+    }
   }
 };

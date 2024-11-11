@@ -1,6 +1,5 @@
 import WindGL from '../mapbox/WindGL/index';
 import {mat4} from 'gl-matrix';
-
 export default class CustomLayer {
   constructor(json,png,show) {
     this.id = 'null-island';
@@ -9,12 +8,13 @@ export default class CustomLayer {
     this.json = json
     this.png = png
     this.show = show
+    this.resize = this.resize.bind(this)
   }
   onAdd(map, gl) {
     this.map = map
     this.projectionName = this.map.getProjection().name
     this.wind = new WindGL(gl,{boundaries:this.json.boundaries})
-    this.wind.numParticles = 1024
+    this.wind.numParticles = 2048
     let windData = this.json
     const windImage = new Image();
     windImage.width = windData.width
@@ -22,24 +22,18 @@ export default class CustomLayer {
     windData.image = windImage;
     windImage.src = this.png;
     windImage.onload = () => {
-        this.wind.setWind(windData);
+      this.wind.setWind(windData);
     };
-    this.map.on("wheel", () => {
-      this.wind.resize();
-    });
-    this.map.on("dragstart", () => {
-      this.wind.resize();
-    });
-    this.map.on("move", () => {
-      this.wind.resize();
-    });
+    this.map.on("wheel", this.resize);
+    this.map.on("dragstart", this.resize);
+    this.map.on("move", this.resize);
   }
   render(gl, projectionMatrix, projection, globeToMercMatrix, transition, centerInMercator, pixelsPerMeterRatio) {
     if(this.show){
       if (this.wind.windData) {
         if (projection && projection.name === 'globe') {
           if(this.projectionName!='globe'){
-            this.wind.resize()
+            resize()
             this.projectionName='globe'
           }
           gl.enable(gl.BLEND);
@@ -48,7 +42,7 @@ export default class CustomLayer {
           this.wind.draw(projectionMatrix,1);
         }else{
           if(this.projectionName!='mercator'){
-            this.wind.resize()
+            wind.resize()
             this.projectionName='mercator'
           }
           gl.enable(gl.BLEND);
@@ -58,5 +52,14 @@ export default class CustomLayer {
         this.map.triggerRepaint();
       }
     }
+  }
+  resize(){
+    this.wind.resize()
+  }
+  onRemove(map,gl){
+    this.wind.dispose(map,gl)
+    this.map.off("wheel",this.resize)
+    this.map.off("dragstart",this.resize)
+    this.map.off("move",this.resize)
   }
 }

@@ -16,7 +16,7 @@ export default class CustomLayer {
         this.projectionName = this.map.getProjection().name
         this.wind = new WindGL(gl,{boundaries:[32,160,12,80]})//和micaps数据范围对应
         // this.wind = new WindGL(gl,{boundaries:[100.57,169.42999999999998,-10.38,50.30088389285023]})//和卫星云图位置对应
-		this.wind.numParticles = 2048
+		this.wind.numParticles = 65535
             let windData = this.json
             const windImage = new Image();
             windImage.width = windData.width

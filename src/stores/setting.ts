@@ -34,10 +34,10 @@ export const useSettingStore = defineStore({
     },
     风雷达组网地图相关:{
       等距环:false,
-      altitudeHeight:100,
+      altitudeHeight:800,
       relativeHeight:1,
-      风场数据:"无",
-      反演风场:"无",
+      风场数据:"不显示",
+      反演风场:"不显示",
       站名:true,
       站号:false,
       高度:false,
@@ -55,7 +55,7 @@ export const useSettingStore = defineStore({
         108,
         30.286192617004076
       ],
-      ppiOpacity:0,
+      ppiOpacity:1,
       mapOpacity:1,
       factor:[
         {toolTips:'站名',name:'ZN',val:true,visible:false},

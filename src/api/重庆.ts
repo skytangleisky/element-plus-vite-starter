@@ -4,39 +4,50 @@ import moment from 'moment';
 // export const databaseRaw = 'host=tanglei.top&port=3306&user=root&password=tanglei&database=union';
 export const databaseRaw = 'host=tanglei.top&port=3308&user=root&password=mysql&database=weatherservice';
 // export const databaseRaw = 'host=127.0.0.1&port=3306&user=admin&password=EkWM76Z8IJbfviCr&database=weatherservice';
-export function getDataList(query:{radar_id:string,path:string}){
+
+export function getDataList(query:{radar_id:string,path:string,type:string}){
+  let url = '/python/api/weather/ppi/file/path';
+  if(query.type=='DBS'){
+    url = '/python/api/weather/avg10min/file/path'
+  }
   return request({
-    url: '/qt/dataList',
+    url: url,
     method: 'post',
     data:{
-      "version":"1.0",
-      "secretKey":"904c396f6956d02c59a6ad35c08f5678",
       "radar_id":query.radar_id,
       "path":query.path
     }
   })
 }
-
-export function getFkxHisData(query:{radar_id:string,dateTime:string}){
+export function getPPIRadial(query:{radar_id:string,data_type:number,path:string,date_time:string}){
   return request({
-    url: '/qt/hisCSV/dbs',
+    url: '/python/api/weather/ppi/time_file',
     method: 'post',
-    data: {"version":"1.0","secretKey":"904c396f6956d02c59a6ad35c08f5678","radar_id":query.radar_id,"dataTime":query.dateTime,num:4}
+    data:{
+      "radar_id":query.radar_id,
+      "path":query.path,
+      "date_time":query.date_time,
+      data_type:query.data_type
+    }
   })
 }
 
-//mock
-export function getFkxRealData(query:{radar_id:string,dateTime:string,num:number}){
-  let data = {
-    "version": "1.0",
-    "secretKey": "904c396f6956d02c59a6ad35c08f5678",
+// export function getFkxHisData(query:{radar_id:string,dateTime:string}){
+//   return request({
+//     url: '/qt/hisCSV/dbs',
+//     method: 'post',
+//     data: {"version":"1.0","secretKey":"904c396f6956d02c59a6ad35c08f5678","radar_id":query.radar_id,"dataTime":query.dateTime,num:4}
+//   })
+// }
+
+export function getFkxHisData(query:{radar_id:string,yearmonthdate:string}){//
+  let data = {//yearmonthdate和file_name传一个参数就可以
     "radar_id": query.radar_id,
-    "dataTime": query.dateTime,
-    "level":3,
-    "num":query.num
+    "yearmonthdate": query.yearmonthdate,
+    file_name:""
   }
   return request({
-    url: '/qt/realCSV/dbs',
+    url: '/python/api/weather/avg10min/date_file',
     method: 'post',
     headers:{
       'content-type':'application/json'
@@ -45,18 +56,69 @@ export function getFkxRealData(query:{radar_id:string,dateTime:string,num:number
   })
 }
 
-export function getFkxData(query:{dataTime:string,altitude:number}){
+// export function getFkxRealData(query:{radar_id:string,dateTime:string,num:number}){//风廓线径向数据(比较慢)-熊俊凯
+//   let data = {
+//     "version": "1.0",
+//     "secretKey": "904c396f6956d02c59a6ad35c08f5678",
+//     "radar_id": query.radar_id,
+//     "dataTime": query.dateTime,
+//     "level":3,
+//     "num":query.num
+//   }
+//   return request({
+//     url: '/qt/realCSV/dbs',
+//     method: 'post',
+//     headers:{
+//       'content-type':'application/json'
+//     },
+//     data
+//   })
+// }
+export function getFkxRealData(query:{radar_id:string,dateTime:string,num:number}){//风廓线径向数据-陈俊驰
   let data = {
-    "version": "1.0",
-    "secretKey": "904c396f6956d02c59a6ad35c08f5678",
+    "radar_id": query.radar_id,
+    "dataTime": query.dateTime,
+    "level":3,
+    "num":query.num
+  }
+  return request({
+    url: '/python/api/weather/avg10min/latest',
+    method: 'post',
+    headers:{
+      'content-type':'application/json'
+    },
+    data
+  })
+}
+
+// export function getFkxData(query:{dataTime:string,altitude:number}){//熊俊凯（比较慢）
+//   let data = {
+//     "version": "1.0",
+//     "secretKey": "904c396f6956d02c59a6ad35c08f5678",
+//     "dataTime": query.dataTime,
+//     "altitude": query.altitude,
+//     "dataTime_interval":600,
+//     "alt_interval": 50,
+//     "level": 3
+//   }
+//   return request({
+//     url: '/qt/dbsNet',
+//     method: 'post',
+//     headers:{
+//       'content-type':'application/json'
+//     },
+//     data
+//   })
+// }
+export function getFkxData(query:{dataTime:string,altitude:number}){//陈俊驰
+  let data = {
     "dataTime": query.dataTime,
     "altitude": query.altitude,
     "dataTime_interval":600,
     "alt_interval": 50,
-    "level": 3
   }
   return request({
-    url: '/qt/dbsNet',
+    url: '/python/api/weather/avg10min/data',
     method: 'post',
     headers:{
       'content-type':'application/json'

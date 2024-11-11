@@ -168,6 +168,11 @@ export default class WindGL{
 		this.particleStateTexture0 = this.particleStateTexture1;
 		this.particleStateTexture1 = temp;
 	}
+	dispose(map,gl){
+		gl.deleteProgram(this.drawProgram.program)
+		gl.deleteProgram(this.screenProgram.program)
+		gl.deleteProgram(this.updateProgram.program)
+	}
 	// getSpeed(coordinate) {
 	// 	if (!this.windData || !this.windData.width) {
 	// 		return;

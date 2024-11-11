@@ -1588,6 +1588,7 @@ function fetch最近风廓线数据(){
       }
       result.data.push(radial)
     }
+    console.log(result)
     bus.avgWindData_重庆 = result
   }))
 }

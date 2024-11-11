@@ -9,7 +9,8 @@
   </div>
 </template>
 <script lang="ts" setup>
-import contentDBS from "../contentDBS.vue";
+// import contentDBS from "../contentDBS.vue";
+import contentDBS from "../contentPPI.vue";
 import type { TabsPaneContext } from "element-plus";
 const handleClick = (tab: TabsPaneContext, event: Event) => {
   console.log(tab, event);
