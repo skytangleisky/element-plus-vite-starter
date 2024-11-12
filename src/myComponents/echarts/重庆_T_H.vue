@@ -46,7 +46,7 @@ watch(
     if(avgWindData.data){
       avgWindData.data.map((radial:any,key:number)=>{
         if(key==0){
-          currentTime.value = moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('HH:mm:ss')
+          currentTime.value = moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
         }
         option.xAxis.data.push(moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('HH:mm:ss') as never)
         option.series[0].data.push(Number(radial['Temperature']))

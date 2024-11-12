@@ -14,7 +14,7 @@
             </div>
             <div class="w-full flex h-40px items-center p-4px box-border">
               <div class="whitespace-nowrap">控制板MCU温度，单位℃</div>
-              <div class="sensor-properties">{{ formData.MCBoardTemp }}</div>
+              <div class="sensor-properties">{{ format(formData.MCBoardTemp) }}</div>
             </div>
             <div class="w-full flex h-40px items-center p-4px box-border">
               <div class="whitespace-nowrap">雷达内部湿度（来自主控板温湿度传感器），单位%</div>

@@ -1,7 +1,7 @@
 <template>
-  <div class="relative" style="font-family: Digital-Classic,Menlo,Consolas,Monaco;border:1px solid gray;border-radius:4px;">
-    <div class="relative whitespace-nowrap" style="color:#ffffff44;">8888-88-88&emsp;88:88:88</div>
-    <div class="absolute whitespace-nowrap color-#0f0 inset-0" style="text-shadow: 0 0 8px #000;" v-html="timeString"></div>
+  <div class="DigitalClock">
+    <div class="back">8888-88-88&emsp;88:88:88</div>
+    <div class="front" v-html="timeString"></div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -19,4 +19,32 @@ onBeforeUnmount(() => {
 })
 </script>
 <style lang="scss">
+  .DigitalClock{
+    position: relative;
+    line-height: 20px;
+    .back{
+      position: relative;
+      color:#00000040;
+      white-space:nowrap;
+    }
+    position: relative;
+    font-family: Digital-Classic,Menlo,Consolas,Monaco;
+    border:1px solid gray;border-radius:4px;
+    .front{
+      left:0;
+      top:0;
+      position: absolute;
+      white-space:nowrap;
+      color:#000;
+    }
+  }
+  .dark .DigitalClock{
+    color:#000;
+    .back{
+      color:#ffffff40;
+    }
+    .front{
+      color:#0f0;
+    }
+  }
 </style>

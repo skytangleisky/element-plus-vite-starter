@@ -51,8 +51,8 @@
       </div>
       <div ref="popup_closer" class="ol-popup-closer"></div>
     </div>
-    <Dialog class="absolute" style="left: 240px; top: 10px"></Dialog>
     <radar-statistic></radar-statistic>
+    <Dialog class="absolute" style="left: 240px; top: 10px"></Dialog>
     <Legend class="legend" style="z-index: 1;"></Legend>
     <div
       :class="`right-drawer ${
@@ -61,12 +61,12 @@
     >
       <div style="display:flex;flex-direction: column;overflow: auto; scroll-snap-type: none;height: 100%;">
         <chart-info></chart-info>
-        <chart-fkx></chart-fkx>
-        <chart-dom></chart-dom>
-        <chartDirection></chartDirection>
-        <chartSpeed></chartSpeed>
-        <chartSNR></chartSNR>
-        <chart-th></chart-th>
+        <chart-fkx v-if="hasPermission(['2353f2f5-b27b-473c-b281-4aa76858ff51'])"></chart-fkx>
+        <chart-dom v-if="hasPermission(['aa0f5674-ca38-4987-9964-f232024f0992'])"></chart-dom>
+        <chartDirection v-if="hasPermission(['ecd5d757-94eb-4b5e-9275-0ffb25a7cbc9'])"></chartDirection>
+        <chartSpeed v-if="hasPermission(['d16bc38f-4b41-4294-b8e6-6230f7633120'])"></chartSpeed>
+        <chartSNR v-if="hasPermission(['fc040225-820d-42f0-8e1a-239c9a76058a'])"></chartSNR>
+        <chart-th v-if="hasPermission(['31aba6cc-6da7-432a-87a3-576e4d5f59f2'])"></chart-th>
       </div>
       <el-icon
         class="left--29px z-999 bg-#eee dark:bg-#304156 dark:color-#888"
@@ -1057,7 +1057,7 @@ async function work(){
 async function updateData(altitude:number){
   //20240729054058
   await getFkxData({dataTime:moment().format('YYYYMMDDHHmmss'),altitude}).then(result=>{
-    console.log('---->',result.data)
+    console.log(result)
     res.data[0].map((device:any,k:number)=>{
       for(let key in result.data.data){
         if(device.no === result.data.data[key].radar_id){
@@ -1727,6 +1727,8 @@ watch(isDark,isDark=>{
     map.setPaintProperty('时间图层','text-color','white')
     map.setPaintProperty('时间图层','text-halo-color','black')
     map.setPaintProperty('stationLayer','circle-stroke-color','white')
+    map.setPaintProperty('districtLineBase','line-color','#fff')
+    map.setPaintProperty('districtOutlineBase','line-color','#fff')
     points.data.features.forEach(feature=>{
       if(feature.properties.color == '#000'){
         feature.properties.color = '#fff'
@@ -1751,6 +1753,8 @@ watch(isDark,isDark=>{
     map.setPaintProperty('时间图层','text-color','black')
     map.setPaintProperty('时间图层','text-halo-color','white')
     map.setPaintProperty('stationLayer','circle-stroke-color','black')
+    map.setPaintProperty('districtLineBase','line-color','#000')
+    map.setPaintProperty('districtOutlineBase','line-color','#000')
     points.data.features.forEach(feature=>{
       if(feature.properties.color == '#fff'){
         feature.properties.color = '#000'

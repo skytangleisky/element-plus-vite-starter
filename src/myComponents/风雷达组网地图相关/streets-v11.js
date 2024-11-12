@@ -1,4 +1,5 @@
 // import url from "./satellite.json?url"
+import { isDark } from "~/composables/dark.ts";
 import data from "./satellite.js"
 let url = URL.createObjectURL(new File([JSON.stringify(data)],"satellite.json",{type:"application/json"}))
 import { useSettingStore } from '~/stores/setting';
@@ -353,22 +354,9 @@ export default {
 					'line-cap':'round'
 				},
 				'paint': {
-					'line-color': 'white',
-					'line-width': 3,
-				}
-			},
-			{
-				'id': 'districtLine',
-				'type': 'line',
-				'source': 'district',
-				'layout': {
-					'visibility':setting.district?'visible':'none',
-					'line-join':'round',
-					'line-cap':'round'
-				},
-				'paint': {
-					'line-color': 'black',
-					'line-width': 1
+					'line-color': isDark.value?'#fff':'#000',
+					'line-width': 1,
+					'line-opacity':0.2
 				}
 			},
 			{
@@ -381,22 +369,8 @@ export default {
 					'line-cap':'round'
 				},
 				'paint': {
-					'line-color': 'white',
-					'line-width': 6
-				}
-			},
-			{
-				'id': 'districtOutline',
-				'type': 'line',
-				'source': 'districtOutline',
-				'layout': {
-					'visibility':setting.district?'visible':'none',
-					'line-join':'round',
-					'line-cap':'round'
-				},
-				'paint': {
-					'line-color': 'black',
-					'line-width': 3
+					'line-color': isDark.value?'#fff':'#000',
+					'line-width': 2
 				}
 			},
 	],

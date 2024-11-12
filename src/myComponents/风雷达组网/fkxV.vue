@@ -77,17 +77,17 @@ const 处理风廓线数据 = (data: any, type1: string, diejia: string, type2: 
     /* level3 */
     let view:View|null = new View(encoder.encode(data).buffer)
     let result:{[key:string]:any} = {HeaderInfo:{},radials:[]}
-    let firstLine = decoder.decode(view.getLine()).replace(/,\r\n$/,'').split(',')
+    let firstLine = decoder.decode(view.getLine()).replace(/,\r\n|,\r|,\n$/,'').split(',')
     for(let i=1;i<firstLine.length;i++){
       let item = firstLine[i].split(':')
       if(item.length==2){
         result.HeaderInfo[item[0]] = item[1]
       }
     }
-    let secondLine = decoder.decode(view.getLine()).replace(/,\r\n$/,'').split(',')
+    let secondLine = decoder.decode(view.getLine()).replace(/,\r\n|,\r|,\n$/,'').split(',')
     while(!view.reachEnd()){
       let radial:{[key:string]:any} = {list:[]}
-      let thirdLine = decoder.decode(view.getLine()).replace(/,\r\n$/g,'').split(',')
+      let thirdLine = decoder.decode(view.getLine()).replace(/,\r\n|,\r|,\n$/g,'').split(',')
       for(let i=0;i<9;i++){
         radial[secondLine[i]] = thirdLine[i]
       }

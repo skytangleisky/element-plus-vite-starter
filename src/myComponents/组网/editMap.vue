@@ -714,11 +714,11 @@ onMounted(() => {
         result: { [key: string]: any } = {};
       let firstLine = d
         .decode(v.getLine())
-        .replace(/,\r\n$/, "")
+        .replace(/,\r\n|,\r|,\n$/, "")
         .split(",");
       let secondLine = d
         .decode(v.getLine())
-        .replace(/,\r\n$/, "")
+        .replace(/,\r\n|,\r|,\n$/, "")
         .split(",");
       type HeaderInfo = {
         AllGates: 200;
@@ -762,7 +762,7 @@ onMounted(() => {
       while (!v.reachEnd()) {
         let thirdLine = d
           .decode(v.getLine())
-          .replace(/,\r\n$/, "")
+          .replace(/,\r\n|,\r|,\n$/, "")
           .split(",");
         let item = { EarthAzimuth: 0, list: new Array<any>() };
         for (let i = 0; i < 23; i++) {

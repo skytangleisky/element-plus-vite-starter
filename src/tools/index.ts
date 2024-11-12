@@ -8,19 +8,21 @@ import droneUrl from "~/assets/aircraft.svg?url";
 import { useUserStore } from '~/stores/user';
 import { useSettingStore } from '~/stores/setting';
 export function hasPermission(permissions:Array<String>){
-  const setting = useSettingStore()
-  let recurse = (list:any)=>{
+  let has = false
+  const recurse = (list:any)=>{
     for(let item of list){
       if(Array.isArray(item.children)){
-        return recurse(item.children)
+        recurse(item.children)
       }else{
         if(permissions.indexOf(item.name)>=0&&item.checked){
-          return true
+          has = true
         }
       }
     }
   }
-  return recurse(setting.permissions)
+  const setting = useSettingStore()
+  recurse(setting.permissions)
+  return has
 }
 export function getLngLat(v:string):[number,number]{
   let lng = v.substring(0, v.indexOf("E"));

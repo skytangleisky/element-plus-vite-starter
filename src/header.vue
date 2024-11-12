@@ -16,6 +16,7 @@
         style="display: flex; align-items: center; white-space: nowrap"
       >
         <!-- <div v-else @click="login" class="QQ_Login_Button"></div> -->
+        <DigitalClock class="m-r-40px"/>
         {{ user.username }}，欢迎您！
         <el-dropdown v-if="user.logined" trigger="click" size="small">
           <el-avatar :size="32" :src="user.avatar" style="margin: 0 8px">
@@ -43,6 +44,7 @@
   </div>
 </template>
 <script lang="ts" setup>
+import DigitalClock from '~/tools/DigitalClock.vue';
 import ResetSvg from '~/assets/reset.svg?raw'
 import openSvg from "~/assets/expand.svg?raw";
 import collapseSvg from "~/assets/collapse.svg?raw";

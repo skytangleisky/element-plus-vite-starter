@@ -10,17 +10,19 @@
       <el-checkbox v-for="(v,k) in roles" v-model="v.val" :key="k" :label="v.key" size="large" />
     </div>
     <div class="flex flex-row items-start">
-      <VueDraggable class="drag-area dd w-50%" tag="ol" v-model="setting.routes" group="g1">
+      <VueDraggable class="drag-area dd w-35%" tag="ol" v-model="setting.routes" group="g1">
         <subEditMenu :routes="(setting.routes as any)"></subEditMenu>
       </VueDraggable>
-      <VueDraggable class="drag-area dd w-50%" tag="ol" v-model="setting.routes" group="gp">
-        <SubPermission v-for="permission in permissions" v-model:permission="(permission as any)"></SubPermission>
+      <VueDraggable class="drag-area dd w-35%" tag="ol" v-model="setting.routes" group="gp">
+        <SubPermission v-for="permission in permissions" v-model:permission="(permission as any)" @update="updateNodeStatus(permission)"></SubPermission>
       </VueDraggable>
+      <Test class="w-30%"></Test>
     </div>
     <!-- <Tree></Tree> -->
   </div>
 </template>
 <script lang="ts" setup>
+import Test from './test.vue'
 import {reactive,computed} from 'vue'
 const roles = reactive([{key:'admin',val:true},{key:'device',val:false},{key:'zh',val:true},{key:'ry',val:true},{key:'jx',val:true},{key:'cq',val:true}])
 import { VueDraggable } from 'vue-draggable-plus'
@@ -30,25 +32,57 @@ import Tree from "./Tree.vue";
 import { onMounted, onBeforeUnmount } from "vue";
 import { useSettingStore } from "~/stores/setting";
 
+function updateNodeStatus(node:any) {
+  // 如果节点没有子节点，直接返回节点的状态
+  if (!node.children || node.children.length === 0) {
+    return { checked: node.checked || false, indeterminate: false };
+  }
+
+  // 遍历子节点的状态
+  let allChecked = true;
+  let anyChecked = false;
+
+  node.children.forEach(child => {
+    const { checked, indeterminate } = updateNodeStatus(child);
+    // 如果子节点有一个没有选中，那么父节点不能全选
+    if (!checked || indeterminate) {
+      allChecked = false;
+    }
+    // 如果子节点有一个被选中，那么父节点至少会是 indeterminate
+    if (checked || indeterminate) {
+      anyChecked = true;
+    }
+  });
+
+  // 设置当前节点的 checked 和 indeterminate 状态
+  node.checked = allChecked;
+  node.indeterminate = !allChecked && anyChecked;
+
+  return { checked: node.checked, indeterminate: node.indeterminate };
+}
+
 //下面这个目的是补齐权限配置中父节点中indeterminate状态
 const permissions = computed({
   set:(permissions)=>{
     Object.assign(setting.permissions,permissions)
   },
   get:()=>{
-    const recurse = (list:Array<any>) => {
-      list.map(item=>{
-        if(Array.isArray(item.children)){
-          if(item.children.every((item:any)=>item.checked)||item.children.every((item:any)=>!item.checked)){
-            item.indeterminate = false
-          }else{
-            item.indeterminate = true
-          }
-          recurse(item.children)
-        }
-      })
-    }
-    recurse(setting.permissions)
+    // const recurse = (list:Array<any>) => {
+    //   list.map(item=>{
+    //     if(Array.isArray(item.children)){
+    //       if(item.children.every((item:any)=>item.checked)||item.children.every((item:any)=>!item.checked)){
+    //         item.indeterminate = false
+    //       }else{
+    //         item.indeterminate = true
+    //       }
+    //       recurse(item.children)
+    //     }
+    //   })
+    // }
+    setting.permissions.map(node=>{
+      updateNodeStatus(node)
+    })
+    
     return setting.permissions
   }
 })
@@ -63,6 +97,7 @@ setting.targetRoles = computed(()=>{
   return arr
 }) as any
 import {getMenu} from '~/api/角色/role'
+import { settings } from 'nprogress';
 getMenu().then(res=>{
   // Object.assign(setting.routes,JSON.parse(res.data.results[0].menu_tree))
 })

@@ -34,7 +34,7 @@ export const useSettingStore = defineStore({
     },
     风雷达组网地图相关:{
       等距环:false,
-      altitudeHeight:800,
+      altitudeHeight:900,
       relativeHeight:1,
       风场数据:"不显示",
       反演风场:"不显示",

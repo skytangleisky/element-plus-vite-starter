@@ -53,7 +53,8 @@ watch(()=>props.radar_time,(newVal)=>{
   getFkxHisData({ radar_id, yearmonthdate:newVal.split('/').slice(-1)[0] }).then((res) => {
     风廓线数据 = res.data.data.file.file_data;
     eventbus.emit("处理风廓线数据"+radar_id, 风廓线数据, value1.value, check.value, value2.value);
-  }).catch(()=>{
+  }).catch((error)=>{
+    console.log(error)
     eventbus.emit("处理风廓线数据"+radar_id, [], value1.value, check.value, value2.value);
   })
 })

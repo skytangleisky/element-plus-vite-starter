@@ -16,10 +16,10 @@
       <DigitalClock class="font-size-20px hidden xl:flex"/>
     </div>
     <div class="flex items-center">
-      <el-badge :value="0" type="warning" :is-dot="false" :offset="[-15,2]" :show-zero="false" @click="alarmClick" v-if="hasPermission('808b579e-e069-4435-bc85-11f7209c4eb6')">
+      <el-badge :value="0" type="warning" :is-dot="false" :offset="[-15,2]" :show-zero="false" @click="alarmClick" v-if="hasPermission(['808b579e-e069-4435-bc85-11f7209c4eb6'])">
         <el-icon v-html="alarmSvg" style="font-size:20px; color:#00f3ff;margin-right:10px"/>
       </el-badge>
-      <el-icon v-html="settingSvg" style="font-size:20px; color:#00f3ff;margin-right:10px" @click="settingClick" v-if="hasPermission('a3a27c58-660f-4d14-a582-6817de2d5079')"/>
+      <el-icon v-html="settingSvg" style="font-size:20px; color:#00f3ff;margin-right:10px" @click="settingClick" v-if="hasPermission(['a3a27c58-660f-4d14-a582-6817de2d5079'])"/>
       <el-icon v-html="logoutSvg" @click="logout" style="font-size:20px; color:#00f3ff;margin-right:10px"/>
     </div>
     <div class="menuItem absolute top-35px left-50% flex w-110px h-20px justify-center" style="transform: translateX(-50%) translateX(-550px);" @click.native="menuClick(0)" v-if="hasPermission(['f46f5668-75ab-40a4-a578-da2b61c3ed95'])">
