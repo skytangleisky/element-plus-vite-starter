@@ -23,9 +23,10 @@ onBeforeUnmount(() => {
     white-space:nowrap;
     position: relative;
     line-height: 20px;
+    font-size: 20px;
     .back{
       position: relative;
-      color:#00000010;
+      color:#ffffff10;
     }
     position: relative;
     font-family: Digital-Classic,Menlo,Consolas,Monaco;
@@ -35,15 +36,15 @@ onBeforeUnmount(() => {
       top:0;
       position: absolute;
       white-space:nowrap;
-      color:#000;
-    }
-  }
-  .dark .DigitalClock{
-    .back{
-      color:#ffffff10;
-    }
-    .front{
       color:#0f0;
     }
   }
+  // .dark .DigitalClock{
+  //   .back{
+  //     color:#ffffff10;
+  //   }
+  //   .front{
+  //     color:#0f0;
+  //   }
+  // }
 </style>

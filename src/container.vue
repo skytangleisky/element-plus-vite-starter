@@ -1,7 +1,8 @@
 <template>
   <left-menu></left-menu>
   <div class="flex flex-col" style="width: 100%; height: 100%">
-    <my-header></my-header>
+    <my-header @editUser="editUserShow=true"></my-header>
+    <ChangePassword class="z-5" v-if="editUserShow" v-model:show="editUserShow"></ChangePassword>
     <div
       class="relative w-full h-full b-solid b-red b-0px box-border"
       style="overflow: visible"
@@ -29,7 +30,9 @@
   <!-- <remote-component></remote-component> -->
 </template>
 <script setup name="contain">
+import ChangePassword from "./changePassword.vue";
 import { ref, onMounted } from "vue";
+const editUserShow = ref(false)
 // import { version as piniaVersion } from "~/tools/pinia/src/package.json'
 // import { version as vueVersion } from 'vue/package.json'
 // import { version as elementplusVersion } from 'element-plus/package.json'

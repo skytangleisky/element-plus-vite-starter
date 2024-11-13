@@ -389,7 +389,7 @@ async function work(){
   });*/
   const sensorData = (await getSensorData({radar_id:'',dataTime:moment().format('YYYYMMDD')})).data.data
   const th1Data = new Array(24).fill(0)
-  sensorData.map((item:any)=>{
+  sensorData&&sensorData.map((item:any)=>{
     if(item.radar_id=='A6418'){
       for(let i=0;i<24;i++){
         if(item.data[i]){
@@ -422,7 +422,7 @@ async function work(){
     },
   });
   const th2Data = new Array(24).fill(0)
-  sensorData.map((item:any)=>{
+  sensorData&&sensorData.map((item:any)=>{
     if(item.radar_id=='A6419'){
       for(let i=0;i<24;i++){
         if(item.data[i]){
@@ -455,7 +455,7 @@ async function work(){
     },
   });
   const th3Data = new Array(24).fill(0)
-  sensorData.map((item:any)=>{
+  sensorData&&sensorData.map((item:any)=>{
     if(item.radar_id=='A6420'){
       for(let i=0;i<24;i++){
         if(item.data[i]){
@@ -488,7 +488,7 @@ async function work(){
     },
   });
   const th4Data = new Array(24).fill(0)
-  sensorData.map((item:any)=>{
+  sensorData&&sensorData.map((item:any)=>{
     if(item.radar_id=='A6421'){
       for(let i=0;i<24;i++){
         if(item.data[i]){
@@ -521,7 +521,7 @@ async function work(){
     },
   });
   const th5Data = new Array(24).fill(0)
-  sensorData.map((item:any)=>{
+  sensorData&&sensorData.map((item:any)=>{
     if(item.radar_id=='A6422'){
       for(let i=0;i<24;i++){
         if(item.data[i]){
@@ -554,7 +554,7 @@ async function work(){
     },
   });
   const th6Data = new Array(24).fill(0)
-  sensorData.map((item:any)=>{
+  sensorData&&sensorData.map((item:any)=>{
     if(item.radar_id=='A6423'){
       for(let i=0;i<24;i++){
         if(item.data[i]){

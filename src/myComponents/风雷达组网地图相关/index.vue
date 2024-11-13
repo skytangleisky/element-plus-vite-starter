@@ -61,6 +61,7 @@
     >
       <div style="display:flex;flex-direction: column;overflow: auto; scroll-snap-type: none;height: 100%;">
         <chart-info></chart-info>
+        <FKX></FKX>
         <chart-fkx v-if="hasPermission(['2353f2f5-b27b-473c-b281-4aa76858ff51'])"></chart-fkx>
         <chart-dom v-if="hasPermission(['aa0f5674-ca38-4987-9964-f232024f0992'])"></chart-dom>
         <chartDirection v-if="hasPermission(['ecd5d757-94eb-4b5e-9275-0ffb25a7cbc9'])"></chartDirection>
@@ -131,6 +132,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import FKX from './风廓线.vue';
 import uvUrl from "../mapbox/data/06040808.000?url";
 import CustomLayer from './CustomLayer.js'//绘制流线
 import discreteContour from "./discreteContour.ts";//绘制等值线
@@ -1057,10 +1059,15 @@ async function work(){
 async function updateData(altitude:number){
   //20240729054058
   await getFkxData({dataTime:moment().format('YYYYMMDDHHmmss'),altitude}).then(result=>{
-    console.log(result)
     res.data[0].map((device:any,k:number)=>{
       for(let key in result.data.data){
         if(device.no === result.data.data[key].radar_id){
+          let timeStr = result.data.data[key].dataTime
+          if(timeStr){
+            device.time = moment(timeStr,'YYYY-MM-DD HH:mm:ss').format('HH:mm')
+          }else{
+            device.time = ''
+          }
           res.data[0][k].wind = result.data.data[key]
         }
       }
@@ -1637,6 +1644,7 @@ function fetch最近风廓线数据(){
       result.data.push(radial)
     }
     bus.avgWindData_重庆 = result
+    eventbus.emit('处理实时风廓线数据',{radar_id:station.active,风廓线数据:res.data.data.file.file_data})
   }))
 }
 onMounted(() => {

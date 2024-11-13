@@ -6,14 +6,14 @@
         <img :src="user.avatar" style="width: 24px; height: 24px; border-radius: 50%" />
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item @click="Reset"><el-icon v-html="ResetSvg"/>重置</el-dropdown-item>
+            <el-dropdown-item @click="Reset"><el-icon v-html="ResetSvg"/>重&emsp;置</el-dropdown-item>
             <!-- <el-dropdown-item :icon="Setting">捐赠</el-dropdown-item> -->
-            <el-dropdown-item  slot="dropdown" @click="userClick"><el-icon v-html="LockSvg"></el-icon>修改密码</el-dropdown-item>
+            <el-dropdown-item  slot="dropdown" @click="userClick"><el-icon v-html="LockSvg"></el-icon>改密码</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
       <div class="font-size-16px m-l-10px"><strong>{{ user.username }}</strong>,欢迎您！</div>
-      <DigitalClock class="font-size-20px hidden xl:flex"/>
+      <DigitalClock/>
     </div>
     <div class="flex items-center">
       <el-badge :value="0" type="warning" :is-dot="false" :offset="[-15,2]" :show-zero="false" @click="alarmClick" v-if="hasPermission(['808b579e-e069-4435-bc85-11f7209c4eb6'])">
@@ -77,7 +77,7 @@ import settingSvg from '~/assets/setting.svg?raw'
 import userSvg from '~/assets/user.svg?raw'
 import logoutSvg from '~/assets/logout.svg?raw'
 import alarmSvg from '~/assets/alarm.svg?raw'
-import LockSvg from './lock.svg?raw'
+import LockSvg from '~/assets/lock.svg?raw'
 import ResetSvg from '~/assets/reset.svg?raw'
 import {hasPermission} from '~/tools'
 
@@ -111,7 +111,7 @@ function alarmClick(){
   emits('alarm')
 }
 import { useRouter } from 'vue-router';
-import DigitalClock from '~/tools/DigitalClock.vue';
+import DigitalClock from '~/tools/DigitalClock2.vue';
 const router = useRouter()
 function logout(){
   user.$reset();

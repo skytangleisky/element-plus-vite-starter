@@ -16,7 +16,7 @@
         style="display: flex; align-items: center; white-space: nowrap"
       >
         <!-- <div v-else @click="login" class="QQ_Login_Button"></div> -->
-        <DigitalClock class="m-r-40px"/>
+        <DigitalClock class="m-r-40px font-size-20px"/>
         {{ user.username }}，欢迎您！
         <el-dropdown v-if="user.logined" trigger="click" size="small">
           <el-avatar :size="32" :src="user.avatar" style="margin: 0 8px">
@@ -27,14 +27,14 @@
             <el-dropdown-menu>
               <!-- <el-dropdown-item @click="login" :icon="Select">登陆</el-dropdown-item> -->
               <!-- <el-dropdown-item :icon="ColdDrink">捐赠</el-dropdown-item> -->
-              <el-dropdown-item @click="toggleDark()"><el-icon v-html="isDark ? Moon : Sunny"/>主题</el-dropdown-item
-              >
-              <el-dropdown-item @click="Reset"><el-icon v-html="ResetSvg" style="font-size: 1em;"/>重置</el-dropdown-item>
+              <el-dropdown-item @click="toggleDark()"><el-icon v-html="isDark ? Moon : Sunny"/>主&emsp;题</el-dropdown-item>
+              <el-dropdown-item @click="Reset"><el-icon v-html="ResetSvg" style="font-size: 1em;"/>重&emsp;置</el-dropdown-item>
+              <el-dropdown-item  slot="dropdown" @click="userClick"><el-icon v-html="LockSvg"></el-icon>改密码</el-dropdown-item>
               <el-dropdown-item
                 v-if="user.logined"
                 divided
                 @click="logout"
-                ><el-icon v-html="ExitSvg"/>退出</el-dropdown-item
+                ><el-icon v-html="ExitSvg"/>退&emsp;出</el-dropdown-item
               >
             </el-dropdown-menu>
           </template>
@@ -44,6 +44,7 @@
   </div>
 </template>
 <script lang="ts" setup>
+import LockSvg from '~/assets/lock.svg?raw'
 import DigitalClock from '~/tools/DigitalClock.vue';
 import ResetSvg from '~/assets/reset.svg?raw'
 import openSvg from "~/assets/expand.svg?raw";
@@ -102,6 +103,10 @@ const Reset = () => {
   router.replace({ ...router.currentRoute.value, force: true });
 };
 const login = () => {};
+const emits = defineEmits(['editUser'])
+function userClick(){
+  emits('editUser')
+}
 const logout = () => {
   user.$reset();
   user.Logout().catch((e) => {
@@ -150,5 +155,12 @@ const logout = () => {
 }
 .dark .nav {
   background-color: #264b5d;
+}
+
+.dark .DigitalClock{
+  color:#0f0;
+}
+.DigitalClock{
+  color:black;
 }
 </style>

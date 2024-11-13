@@ -62,7 +62,7 @@ export default {
           children:[
             {
               name:'2353f2f5-b27b-473c-b281-4aa76858ff51',
-              checked:true,
+              checked:false,
               meta:{
                 label:'风廓线'
               }

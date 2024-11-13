@@ -46,6 +46,7 @@ onMounted(() => {
 const emits = defineEmits(['handleNodeClick','update:radar_time'])
 
 const handleNodeClick = (data: Tree) => {
+  console.log(data.id)
   if(data.leaf){
     emits('update:radar_time',data.id)
   }
@@ -53,6 +54,7 @@ const handleNodeClick = (data: Tree) => {
 let radar_id = location.href.substring(location.href.lastIndexOf('/')+1,location.href.length)
 import type Node from 'element-plus/es/components/tree/src/model/node'
 import { isLeaf } from "element-plus/es/utils";
+import moment from 'moment';
 const loadNode = (node: Node, resolve: (data: Tree[]) => void) => {
   if (node.level === 0) {
     // loading.value = true
@@ -82,10 +84,18 @@ const loadNode = (node: Node, resolve: (data: Tree[]) => void) => {
         leaf = node.level>=2
       }
       let paths = res.data.data.path.map((name:string)=>{
-        return {
-          id:path+'/'+name,
-          name,
-          leaf
+        if(node.level>=3){
+          return {
+            id:path+'/'+name,
+            name: moment(name,'HHmmss').format('HH:mm:ss'),
+            leaf
+          }
+        }else{
+          return {
+            id:path+'/'+name,
+            name,
+            leaf
+          }
         }
       })
       return resolve(paths)
@@ -107,7 +117,7 @@ const renderContent = (
     data: Tree;
   }
 ) => {
-  return node.label
+  return node.label 
 };
 const treeRef = ref(null);
 

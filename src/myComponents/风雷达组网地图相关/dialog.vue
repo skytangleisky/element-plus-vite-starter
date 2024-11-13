@@ -55,7 +55,9 @@
               <th>序号</th>
               <th>编号</th>
               <th>名称</th>
-              <th>海拔高度(米)</th>
+              <th>海高</th>
+              <th>相对高</th>
+              <th>时间</th>
               <th>状态</th>
             </tr>
           </thead>
@@ -69,8 +71,10 @@
               >
                 <td>{{ k + 1 }}</td>
                 <td>{{ v.no }}</td>
-                <td>{{ v.device_name }}</td>
+                <td>{{ v.device_short_name }}</td>
                 <td>{{ v.altitude }}</td>
+                <td>{{ (setting.风雷达组网地图相关.altitudeHeight-v.altitude).toFixed(1) }}</td>
+                <td>{{ v.time }}</td>
                 <td :class="v.status==0 ? '未知' : v.status == 1 ? 'color-#0f0' : v.status == 2 ? 'color-#f80' : v.status == 3 ? 'color-#f00' : 'color-inherit'">
                   {{ v.status==0 ? '未知' : v.status==1 ? '正常' : v.status==2 ? '延迟' : v.status==3 ? '缺失' : v.status }}
                 </td>
@@ -97,6 +101,8 @@
   </div>
 </template>
 <script lang="ts" setup>
+  import { useSettingStore } from "~/stores/setting";
+  const setting = useSettingStore()
 import { reactive, onMounted, watch } from "vue";
 import { useStationStore } from "~/stores/station";
 import { eventbus } from "~/eventbus";
@@ -180,7 +186,7 @@ const toggleCollapse = () => {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 170px;
+  height: 190px;
   .menuUl {
     outline: none;
     position: absolute;
@@ -198,6 +204,7 @@ const toggleCollapse = () => {
     list-style: none;
     padding: 2px;
     li {
+      height: 20px;
       img {
         vertical-align: middle;
         width: 20px;
@@ -210,8 +217,6 @@ const toggleCollapse = () => {
       width: 140px;
       cursor: pointer;
       overflow: hidden;
-      padding: 2px;
-      margin: 2px;
       color: grey;
       &:hover {
         background-color: rgb(26, 117, 158);
