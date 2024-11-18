@@ -97,6 +97,7 @@ import { v4 as uuid } from 'uuid';
 import {reactive,ref,watch} from 'vue'
 import { VueDraggable } from 'vue-draggable-plus';
 import type { FormInstance, FormRules } from "element-plus";
+import { databaseRaw } from '~/api/重庆';
 const props = withDefaults(defineProps<{
   svg:string
 }>(),{
@@ -132,10 +133,10 @@ const click = (uuid:string) => {
 watch(()=>icon.row,(newRow)=>{
   if(visible.value){
     exec({
-      database: "host=127.0.0.1&port=3306&user=root&password=tanglei&database=union",
+      database: databaseRaw,
       query: {
         sqls: [
-          "UPDATE `union`.`图标` SET `icon_tree` = ? where `uuid` = '" + newRow.uuid+"'",
+          "UPDATE `图标` SET `icon_tree` = ? where `uuid` = '" + newRow.uuid+"'",
         ],
         vals:[
           [JSON.stringify(icon.row.icon_tree)]
