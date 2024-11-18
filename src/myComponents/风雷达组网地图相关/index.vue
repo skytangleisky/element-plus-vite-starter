@@ -1020,7 +1020,7 @@ const loadFunc = async () => {
   //   station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
 
   work()
-  timer = setInterval(work,10*60e3)
+  timer = setInterval(work,60e3)
 };
 const flyTo = (item) => {
   try {
