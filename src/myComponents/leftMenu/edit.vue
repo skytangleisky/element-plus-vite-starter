@@ -1,37 +1,30 @@
 <template>
   <div
     class="flex flex-col dark:bg-#2b2b2b bg-white"
-    style="color: black; overflow: auto; width: 100%;height: 100%;position: relative;"
+    style="overflow: auto; width: 100%;height: 100%;position: relative;"
   >
     <div>
       <el-button type="primary" @click="resetMenu()">reset menu</el-button><el-button type="primary" @click="expandAll()">expandAll</el-button><el-button type="primary" @click="collapseAll()">collapseAll</el-button>
     </div>
     <div>
-      <el-checkbox v-for="(v,k) in roles" v-model="v.val" :key="k" :label="v.key" size="large" />
+      <el-checkbox v-for="(v,k) in roles" v-model="v.val" :key="k" :label="v.key" size="large"/>
     </div>
     <div class="flex flex-row items-start">
       <VueDraggable class="drag-area dd w-35%" tag="ol" v-model="setting.routes" group="g1">
         <subEditMenu :routes="(setting.routes as any)"></subEditMenu>
       </VueDraggable>
-      <VueDraggable class="drag-area dd w-35%" tag="ol" v-model="setting.routes" group="gp">
-        <SubPermission v-for="permission in permissions" v-model:permission="(permission as any)" @update="updateNodeStatus(permission)"></SubPermission>
-      </VueDraggable>
-      <Test class="w-30%"></Test>
+      <Permission class="w-30%" :treeData="permissions"></Permission>
     </div>
-    <!-- <Tree></Tree> -->
   </div>
 </template>
 <script lang="ts" setup>
-import Test from './test.vue'
+import Permission from './permission.vue'
 import {reactive,computed} from 'vue'
 const roles = reactive([{key:'admin',val:true},{key:'device',val:false},{key:'zh',val:true},{key:'ry',val:true},{key:'jx',val:true},{key:'cq',val:true}])
 import { VueDraggable } from 'vue-draggable-plus'
-import SubPermission from "./subPermission.vue";
-import subEditMenu from "./subEditMenu.vue";
-import Tree from "./Tree.vue";
-import { onMounted, onBeforeUnmount } from "vue";
-import { useSettingStore } from "~/stores/setting";
-
+import subEditMenu from "./subEditMenu.vue"
+import { onMounted, onBeforeUnmount } from "vue"
+import { useSettingStore } from "~/stores/setting"
 function updateNodeStatus(node:any) {
   // 如果节点没有子节点，直接返回节点的状态
   if (!node.children || node.children.length === 0) {
@@ -67,18 +60,6 @@ const permissions = computed({
     Object.assign(setting.permissions,permissions)
   },
   get:()=>{
-    // const recurse = (list:Array<any>) => {
-    //   list.map(item=>{
-    //     if(Array.isArray(item.children)){
-    //       if(item.children.every((item:any)=>item.checked)||item.children.every((item:any)=>!item.checked)){
-    //         item.indeterminate = false
-    //       }else{
-    //         item.indeterminate = true
-    //       }
-    //       recurse(item.children)
-    //     }
-    //   })
-    // }
     setting.permissions.map(node=>{
       updateNodeStatus(node)
     })
@@ -97,7 +78,6 @@ setting.targetRoles = computed(()=>{
   return arr
 }) as any
 import {getMenu} from '~/api/角色/role'
-import { settings } from 'nprogress';
 getMenu().then(res=>{
   // Object.assign(setting.routes,JSON.parse(res.data.results[0].menu_tree))
 })

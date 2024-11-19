@@ -12,12 +12,11 @@
       />
       <span>{{ node.label }}</span>
     </slot>
-
-    <VueDraggable :class="`drag-area ${node.expand?'':'collapsed'}`" :style="`interpolate-size: allow-keywords;transition:height 0.3s;transition-timing-function:ease-in-out;overflow: hidden;padding:0;height: ${node.expand?'auto':'0px'}`" tag="ul" v-model="node.children" group="gp">
+    <VueDraggable v-model="node.children" :class="`drag-area ${node.expand?'':'collapsed'}`" :style="`interpolate-size: allow-keywords;transition:height 0.3s;transition-timing-function:ease-in-out;overflow: hidden;padding:0;height: ${node.expand?'auto':'0px'}`" tag="ul" group="gp">
       <NestedCheckbox
         v-for="(child, index) in node.children"
         :key="index"
-        :node="Object.assign(child,{parent:node})"
+        :node="child"
         @change="$emit('change', $event)"
       >
         <template #item="{data,change}:any">
@@ -41,7 +40,6 @@ interface TreeNode {
   checked: boolean;
   indeterminate: boolean;
   children?: TreeNode[];
-  parent?: TreeNode;
 }
 import { defineComponent, ref, watch, PropType } from 'vue';
 
@@ -51,6 +49,10 @@ export default defineComponent({
     node: {
       type: Object as PropType<TreeNode>,
       required: true,
+    },
+    parent: {
+      type: Object as PropType<TreeNode>,
+      required: false,
     }
   },
   emits: ['change'],
@@ -66,17 +68,13 @@ export default defineComponent({
     };
 
     // 更新父节点状态
-    const updateParentState = (node: TreeNode | undefined) => {
-      if (!node?.parent) return;
-
-      const parent = node.parent;
-      const allChecked = parent.children?.every((child) => child.checked) ?? false;
-      const allUnchecked = parent.children?.every((child) => !child.checked && !child.indeterminate) ?? false;
-
-      parent.checked = allChecked;
-      parent.indeterminate = !allChecked && !allUnchecked;
-
-      updateParentState(parent);
+    const updateParentState = (parent: TreeNode | undefined) => {
+      if (parent) {
+        const allChecked = parent.children?.every((child) => child.checked) ?? false;
+        const allUnchecked = parent.children?.every((child) => !child.checked && !child.indeterminate) ?? false;
+        parent.checked = allChecked;
+        parent.indeterminate = !allChecked && !allUnchecked;
+      }
     };
 
     // 切换当前节点状态
@@ -84,7 +82,7 @@ export default defineComponent({
       checked.value = !checked.value;
       indeterminate.value = false;
       updateChildrenState(props.node, checked.value);
-      updateParentState(props.node);
+      updateParentState(props.parent);
       emit('change', props.node);
     };
 

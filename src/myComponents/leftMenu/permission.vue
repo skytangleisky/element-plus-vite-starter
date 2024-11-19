@@ -1,14 +1,14 @@
 <template>
   <div class="h-full box-border tree" style="border:1px solid red;">
     <VueDraggable tag="ul" v-model="treeData" group="gp">
-      <NestedCheckbox :node="treeData" @change="handleChange">
+      <NestedCheckbox v-for="node in treeData" :key="node.name" :node="node" @change="handleChange">
         <template #item="{data,change}">
           <div class="flex items-center item">
             <el-icon  v-if="data.children" :class="`${data.expand?'':'collapsed'}`" style="position: absolute;width: 30px;height: 30px;left: 0;display: flex;align-items: center;justify-content: center;">
               <div class="dd-collapse cross" style="position: absolute;width: 30px;height: 30px;left: 0;display: flex;align-items: center;justify-content: center;">
-              <div style="width: 10px;height: 10px;border-radius: 50%;background: white;z-index: 1;border:1px solid black;" @click="data.expand=!data.expand"></div>
+              <div style="width: 10px;height: 10px;border-radius: 0;background: black;z-index: 1;border:1px solid white;" @click="data.expand=!data.expand"></div>
                 <svg viewBox="0 0 200 200" style="width:8px;height:8px;position:absolute;z-index:1;pointer-events: none;">
-                    <path id="morph" fill="black" />
+                    <path id="morph" fill="white" />
                 </svg>
               </div>
             </el-icon>
@@ -18,7 +18,7 @@
               :indeterminate="data.indeterminate"
               @change="change"
             />
-            <span class="color-white">{{ data.label }}</span>
+            <span>{{ data.meta?.label }}</span>
           </div>
         </template>
       </NestedCheckbox>
@@ -27,53 +27,51 @@
 </template>
 
 <script lang="ts" setup>
-import { ref,watch } from 'vue';
+import { reactive,watch } from 'vue';
 import { VueDraggable } from '../../../packages/vue-draggable-plus/component'
 import NestedCheckbox from './NestedCheckbox.vue';
 
+const treeData = defineModel<TreeNode>('treeData',{
+  default:reactive<TreeNode[]>([
+    {
+      meta:{label: 'Node 1'},
+      children: [
+        { meta:{label: 'Node 1.1'}, checked: false },
+        { meta:{label: 'Node 1.2'}, checked: false },
+      ],
+    },
+    {
+      meta:{label: 'Node 2'},
+      children: [
+        { meta:{label: 'Node 2.1'},children:[
+            { meta:{label: 'Node 2.1.1'},
+              children:[
+                { meta:{label: 'Node 2.1.1.1'}, checked: true },
+                { meta:{label: 'Node 2.1.1.2'}, checked: false },
+              ]
+            },
+            { meta:{label: 'Node 2.1.2'}, checked: false },
+          ]
+        },
+        { meta:{label: 'Node 2.2'}, checked: false },
+      ],
+    },
+  ])
+})
+
 // 定义树节点接口
 interface TreeNode {
-  label: string;
+  name:string;
+  expand?:boolean;
+  meta:{label: string;},
   checked?: boolean;
   indeterminate?: boolean;
   children?: TreeNode[];
-  parent?: TreeNode;
 }
-
-// 初始数据
-const treeData = ref<TreeNode>({
-  label: 'Root',
-  children: [
-    {
-      label: 'Node 1',
-      children: [
-        { label: 'Node 1.1', checked: false },
-        { label: 'Node 1.2', checked: false },
-      ],
-    },
-    {
-      label: 'Node 2',
-      children: [
-        { label: 'Node 2.1',children:[
-            { label: 'Node 2.1.1',
-              children:[
-                { label: 'Node 2.1.1.1', checked: true },
-                { label: 'Node 2.1.1.2', checked: false },
-              ]
-            },
-            { label: 'Node 2.1.2', checked: false },
-          ]
-        },
-        { label: 'Node 2.2', checked: false },
-      ],
-    },
-  ],
-});
 
 const initializeState = (node: TreeNode) => {
   if (node.children && node.children.length > 0) {
     node.children.forEach((child) => {
-      child.parent = node; // 设置父节点引用
       initializeState(child); // 递归处理子节点
     });
 
@@ -153,6 +151,20 @@ const handleChange = (node: TreeNode) => {
 
     &:last-child::before {
       height: 15px;
+    }
+  }
+}
+.tree{
+  .item{
+    color: #fff;
+    border: 1px solid #999;
+    background: #bbb;
+    background: -webkit-linear-gradient(top, #bbb 0%, #999 100%);
+    background: -moz-linear-gradient(top, #bbb 0%, #999 100%);
+    background: linear-gradient(top, #bbb 0%, #999 100%);
+    border-radius: 10px;
+    &:hover {
+      background: #bbb;
     }
   }
 }
