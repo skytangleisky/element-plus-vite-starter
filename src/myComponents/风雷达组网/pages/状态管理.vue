@@ -68,7 +68,7 @@
             </div>
         </div>
         <div class="right">
-          <border-box-7 :color="['#0154be', '#03f7fc']" style="box-sizing: border-box;backdrop-filter:blur(20px);pointer-events: auto;">
+          <border-box-7 :color="['#0154be', '#03f7fc']" style="box-sizing: border-box;backdrop-filter:blur(20px);pointer-events: auto;height: calc(70% - 5px);">
             <div class="flex justify-center"><strong style="line-height: 40px;font-size: 20px;">雷达当天每小时10分钟平均风廓线数据获取量</strong></div>
             <div class="w-full grid grid-rows-3 grid-cols-2 place-items-center grid-gap-10px p-10px box-border" style="height: calc(100% - 40px);">
               <div ref="dataTrend1" class="row-start-1 row-span-1 col-start-1 col-span-1 w-full h-full"/>
@@ -79,12 +79,16 @@
               <div ref="dataTrend6" class="row-start-3 row-span-1 col-start-2 col-span-1 w-full h-full"/>
             </div>
           </border-box-7>
+          <border-box-7 :color="['#0154be', '#03f7fc']" style="box-sizing: border-box;backdrop-filter:blur(20px);pointer-events: auto;height: calc(30% - 5px);">
+            <Sys></Sys>
+          </border-box-7>
         </div>
       </div>
     </border-box-11>
   </div>
 </template>
 <script lang="ts" setup>
+import Sys from './Sys.vue'
 import { exec } from "~/api/index.js";
 import {databaseRaw,getDbsData,getSensorData} from '~/api/重庆';
 import {ref} from 'vue'
@@ -95,6 +99,7 @@ import echartsUtils from './echartsUtils'
 import { onBeforeUnmount, onMounted } from 'vue';
 import { eventbus } from '~/eventbus';
 import data from './data.json'
+
 const settingShow = ref(false)
 const editUserShow = ref(false)
 const sensorViewShow = ref(false)
@@ -722,7 +727,10 @@ onBeforeUnmount(()=>{
   }
   .right{
     width: calc(33% - 5px);
-    height: 100%;
+    height:100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
 }
 </style>

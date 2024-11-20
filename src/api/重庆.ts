@@ -216,3 +216,35 @@ export function getDbsData(query:{radar_id:string,dataTime:string}){
 // get10minWindAvgData({radar_id:'',dataTime:moment().format('YYYYMMDD')}).then((res)=>{
 //   console.log(res.data)//结果不符合预期
 // })
+
+//获取CPU使用情况
+export function getCPU(){
+  return request({
+    url: '/python/api/common/system/get_cpu_info',
+    method: 'post',
+    headers:{
+    'content-type':'application/json'
+    }
+  })
+}
+export function getMEM(){
+  return request({
+    url: '/python/api/common/system/get_memory_info',
+    method: 'post',
+    headers:{
+    'content-type':'application/json'
+    }
+  })
+}
+export function getDisk(){
+  return request({
+    url: '/python/api/common/system/get_disk_info_for_path',
+    method: 'post',
+    headers:{
+    'content-type':'application/json'
+    },
+    data:{
+      path:'D:/chongqing/A6418/'
+    }
+  })
+}

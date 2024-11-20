@@ -10,10 +10,10 @@
       <el-checkbox v-for="(v,k) in roles" v-model="v.val" :key="k" :label="v.key" size="large"/>
     </div>
     <div class="flex flex-row items-start">
-      <VueDraggable class="drag-area dd w-35%" tag="ol" v-model="setting.routes" group="g1">
+      <VueDraggable class="drag-area dd w-50%" tag="ol" v-model="setting.routes" group="g1">
         <subEditMenu :routes="(setting.routes as any)"></subEditMenu>
       </VueDraggable>
-      <Permission class="w-30%" :treeData="permissions"></Permission>
+      <Permission class="w-50%" :treeData="permissions"></Permission>
     </div>
   </div>
 </template>
