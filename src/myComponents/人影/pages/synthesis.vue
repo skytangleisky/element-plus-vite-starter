@@ -109,8 +109,7 @@
     @click="confirm"
     style="z-index:2010"
   ></dialog-plan-request>
-  <ColorSelector v-if="setting.人影.监控.showColorSelector == 0" v-model:selectorColor="setting.人影.监控.districtLineColor" style="z-index: 2010;" @cancel="setting.人影.监控.showColorSelector=-1"></ColorSelector>
-  <ColorSelector v-if="setting.人影.监控.showColorSelector == 1" v-model:selectorColor="setting.人影.监控.districtFillColor" style="z-index: 2010;" @cancel="setting.人影.监控.showColorSelector=-1"></ColorSelector>
+  <ColorSelector v-show="setting.人影.监控.showColorSelector !== -1" v-model:selectorColor="selectorColor" style="z-index: 2010;" @cancel="setting.人影.监控.showColorSelector=-1"></ColorSelector>
 </template>
 <script lang="ts" setup>
 import editMap from "../editMap.vue";
@@ -123,7 +122,7 @@ import recordSvg from "~/assets/record.svg?raw";
 import whitelistSvg from "~/assets/whitelist.svg?raw";
 import statisticSvg from "~/assets/statistic.svg?raw";
 import selectTile from "../selectTile.vue";
-import { watch, ref, reactive } from "vue";
+import { watch, ref, reactive,computed } from "vue";
 import DialogPlanRequest, { prevRequestDataType } from "../../dialog_plan_request.vue";
 import { useSettingStore } from "~/stores/setting";
 import { eventbus } from "~/eventbus/index";
@@ -138,6 +137,23 @@ const menus = reactive([
   { value: 12, type: "info", svg: whitelistSvg, active: false },
   { value: 0, svg: statisticSvg, active: false },
 ]);
+const selectorColor = computed({
+  get(){
+    if(setting.人影.监控.showColorSelector===0){
+      return setting.人影.监控.districtLineColor
+    }else if(setting.人影.监控.showColorSelector===1){
+      return setting.人影.监控.districtFillColor
+    }
+    return ''
+  },
+  set(val:string){
+    if(setting.人影.监控.showColorSelector===0){
+      setting.人影.监控.districtLineColor = val
+    }else if(setting.人影.监控.showColorSelector===1){
+      setting.人影.监控.districtFillColor = val
+    }
+  }
+})
 import { checkPermission } from "~/tools";
 const confirm = (data: prevRequestDataType) => {
   eventbus.emit("人影-地面作业申请-网络上报", data);

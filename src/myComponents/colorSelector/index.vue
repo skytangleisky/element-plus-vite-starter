@@ -67,6 +67,16 @@ const props = withDefaults(defineProps<{
 }>(),{
   selectorColor:'#ffffff',
 });
+watch(()=>props.selectorColor,()=>{
+  $('#csactive').css('background-color',props.selectorColor)
+  $('#cscolor').css('background-color',props.selectorColor)
+  let matches = (getComputedStyle($('#cscolor')[0]) as any)['background-color'].match(/(?<=\().*(?=\))/g)
+  let rgb = matches[0].split(',').map((item:any)=>Number(item.trim()))
+  console.log('rgb=',rgb)
+  colorSelector.setRgb(rgb[0],rgb[1],rgb[2])
+  colorSelector.update()
+  colorSelector.channelChanged()
+})
 const emit = defineEmits(['update:selectorColor','cancel'])
 let colorSelector:ColorSelector;
 onMounted(()=>{
