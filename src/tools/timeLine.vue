@@ -46,10 +46,10 @@
       v-dompurify-html="nextSvg"
     />
     <el-icon
-      @click="status == 'play' ? pause() : play()"
+      @click="local_status == 'play' ? pause() : play()"
       class="btn"
       style="overflow: hidden; font-size: 2rem; min-width: 2rem"
-      v-dompurify-html="status == 'play' ? stopSvg : playSvg"
+      v-dompurify-html="local_status == 'play' ? stopSvg : playSvg"
     />
     <span @click="speed">x{{ Math.pow(2, options.times) }}</span>
     <!-- <graph
@@ -70,27 +70,22 @@ import moment from "moment";
 import graph from "./graph.vue";
 import { onMounted, onBeforeUnmount, ref, reactive, watch } from "vue";
 import { isDark } from "~/composables";
-const emit = defineEmits(["update:now", "update:status", "update:level"]);
+const emit = defineEmits(["update:now", "update:status", "update:level", "toLeft","toMiddle","toRight"]);
 const props = withDefaults(
   defineProps<{
     data?: Array<{ time: number; position: "left" | "right" | "middle" }>;
-    toLeft?: Function | undefined;
-    toRight?: Function | undefined;
-    toMiddle?: Function | undefined;
     now?: number | undefined;
-    status?: "play" | "pause";
     level?: number | undefined;
   }>(),
   {
     data: () => new Array<{ time: number; position: "left" }>(),
-    toLeft: undefined,
-    toRight: undefined,
-    toMiddle: undefined,
     now: undefined,
-    status: "play",
     level: undefined,
   }
 );
+const local_status = defineModel<"play"|"pause">('status',{
+  default:'play'
+})
 const graphArgs = reactive({
   fps: {
     min: 0,
@@ -277,10 +272,10 @@ const speed = () => {
 };
 const play = () => {
   time = Date.now();
-  emit("update:status", "play");
+  local_status.value = "play";
 };
 const pause = () => {
-  emit("update:status", "pause");
+  local_status.value = "pause"
 };
 const leftClick = () => {
   pause();
@@ -477,7 +472,7 @@ const draw = () => {
   let ctx = cvs.getContext("2d");
   ctx.font = `${14 * options.devicePixelRatio}px Menlo,Consolas,Monaco`;
   let currentTime = Date.now();
-  if (props.status == "play") {
+  if (local_status.value == "play") {
     let 𝛿 = currentTime - time;
     options.now += 𝛿 * Math.pow(2, options.times);
     options.targetNow = options.now;
@@ -496,15 +491,15 @@ const draw = () => {
     let item = props.data[i];
     let x = ((item.time - left) / (right - left)) * cvs.width;
     if (item.time < options.now && item.position !== "left") {
-      props.toLeft && props.toLeft(item);
+      emit('toLeft',item)
       item.position = "left";
     }
     if (item.time > options.now && item.position !== "right") {
-      props.toRight && props.toRight(item);
+      emit('toRight',item)
       item.position = "right";
     }
     if (item.time === options.now && item.position !== "middle") {
-      props.toMiddle && props.toMiddle(item);
+      emit('toMiddle',item)
       item.position = "middle";
     }
     ctx.lineWidth = 2 * options.devicePixelRatio;
@@ -516,16 +511,6 @@ const draw = () => {
   }
   let leftDate = new Date(Math.round(left));
   let rightDate = new Date(Math.round(right));
-  let x = ((time - left) / (right - left)) * cvs.width;
-  ctx.fillStyle = "#00000044";
-  ctx.fillRect(x, 0, cvs.width - x, cvs.height);
-  x = ((options.now - left) / (right - left)) * cvs.width;
-  ctx.beginPath();
-  ctx.moveTo(x, 0);
-  ctx.lineTo(x, cvs.height);
-  ctx.lineWidth = 2 * options.devicePixelRatio;
-  ctx.strokeStyle = "#f00";
-  ctx.stroke();
   ctx.restore();
   for (let index = 0; index < arr.length; index++) {
     if (arr[index] === "year") {
@@ -721,6 +706,18 @@ const draw = () => {
       throw Error(arr[index]);
     }
   }
+  ctx.save()
+  let x = ((time - left) / (right - left)) * cvs.width;
+  ctx.fillStyle = "#00000044";
+  ctx.fillRect(x, 0, cvs.width - x, cvs.height);
+  x = ((options.now - left) / (right - left)) * cvs.width;
+  ctx.beginPath();
+  ctx.moveTo(x, 0);
+  ctx.lineTo(x, cvs.height);
+  ctx.lineWidth = 2 * options.devicePixelRatio;
+  ctx.strokeStyle = "red";
+  ctx.stroke();
+  ctx.restore()
 };
 onBeforeUnmount(() => {
   cvs.removeEventListener("mousewheel", mousewheelFunc);

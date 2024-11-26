@@ -98,9 +98,9 @@
     <time-line
       v-if="hasPermission(['e44f37e1-f642-4dbf-83ca-052313b217f5'])"
       :data="data"
-      :toLeft="change"
-      :toRight="change"
-      :toMiddle="change"
+      @toLeft="change"
+      @toRight="change"
+      @toMiddle="change"
       v-model:now="setting.now"
       v-model:status="setting.status"
       v-model:level="setting.level"
@@ -195,7 +195,8 @@ const graphArgs = reactive({
 });
 const data = reactive([]);
 let preTime = 0;
-const change = (it) => {
+const change = (it:any) => {
+  console.log(it)
   // if (it.time !== preTime) {
   //   console.log("change");
   //   //删除相关站点的风羽

@@ -26,7 +26,7 @@ export default {
             },
             {
               name: 'e44f37e1-f642-4dbf-83ca-052313b217f5',
-              checked:false,
+              checked:true,
               meta:{
                 label: '重庆组网时间轴',
               }

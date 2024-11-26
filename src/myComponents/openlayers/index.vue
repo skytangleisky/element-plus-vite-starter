@@ -95,9 +95,9 @@
     </div>
     <time-line
       :data="data"
-      :toLeft="change"
-      :toRight="change"
-      :toMiddle="change"
+      @toLeft="change"
+      @toRight="change"
+      @toMiddle="change"
       v-model:now="setting.now"
       v-model:status="setting.status"
       v-model:level="setting.level"

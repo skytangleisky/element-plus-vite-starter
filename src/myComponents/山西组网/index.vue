@@ -101,9 +101,9 @@
     <time-line
       v-if="hasPermission(['e44f37e1-f642-4dbf-83ca-052313b217f5'])"
       :data="data"
-      :toLeft="change"
-      :toRight="change"
-      :toMiddle="change"
+      @toLeft="change"
+      @toRight="change"
+      @toMiddle="change"
       v-model:now="setting.now"
       v-model:status="setting.status"
       v-model:level="setting.level"

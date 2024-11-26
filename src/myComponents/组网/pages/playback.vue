@@ -28,9 +28,9 @@
     />
     <time-line
       :data="data"
-      :toLeft="change"
-      :toRight="change"
-      :toMiddle="change"
+      @toLeft="change"
+      @toRight="change"
+      @toMiddle="change"
       v-model:now="setting.playback.now"
       v-model:status="setting.playback.status"
       v-model:level="setting.playback.level"
