@@ -1,18 +1,13 @@
 <template>
   <div
-    class="timeline h-auto flex flex-row absolute dark:bg-#646464 bg-#ffffff"
+    class="timeline"
     style="width: 100%"
     tabindex="-1"
   >
     <el-icon
       @click="prev"
       class="btn"
-      style="
-        overflow: hidden;
-        font-size: 2rem;
-        transform: rotate(180deg);
-        min-width: 2rem;
-      "
+      style="overflow: hidden;font-size: 2rem;transform: rotate(180deg);min-width: 2rem;"
       v-dompurify-html="nextSvg"
     />
     <div class="relative h-30px" style="width: 100%">
@@ -737,6 +732,16 @@ onBeforeUnmount(() => {
 });
 </script>
 <style lang="scss" scoped>
+.dark .timeline{
+  background: #646464;
+}
+.timeline{
+  height: auto;
+  display:flex;
+  position: absolute;
+  bottom:0;
+  background:#ffffff;
+}
 .btn {
   &:active {
     color: gray;
@@ -795,7 +800,7 @@ onBeforeUnmount(() => {
       background-color: #646464;
       color: white;
       &::before {
-        border-color: #646464 transparent transparent transparent;
+        border-color: black transparent transparent transparent;
       }
       &::after {
         border-color: #646464 transparent transparent transparent;
