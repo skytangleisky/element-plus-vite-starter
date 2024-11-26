@@ -33,6 +33,7 @@ router.afterEach((to,from)=>{
   NProgress.done()
 })
 router.onError(e=>{
+  console.log('路由错误',e)
   const user = useUserStore()
   if(router.currentRoute.value.name){
     user.defaultActive = router.currentRoute.value.name.toString()

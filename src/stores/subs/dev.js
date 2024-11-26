@@ -132,6 +132,15 @@ export default {
       }
     },
     {
+      path: 'player',
+      name: 'c4961e04-e574-0e1f-ae23-94f157a14a44',
+      component: '/src/myComponents/player.vue',
+      svg:'843756f0-0745-445c-8bc7-fc3208ac733c',
+      meta:{
+        label: 'player',
+      }
+    },
+    {
       path: 'audio',
       name: 'c4961e04-e574-0e1f-ae23-94f157b14aae',
       component: '/src/myComponents/audio/index.vue',

@@ -295,7 +295,7 @@ export default {
 			"tileSize": 256
 		}
 	},
-	"terrain": { 'source': 'mapbox-dem', 'exaggeration': 0.0 },
+	"terrain": { 'source': 'mapbox-dem', 'exaggeration': 1.0 },
 	"sprite_origin": "mapbox://sprites/tanglei201314/clons7b5v00dm01prgrblhncs/6iqitl5z21pbbxxwuij8b59i2",
 	"glyphs_origin": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
 	"sprite": window.location.origin+"/resources/sprite",
@@ -923,16 +923,16 @@ export default {
 					}
 			},
 
-			{
-				"id": "simple-tiles",
-				"type": "raster",
-				"source": "raster-tiles",
-				"minzoom": 0,
-				"maxzoom": 22,
-				layout:{
-					visibility:'visible'
-				}
-			},
+			// {
+			// 	"id": "simple-tiles",
+			// 	"type": "raster",
+			// 	"source": "raster-tiles",
+			// 	"minzoom": 0,
+			// 	"maxzoom": 22,
+			// 	layout:{
+			// 		visibility:'visible'
+			// 	}
+			// },
 			{
 					"id": "building",
 					"type": "fill",
@@ -7092,16 +7092,16 @@ export default {
 					visibility:'visible'
 				}
 			},
-			{
-				"id": "tmp-tiles",
-				"type": "raster",
-				"source": "raster-tiles",
-				"minzoom": 0,
-				"maxzoom": 22,
-				layout:{
-					visibility:'visible'
-				}
-			},
+			// {
+			// 	"id": "tmp-tiles",
+			// 	"type": "raster",
+			// 	"source": "raster-tiles",
+			// 	"minzoom": 0,
+			// 	"maxzoom": 22,
+			// 	layout:{
+			// 		visibility:'visible'
+			// 	}
+			// },
 	],
 	"created": "2023-11-07T03:38:34.435Z",
 	"modified": "2023-11-14T11:53:57.549Z",

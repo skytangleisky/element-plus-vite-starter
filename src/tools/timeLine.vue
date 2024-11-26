@@ -1,6 +1,6 @@
 <template>
   <div
-    class="timeline h-auto flex flex-row absolute dark:bg-#64646490 bg-#ffffff90"
+    class="timeline h-auto flex flex-row absolute dark:bg-#646464 bg-#ffffff"
     style="width: 100%"
     tabindex="-1"
   >
@@ -26,10 +26,10 @@
             v-dompurify-html="rightSvg"
             @click="leftClick"
           />
-          <span v-html="options.leftText"></span
-          ><span style="text-decoration: underline">{{ options.underlineText }}</span>
-          <span v-html="options.rightText"></span
-          ><el-icon
+          <span v-html="options.leftText"></span>
+          <span style="text-decoration: underline">{{ options.underlineText }}</span>
+          <span v-html="options.rightText"></span>
+          <el-icon
             class="active:color-#2b2b2b"
             style="overflow: hidden"
             v-dompurify-html="rightSvg"
@@ -71,6 +71,7 @@ import stopSvg from "~/assets/stop.svg?raw";
 import playSvg from "~/assets/play.svg?raw";
 import nextSvg from "~/assets/next.svg?raw";
 import rightSvg from "~/assets/right.svg?raw";
+import moment from "moment";
 import graph from "./graph.vue";
 import { onMounted, onBeforeUnmount, ref, reactive, watch } from "vue";
 import { isDark } from "~/composables";
@@ -138,15 +139,17 @@ let timeShaft = ref(undefined);
 let leftMouseDown = false;
 let aid: number;
 const resize = () => {
-  let box = cvs.getBoundingClientRect();
-  if (box.width == 0 || box.height == 0) {
-    cancelAnimationFrame(aid);
-  } else {
-    cvs.width = box.width * options.devicePixelRatio;
-    cvs.height = box.height * options.devicePixelRatio;
-    draw();
-    cancelAnimationFrame(aid);
-    aid = requestAnimationFrame(loop);
+  if(cvs){
+    let box = cvs.getBoundingClientRect();
+    if (box.width == 0 || box.height == 0) {
+      cancelAnimationFrame(aid);
+    } else {
+      cvs.width = box.width * options.devicePixelRatio;
+      cvs.height = box.height * options.devicePixelRatio;
+      draw();
+      cancelAnimationFrame(aid);
+      aid = requestAnimationFrame(loop);
+    }
   }
 };
 const mousewheelFunc = (evt: any) => {
@@ -462,7 +465,7 @@ const drawLongLine = (cvs, time) => {
   ctx.textAlign = "center";
   ctx.textBaseline = "bottom";
   ctx.fillText(
-    new Date(time).Format("yyyy-MM-dd HH:mm:ss.SSS"),
+    moment(time).format("YYYY-MM-DD HH:mm:ss.SSS"),
     x,
     cvs.height - options.long * options.devicePixelRatio
   );
@@ -532,9 +535,10 @@ const draw = () => {
   for (let index = 0; index < arr.length; index++) {
     if (arr[index] === "year") {
       options.strScaleType = "year";
-      options.leftText = new Date(options.now).Format("yyyy-");
-      options.underlineText = new Date(options.now).Format("MM");
-      options.rightText = new Date(options.now).Format("-dd HH:mm:ss.SSS");
+      let time = moment(options.now)
+      options.leftText = time.format('YYYY-');
+      options.underlineText = time.format("MM");
+      options.rightText = time.format("-DD HH:mm:ss.SSS");
       let x1 =
         ((new Date(leftDate.getFullYear(), 0, 1).getTime() - left) / (right - left)) *
         cvs.width;
@@ -556,9 +560,10 @@ const draw = () => {
       }
     } else if (arr[index] === "month") {
       options.strScaleType = "month";
-      options.leftText = new Date(options.now).Format("yyyy-MM-");
-      options.underlineText = new Date(options.now).Format("dd");
-      options.rightText = new Date(options.now).Format("&nbsp;HH:mm:ss.SSS");
+      let time = moment(options.now)
+      options.leftText = time.format("yyyy-MM-");
+      options.underlineText = time.format("DD");
+      options.rightText = '&nbsp;' + time.format("HH:mm:ss.SSS");
       let x1 =
         ((new Date(leftDate.getFullYear(), 0, 1).getTime() - left) / (right - left)) *
         cvs.width;
@@ -591,9 +596,10 @@ const draw = () => {
       }
     } else if (arr[index] === "day") {
       options.strScaleType = "day";
-      options.leftText = new Date(options.now).Format("yyyy-MM-dd&nbsp;");
-      options.underlineText = new Date(options.now).Format("HH");
-      options.rightText = new Date(options.now).Format(":mm:ss.SSS");
+      let time = moment(options.now)
+      options.leftText = time.format("YYYY-MM-DD") + "&nbsp;";
+      options.underlineText = time.format('HH');
+      options.rightText = time.format(':mm:ss.SSS');
       let delta = 24 * 60 * 60 * 1000;
       if (
         (cvs.width / (right - left)) * delta >=
@@ -623,9 +629,10 @@ const draw = () => {
       }
     } else if (arr[index] === "hours") {
       options.strScaleType = "hours";
-      options.leftText = new Date(options.now).Format("yyyy-MM-dd HH:");
-      options.underlineText = new Date(options.now).Format("mm");
-      options.rightText = new Date(options.now).Format(":ss.SSS");
+      let time = moment(options.now)
+      options.leftText = time.format("YYYY-MM-DD HH:");
+      options.underlineText = time.format("MM");
+      options.rightText = time.format(":ss.SSS");
       let delta = 60 * 60 * 1000;
       if (
         (cvs.width / (right - left)) * delta >=
@@ -655,9 +662,10 @@ const draw = () => {
       }
     } else if (arr[index] === "minutes") {
       options.strScaleType = "minutes";
-      options.leftText = new Date(options.now).Format("yyyy-MM-dd HH:mm:");
-      options.underlineText = new Date(options.now).Format("ss");
-      options.rightText = new Date(options.now).Format(".SSS");
+      let time = moment(options.now)
+      options.leftText = time.format("YYYY-MM-DD HH:mm:");
+      options.underlineText = time.format("ss");
+      options.rightText = time.format(".SSS");
       let delta = 60 * 1000;
       if (
         (cvs.width / (right - left)) * delta >=
@@ -677,9 +685,10 @@ const draw = () => {
       }
     } else if (arr[index] === "seconds") {
       options.strScaleType = "seconds";
-      options.leftText = new Date(options.now).Format("yyyy-MM-dd HH:mm:");
-      options.underlineText = new Date(options.now).Format("ss");
-      options.rightText = new Date(options.now).Format(".SSS");
+      let time = moment(options.now)
+      options.leftText = time.format("YYYY-MM-DD HH:mm:");
+      options.underlineText = time.format("ss");
+      options.rightText = time.format(".SSS");
       let delta = 1000;
       if (
         (cvs.width / (right - left)) * delta >=
@@ -699,9 +708,10 @@ const draw = () => {
       }
     } else if (arr[index] === "milliseconds") {
       options.strScaleType = "milliseconds";
-      options.leftText = new Date(options.now).Format("yyyy-MM-dd HH:mm:");
-      options.underlineText = new Date(options.now).Format("ss");
-      options.rightText = new Date(options.now).Format(".SSS");
+      let time = moment(options.now)
+      options.leftText = time.format("YYYY-MM-DD HH:mm:");
+      options.underlineText = time.format("ss");
+      options.rightText = time.format(".SSS");
       let delta = 1;
       if (
         (cvs.width / (right - left)) * delta >=
@@ -745,22 +755,32 @@ onBeforeUnmount(() => {
   justify-content: center;
   pointer-events: none;
   div {
+    border:1px solid #000000a0;
     pointer-events: auto;
     text-wrap: nowrap;
     padding: 4px;
     margin: 4px;
     border-radius: 4px;
-    background-color: #ffffffa0;
+    background-color: #ffffff;
     color: black;
     /* visibility: hidden; */
     &::before {
+      position: absolute;
+      content: "";
+      border-width: 5px;
+      border-style: solid;
+      border-color: #000000a0 transparent transparent transparent;
+      left: calc(50% - 5px);
+      top: calc(100% - 5px);
+    }
+    &::after {
       position: absolute;
       content: "";
       border-width: 4px;
       border-style: solid;
       border-color: #eee transparent transparent transparent;
       left: calc(50% - 4px);
-      top: calc(100% - 4px);
+      top: calc(100% - 5px);
     }
   }
 }
@@ -772,9 +792,12 @@ onBeforeUnmount(() => {
   }
   .currentTime {
     div {
-      background-color: #646464a0;
+      background-color: #646464;
       color: white;
       &::before {
+        border-color: #646464 transparent transparent transparent;
+      }
+      &::after {
         border-color: #646464 transparent transparent transparent;
       }
     }

@@ -174,7 +174,7 @@ const chromatographyOption=reactive<{arr:Array<number>}>({
   arr:[]
 })
 switch(setting.风雷达组网地图相关.风场数据){
-  case '无':
+  case '不显示':
     chromatographyOption.arr=[]
     break;
   case '径向速度':
@@ -531,7 +531,7 @@ function processData(result: any, position: [number, number]) {
       // });
       let fillColor:string|null = 'black';
       switch(setting.风雷达组网地图相关.风场数据){
-        case '无':
+        case '不显示':
           chromatographyOption.arr=[]
           fillColor = 'black'
           break;

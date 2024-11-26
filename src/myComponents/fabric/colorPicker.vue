@@ -1,5 +1,5 @@
 <template>
-  <div v-dialogDrag v-resize="resize" class="canvasContainer">
+  <div ref="canvasContainerRef" v-dialogDrag v-resize="resize" class="canvasContainer">
     <div class="title">拾色器</div>
     <div class="absolute m-t-30px" tabindex="-1" @mousedown.stop>
       <canvas id="gradient" class="w-full h-full"></canvas>
@@ -227,8 +227,9 @@ Promise.all(Object.values(images)).then((values)=>{
   // canvas.add(bgUrl);
 })
 */
+const canvasContainerRef = ref()
 const resize = ()=>{
-  let rect = document.querySelector(".canvasContainer").getBoundingClientRect();
+  let rect = canvasContainerRef.value.getBoundingClientRect();
   canvas.setDimensions({
     width: rect.width,
     height: rect.height,
