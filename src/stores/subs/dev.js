@@ -107,7 +107,7 @@ export default {
     {
       path: 'timeline',
       name: 'e4961e04-e574-0e1f-ae23-94f157b14a40',
-      component: '/src/tools/timeLine.vue',
+      component: '/src/tools/timeStep.vue',
       svg:'0f59128a-9003-4656-b0ad-26c9e646f58d',
       meta:{
         label: 'timeline',
