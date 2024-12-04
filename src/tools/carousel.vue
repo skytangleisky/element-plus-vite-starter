@@ -1,8 +1,15 @@
 <template>
-  <div class="absolute flex justify-center w-full top-100px">
+  <div class="my-carousel">
     <div ref="carouselRef" class="carousel-container">
       <div ref="carouselListRef" class="carousel-list">
-        <div v-for="item in options.arr" class="carousel-item">{{ item.text }}</div>
+        <div v-for="item in options.arr" class="carousel-item" @click="click(item)">
+          <slot
+            name="default"
+            :data="item"
+            :currentIndex="currentIndex">
+            {{ item.index }}
+          </slot>
+        </div>
       </div>
       <div class="indicator">
         <span class="active"></span>
@@ -12,11 +19,10 @@
       <div class="carousel-arrow carousel-arrow-left z-1 bg-#eeeeee40 w-20px h-20px" @click="moveLeft"><</div>
       <div class="carousel-arrow carousel-arrow-right z-1 bg-#eeeeee40 w-20px h-20px" @click="moveRight">></div>
     </div>
-    <div class="pointer"></div>
   </div>
 </template>
 <script lang="ts" setup>
-  import { onBeforeUnmount, onMounted,reactive,ref,watch } from 'vue';
+import { onBeforeUnmount, onMounted,reactive,ref,watch } from 'vue';
   const carouselRef = ref()
   const carouselListRef = ref()
   const currentIndex = ref(0)
@@ -24,19 +30,47 @@
   let position = 0//控制滑动动画
   let marginLeft = 0//控制位置
   let leftGap = 0
-  let percent = 10//item的宽度百分比
-  options.arr.push({text:-3})
-  options.arr.push({text:-2})
-  options.arr.push({text:-1})
-  options.arr.push({text: 0})
-  options.arr.push({text:+1})
-  options.arr.push({text:+2})
-  options.arr.push({text:+3})
-  let keepNumber = Math.floor(options.arr.length/2)
+  let percent = defineModel('percent',{
+    type:Number,
+    default:100,
+  })
+  watch(percent,(newValue,oldValue)=>{
+    position = -currentIndex.value*percent.value
+    carouselListRef.value.style.transition='none'
+    carouselListRef.value.style.transform=`translateX(${position}%)`
+    carouselListRef.value.clientWidth
+    carouselListRef.value.style.transition='transform 0.5s ease-in-out'
+    marginLeft = -position
+    carouselListRef.value.style.setProperty('--item-width',newValue+'%')
+    leftGap = -options.arr.length*percent.value/2 + 50
+    carouselListRef.value.style.marginLeft = marginLeft+leftGap+'%'
+  })
+  options.arr.push({index: 0})
+  const keepNumber = defineModel('keepNumber',{
+    type:Number,
+    default:4,
+  })
+  for(let i=1;i<=keepNumber.value;i++){
+    options.arr.unshift({index: -i})
+    options.arr.push({index: i})
+  }
+  watch(keepNumber,(newValue,oldValue)=>{
+    options.arr = []
+    let startIndex = -Math.round(position/percent.value)
+    options.arr.push({index: startIndex})
+    for(let i=1;i<=newValue;i++){
+      options.arr.unshift({index: startIndex - i})
+      options.arr.push({index: startIndex + i})
+    }
+    carouselListRef.value.style.setProperty('--item-width',percent.value+'%')
+    marginLeft = -position
+    leftGap = -options.arr.length*percent.value/2 + 50
+    carouselListRef.value.style.marginLeft = marginLeft+leftGap+'%'
+  })
   onMounted(()=>{
-    carouselListRef.value.style.setProperty('--item-width',percent+'%')
-    marginLeft = -percent*Math.floor(options.arr.length/2)
-    leftGap = (100-percent)/2
+    carouselListRef.value.style.setProperty('--item-width',percent.value+'%')
+    marginLeft = -position
+    leftGap = -options.arr.length*percent.value/2 + 50
     carouselListRef.value.style.marginLeft = marginLeft+leftGap+'%'
     carouselListRef.value.addEventListener('transitionend',onTransitionendEnd)
   })
@@ -44,88 +78,106 @@
     carouselListRef.value.removeEventListener('transitionend',onTransitionendEnd)
   })
   function moveLeft(){
-    position += percent
+    position += percent.value
     carouselListRef.value.style.transform=`translateX(${position}%)`
-    if(position+marginLeft+percent*keepNumber>=0){
-      marginLeft -= percent
-      carouselListRef.value.style.marginLeft = marginLeft+leftGap+'%'
-      options.arr.unshift({text:marginLeft/percent})
-    }
-    currentIndex.value = -position/percent
+    
+    marginLeft -= percent.value
+    carouselListRef.value.style.marginLeft = marginLeft+leftGap+'%'
+    options.arr.unshift({index:currentIndex.value-keepNumber.value-1})
+    currentIndex.value = -Math.round(position/percent.value)
   }
   function moveRight(){
-    position-=percent
+    position-=percent.value
     carouselListRef.value.style.transform=`translateX(${position}%)`
-    if(-position>=marginLeft+(options.arr.length-keepNumber)*percent){
-      options.arr.push({text:((keepNumber*percent-position)/percent)})
-    }
-    currentIndex.value = -position/percent
+    options.arr.push({index:currentIndex.value+keepNumber.value+1})
+    currentIndex.value = -Math.round(position/percent.value)
   }
   function onTransitionendEnd(event:TransitionEvent){
     for(let i=0;i<options.arr.length;i++){
-      if(options.arr[i].text>currentIndex.value+keepNumber){
+      if(options.arr[i].index>currentIndex.value+keepNumber.value){
         options.arr.splice(i--,1)
       }
     }
     for(let i=options.arr.length-1;i>=0;i--){
-      if(options.arr[i].text<currentIndex.value-keepNumber){
-        marginLeft += percent
+      if(options.arr[i].index<currentIndex.value-keepNumber.value){
+        marginLeft += percent.value
         carouselListRef.value.style.marginLeft = marginLeft + leftGap+'%'
         options.arr.splice(i++,1)
       }
     }
   }
-  watch(currentIndex,()=>{
-    console.log(currentIndex.value)
+  function click(item:any){
+    let N = (item.index - currentIndex.value)
+    if(N>0){
+      for(let i=0;i<N;i++){
+        moveRight()
+      }
+    }else{
+      for(let i=0;i<-N;i++){
+        moveLeft()
+      }
+    }
+  }
+  const emit = defineEmits(['change'])
+  watch(currentIndex,(newValue,oldValue)=>{
+    emit('change',newValue,oldValue)
   })
 </script>
 <style lang="scss">
-.carousel-container{
-  outline:1px solid red;
-  width: 100%;
-  height: 60px;
+.my-carousel{
+  display: flex;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  top:100px;
+  background:#ffffff40;
+  padding:0 0px;;
+  border-radius:10px;
   position: absolute;
-  overflow: hidden;
-  .carousel-list{
-    --item-width:100%;
-    display: flex;
+  line-height: 30px;
+  // &::before{
+  //   content:'';
+  //   position: absolute;
+  //   width: 4px;
+  //   height: 10px;
+  //   left:50%;
+  //   transform: translateX(-50%);
+  //   background:#f00;
+  //   height: 30px;
+  // }
+  .carousel-container{
     width: 100%;
-    height: 100%;
-    transition: transform 2s ease-in-out;
-    .carousel-item{
-      box-sizing: border-box;
-      border:1px solid #0f0;
-      flex-shrink: 0;
-      width: var(--item-width);
-      height: 100%;
+    height: fit-content;
+    overflow: hidden;
+    .carousel-list{
+      --item-width:100%;
       display: flex;
-      justify-content: center;
+      width: 100%;
+      transition: transform 1s ease-in-out;
+      .carousel-item{
+        flex-shrink: 0;
+        width: var(--item-width);
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+    .carousel-arrow{
+      position: absolute;
+      display: none;
       align-items: center;
+      justify-content: center;
+      border-radius:50%;
+      top:50%;
+      transform: translateY(-50%);
+      &.carousel-arrow-left{
+        left:0;
+      }
+      &.carousel-arrow-right{
+        right:0;
+      }
     }
   }
-  .carousel-arrow{
-    position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius:50%;
-    top:50%;
-    transform: translateY(-50%);
-    &.carousel-arrow-left{
-      left:0;
-    }
-    &.carousel-arrow-right{
-      right:0;
-    }
-  }
-}
-.pointer{
-  position: absolute;
-  left:50%;
-  transform: translateX(-50%);
-  top:100%;
-  width: 20px;
-  height: 20px;
-  background:white;
 }
 </style>

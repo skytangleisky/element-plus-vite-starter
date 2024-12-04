@@ -200,7 +200,7 @@ export default{
     type: 'custom',
     renderingMode: '3d',
     imageLoaded:false,
-    images: {texture1:'/01.png',texture2:'/02.png',texture3:'/03.png',texture4:'/04.png'},
+    images: {texture1:{url:'/01.png'},texture2:{url:'/02.png'},texture3:{url:'/03.png'},texture4:{url:'/04.png'}},
     onAdd(map, gl){
         // console.log(gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE))
         mapInstance = map
@@ -345,12 +345,14 @@ export default{
             0,0,
         ]);
         gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
+        gl.uniform1i(gl.getUniformLocation(this.program, 'u_shape'), -1);
+        this.imageLoaded = false
         let funcs = []
         for(let key in this.images){
             funcs.push(new Promise((resolve,reject)=>{
                 const texture = gl.createTexture();
                 const image = new Image();
-                image.src = this.images[key];
+                image.src = this.images[key].url;
                 image.onload = ()=>{
                     gl.bindTexture(gl.TEXTURE_2D, texture);
                     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
@@ -358,24 +360,17 @@ export default{
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                    resolve({[key]:texture})
+                    this.images[key].texture = texture;
+                    resolve(this.images[key])
                 };
                 image.onerror=()=>{
                     reject()
                 }
-            }))
+            }))      
         }
         Promise.all(funcs).then(values=>{
-            values.map((item)=>{
-                for(let key in item){
-                    this.images[key] = item[key]
-                }
-            })
             this.imageLoaded = true;
         })
-
-
-        gl.uniform1i(gl.getUniformLocation(this.program, 'u_shape'), -1);
     },
     render: function (gl, matrix) {
         if(this.imageLoaded){
@@ -403,13 +398,13 @@ export default{
             gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
             gl.uniform1i(gl.getUniformLocation(this.program, 'u_shape'), 2);
-            gl.bindTexture(gl.TEXTURE_2D, this.images['texture1']);
+            gl.bindTexture(gl.TEXTURE_2D, this.images['texture1'].texture);
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-            gl.bindTexture(gl.TEXTURE_2D, this.images['texture2']);
+            gl.bindTexture(gl.TEXTURE_2D, this.images['texture2'].texture);
             gl.drawArrays(gl.TRIANGLE_STRIP,4,4);
-            gl.bindTexture(gl.TEXTURE_2D, this.images['texture3']);
+            gl.bindTexture(gl.TEXTURE_2D, this.images['texture3'].texture);
             gl.drawArrays(gl.TRIANGLE_STRIP,8,4);
-            gl.bindTexture(gl.TEXTURE_2D, this.images['texture4']);
+            gl.bindTexture(gl.TEXTURE_2D, this.images['texture4'].texture);
             gl.drawArrays(gl.TRIANGLE_STRIP,12,4);
             gl.uniform1i(gl.getUniformLocation(this.program, 'u_shape'), 1);
 

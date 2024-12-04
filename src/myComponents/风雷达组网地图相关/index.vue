@@ -1496,6 +1496,14 @@ async function updateData(altitude:number){
           ppiData[radar_id] = {result,position}
           result.data = result.data.slice(1)//由于第一条径向和第二条径向之间方位角跨度太大，鼠标选取会出现异常（所以删除第一条径向）
           processData(result, position);
+          // let tmp = {
+          //   type: "geojson",
+          //   data: {
+          //     type: "FeatureCollection",
+          //     features: polygons,
+          //   },
+          // };
+          // console.log(tmp);
           (map.getSource("radar") as any).setData({
             type: "FeatureCollection",
             features: polygons,

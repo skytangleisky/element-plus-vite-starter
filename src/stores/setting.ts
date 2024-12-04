@@ -307,10 +307,10 @@ export const useSettingStore = defineStore({
     },
     人影:{
       监控:{
-        "zoom": 8.882777980661407,
+        "zoom": 9,
         "center": [
-            117.04212403858509,
-            28.1994655756006
+            117,
+            28
         ],
         gridValue:false,
         gridPoint:false,
