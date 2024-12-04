@@ -25,15 +25,27 @@
 import { onBeforeUnmount, onMounted,reactive,ref,watch } from 'vue';
   const carouselRef = ref()
   const carouselListRef = ref()
-  const currentIndex = ref(0)
-  const options = reactive<{arr:any[]}>({arr:[]})
-  let position = 0//控制滑动动画
-  let marginLeft = 0//控制位置
-  let leftGap = 0
-  let percent = defineModel('percent',{
-    type:Number,
-    default:100,
+  const startIndex = defineModel('startIndex',{type:Number,default:0})
+  watch(startIndex,(newValue)=>{
+    currentIndex.value = newValue
+    options.arr = []
+    options.arr.push({index: currentIndex.value})
+    for(let i=1;i<=keepNumber.value;i++){
+      options.arr.unshift({index: currentIndex.value - i})
+      options.arr.push({index: currentIndex.value + i})
+    }
+    position = -currentIndex.value*percent.value
+    carouselListRef.value.style.transition='none'
+    carouselListRef.value.style.transform=`translateX(${position}%)`
+    carouselListRef.value.clientWidth
+    carouselListRef.value.style.transition='transform 0.5s ease-in-out'
+    marginLeft = -position
+    carouselListRef.value.style.marginLeft = marginLeft+leftGap+'%'
   })
+  const currentIndex = ref(startIndex.value)
+  const options = reactive<{arr:any[]}>({arr:[]})
+  let leftGap = 0
+  let percent = defineModel('percent',{type:Number,default:100})
   watch(percent,(newValue,oldValue)=>{
     position = -currentIndex.value*percent.value
     carouselListRef.value.style.transition='none'
@@ -45,14 +57,11 @@ import { onBeforeUnmount, onMounted,reactive,ref,watch } from 'vue';
     leftGap = -options.arr.length*percent.value/2 + 50
     carouselListRef.value.style.marginLeft = marginLeft+leftGap+'%'
   })
-  options.arr.push({index: 0})
-  const keepNumber = defineModel('keepNumber',{
-    type:Number,
-    default:4,
-  })
+  const keepNumber = defineModel('keepNumber',{type:Number,default:4})
+  options.arr.push({index: currentIndex.value})
   for(let i=1;i<=keepNumber.value;i++){
-    options.arr.unshift({index: -i})
-    options.arr.push({index: i})
+    options.arr.unshift({index: currentIndex.value-i})
+    options.arr.push({index: currentIndex.value+i})
   }
   watch(keepNumber,(newValue,oldValue)=>{
     options.arr = []
@@ -67,9 +76,15 @@ import { onBeforeUnmount, onMounted,reactive,ref,watch } from 'vue';
     leftGap = -options.arr.length*percent.value/2 + 50
     carouselListRef.value.style.marginLeft = marginLeft+leftGap+'%'
   })
+  let position = -currentIndex.value*percent.value//控制滑动动画
+  let marginLeft = -position//控制位置
   onMounted(()=>{
+    carouselListRef.value.style.transition='none'
+    carouselListRef.value.style.transform=`translateX(${position}%)`
+    carouselListRef.value.clientWidth
+    carouselListRef.value.style.transition='transform 0.5s ease-in-out'
+
     carouselListRef.value.style.setProperty('--item-width',percent.value+'%')
-    marginLeft = -position
     leftGap = -options.arr.length*percent.value/2 + 50
     carouselListRef.value.style.marginLeft = marginLeft+leftGap+'%'
     carouselListRef.value.addEventListener('transitionend',onTransitionendEnd)
@@ -80,7 +95,6 @@ import { onBeforeUnmount, onMounted,reactive,ref,watch } from 'vue';
   function moveLeft(){
     position += percent.value
     carouselListRef.value.style.transform=`translateX(${position}%)`
-    
     marginLeft -= percent.value
     carouselListRef.value.style.marginLeft = marginLeft+leftGap+'%'
     options.arr.unshift({index:currentIndex.value-keepNumber.value-1})

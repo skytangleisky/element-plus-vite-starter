@@ -1,6 +1,6 @@
 <template>
   <div class="timestep-container">
-    <Carousel :percent="100/13" :keep-number="6" style="width: 100%;">
+    <Carousel :percent="100/13" :keep-number="6" :startIndex="0" style="width: 100%;">
       <template #default="{data,currentIndex}">
         <div :class="`item w-full h-full flex items-center relative justify-center font-size-20px flex flex-col ${data.index==currentIndex?'currentItem':''}`">
           <div v-if="data.index == currentIndex" class="day absolute top-0px font-size-12px line-height-12px">{{ getDay(data) }}D</div>
@@ -132,7 +132,7 @@ function getDay(data:any){
   let day = Math.floor((delta + data.index * increment)/1000/60/60/24)
   return day > 0 ? `+${day}` : `${day}`;
 }
-const startTime = ref('2024-12-04')
+const startTime = ref(moment().format('YYYY-MM-DD'))
 function format(data:{index:number}){
   return moment(moment(startTime.value,'YYYY-MM-DD').valueOf() + data.index * increment).format('HH:mm');
 }
@@ -145,7 +145,15 @@ function setDate(value:string,data:any){
 }
 </script>
 <style lang="scss">
-
+.my-carousel{
+  .item{
+    border-radius: 10px;
+    height: 50px;
+    &.currentItem{
+      background: #4c7cc8;
+    }
+  }
+}
 .ep-input__wrapper{
   height: 12px;
   line-height: 12px;
@@ -162,17 +170,6 @@ function setDate(value:string,data:any){
   }
   .ep-input__suffix{
     display: none;
-  }
-}
-
-
-.my-carousel{
-  .item{
-    border-radius: 10px;
-    height: 50px;
-    &.currentItem{
-      background: #4c7cc8;
-    }
   }
 }
 .timestep-container{
