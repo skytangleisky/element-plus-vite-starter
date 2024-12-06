@@ -79,24 +79,22 @@ import { nextTick, onBeforeUnmount, onMounted,reactive,ref,watch } from 'vue';
   onBeforeUnmount(()=>{
     carouselListRef.value.removeEventListener('transitionend',onTransitionendEnd)
   })
-  function moveLeft(N:number){
+  function moveLeft(){
     if(mode.value=='infinite'){
       position += percent.value
       carouselListRef.value.style.transform=`translateX(${position}%)`
       marginLeft -= percent.value
       carouselListRef.value.style.marginLeft = marginLeft+leftGap+'%'
-      options.arr.unshift({index:currentIndex.value-keepNumber.value+N-1})
-      // currentIndex.value = -Math.round(position/percent.value)
+      options.arr.unshift({index:-Math.round(position/percent.value)-keepNumber.value})
     }else if(mode.value=='finite'){
       console.log('finite')
     }
   }
-  function moveRight(N:number){
+  function moveRight(){
     if(mode.value == 'infinite'){
       position-=percent.value
       carouselListRef.value.style.transform=`translateX(${position}%)`
-      options.arr.push({index:currentIndex.value+keepNumber.value-N+1})
-      // currentIndex.value = -Math.round(position/percent.value)
+      options.arr.push({index:-Math.round(position/percent.value)+keepNumber.value})
     }else if(mode.value == 'finite'){
       console.log('finite')
     }
@@ -126,12 +124,12 @@ import { nextTick, onBeforeUnmount, onMounted,reactive,ref,watch } from 'vue';
   watch(currentIndex,(newValue,oldValue)=>{
     let N = (newValue - oldValue)
     if(N>0){
-      for(let i=N;i>=1;i--){
-        moveRight(i)
+      for(let i=0;i<N;i++){
+        moveRight()
       }
     }else{
-      for(let i=-N;i>=1;i--){
-        moveLeft(i)
+      for(let i=0;i<-N;i++){
+        moveLeft()
       }
     }
     emit('change',newValue,oldValue,changeType)

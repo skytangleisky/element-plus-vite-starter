@@ -63,7 +63,6 @@ watch(startTime,(newValue)=>{
 })
 const emit = defineEmits(['change'])
 function change(newVal:number,oldValue:number,changeType:string){
-  console.log(newVal,changeType)
   if(changeType == 'click'){
     playState.value = false
   }
