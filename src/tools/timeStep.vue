@@ -127,20 +127,23 @@ onBeforeUnmount(()=>{
 }
 .timestep-container{
   position: absolute;
+  display: flex;
   bottom:100px;
   left:50%;
   transform: translateX(-50%);
-  display: flex;
   align-items:center;
+  justify-content: space-between;
   width: 80%;
   height: 38px;
   .btn{
+    position: absolute;
+    right:0;
+    transform: translateX(calc(100% + 10px));
+    flex-shrink: 0;
     border-radius: 50%;
     background:#ffffff80;
-    margin-left: 10px;
     width: 30px;
     height: 30px;
-    flex-shrink: 0;
     &:hover{
       opacity: 0.8;;
     }
