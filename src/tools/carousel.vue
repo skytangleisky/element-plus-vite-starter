@@ -22,27 +22,12 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { onBeforeUnmount, onMounted,reactive,ref,watch } from 'vue';
+import { nextTick, onBeforeUnmount, onMounted,reactive,ref,watch } from 'vue';
   const carouselRef = ref()
   const carouselListRef = ref()
-  const startIndex = defineModel('startIndex',{type:Number,default:0})
-  watch(startIndex,(newValue)=>{
-    currentIndex.value = newValue
-    options.arr = []
-    options.arr.push({index: currentIndex.value})
-    for(let i=1;i<=keepNumber.value;i++){
-      options.arr.unshift({index: currentIndex.value - i})
-      options.arr.push({index: currentIndex.value + i})
-    }
-    position = -currentIndex.value*percent.value
-    carouselListRef.value.style.transition='none'
-    carouselListRef.value.style.transform=`translateX(${position}%)`
-    carouselListRef.value.clientWidth
-    carouselListRef.value.style.transition='transform 0.5s ease-in-out'
-    marginLeft = -position
-    carouselListRef.value.style.marginLeft = marginLeft+leftGap+'%'
-  })
-  const currentIndex = ref(startIndex.value)
+  const mode = ref<'infinite'|'finite'>('infinite')
+  let changeType:'auto'|'click' = 'auto'// 自动触发还是点击触发
+  const currentIndex = defineModel('currentIndex',{type:Number,default:0})
   const options = reactive<{arr:any[]}>({arr:[]})
   let leftGap = 0
   let percent = defineModel('percent',{type:Number,default:100})
@@ -58,27 +43,29 @@ import { onBeforeUnmount, onMounted,reactive,ref,watch } from 'vue';
     carouselListRef.value.style.marginLeft = marginLeft+leftGap+'%'
   })
   const keepNumber = defineModel('keepNumber',{type:Number,default:4})
-  options.arr.push({index: currentIndex.value})
-  for(let i=1;i<=keepNumber.value;i++){
-    options.arr.unshift({index: currentIndex.value-i})
-    options.arr.push({index: currentIndex.value+i})
-  }
   watch(keepNumber,(newValue,oldValue)=>{
     options.arr = []
-    let startIndex = -Math.round(position/percent.value)
-    options.arr.push({index: startIndex})
+    options.arr.push({index: currentIndex.value})
     for(let i=1;i<=newValue;i++){
-      options.arr.unshift({index: startIndex - i})
-      options.arr.push({index: startIndex + i})
+      options.arr.unshift({index: currentIndex.value - i})
+      options.arr.push({index: currentIndex.value + i})
     }
     carouselListRef.value.style.setProperty('--item-width',percent.value+'%')
     marginLeft = -position
     leftGap = -options.arr.length*percent.value/2 + 50
     carouselListRef.value.style.marginLeft = marginLeft+leftGap+'%'
   })
-  let position = -currentIndex.value*percent.value//控制滑动动画
-  let marginLeft = -position//控制位置
+  let position = 0//控制滑动动画
+  let marginLeft = 0//控制位置
   onMounted(()=>{
+    options.arr.push({index: currentIndex.value})
+    for(let i=1;i<=keepNumber.value;i++){
+      options.arr.unshift({index: currentIndex.value-i})
+      options.arr.push({index: currentIndex.value+i})
+    }
+    position = -currentIndex.value*percent.value
+    marginLeft = -position
+
     carouselListRef.value.style.transition='none'
     carouselListRef.value.style.transform=`translateX(${position}%)`
     carouselListRef.value.clientWidth
@@ -92,19 +79,27 @@ import { onBeforeUnmount, onMounted,reactive,ref,watch } from 'vue';
   onBeforeUnmount(()=>{
     carouselListRef.value.removeEventListener('transitionend',onTransitionendEnd)
   })
-  function moveLeft(){
-    position += percent.value
-    carouselListRef.value.style.transform=`translateX(${position}%)`
-    marginLeft -= percent.value
-    carouselListRef.value.style.marginLeft = marginLeft+leftGap+'%'
-    options.arr.unshift({index:currentIndex.value-keepNumber.value-1})
-    currentIndex.value = -Math.round(position/percent.value)
+  function moveLeft(N:number){
+    if(mode.value=='infinite'){
+      position += percent.value
+      carouselListRef.value.style.transform=`translateX(${position}%)`
+      marginLeft -= percent.value
+      carouselListRef.value.style.marginLeft = marginLeft+leftGap+'%'
+      options.arr.unshift({index:currentIndex.value-keepNumber.value+N-1})
+      // currentIndex.value = -Math.round(position/percent.value)
+    }else if(mode.value=='finite'){
+      console.log('finite')
+    }
   }
-  function moveRight(){
-    position-=percent.value
-    carouselListRef.value.style.transform=`translateX(${position}%)`
-    options.arr.push({index:currentIndex.value+keepNumber.value+1})
-    currentIndex.value = -Math.round(position/percent.value)
+  function moveRight(N:number){
+    if(mode.value == 'infinite'){
+      position-=percent.value
+      carouselListRef.value.style.transform=`translateX(${position}%)`
+      options.arr.push({index:currentIndex.value+keepNumber.value-N+1})
+      // currentIndex.value = -Math.round(position/percent.value)
+    }else if(mode.value == 'finite'){
+      console.log('finite')
+    }
   }
   function onTransitionendEnd(event:TransitionEvent){
     for(let i=0;i<options.arr.length;i++){
@@ -121,33 +116,40 @@ import { onBeforeUnmount, onMounted,reactive,ref,watch } from 'vue';
     }
   }
   function click(item:any){
-    let N = (item.index - currentIndex.value)
-    if(N>0){
-      for(let i=0;i<N;i++){
-        moveRight()
-      }
-    }else{
-      for(let i=0;i<-N;i++){
-        moveLeft()
-      }
-    }
+    changeType = 'click'
+    currentIndex.value = item.index
+    nextTick(()=>{
+      changeType = 'auto'
+    })
   }
   const emit = defineEmits(['change'])
   watch(currentIndex,(newValue,oldValue)=>{
-    emit('change',newValue,oldValue)
+    let N = (newValue - oldValue)
+    if(N>0){
+      for(let i=N;i>=1;i--){
+        moveRight(i)
+      }
+    }else{
+      for(let i=-N;i>=1;i--){
+        moveLeft(i)
+      }
+    }
+    emit('change',newValue,oldValue,changeType)
   })
 </script>
 <style lang="scss">
+.dark .my-carousel{
+  background:#80808080;
+}
 .my-carousel{
   display: flex;
   height: 30px;
   align-items: center;
   justify-content: center;
-  top:100px;
-  background:#ffffff40;
+  background:#ffffff80;
   padding:0 0px;;
   border-radius:10px;
-  position: absolute;
+  position: relative;
   line-height: 30px;
   // &::before{
   //   content:'';
@@ -158,6 +160,7 @@ import { onBeforeUnmount, onMounted,reactive,ref,watch } from 'vue';
   //   transform: translateX(-50%);
   //   background:#f00;
   //   height: 30px;
+  //   z-index: 1;
   // }
   .carousel-container{
     width: 100%;

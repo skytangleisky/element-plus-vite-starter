@@ -95,6 +95,7 @@
         </svg>
       </el-icon>
     </div>
+    <TimeStep @change="TimeStepChange"></TimeStep>
     <time-line
       v-if="hasPermission(['e44f37e1-f642-4dbf-83ca-052313b217f5'])"
       :data="data"
@@ -132,6 +133,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import TimeStep from '~/tools/timeStep.vue';
 import FKX from './风廓线.vue';
 import uvUrl from "../mapbox/data/06040808.000?url";
 import CustomLayer from './CustomLayer.js'//绘制流线
@@ -165,6 +167,7 @@ import { eventbus } from "~/eventbus";
 const chromatographyOption=reactive<{arr:Array<number>}>({
   arr:[]
 })
+const targetTime = ref(moment().format('YYYYMMDDHHmmss'))
 switch(setting.风雷达组网地图相关.风场数据){
   case '不显示':
     chromatographyOption.arr=[]
@@ -309,7 +312,7 @@ const popup_closer = ref(null);
 const disappear = (e) => {
   setting.disappear = !setting.disappear;
 };
-let timer, map: mapboxgl.Map;
+let map: mapboxgl.Map;
 let mock;
 let speed = 20;
 const points = {
@@ -999,11 +1002,6 @@ const loadFunc = async () => {
   bus.avgWindData = [];
   bus.secondWindData = [];
   bus.radialWindData = [];
-  // if (import.meta.env.PROD) {
-  //   timer = setInterval(() => task(), 4 * 60 * 1000);
-  // } else if (import.meta.env.DEV) {
-  //   timer = setInterval(() => task(), 4 * 60 * 1000);
-  // }
   let frameCounter = map.painter.frameCounter;
   mock = setInterval(() => {
     graphArgs.fps.value = map.painter.frameCounter - frameCounter;
@@ -1021,7 +1019,6 @@ const loadFunc = async () => {
   //   station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
 
   work()
-  timer = setInterval(work,60e3)
 };
 const flyTo = (item) => {
   try {
@@ -1057,9 +1054,13 @@ async function work(){
   })
   updateData(setting.风雷达组网地图相关.altitudeHeight)
 }
+function TimeStepChange(timeString:string){
+  targetTime.value = moment(timeString,'YYYY-MM-DD HH:mm:ss').format('YYYYMMDDHHmmss')
+  work()
+}
 async function updateData(altitude:number){
   //20240729054058
-  await getFkxData({dataTime:moment().format('YYYYMMDDHHmmss'),altitude}).then(result=>{
+  await getFkxData({dataTime:targetTime.value,altitude}).then(result=>{
     res.data[0].map((device:any,k:number)=>{
       for(let key in result.data.data){
         if(device.no === result.data.data[key].radar_id){
@@ -1347,7 +1348,7 @@ async function updateData(altitude:number){
         (map.getSource('等距环Source') as any).setData(circleDataFeatures);
       }
 
-      getPPIData({radar_id:Item.no,dataTime:moment().format('YYYYMMDDHHmmss')},1).then(res=>{
+      getPPIData({radar_id:Item.no,dataTime:targetTime.value},1).then(res=>{
       // getPPIData({radar_id:Item.no,dataTime:'20240716105055'},1).then(res=>{
         if(res.data.code==200){
           //绘制PPI
@@ -1510,7 +1511,7 @@ async function updateData(altitude:number){
           });
         }
       })
-      getPPIData({radar_id:Item.no,dataTime:moment().format('YYYYMMDDHHmmss')},2).then(res=>{
+      getPPIData({radar_id:Item.no,dataTime:targetTime.value},2).then(res=>{
       // getPPIData({radar_id:Item.no,dataTime:'20240716105055'},2).then(res=>{
         if(res.data.code==200){
           /* PPI反演风场 */
@@ -1619,7 +1620,7 @@ let pointDataFeatures:{type:string,features:Array<any>} = {
   features: [],
 };
 function fetch最近风廓线数据(){
-  getFkxRealData({radar_id:station.active,dateTime:moment().format('YYYYMMDDHHmmss'),num:6}).then((res=>{
+  getFkxRealData({radar_id:station.active,dateTime:targetTime.value,num:6}).then((res=>{
     const v = new View(encoder.encode(res.data.data.file.file_data).buffer)
     let result:{[key:string]:any} = {HeaderInfo:{},data:[]}
     let firstLine = decoder.decode(v.getLine()).trim().replace(/,$/,'').split(',')
@@ -1713,7 +1714,6 @@ onMounted(() => {
 });
 onBeforeUnmount(() => {
   eventbus.off("将站点移动到屏幕中心", flyTo);
-  clearInterval(timer);
   clearInterval(mock);
   map.off("zoom", zoomFunc);
   map.off("move", moveFunc);
@@ -2199,6 +2199,13 @@ watch(
   }
 );
 </script>
+<style lang="scss">
+.main-container .timestep-container{
+  box-sizing: border-box;
+  bottom:10px;
+  width:90%;
+}
+</style>
 <style scoped lang="scss">
 .stationMenu {
   display: none;

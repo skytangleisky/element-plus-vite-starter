@@ -8,7 +8,7 @@
   </el-config-provider>
   <websocket v-if="checkPermission(['admin', 'zh'])"></websocket>
   <debug v-if="checkPermission(['admin', 'zh'])"></debug>
-  <!-- <AircraftPos v-if="checkPermission(['admin', 'ry'])"></AircraftPos> -->
+  <AircraftPos v-if="checkPermission(['admin', 'ry'])"></AircraftPos>
 </template>
 <script lang="ts" setup>
 import { onMounted,nextTick, onBeforeUnmount } from "vue";
