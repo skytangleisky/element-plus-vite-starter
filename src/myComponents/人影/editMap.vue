@@ -3,6 +3,7 @@
     <div
       v-resize="resize"
       ref="mapRef"
+      class="dark:bg-#2b2b2b bg-white"
       style="
         position: absolute;
         left: 0;
@@ -11,7 +12,6 @@
         height: 100%;
         line-height: 1;
         outline: none;
-        background: #2b2b2b;
       "
     ></div>
     <Dialog
@@ -184,7 +184,6 @@ const props = withDefaults(
     gridValue?: boolean;
     feather?: boolean;
     equidistantRing?: boolean;
-    districtLineColor?:string;
   }>(),
   {
     routeLine: true,
@@ -205,7 +204,6 @@ const props = withDefaults(
     gridValue: true,
     feather: false,
     equidistantRing: false,
-    districtLineColor:'#ffffff',
   }
 );
 import style from "./editMap.js";
@@ -705,7 +703,7 @@ onMounted(() => {
               }
             },
             layout: {
-              visibility: props.zyd ? "visible" : "none",
+              visibility: setting.人影.监控.navigationStation ? "visible" : "none",
               // This icon is a part of the Mapbox Streets style.
               // To view all images available in a Mapbox style, open
               // the style in Mapbox Studio and click the "Images" tab.
@@ -1137,11 +1135,11 @@ onMounted(() => {
           },
         },
         layout: {
-          visibility: setting.人影.监控.人影飞行区 ? "visible" : "none",
+          visibility: setting.人影.监控.ryAirspaces.fill ? "visible" : "none",
         },
         paint: {
-          "fill-color": "#000",
-          "fill-opacity": 0.5,
+          "fill-color": `rgba(${setting.人影.监控.ryAirspaces.fillColor.r},${setting.人影.监控.ryAirspaces.fillColor.g},${setting.人影.监控.ryAirspaces.fillColor.b},${setting.人影.监控.ryAirspaces.fillColor.a})`,
+          "fill-outline-color":'transparent'
         },
       });
       map.addLayer({
@@ -1158,7 +1156,7 @@ onMounted(() => {
           },
         },
         layout: {
-          visibility: setting.人影.监控.人影飞行区 ? "visible" : "none",
+          visibility: setting.人影.监控.ryAirspaces.fill ? "visible" : "none",
           'line-cap': 'round',
           'line-join': 'round'
         },
@@ -1182,7 +1180,7 @@ onMounted(() => {
           },
         },
         layout: {
-          visibility: setting.人影.监控.人影飞行区 ? "visible" : "none",
+          visibility: setting.人影.监控.ryAirspaces.fill ? "visible" : "none",
           'line-cap': 'round',
           'line-join': 'round'
         },
@@ -1203,7 +1201,7 @@ onMounted(() => {
           }
         },
         layout: {
-          visibility: setting.人影.监控.人影飞行区 ? "visible" : "none",
+          visibility: setting.人影.监控.ryAirspaces.fill ? "visible" : "none",
           // This icon is a part of the Mapbox Streets style.
           // To view all images available in a Mapbox style, open
           // the style in Mapbox Studio and click the "Images" tab.
@@ -2387,6 +2385,13 @@ watch(
     }
   }
 );
+watch(()=>setting.人影.监控.navigationStation,(newVal)=>{
+  if(newVal){
+    map.setLayoutProperty("导航台图层","visibility","visible")
+  }else{
+    map.setLayoutProperty("导航台图层","visibility","none")
+  }
+})
 watch(
   () => props.routeLine,
   (newVal) => {
@@ -2401,26 +2406,54 @@ watch(
   () => props.district,
   (newVal) => {
     if (newVal) {
-      map.setLayoutProperty("districtLineBase", "visibility", "visible");
-      map.setLayoutProperty("districtLineOver", "visibility", "visible");
       map.setLayoutProperty("districtLayer", "visibility", "visible");
     } else {
-      map.setLayoutProperty("districtLineBase", "visibility", "none");
-      map.setLayoutProperty("districtLineOver", "visibility", "none");
       map.setLayoutProperty("districtLayer", "visibility", "none");
     }
   }
 );
+watch(()=>setting.人影.监控.districtOptions.districtBase,(newVal)=>{
+  if(newVal){
+    map.setLayoutProperty("districtLineBase", "visibility", "visible");
+  }else{
+    map.setLayoutProperty("districtLineBase", "visibility", "none");
+  }
+})
+watch(()=>setting.人影.监控.districtOptions.districtLine,(newVal)=>{
+  if(newVal){
+    map.setLayoutProperty("districtLineOver", "visibility", "visible");
+  }else{
+    map.setLayoutProperty("districtLineOver", "visibility", "none");
+  }
+})
 watch(
-  () => props.districtLineColor,
+  () => setting.人影.监控.districtOptions.districtBaseWidth,
   (newVal) => {
-    map.setPaintProperty("districtLineOver","line-color",newVal)
+    map.setPaintProperty("districtLineBase","line-width",newVal)
   }
 );
 watch(
-  () => setting.人影.监控.districtFillColor,
+  () => setting.人影.监控.districtOptions.districtBaseColor,
   (newVal) => {
-    map.setPaintProperty("districtLayer","fill-color",newVal)
+    map.setPaintProperty("districtLineBase","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+  }
+);
+watch(
+  () => setting.人影.监控.districtOptions.districtLineWidth,
+  (newVal) => {
+    map.setPaintProperty("districtLineOver","line-width",newVal)
+  }
+);
+watch(
+  () => setting.人影.监控.districtOptions.districtLineColor,
+  (newVal) => {
+    map.setPaintProperty("districtLineOver","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+  }
+);
+watch(
+  () => setting.人影.监控.districtOptions.districtFillColor,
+  (newVal) => {
+    map.setPaintProperty("districtLayer","fill-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
   }
 );
 watch(
@@ -2433,17 +2466,50 @@ watch(
     }
   }
 );
-watch(()=>setting.人影.监控.人影飞行区,(newVal)=>{
+watch(()=>setting.人影.监控.ryAirspaces.fill,(newVal)=>{
   if(newVal){
-    map.setLayoutProperty("华北飞行区域baseLine","visibility","visible")
-    map.setLayoutProperty("华北飞行区域line","visibility","visible")
-    map.setLayoutProperty("华北飞行区域标签","visibility","visible")
     map.setLayoutProperty("华北飞行区域area","visibility","visible")
   }else{
-    map.setLayoutProperty("华北飞行区域baseLine","visibility","none")
-    map.setLayoutProperty("华北飞行区域line","visibility","none")
-    map.setLayoutProperty("华北飞行区域标签","visibility","none")
     map.setLayoutProperty("华北飞行区域area","visibility","none")
+  }
+})
+watch(()=>setting.人影.监控.ryAirspaces.fillColor,(newVal)=>{
+  map.setPaintProperty("华北飞行区域area","fill-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+})
+watch(()=>setting.人影.监控.ryAirspaces.base,(newVal)=>{
+  if(newVal){
+    map.setLayoutProperty("华北飞行区域baseLine","visibility","visible")
+  }else{
+    map.setLayoutProperty("华北飞行区域baseLine","visibility","none")
+  }
+})
+watch(()=>setting.人影.监控.ryAirspaces.baseWidth,(newVal)=>{
+  map.setPaintProperty("华北飞行区域baseLine","line-width",newVal)
+})
+watch(()=>setting.人影.监控.ryAirspaces.baseColor,(newVal)=>{
+  map.setPaintProperty("华北飞行区域baseLine","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+})
+watch(()=>setting.人影.监控.ryAirspaces.line,(newVal)=>{
+  if(newVal){
+    map.setLayoutProperty("华北飞行区域line","visibility","visible")
+  }else{
+    map.setLayoutProperty("华北飞行区域line","visibility","none")
+  }
+})
+watch(()=>setting.人影.监控.ryAirspaces.lineWidth,(newVal)=>{
+  map.setPaintProperty("华北飞行区域line","line-width",newVal)
+})
+watch(()=>setting.人影.监控.ryAirspaces.lineColor,(newVal)=>{
+  map.setPaintProperty("华北飞行区域line","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+})
+watch(()=>setting.人影.监控.ryAirspaces.lineColor,(newVal)=>{
+  map.setPaintProperty("华北飞行区域line","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+})
+watch(()=>setting.人影.监控.ryAirspaces.tag,(newVal)=>{
+  if(newVal){
+    map.setLayoutProperty("华北飞行区域标签","visibility","visible")
+  }else{
+    map.setLayoutProperty("华北飞行区域标签","visibility","none")
   }
 })
 </script>

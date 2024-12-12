@@ -7,7 +7,7 @@
       v-model:routeLine="setting.人影.监控.routeLine"
       v-model:loadmap="setting.人影.监控.loadmap"
       v-model:zyd="setting.人影.监控.zyd"
-      v-model:district="setting.人影.监控.district"
+      v-model:district="setting.人影.监控.districtOptions.district"
       v-model:tile="setting.人影.监控.tile"
       v-model:center="setting.人影.监控.center"
       v-model:zoom="setting.人影.监控.zoom"
@@ -20,7 +20,6 @@
       v-model:gridValue="setting.人影.监控.gridValue"
       v-model:isolines="setting.人影.监控.isolines"
       v-model:isobands="setting.人影.监控.isobands"
-      v-model:districtLineColor="setting.人影.监控.districtLineColor"
     ></edit-map>
     <div
       class="absolute left-10px top-10px b-solid b-1px dark:b-gray-5 b-gray dark:bg-#2b2b2b bg-white dark:color-white color-black w-150px h-80px flex flex-col justify-between p-10px"
@@ -47,12 +46,13 @@
               v-model="setting.人影.监控.loadmap"
               label="显示瓦片地图"
             ></el-checkbox>
-            <div class="flex items-center"><el-checkbox name="控制区划" v-model="setting.人影.监控.district"></el-checkbox><div class="p-l-8px">显示行政区划</div></div>
-            <el-checkbox name="控制人影飞行区" v-model="setting.人影.监控.人影飞行区" label="人影飞行区"></el-checkbox>
+            <div class="flex items-center"><el-checkbox name="控制区划" v-model="setting.人影.监控.districtOptions.district"></el-checkbox><div class="p-l-8px">显示行政区划</div></div>
+            <el-checkbox name="控制人影飞行区" v-model="setting.人影.监控.ryAirspaces.fill" label="人影飞行区"></el-checkbox>
             <el-checkbox name="控制航线" v-model="setting.人影.监控.routeLine" label="航路航线"></el-checkbox>
             <el-checkbox name="控制作业点" v-model="setting.人影.监控.zyd" label="显示作业点"></el-checkbox>
             <el-checkbox name="飞机" v-model="setting.人影.监控.plane" label="显示飞机"></el-checkbox>
             <el-checkbox name="机场" v-model="setting.人影.监控.airport" label="显示机场"></el-checkbox>
+            <el-checkbox name="导航台" v-model="setting.人影.监控.navigationStation" label="导航台"></el-checkbox>
             <template v-if="checkPermission(['admin'])">
               <el-checkbox name="控制自动站" v-model="setting.人影.监控.zdz" label="自动站"></el-checkbox>
               <el-checkbox name="控制网格点" v-model="setting.人影.监控.gridPoint" label="网格点"></el-checkbox>
@@ -66,11 +66,8 @@
           <legend class="font-size-14px">人影飞行区域 显示风格</legend>
           <div class="flex flex-col">
             <el-checkbox name="图层显示控制" class="row-start-1 col-span-3" label="图层显示"></el-checkbox>
-            <label class="flex"><input type="radio" class="m-0" name="选择颜色" :value="0" v-model="setting.人影.监控.showColorSelector">图层颜色<div :style="`background:${setting.人影.监控.districtLineColor};flex:1;`"></div></label>
-            <label class="flex"><input type="radio" class="m-0" name="选择颜色" :value="1" v-model="setting.人影.监控.showColorSelector">填充颜色<div :style="`background:${setting.人影.监控.districtFillColor};flex:1;`"></div></label>
-            <!-- <div class="row-start-2 col-span-1">图层颜色</div><el-color-picker class="row-start-2 col-span-3" v-model="color" show-alpha :predefine="predefineColors" color-format="hex" /> -->
-            <!-- <div class="row-start-2 col-span-1">省界颜色</div><div :style="`background:${setting.人影.监控.districtLineColor}`" @click="setting.人影.监控.districtLineColorSelector=!setting.人影.监控.districtLineColorSelector" tabindex="-1"></div>
-            <div class="row-start-2 col-span-1">填充颜色</div><div :style="`background:${setting.人影.监控.districtFillColor}`" @click="setting.人影.监控.districtFillColorSelector=!setting.人影.监控.districtFillColorSelector" tabindex="-1"></div> -->
+            <label class="flex"><input type="radio" class="m-0" name="选择颜色" :value="0" v-model="setting.人影.监控.showColorSelector">图层颜色<div :style="`background:rgba(${setting.人影.监控.districtOptions.districtLineColor.r},${setting.人影.监控.districtOptions.districtLineColor.g},${setting.人影.监控.districtOptions.districtLineColor.b},${setting.人影.监控.districtOptions.districtLineColor.a});flex:1;`"></div></label>
+            <label class="flex"><input type="radio" class="m-0" name="选择颜色" :value="1" v-model="setting.人影.监控.showColorSelector">填充颜色<div :style="`background:rgba(${setting.人影.监控.districtOptions.districtFillColor.r},${setting.人影.监控.districtOptions.districtFillColor.g},${setting.人影.监控.districtOptions.districtFillColor.b},${setting.人影.监控.districtOptions.districtFillColor.a});flex:1;`"></div></label>
             <el-checkbox name="填充控制" class="row-start-3 col-span-3" label="填充"></el-checkbox>
             <el-checkbox name="比例尺显示" class="row-start-4 col-span-3" label="比例尺显示控制"></el-checkbox>
           </div>
@@ -110,6 +107,7 @@
     style="z-index:2010"
   ></dialog-plan-request>
   <ColorSelector v-show="setting.人影.监控.showColorSelector !== -1" v-model:selectorColor="selectorColor" style="z-index: 2010;" @cancel="setting.人影.监控.showColorSelector=-1"></ColorSelector>
+  <div ref="tweakPaneRef" class="tp-dfwv" style="z-index: 1;"></div>
 </template>
 <script lang="ts" setup>
 import editMap from "../editMap.vue";
@@ -122,12 +120,110 @@ import recordSvg from "~/assets/record.svg?raw";
 import whitelistSvg from "~/assets/whitelist.svg?raw";
 import statisticSvg from "~/assets/statistic.svg?raw";
 import selectTile from "../selectTile.vue";
-import { watch, ref, reactive,computed } from "vue";
+import { watch, ref, reactive,computed,onMounted, onBeforeUnmount } from "vue";
 import DialogPlanRequest, { prevRequestDataType } from "../../dialog_plan_request.vue";
 import { useSettingStore } from "~/stores/setting";
 import { eventbus } from "~/eventbus/index";
 import ColorSelector from "~/myComponents/colorSelector/index.vue"
+import { Pane } from 'tweakpane';
+let pane:any
+onMounted(()=>{
+  pane = new Pane({
+    container:tweakPaneRef.value
+  });
+  pane.addBinding(setting.人影.监控, 'loadmap',{label:'瓦片地图'});
+  {// 行政区划图层配置
+    const folder = pane.addFolder({title: '行政区划'});
+    folder.addBinding(setting.人影.监控.districtOptions, 'district',{label:'填充'});
+    const fillColor = folder.addBinding(setting.人影.监控.districtOptions, 'districtFillColor',{label:'填充颜色',picker:'popup',expanded:false});
+    fillColor.on('change', (ev:any) => {
+      setting.人影.监控.districtOptions.districtFillColor = {r:Math.round(ev.value.r),g:Math.round(ev.value.g),b:Math.round(ev.value.b),a:ev.value.a};
+    });
+    watch(()=>setting.人影.监控.districtOptions.districtFillColor,()=>{
+      fillColor.refresh()
+    })
+    folder.addBinding(setting.人影.监控.districtOptions, 'districtBase',{label:'底线'});
+    folder.addBinding(setting.人影.监控.districtOptions, 'districtBaseWidth',{label:'底线宽度',min:0,max:5,step:0.1});
+    const baseColor = folder.addBinding(setting.人影.监控.districtOptions, 'districtBaseColor',{label:'底线颜色',picker:'popup',expanded:false});
+    baseColor.on('change', (ev:any) => {
+      setting.人影.监控.districtOptions.districtBaseColor = {r:Math.round(ev.value.r),g:Math.round(ev.value.g),b:Math.round(ev.value.b),a:ev.value.a};
+    });
+    watch(()=>setting.人影.监控.districtOptions.districtBaseColor,()=>{
+      baseColor.refresh()
+    })
+    folder.addBinding(setting.人影.监控.districtOptions, 'districtLine',{label:'界线'});
+    folder.addBinding(setting.人影.监控.districtOptions, 'districtLineWidth',{label:'界线宽度',min:0,max:5,step:0.1});
+    const lineColor = folder.addBinding(setting.人影.监控.districtOptions, 'districtLineColor',{label:'界线颜色',picker:'popup',expanded:false});
+    lineColor.on('change', (ev:any) => {
+      setting.人影.监控.districtOptions.districtLineColor = {r:Math.round(ev.value.r),g:Math.round(ev.value.g),b:Math.round(ev.value.b),a:ev.value.a};
+    });
+    watch(()=>setting.人影.监控.districtOptions.districtLineColor,()=>{
+      lineColor.refresh()
+    })
+  }
+
+  {// 人影飞行区图层配置
+    const folder = pane.addFolder({title: '人影飞行区'});
+    folder.addBinding(setting.人影.监控.ryAirspaces, 'fill',{label:'填充'});
+    const fillColor = folder.addBinding(setting.人影.监控.ryAirspaces, 'fillColor',{label:'底线颜色',picker:'popup',expanded:false});
+    fillColor.on('change', (ev:any) => {
+      setting.人影.监控.ryAirspaces.fillColor = {r:Math.round(ev.value.r),g:Math.round(ev.value.g),b:Math.round(ev.value.b),a:ev.value.a};
+    });
+    watch(()=>setting.人影.监控.ryAirspaces.fillColor,()=>{
+      fillColor.refresh()
+    })
+    folder.addBinding(setting.人影.监控.ryAirspaces, 'base',{label:'底线'});
+    folder.addBinding(setting.人影.监控.ryAirspaces, 'baseWidth',{label:'底线宽度',min:0,max:5,step:0.1});
+    const baseColor = folder.addBinding(setting.人影.监控.ryAirspaces, 'baseColor',{label:'底线颜色',picker:'popup',expanded:false});
+    baseColor.on('change', (ev:any) => {
+      setting.人影.监控.ryAirspaces.baseColor = {r:Math.round(ev.value.r),g:Math.round(ev.value.g),b:Math.round(ev.value.b),a:ev.value.a};
+    });
+    watch(()=>setting.人影.监控.ryAirspaces.baseColor,()=>{
+      baseColor.refresh()
+    })
+    folder.addBinding(setting.人影.监控.ryAirspaces, 'line',{label:'界线'});
+    folder.addBinding(setting.人影.监控.ryAirspaces, 'lineWidth',{label:'界线宽度',min:0,max:5,step:0.1});
+    const lineColor = folder.addBinding(setting.人影.监控.ryAirspaces, 'lineColor',{label:'界线颜色',picker:'popup',expanded:false});
+    lineColor.on('change', (ev:any) => {
+      setting.人影.监控.ryAirspaces.lineColor = {r:Math.round(ev.value.r),g:Math.round(ev.value.g),b:Math.round(ev.value.b),a:ev.value.a};
+    });
+    watch(()=>setting.人影.监控.ryAirspaces.baseColor,()=>{
+      lineColor.refresh()
+    })
+    folder.addBinding(setting.人影.监控.ryAirspaces, 'tag',{label:'标号'});
+  }
+  pane.addBinding(setting.人影.监控, 'routeLine',{label:'航路航线'});
+  pane.addBinding(setting.人影.监控, 'airport',{label:'机场'});
+  pane.addBinding(setting.人影.监控, 'plane',{label:'飞机'});
+  pane.addBinding(setting.人影.监控, 'zyd',{label:'作业点'});
+  pane.addBinding(setting.人影.监控, 'navigationStation',{label:'导航台'});
+  pane.addBinding(setting.人影.监控, 'zdz',{label:'自动站'});
+  pane.addBinding(setting.人影.监控, 'gridPoint',{label:'网格点'});
+  pane.addBinding(setting.人影.监控, 'gridValue',{label:'网格值'});
+  pane.addBinding(setting.人影.监控, 'isolines',{label:'等值线'});
+  pane.addBinding(setting.人影.监控, 'isobands',{label:'等值带'});
+})
+onBeforeUnmount(()=>{
+  pane.dispose();
+})
 const setting = useSettingStore();
+watch([
+  ()=>setting.人影.监控.loadmap,
+  ()=>setting.人影.监控.districtOptions.district,
+  ()=>setting.人影.监控.ryAirspaces.fill,
+  ()=>setting.人影.监控.routeLine,
+  ()=>setting.人影.监控.airport,
+  ()=>setting.人影.监控.plane,
+  ()=>setting.人影.监控.zyd,
+  ()=>setting.人影.监控.navigationStation,
+  ()=>setting.人影.监控.zdz,
+  ()=>setting.人影.监控.gridPoint,
+  ()=>setting.人影.监控.gridValue,
+  ()=>setting.人影.监控.isolines,
+  ()=>setting.人影.监控.isobands,
+],()=>{
+  pane&&pane.refresh()
+})
 import datatable from "~/myComponents/datatable/index.vue";
 const menus = reactive([
   { value: 12, type: "warning", svg: warnSvg, active: true },
@@ -139,21 +235,13 @@ const menus = reactive([
 ]);
 const selectorColor = computed({
   get(){
-    if(setting.人影.监控.showColorSelector===0){
-      return setting.人影.监控.districtLineColor
-    }else if(setting.人影.监控.showColorSelector===1){
-      return setting.人影.监控.districtFillColor
-    }
-    return ''
+    return setting.人影.监控.districtOptions.districtFillColor
   },
-  set(val:string){
-    if(setting.人影.监控.showColorSelector===0){
-      setting.人影.监控.districtLineColor = val
-    }else if(setting.人影.监控.showColorSelector===1){
-      setting.人影.监控.districtFillColor = val
-    }
+  set(val:{r:number,g:number,b:number,a:number}){
+    setting.人影.监控.districtOptions.districtFillColor = val
   }
 })
+const tweakPaneRef = ref<HTMLElement>();
 import { checkPermission } from "~/tools";
 const confirm = (data: prevRequestDataType) => {
   eventbus.emit("人影-地面作业申请-网络上报", data);
@@ -171,91 +259,6 @@ const formatUrl = (url: string) => {
   return url.replace("{x}", "105").replace("{y}", "48").replace("{z}", "7");
 };
 const tileList = ref([
-  {
-    selected: false,
-    name: "天地图(地形)",
-    url: formatUrl(
-      "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c"
-    ),
-    tileData: [
-      "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t1.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t2.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t3.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t4.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t5.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t6.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t7.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-    ],
-  },
-  {
-    selected: false,
-    name: "天地图(影像)",
-    url: formatUrl(
-      "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c"
-    ),
-    tileData: [
-      "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t1.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t2.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t3.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t4.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t5.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t6.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t7.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-    ],
-  },
-  {
-    selected: false,
-    name: "天地图(矢量图)",
-    url: formatUrl(
-      "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c"
-    ),
-    tileData: [
-      "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t1.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t2.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t3.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t4.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t5.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t6.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t7.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-    ],
-  },
-  {
-    selected: false,
-    name: "天地图(标注)",
-    url: formatUrl(
-      "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c"
-    ),
-    tileData: [
-      "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t1.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t2.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t3.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t4.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t5.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t6.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t7.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-    ],
-  },
-  {
-    selected: false,
-    name: "天地图(网路)",
-    url: formatUrl(
-      "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c"
-    ),
-    tileData: [
-      "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t1.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t2.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t3.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t4.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t5.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t6.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      "http://t7.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-    ],
-  },
   {
     selected: false,
     name: "高德街道地图",
@@ -299,6 +302,91 @@ const tileList = ref([
     url: formatUrl("https://tile.tanglei.site/maps/vt?lyrs=m&x={x}&y={y}&z={z}"),
     tileData: ["https://tile.tanglei.site/maps/vt?lyrs=m&x={x}&y={y}&z={z}"],
   },
+  // {
+  //   selected: false,
+  //   name: "天地图(地形)",
+  //   url: formatUrl(
+  //     "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c"
+  //   ),
+  //   tileData: [
+  //     "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t1.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t2.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t3.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t4.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t5.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t6.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t7.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=ter_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //   ],
+  // },
+  // {
+  //   selected: false,
+  //   name: "天地图(影像)",
+  //   url: formatUrl(
+  //     "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c"
+  //   ),
+  //   tileData: [
+  //     "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t1.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t2.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t3.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t4.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t5.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t6.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t7.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //   ],
+  // },
+  // {
+  //   selected: false,
+  //   name: "天地图(矢量图)",
+  //   url: formatUrl(
+  //     "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c"
+  //   ),
+  //   tileData: [
+  //     "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t1.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t2.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t3.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t4.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t5.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t6.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t7.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //   ],
+  // },
+  // {
+  //   selected: false,
+  //   name: "天地图(标注)",
+  //   url: formatUrl(
+  //     "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c"
+  //   ),
+  //   tileData: [
+  //     "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t1.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t2.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t3.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t4.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t5.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t6.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t7.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cva_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //   ],
+  // },
+  // {
+  //   selected: false,
+  //   name: "天地图(网路)",
+  //   url: formatUrl(
+  //     "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c"
+  //   ),
+  //   tileData: [
+  //     "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t1.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t2.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t3.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t4.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t5.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t6.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     "http://t7.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=cia_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //   ],
+  // },
 ]);
 tileList.value.map((item: any, k: number) => {
   if (k == setting.人影.监控.tile.index) {

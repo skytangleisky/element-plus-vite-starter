@@ -51,6 +51,7 @@
     "pinia-plugin-persistedstate": "^3.2.1",
     "pixi.js": "^7.2.4",
     "sortablejs": "^1.15.3",
+    "tweakpane": "^4.0.5",
     "unplugin-vue-setup-extend-plus": "^1.0.1",
     "uuid": "^9.0.1",
     "vite-plugin-compression": "^0.5.1",

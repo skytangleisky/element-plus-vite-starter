@@ -62,14 +62,13 @@ import {ColorSelector} from './colorselector.js'
 import { onBeforeUnmount, onMounted,watch } from 'vue';
 import { useSettingStore } from '~/stores/setting';
 const setting = useSettingStore()
-const props = withDefaults(defineProps<{
-  selectorColor?:string,
-}>(),{
-  selectorColor:'#ffffff',
-});
-watch(()=>props.selectorColor,()=>{
-  $('#csactive').css('background-color',props.selectorColor)
-  $('#cscolor').css('background-color',props.selectorColor)
+const selectorColor = defineModel<{r:number;g:number;b:number;a:number}>('selectorColor',{
+  default:{r:255,g:255,b:255,a:1.0}
+})
+watch(selectorColor,()=>{
+  let color = `rgb(${selectorColor.value.r},${selectorColor.value.g},${selectorColor.value.b})`
+  $('#csactive').css('background-color',color)
+  $('#cscolor').css('background-color',color)
   let matches = (getComputedStyle($('#cscolor')[0]) as any)['background-color'].match(/(?<=\().*(?=\))/g)
   let rgb = matches[0].split(',').map((item:any)=>Number(item.trim()))
   colorSelector.setRgb(rgb[0],rgb[1],rgb[2])
@@ -79,13 +78,21 @@ watch(()=>props.selectorColor,()=>{
 const emit = defineEmits(['update:selectorColor','cancel'])
 let colorSelector:ColorSelector;
 onMounted(()=>{
-  $('#csactive').css('background-color',props.selectorColor)
+  let color = `rgb(${selectorColor.value.r},${selectorColor.value.g},${selectorColor.value.b})`
+  $('#csactive').css('background-color',color)
   colorSelector = new ColorSelector();
 })
 const confirm = ()=>{
   let targetColor = $('#cscolor').css('background-color')
   $('#csactive').css('background-color',targetColor)
-  emit('update:selectorColor',targetColor)
+  const match = targetColor.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+  if (!match) {
+    throw new Error('Invalid RGB string format');
+  }
+  const r = parseInt(match[1], 10);
+  const g = parseInt(match[2], 10);
+  const b = parseInt(match[3], 10);
+  emit('update:selectorColor',{r,g,b,a:1.0})
   emit('cancel')
 }
 const cancel = ()=>{

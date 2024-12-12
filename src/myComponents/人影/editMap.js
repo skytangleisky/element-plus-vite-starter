@@ -353,16 +353,6 @@ export default {
 				}
 			},
 			{
-				"id": "routeLineLayer",
-				"type": "raster",
-				"source": "raster-route",
-				"minzoom": 0,
-				"maxzoom": 22,
-				layout:{
-					visibility:setting.人影.监控.routeLine?'visible':'none'
-				}
-			},
-			{
 				"id": "demLayer",
 				"type": "raster",
 				"source": "raster-dem",
@@ -377,11 +367,11 @@ export default {
 				'type': 'fill',
 				'source': 'district', // reference the data source
 				'layout': {
-					visibility:setting.人影.监控.district?'visible':'none'
+					visibility:setting.人影.监控.districtOptions.district?'visible':'none'
 				},
 				'paint': {
-					'fill-color': setting.人影.监控.districtFillColor,
-					'fill-opacity': 0.2
+					'fill-color': `rgba(${setting.人影.监控.districtOptions.districtFillColor.r},${setting.人影.监控.districtOptions.districtFillColor.g},${setting.人影.监控.districtOptions.districtFillColor.b},${setting.人影.监控.districtOptions.districtFillColor.a})`,
+					'fill-outline-color':'transparent'
 				}
 			},
 			{
@@ -389,13 +379,13 @@ export default {
 				'type': 'line',
 				'source': 'district',
 				'layout': {
-					'visibility':setting.人影.监控.district?'visible':'none',
+					'visibility':setting.人影.监控.districtOptions.districtBase?'visible':'none',
 					'line-join':'round',
 					'line-cap':'round',
 				},
 				'paint': {
-					'line-color': '#000',
-					'line-width': 2,
+					'line-color': `rgba(${setting.人影.监控.districtOptions.districtBaseColor.r},${setting.人影.监控.districtOptions.districtBaseColor.g},${setting.人影.监控.districtOptions.districtBaseColor.b},${setting.人影.监控.districtOptions.districtBaseColor.a})`,
+					'line-width': setting.人影.监控.districtOptions.districtBaseWidth,
 				}
 			},
 			{
@@ -403,14 +393,24 @@ export default {
 				'type': 'line',
 				'source': 'district',
 				'layout': {
-					'visibility':setting.人影.监控.district?'visible':'none',
+					'visibility':setting.人影.监控.districtOptions.districtLine?'visible':'none',
 					'line-join':'round',
 					'line-cap':'round',
 				},
 				'paint': {
-					'line-color': setting.人影.监控.districtLineColor,
-					'line-width': 1,
+					'line-color': `rgba(${setting.人影.监控.districtOptions.districtLineColor.r},${setting.人影.监控.districtOptions.districtLineColor.g},${setting.人影.监控.districtOptions.districtLineColor.b},${setting.人影.监控.districtOptions.districtLineColor.a})`,
+					'line-width': setting.人影.监控.districtOptions.districtLineWidth,
 					// 'line-dasharray': [1,1],
+				}
+			},
+			{
+				"id": "routeLineLayer",
+				"type": "raster",
+				"source": "raster-route",
+				"minzoom": 0,
+				"maxzoom": 22,
+				layout:{
+					visibility:setting.人影.监控.routeLine?'visible':'none'
 				}
 			},
 			// {
