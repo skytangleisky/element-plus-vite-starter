@@ -3,7 +3,7 @@
     <div
       v-resize="resize"
       ref="mapRef"
-      class="dark:bg-#2b2b2b bg-white"
+      class="dark:bg-#000 bg-white"
       style="
         position: absolute;
         left: 0;
@@ -23,7 +23,7 @@
       :当前作业进度="planProps.当前作业进度"
       :今日作业记录="planProps.今日作业记录"
     ></plan-panel>
-    <el-select
+    <!-- <el-select
       class="select"
       style="position: absolute; width: 100px; left: 588px; top: 10px"
       size="small"
@@ -36,10 +36,10 @@
         :value="v.value"
         :key="k"
       ></el-option>
-    </el-select>
+    </el-select> -->
     <graph
       v-if="checkPermission(['admin'])"
-      class="absolute left-0 bottom-50px"
+      class="absolute left-0 bottom-0px"
       v-model:args="graphArgs"
     ></graph>
     <div class="stationMenu" ref="stationMenuRef" @mousedown.stop>
@@ -119,12 +119,12 @@ let timer = 0;
 let graphTimer = 0;
 let frameCounter = 0;
 const mapRef = ref<HTMLCanvasElement>();
-const color = ref("red");
-const options = ref([
-  { label: "红色", value: "red" },
-  { label: "绿色", value: "green" },
-  { label: "蓝色", value: "blue" },
-]);
+// const color = ref("red");
+// const options = ref([
+//   { label: "红色", value: "red" },
+//   { label: "绿色", value: "green" },
+//   { label: "蓝色", value: "blue" },
+// ]);
 type zydparaType = {
   strID: "110108082";
   strCode: "110108082";
@@ -229,6 +229,7 @@ const moveFunc = () => {
   emits("update:center", map.getCenter());
 };
 function 网络上报(data:prevRequestDataType){
+  console.log(data)
   dialogOptions.menus.map((item: stationData) => {
     if(item.strID == data.strID){
       let zyddata:zyddataType = {
@@ -296,14 +297,14 @@ function 网络上报(data:prevRequestDataType){
           vals.push(v)
         }
       }
-      exec({
-        database:"host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
-        query:{sqls:["INSERT INTO `ryplat_bjry`.`zyddata` ("+Object.keys(zyddata).join(',')+") VALUES ("+vals.join(',')+")"]}
-      }).then(res=>{
-        console.log(res.data)
-      })
+      // exec({
+      //   database:"host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
+      //   query:{sqls:["INSERT INTO `ryplat_bjry`.`zyddata` ("+Object.keys(zyddata).join(',')+") VALUES ("+vals.join(',')+")"]}
+      // }).then(res=>{
+      //   console.log(res.data)
+      // })
+      emits('update:prevRequestShow',false)//关闭弹窗
     }
-    emits('update:prevRequestShow',false)
 
     let v = data.strPos;
     let lng = v.substring(0, v.indexOf("E"));
@@ -318,7 +319,7 @@ function 网络上报(data:prevRequestDataType){
         Number(lat.substring(2, 4)) / 60 +
         Number(lat.substring(4, 8)) / 100 / 3600,
     };
-    if (data.iShotRangeEnd - data.iShotRangeBegin >= 360) {
+    if (data.iShotRangeEnd - data.iShotRangeBegin >= 360) {//可以画成一个圆
       const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
         number,
         number
@@ -343,7 +344,7 @@ function 网络上报(data:prevRequestDataType){
           circleFeatures[i].properties.color = '#0f0'
         }
       }
-    } else {
+    } else {//不足一个圆
       const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
         number,
         number
@@ -1226,11 +1227,21 @@ onMounted(() => {
         },
         paint: {
           "icon-opacity": 1,
-          "text-color": "#ffaa00",
+          "text-color": `rgba(${setting.人影.监控.ryAirspaces.labelColor.r},${setting.人影.监控.ryAirspaces.labelColor.g},${setting.人影.监控.ryAirspaces.labelColor.b},${setting.人影.监控.ryAirspaces.labelColor.a})`,
           "text-halo-color": "black",
-          "text-halo-width": 1,
+          "text-halo-width": 0.1,
         }
       });
+      map.addLayer({
+				"id": "routeLineLayer",
+				"type": "raster",
+				"source": "raster-route",
+				"minzoom": 0,
+				"maxzoom": 22,
+				layout:{
+					visibility:setting.人影.监控.routeLine?'visible':'none'
+				}
+			})
     })
     exec({
       database:"host=127.0.0.1&port=3306&user=root&password=tanglei&database=union",
@@ -2505,12 +2516,15 @@ watch(()=>setting.人影.监控.ryAirspaces.lineColor,(newVal)=>{
 watch(()=>setting.人影.监控.ryAirspaces.lineColor,(newVal)=>{
   map.setPaintProperty("华北飞行区域line","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
 })
-watch(()=>setting.人影.监控.ryAirspaces.tag,(newVal)=>{
+watch(()=>setting.人影.监控.ryAirspaces.label,(newVal)=>{
   if(newVal){
     map.setLayoutProperty("华北飞行区域标签","visibility","visible")
   }else{
     map.setLayoutProperty("华北飞行区域标签","visibility","none")
   }
+})
+watch(()=>setting.人影.监控.ryAirspaces.labelColor,(newVal)=>{
+  map.setPaintProperty("华北飞行区域标签","text-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
 })
 </script>
 

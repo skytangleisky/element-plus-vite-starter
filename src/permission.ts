@@ -4,7 +4,7 @@ import { useUserStore } from './stores/user'
 import "nprogress/nprogress.css"
 import "./styles/nprogress.scss"
 NProgress.configure({ showSpinner: false })
-const whiteList=['/login','/qqlogin','/register','/404','/401', '/openlayers','/mapbox','/calibration','/backend']
+const whiteList=['/login','/qqlogin','/register','/404','/401', '/openlayers','/mapbox','/calibration','/backend','/ry_synthesis']
 router.beforeEach((to,from,next)=>{
   NProgress.start()
   document.title = to.meta.label as string

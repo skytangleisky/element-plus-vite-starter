@@ -336,14 +336,15 @@ export const useSettingStore = defineStore({
         },
         ryAirspaces:{
           fill:true,
-          fillColor:{r:0,g:255,b:0,a:0.5},
+          fillColor:{r:255,g:255,b:255,a:0.8},
           base:false,
           baseWidth:3,
           baseColor:{r:0,g:0,b:0,a:0.5},
           line:false,
           lineWidth:2,
           lineColor:{r:255,g:0,b:0,a:0.5},
-          tag:false,
+          label:true,
+          labelColor:{r:255,g:128,b:0,a:1.0},
         },
         showColorSelector:-1,
         loadmap:true,
@@ -626,6 +627,16 @@ export const useSettingStore = defineStore({
         hide:true,
         meta:{
           label: '光恒标定场',
+        }
+      },
+      {
+        path:'ry_synthesis',
+        name:'b7ef7b88-5e6a-0c62-129b-a0a18980cd11',
+        component:'/src/myComponents/人影/pages/synthesis.vue',
+        hide:false,
+        svg:'0ca86c9c-7cf8-4ffa-8b38-82bf6771c25f',
+        meta:{
+          label:'首页'
         }
       },
       {

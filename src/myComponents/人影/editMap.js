@@ -403,16 +403,6 @@ export default {
 					// 'line-dasharray': [1,1],
 				}
 			},
-			{
-				"id": "routeLineLayer",
-				"type": "raster",
-				"source": "raster-route",
-				"minzoom": 0,
-				"maxzoom": 22,
-				layout:{
-					visibility:setting.人影.监控.routeLine?'visible':'none'
-				}
-			},
 			// {
 			// 	'id': 'terrain-data',
 			// 	'type': 'line',

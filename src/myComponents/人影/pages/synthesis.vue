@@ -75,7 +75,7 @@
       </div>
     </div>
     <div
-      :class="`bottom-drawer ${setting.人影.监控.bottom_disappear ? 'disappear' : ''}`"
+      :class="`bottom-drawer hidden ${setting.人影.监控.bottom_disappear ? 'disappear' : ''}`"
     >
       <div class="handle p-8px">
         <el-badge
@@ -107,7 +107,7 @@
     style="z-index:2010"
   ></dialog-plan-request>
   <ColorSelector v-show="setting.人影.监控.showColorSelector !== -1" v-model:selectorColor="selectorColor" style="z-index: 2010;" @cancel="setting.人影.监控.showColorSelector=-1"></ColorSelector>
-  <div ref="tweakPaneRef" class="tp-dfwv" style="z-index: 1;"></div>
+  <div ref="tweakPaneRef" class="tp-dfwv default" data-pane-lighttheme style="z-index: 1;"></div>
 </template>
 <script lang="ts" setup>
 import editMap from "../editMap.vue";
@@ -190,18 +190,25 @@ onMounted(()=>{
     watch(()=>setting.人影.监控.ryAirspaces.baseColor,()=>{
       lineColor.refresh()
     })
-    folder.addBinding(setting.人影.监控.ryAirspaces, 'tag',{label:'标号'});
+    folder.addBinding(setting.人影.监控.ryAirspaces, 'label',{label:'标签'});
+    const labelColor = folder.addBinding(setting.人影.监控.ryAirspaces, 'labelColor',{label:'标签颜色',picker:'popup',expanded:false});
+    labelColor.on('change', (ev:any) => {
+      setting.人影.监控.ryAirspaces.labelColor = {r:Math.round(ev.value.r),g:Math.round(ev.value.g),b:Math.round(ev.value.b),a:ev.value.a};
+    });
+    watch(()=>setting.人影.监控.ryAirspaces.labelColor,()=>{
+      labelColor.refresh()
+    })
   }
   pane.addBinding(setting.人影.监控, 'routeLine',{label:'航路航线'});
   pane.addBinding(setting.人影.监控, 'airport',{label:'机场'});
   pane.addBinding(setting.人影.监控, 'plane',{label:'飞机'});
   pane.addBinding(setting.人影.监控, 'zyd',{label:'作业点'});
   pane.addBinding(setting.人影.监控, 'navigationStation',{label:'导航台'});
-  pane.addBinding(setting.人影.监控, 'zdz',{label:'自动站'});
-  pane.addBinding(setting.人影.监控, 'gridPoint',{label:'网格点'});
-  pane.addBinding(setting.人影.监控, 'gridValue',{label:'网格值'});
-  pane.addBinding(setting.人影.监控, 'isolines',{label:'等值线'});
-  pane.addBinding(setting.人影.监控, 'isobands',{label:'等值带'});
+  // pane.addBinding(setting.人影.监控, 'zdz',{label:'自动站'});
+  // pane.addBinding(setting.人影.监控, 'gridPoint',{label:'网格点'});
+  // pane.addBinding(setting.人影.监控, 'gridValue',{label:'网格值'});
+  // pane.addBinding(setting.人影.监控, 'isolines',{label:'等值线'});
+  // pane.addBinding(setting.人影.监控, 'isobands',{label:'等值带'});
 })
 onBeforeUnmount(()=>{
   pane.dispose();
@@ -418,6 +425,217 @@ watch(
   { immediate: true, deep: true }
 );
 </script>
+<style lang="scss">
+// .tp-dfwv{
+//   --tp-base-background-color: hsla(230, 5%, 90%, 1);
+//   --tp-base-shadow-color: hsla(0, 0%, 0%, 0.1);
+//   --tp-button-background-color: hsla(230, 7%, 75%, 1);
+//   --tp-button-background-color-active: hsla(230, 7%, 60%, 1);
+//   --tp-button-background-color-focus: hsla(230, 7%, 65%, 1);
+//   --tp-button-background-color-hover: hsla(230, 7%, 70%, 1);
+//   --tp-button-foreground-color: hsla(230, 10%, 30%, 1);
+//   --tp-container-background-color: hsla(230, 15%, 30%, 0.2);
+//   --tp-container-background-color-active: hsla(230, 15%, 30%, 0.32);
+//   --tp-container-background-color-focus: hsla(230, 15%, 30%, 0.28);
+//   --tp-container-background-color-hover: hsla(230, 15%, 30%, 0.24);
+//   --tp-container-foreground-color: hsla(230, 10%, 30%, 1);
+//   --tp-groove-foreground-color: hsla(230, 15%, 30%, 0.1);
+//   --tp-input-background-color: hsla(230, 15%, 30%, 0.1);
+//   --tp-input-background-color-active: hsla(230, 15%, 30%, 0.22);
+//   --tp-input-background-color-focus: hsla(230, 15%, 30%, 0.18);
+//   --tp-input-background-color-hover: hsla(230, 15%, 30%, 0.14);
+//   --tp-input-foreground-color: hsla(230, 10%, 30%, 1);
+//   --tp-label-foreground-color: hsla(230, 10%, 30%, 0.7);
+//   --tp-monitor-background-color: hsla(230, 15%, 30%, 0.1);
+//   --tp-monitor-foreground-color: hsla(230, 10%, 30%, 0.5);
+// }
+// .dark .tp-dfwv{
+//   --tp-base-background-color: hsla(230, 7%, 17%, 1);
+// 	--tp-base-shadow-color: hsla(0, 0%, 0%, 0.2);
+//   --tp-button-background-color: hsla(230, 7%, 70%, 1);
+//   --tp-button-background-color-active: hsla(230, 7%, 85%, 1);
+//   --tp-button-background-color-focus: hsla(230, 7%, 80%, 1);
+//   --tp-button-background-color-hover: hsla(230, 7%, 75%, 1);
+//   --tp-button-foreground-color: hsla(230, 7%, 17%, 1);
+//   --tp-container-background-color: hsla(230, 7%, 75%, 0.1);
+//   --tp-container-background-color-active: hsla(230, 7%, 75%, 0.25);
+//   --tp-container-background-color-focus: hsla(230, 7%, 75%, 0.2);
+//   --tp-container-background-color-hover: hsla(230, 7%, 75%, 0.15);
+//   --tp-container-foreground-color: hsla(230, 7%, 75%, 1);
+//   --tp-groove-foreground-color: hsla(230, 7%, 75%, 0.1);
+//   --tp-input-background-color: hsla(230, 7%, 75%, 0.1);
+//   --tp-input-background-color-active: hsla(230, 7%, 75%, 0.25);
+//   --tp-input-background-color-focus: hsla(230, 7%, 75%, 0.2);
+//   --tp-input-background-color-hover: hsla(230, 7%, 75%, 0.15);
+//   --tp-input-foreground-color: hsla(230, 7%, 75%, 1);
+//   --tp-label-foreground-color: hsla(230, 7%, 75%, 0.7);
+//   --tp-monitor-background-color: hsla(230, 7%, 0%, 0.2);
+//   --tp-monitor-foreground-color: hsla(230, 7%, 75%, 0.7);
+// }
+:root{
+  --tp-base-background-color: hsla(230, 5%, 90%, 1);
+  --tp-base-shadow-color: hsla(0, 0%, 0%, 0.1);
+  --tp-button-background-color: hsla(230, 7%, 75%, 1);
+  --tp-button-background-color-active: hsla(230, 7%, 60%, 1);
+  --tp-button-background-color-focus: hsla(230, 7%, 65%, 1);
+  --tp-button-background-color-hover: hsla(230, 7%, 70%, 1);
+  --tp-button-foreground-color: hsla(230, 10%, 30%, 1);
+  --tp-container-background-color: hsla(230, 15%, 30%, 0.2);
+  --tp-container-background-color-active: hsla(230, 15%, 30%, 0.32);
+  --tp-container-background-color-focus: hsla(230, 15%, 30%, 0.28);
+  --tp-container-background-color-hover: hsla(230, 15%, 30%, 0.24);
+  --tp-container-foreground-color: hsla(230, 10%, 30%, 1);
+  --tp-groove-foreground-color: hsla(230, 15%, 30%, 0.1);
+  --tp-input-background-color: hsla(230, 15%, 30%, 0.1);
+  --tp-input-background-color-active: hsla(230, 15%, 30%, 0.22);
+  --tp-input-background-color-focus: hsla(230, 15%, 30%, 0.18);
+  --tp-input-background-color-hover: hsla(230, 15%, 30%, 0.14);
+  --tp-input-foreground-color: hsla(230, 10%, 30%, 1);
+  --tp-label-foreground-color: hsla(230, 10%, 30%, 0.7);
+  --tp-monitor-background-color: hsla(230, 15%, 30%, 0.1);
+  --tp-monitor-foreground-color: hsla(230, 10%, 30%, 0.5);
+}
+.dark .tp-dfwv{
+  &.default{
+    --tp-base-background-color: hsla(230, 7%, 17%, 1);
+    --tp-base-shadow-color: hsla(0, 0%, 0%, 0.2);
+    --tp-button-background-color: hsla(230, 7%, 70%, 1);
+    --tp-button-background-color-active: hsla(230, 7%, 85%, 1);
+    --tp-button-background-color-focus: hsla(230, 7%, 80%, 1);
+    --tp-button-background-color-hover: hsla(230, 7%, 75%, 1);
+    --tp-button-foreground-color: hsla(230, 7%, 17%, 1);
+    --tp-container-background-color: hsla(230, 7%, 75%, 0.1);
+    --tp-container-background-color-active: hsla(230, 7%, 75%, 0.25);
+    --tp-container-background-color-focus: hsla(230, 7%, 75%, 0.2);
+    --tp-container-background-color-hover: hsla(230, 7%, 75%, 0.15);
+    --tp-container-foreground-color: hsla(230, 7%, 75%, 1);
+    --tp-groove-foreground-color: hsla(230, 7%, 75%, 0.1);
+    --tp-input-background-color: hsla(230, 7%, 75%, 0.1);
+    --tp-input-background-color-active: hsla(230, 7%, 75%, 0.25);
+    --tp-input-background-color-focus: hsla(230, 7%, 75%, 0.2);
+    --tp-input-background-color-hover: hsla(230, 7%, 75%, 0.15);
+    --tp-input-foreground-color: hsla(230, 7%, 75%, 1);
+    --tp-label-foreground-color: hsla(230, 7%, 75%, 0.7);
+    --tp-monitor-background-color: hsla(230, 7%, 0%, 0.2);
+    --tp-monitor-foreground-color: hsla(230, 7%, 75%, 0.7);
+  }
+  &.jetblack{
+    --tp-base-background-color: hsla(0, 0%, 0%, 1);
+    --tp-base-shadow-color: hsla(0, 0%, 0%, 0.2);
+    --tp-button-background-color: hsla(0, 0%, 70%, 1);
+    --tp-button-background-color-active: hsla(0, 0%, 85%, 1);
+    --tp-button-background-color-focus: hsla(0, 0%, 80%, 1);
+    --tp-button-background-color-hover: hsla(0, 0%, 75%, 1);
+    --tp-button-foreground-color: hsla(0, 0%, 0%, 1);
+    --tp-container-background-color: hsla(0, 0%, 10%, 1);
+    --tp-container-background-color-active: hsla(0, 0%, 25%, 1);
+    --tp-container-background-color-focus: hsla(0, 0%, 20%, 1);
+    --tp-container-background-color-hover: hsla(0, 0%, 15%, 1);
+    --tp-container-foreground-color: hsla(0, 0%, 50%, 1);
+    --tp-groove-foreground-color: hsla(0, 0%, 10%, 1);
+    --tp-input-background-color: hsla(0, 0%, 10%, 1);
+    --tp-input-background-color-active: hsla(0, 0%, 25%, 1);
+    --tp-input-background-color-focus: hsla(0, 0%, 20%, 1);
+    --tp-input-background-color-hover: hsla(0, 0%, 15%, 1);
+    --tp-input-foreground-color: hsla(0, 0%, 70%, 1);
+    --tp-label-foreground-color: hsla(0, 0%, 50%, 1);
+    --tp-monitor-background-color: hsla(0, 0%, 8%, 1);
+    --tp-monitor-foreground-color: hsla(0, 0%, 48%, 1);
+  }
+  &.iceberg{
+    --tp-base-background-color: hsla(230, 20%, 11%, 1);
+    --tp-base-shadow-color: hsla(0, 0%, 0%, 0.2);
+    --tp-button-background-color: hsla(230, 10%, 80%, 1);
+    --tp-button-background-color-active: hsla(230, 10%, 95%, 1);
+    --tp-button-background-color-focus: hsla(230, 10%, 90%, 1);
+    --tp-button-background-color-hover: hsla(230, 10%, 85%, 1);
+    --tp-button-foreground-color: hsla(230, 20%, 11%, 1);
+    --tp-container-background-color: hsla(230, 25%, 16%, 1);
+    --tp-container-background-color-active: hsla(230, 25%, 31%, 1);
+    --tp-container-background-color-focus: hsla(230, 25%, 26%, 1);
+    --tp-container-background-color-hover: hsla(230, 25%, 21%, 1);
+    --tp-container-foreground-color: hsla(230, 10%, 80%, 1);
+    --tp-groove-foreground-color: hsla(230, 20%, 8%, 1);
+    --tp-input-background-color: hsla(230, 20%, 8%, 1);
+    --tp-input-background-color-active: hsla(230, 28%, 23%, 1);
+    --tp-input-background-color-focus: hsla(230, 28%, 18%, 1);
+    --tp-input-background-color-hover: hsla(230, 20%, 13%, 1);
+    --tp-input-foreground-color: hsla(230, 10%, 80%, 1);
+    --tp-label-foreground-color: hsla(230, 12%, 48%, 1);
+    --tp-monitor-background-color: hsla(230, 20%, 8%, 1);
+    --tp-monitor-foreground-color: hsla(230, 12%, 48%, 1);
+  }
+  &.retro{
+    --tp-base-background-color: hsla(40, 3%, 90%, 1);
+    --tp-base-shadow-color: hsla(0, 0%, 0%, 0.3);
+    --tp-button-background-color: hsla(40, 3%, 70%, 1);
+    --tp-button-background-color-active: hsla(40, 3%, 55%, 1);
+    --tp-button-background-color-focus: hsla(40, 3%, 60%, 1);
+    --tp-button-background-color-hover: hsla(40, 3%, 65%, 1);
+    --tp-button-foreground-color: hsla(40, 3%, 20%, 1);
+    --tp-container-background-color: hsla(40, 3%, 70%, 1);
+    --tp-container-background-color-active: hsla(40, 3%, 55%, 1);
+    --tp-container-background-color-focus: hsla(40, 3%, 60%, 1);
+    --tp-container-background-color-hover: hsla(40, 3%, 65%, 1);
+    --tp-container-foreground-color: hsla(40, 3%, 20%, 1);
+    --tp-groove-foreground-color: hsla(40, 3%, 40%, 1);
+    --tp-input-background-color: hsla(120, 3%, 20%, 1);
+    --tp-input-background-color-active: hsla(120, 3%, 35%, 1);
+    --tp-input-background-color-focus: hsla(120, 3%, 30%, 1);
+    --tp-input-background-color-hover: hsla(120, 3%, 25%, 1);
+    --tp-input-foreground-color: hsla(120, 40%, 60%, 1);
+    --tp-label-foreground-color: hsla(40, 3%, 50%, 1);
+    --tp-monitor-background-color: hsla(120, 3%, 20%, 1);
+    --tp-monitor-foreground-color: hsla(120, 40%, 60%, 0.8);
+  }
+  &.translucent{
+    --tp-base-background-color: hsla(0, 0%, 10%, 0.8);
+    --tp-base-shadow-color: hsla(0, 0%, 0%, 0.2);
+    --tp-button-background-color: hsla(0, 0%, 80%, 1);
+    --tp-button-background-color-active: hsla(0, 0%, 100%, 1);
+    --tp-button-background-color-focus: hsla(0, 0%, 95%, 1);
+    --tp-button-background-color-hover: hsla(0, 0%, 85%, 1);
+    --tp-button-foreground-color: hsla(0, 0%, 0%, 0.8);
+    --tp-container-background-color: hsla(0, 0%, 0%, 0.3);
+    --tp-container-background-color-active: hsla(0, 0%, 0%, 0.6);
+    --tp-container-background-color-focus: hsla(0, 0%, 0%, 0.5);
+    --tp-container-background-color-hover: hsla(0, 0%, 0%, 0.4);
+    --tp-container-foreground-color: hsla(0, 0%, 100%, 0.5);
+    --tp-groove-foreground-color: hsla(0, 0%, 0%, 0.2);
+    --tp-input-background-color: hsla(0, 0%, 0%, 0.3);
+    --tp-input-background-color-active: hsla(0, 0%, 0%, 0.6);
+    --tp-input-background-color-focus: hsla(0, 0%, 0%, 0.5);
+    --tp-input-background-color-hover: hsla(0, 0%, 0%, 0.4);
+    --tp-input-foreground-color: hsla(0, 0%, 100%, 0.5);
+    --tp-label-foreground-color: hsla(0, 0%, 100%, 0.5);
+    --tp-monitor-background-color: hsla(0, 0%, 0%, 0.3);
+    --tp-monitor-foreground-color: hsla(0, 0%, 100%, 0.3);
+  }
+  &.vivid{
+    --tp-base-background-color: hsla(0, 80%, 40%, 1);
+    --tp-base-shadow-color: hsla(0, 0%, 0%, 0.2);
+    --tp-button-background-color: hsla(0, 0%, 100%, 1);
+    --tp-button-background-color-active: hsla(0, 0%, 85%, 1);
+    --tp-button-background-color-focus: hsla(0, 0%, 90%, 1);
+    --tp-button-background-color-hover: hsla(0, 0%, 95%, 1);
+    --tp-button-foreground-color: hsla(230, 20%, 11%, 1);
+    --tp-container-background-color: hsla(0, 0%, 0%, 0.2);
+    --tp-container-background-color-active: hsla(0, 0%, 0%, 0.35);
+    --tp-container-background-color-focus: hsla(0, 0%, 0%, 0.3);
+    --tp-container-background-color-hover: hsla(0, 0%, 0%, 0.25);
+    --tp-container-foreground-color: hsla(0, 0%, 100%, 0.9);
+    --tp-groove-foreground-color: hsla(0, 0%, 0%, 0.5);
+    --tp-input-background-color: hsla(0, 0%, 0%, 0.5);
+    --tp-input-background-color-active: hsla(0, 0%, 0%, 0.65);
+    --tp-input-background-color-focus: hsla(0, 0%, 0%, 0.60);
+    --tp-input-background-color-hover: hsla(0, 0%, 0%, 0.55);
+    --tp-input-foreground-color: hsla(0, 0%, 100%, 0.9);
+    --tp-label-foreground-color: hsla(0, 0%, 100%, 0.9);
+    --tp-monitor-background-color: hsla(0, 0%, 0%, 0.5);
+    --tp-monitor-foreground-color: hsla(0, 0%, 100%, 0.5);
+  }
+}
+</style>
 <style scoped lang="scss">
 $time: 1s;
 .bottom-drawer {
@@ -468,7 +686,7 @@ $time: 1s;
   box-sizing: border-box;
   height: 100%;
   background-color: white;
-  display: flex;
+  display: none;//flex
   flex-direction: column;
   transition: transform $time;
   border-left: 1px solid #ddd;
