@@ -316,7 +316,7 @@ export const useSettingStore = defineStore({
         gridPoint:false,
         isobands:false,
         isolines:false,
-        zdz:true,
+        zdz:false,
         bearing:0,
         pitch:0,
         routeLine:true,

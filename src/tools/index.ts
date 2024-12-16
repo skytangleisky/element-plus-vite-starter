@@ -326,7 +326,7 @@ export function loadImage(url:string,width:number,height:number,options:any){
           width&&(image.width=Math.round(width*devicePixelRatio))
           height&&(image.height=Math.round(height*devicePixelRatio))
         }
-        image.crossOrigin = 'anonymous';
+        image.crossOrigin = 'Anonymous';
         image.src = URL.createObjectURL(new File([serializer.serializeToString(xmlDoc)],uuid()+'.svg',{type:"image/svg+xml"}))
       }
       Promise.all(promises).then(results=>{
@@ -388,7 +388,7 @@ export function loadImage(url:string,width:number,height:number,options:any){
       // image.onabort = function(err){
       //   reject(err);
       // }
-      // image.crossOrigin = 'anonymous';
+      // image.crossOrigin = 'Anonymous';
       // if(url.endsWith('.svg')){
       //   width&&(image.width=Math.round(width*devicePixelRatio))
       //   height&&(image.height=Math.round(height*devicePixelRatio))
@@ -438,7 +438,7 @@ export function loadImage_bak(url:string,width:number,height:number,options:any)
     image.onabort = function(err){
       reject(err);
     }
-    image.crossOrigin = 'anonymous';
+    image.crossOrigin = 'Anonymous';
     if(url.endsWith('.svg')){
       width&&(image.width=Math.round(width*devicePixelRatio))
       height&&(image.height=Math.round(height*devicePixelRatio))

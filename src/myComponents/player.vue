@@ -86,7 +86,7 @@ onMounted(() => {
     // });
   }
 });
-// crossorigin="anonymous"
+// crossorigin="Anonymous"
 onBeforeUnmount(() => {
   if (hls) {
     hls.destroy();

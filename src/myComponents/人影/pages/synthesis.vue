@@ -165,7 +165,7 @@ onMounted(()=>{
   {// 人影飞行区图层配置
     const folder = pane.addFolder({title: '人影飞行区'});
     folder.addBinding(setting.人影.监控.ryAirspaces, 'fill',{label:'填充'});
-    const fillColor = folder.addBinding(setting.人影.监控.ryAirspaces, 'fillColor',{label:'底线颜色',picker:'popup',expanded:false});
+    const fillColor = folder.addBinding(setting.人影.监控.ryAirspaces, 'fillColor',{label:'填充颜色',picker:'popup',expanded:false});
     fillColor.on('change', (ev:any) => {
       setting.人影.监控.ryAirspaces.fillColor = {r:Math.round(ev.value.r),g:Math.round(ev.value.g),b:Math.round(ev.value.b),a:ev.value.a};
     });

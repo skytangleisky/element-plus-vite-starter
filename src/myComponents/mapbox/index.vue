@@ -48,6 +48,7 @@ import { lngLat2XY, XY2LngLat } from "../map/js/core";
 import imageUrl from "~/assets/feather.svg?url";
 import { getMicapsData } from "./data/plot/micaps";
 import CustomLayer from "./WindGL/CustomLayer";
+import CustomRasterSource from './customRasterSource.js'
 import { useSettingStore } from "~/stores/setting";
 import { storeToRefs } from "pinia";
 import { getFeather, getColor, getCoord, addFeatherImages } from "~/tools";
@@ -570,7 +571,15 @@ onMounted(() => {
             }
             let url = cvs.toDataURL()
             //map.removeLayer("null-island");
-            map.addLayer(new CustomLayer(json,url))
+            map.addLayer(new CustomLayer(json,url) as any)
+            map.addLayer({
+              id: 'customRasterLayer',
+              type: 'raster',
+              source: new CustomRasterSource() as any,
+              paint: {
+                'raster-opacity': 1,
+              }
+            });
           })
         } else {
           map.getLayer("plane") && map.removeLayer("plane");
