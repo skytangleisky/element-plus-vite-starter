@@ -307,10 +307,10 @@ export const useSettingStore = defineStore({
     },
     人影:{
       监控:{
-        "zoom": 9,
-        "center": [
-            117,
-            28
+        zoom: 9,
+        center: [
+          116.403414,
+          39.914714
         ],
         gridValue:false,
         gridPoint:false,
@@ -326,7 +326,7 @@ export const useSettingStore = defineStore({
         navigationStation:true,
         districtOptions:{
           district:true,
-          districtFillColor:{r:0,g:255,b:0,a:0.5},
+          districtFillColor:{r:0,g:255,b:0,a:0.2},
           districtBase:false,
           districtBaseWidth:3,
           districtBaseColor:{r:0,g:0,b:0,a:0.5},
@@ -334,9 +334,19 @@ export const useSettingStore = defineStore({
           districtLineWidth:2,
           districtLineColor:{r:255,g:0,b:0,a:0.5},
         },
+        beijingOptions:{
+          district:true,
+          districtFillColor:{r:0,g:255,b:0,a:0.5},
+          districtBase:true,
+          districtBaseWidth:3,
+          districtBaseColor:{r:0,g:0,b:0,a:0.5},
+          districtLine:true,
+          districtLineWidth:2,
+          districtLineColor:{r:255,g:0,b:0,a:0.5},
+        },
         ryAirspaces:{
           fill:true,
-          fillColor:{r:255,g:255,b:255,a:0.8},
+          fillColor:{r:255,g:255,b:255,a:0.4},
           base:false,
           baseWidth:3,
           baseColor:{r:0,g:0,b:0,a:0.5},

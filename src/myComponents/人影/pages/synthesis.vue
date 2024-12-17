@@ -133,7 +133,7 @@ onMounted(()=>{
   });
   pane.addBinding(setting.人影.监控, 'loadmap',{label:'瓦片地图'});
   {// 行政区划图层配置
-    const folder = pane.addFolder({title: '行政区划'});
+    const folder = pane.addFolder({title: '全国行政区划',expanded:false});
     folder.addBinding(setting.人影.监控.districtOptions, 'district',{label:'填充'});
     const fillColor = folder.addBinding(setting.人影.监控.districtOptions, 'districtFillColor',{label:'填充颜色',picker:'popup',expanded:false});
     fillColor.on('change', (ev:any) => {
@@ -162,8 +162,38 @@ onMounted(()=>{
     })
   }
 
+  {// 北京行政区划图层配置
+    const folder = pane.addFolder({title: '北京行政区划',expanded:false});
+    folder.addBinding(setting.人影.监控.beijingOptions, 'district',{label:'填充'});
+    const fillColor = folder.addBinding(setting.人影.监控.beijingOptions, 'districtFillColor',{label:'填充颜色',picker:'popup',expanded:false});
+    fillColor.on('change', (ev:any) => {
+      setting.人影.监控.beijingOptions.districtFillColor = {r:Math.round(ev.value.r),g:Math.round(ev.value.g),b:Math.round(ev.value.b),a:ev.value.a};
+    });
+    watch(()=>setting.人影.监控.beijingOptions.districtFillColor,()=>{
+      fillColor.refresh()
+    })
+    folder.addBinding(setting.人影.监控.beijingOptions, 'districtBase',{label:'底线'});
+    folder.addBinding(setting.人影.监控.beijingOptions, 'districtBaseWidth',{label:'底线宽度',min:0,max:5,step:0.1});
+    const baseColor = folder.addBinding(setting.人影.监控.beijingOptions, 'districtBaseColor',{label:'底线颜色',picker:'popup',expanded:false});
+    baseColor.on('change', (ev:any) => {
+      setting.人影.监控.beijingOptions.districtBaseColor = {r:Math.round(ev.value.r),g:Math.round(ev.value.g),b:Math.round(ev.value.b),a:ev.value.a};
+    });
+    watch(()=>setting.人影.监控.beijingOptions.districtBaseColor,()=>{
+      baseColor.refresh()
+    })
+    folder.addBinding(setting.人影.监控.beijingOptions, 'districtLine',{label:'界线'});
+    folder.addBinding(setting.人影.监控.beijingOptions, 'districtLineWidth',{label:'界线宽度',min:0,max:5,step:0.1});
+    const lineColor = folder.addBinding(setting.人影.监控.beijingOptions, 'districtLineColor',{label:'界线颜色',picker:'popup',expanded:false});
+    lineColor.on('change', (ev:any) => {
+      setting.人影.监控.beijingOptions.districtLineColor = {r:Math.round(ev.value.r),g:Math.round(ev.value.g),b:Math.round(ev.value.b),a:ev.value.a};
+    });
+    watch(()=>setting.人影.监控.beijingOptions.districtLineColor,()=>{
+      lineColor.refresh()
+    })
+  }
+
   {// 人影飞行区图层配置
-    const folder = pane.addFolder({title: '人影飞行区'});
+    const folder = pane.addFolder({title: '人影飞行区',expanded:false});
     folder.addBinding(setting.人影.监控.ryAirspaces, 'fill',{label:'填充'});
     const fillColor = folder.addBinding(setting.人影.监控.ryAirspaces, 'fillColor',{label:'填充颜色',picker:'popup',expanded:false});
     fillColor.on('change', (ev:any) => {

@@ -2422,11 +2422,28 @@ watch(
     }
   }
 );
+watch(
+  () => setting.人影.监控.beijingOptions.district,
+  (newVal) => {
+    if (newVal) {
+      map.setLayoutProperty("beijingLayer", "visibility", "visible");
+    } else {
+      map.setLayoutProperty("beijingLayer", "visibility", "none");
+    }
+  }
+);
 watch(()=>setting.人影.监控.districtOptions.districtBase,(newVal)=>{
   if(newVal){
     map.setLayoutProperty("districtLineBase", "visibility", "visible");
   }else{
     map.setLayoutProperty("districtLineBase", "visibility", "none");
+  }
+})
+watch(()=>setting.人影.监控.beijingOptions.districtBase,(newVal)=>{
+  if(newVal){
+    map.setLayoutProperty("beijingLineBase", "visibility", "visible");
+  }else{
+    map.setLayoutProperty("beijingLineBase", "visibility", "none");
   }
 })
 watch(()=>setting.人影.监控.districtOptions.districtLine,(newVal)=>{
@@ -2436,10 +2453,23 @@ watch(()=>setting.人影.监控.districtOptions.districtLine,(newVal)=>{
     map.setLayoutProperty("districtLineOver", "visibility", "none");
   }
 })
+watch(()=>setting.人影.监控.beijingOptions.districtLine,(newVal)=>{
+  if(newVal){
+    map.setLayoutProperty("beijingLineOver", "visibility", "visible");
+  }else{
+    map.setLayoutProperty("beijingLineOver", "visibility", "none");
+  }
+})
 watch(
   () => setting.人影.监控.districtOptions.districtBaseWidth,
   (newVal) => {
     map.setPaintProperty("districtLineBase","line-width",newVal)
+  }
+);
+watch(
+  () => setting.人影.监控.beijingOptions.districtBaseWidth,
+  (newVal) => {
+    map.setPaintProperty("beijingLineBase","line-width",newVal)
   }
 );
 watch(
@@ -2449,9 +2479,21 @@ watch(
   }
 );
 watch(
+  () => setting.人影.监控.beijingOptions.districtBaseColor,
+  (newVal) => {
+    map.setPaintProperty("beijingLineBase","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+  }
+);
+watch(
   () => setting.人影.监控.districtOptions.districtLineWidth,
   (newVal) => {
     map.setPaintProperty("districtLineOver","line-width",newVal)
+  }
+);
+watch(
+  () => setting.人影.监控.beijingOptions.districtLineWidth,
+  (newVal) => {
+    map.setPaintProperty("beijingLineOver","line-width",newVal)
   }
 );
 watch(
@@ -2461,9 +2503,21 @@ watch(
   }
 );
 watch(
+  () => setting.人影.监控.beijingOptions.districtLineColor,
+  (newVal) => {
+    map.setPaintProperty("beijingLineOver","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+  }
+);
+watch(
   () => setting.人影.监控.districtOptions.districtFillColor,
   (newVal) => {
     map.setPaintProperty("districtLayer","fill-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+  }
+);
+watch(
+  () => setting.人影.监控.beijingOptions.districtFillColor,
+  (newVal) => {
+    map.setPaintProperty("beijingLayer","fill-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
   }
 );
 watch(

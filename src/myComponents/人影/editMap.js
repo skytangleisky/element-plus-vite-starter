@@ -1,4 +1,5 @@
 import city from './省界.json?url'
+import beijing from './北京市.json?url'
 import { useSettingStore } from '~/stores/setting';
 const setting = useSettingStore()
 export default {
@@ -278,6 +279,10 @@ export default {
 			"type":"geojson",
 			"data": city
 		},
+		"beijing":{
+			"type":"geojson",
+			"data": beijing
+		},
 		"composite": {
 				"url_origin": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2",
 				"tiles":["https://vector.tanglei.site?lyrs=v&x={x}&y={y}&z={z}"],
@@ -400,6 +405,47 @@ export default {
 				'paint': {
 					'line-color': `rgba(${setting.人影.监控.districtOptions.districtLineColor.r},${setting.人影.监控.districtOptions.districtLineColor.g},${setting.人影.监控.districtOptions.districtLineColor.b},${setting.人影.监控.districtOptions.districtLineColor.a})`,
 					'line-width': setting.人影.监控.districtOptions.districtLineWidth,
+					// 'line-dasharray': [1,1],
+				}
+			},
+			{
+				'id': 'beijingLayer',
+				'type': 'fill',
+				'source': 'beijing', // reference the data source
+				'layout': {
+					visibility:setting.人影.监控.beijingOptions.district?'visible':'none'
+				},
+				'paint': {
+					'fill-color': `rgba(${setting.人影.监控.beijingOptions.districtFillColor.r},${setting.人影.监控.beijingOptions.districtFillColor.g},${setting.人影.监控.beijingOptions.districtFillColor.b},${setting.人影.监控.beijingOptions.districtFillColor.a})`,
+					'fill-outline-color':'transparent'
+				}
+			},
+			{
+				'id': 'beijingLineBase',
+				'type': 'line',
+				'source': 'beijing',
+				'layout': {
+					'visibility':setting.人影.监控.beijingOptions.districtBase?'visible':'none',
+					'line-join':'round',
+					'line-cap':'round',
+				},
+				'paint': {
+					'line-color': `rgba(${setting.人影.监控.beijingOptions.districtBaseColor.r},${setting.人影.监控.beijingOptions.districtBaseColor.g},${setting.人影.监控.beijingOptions.districtBaseColor.b},${setting.人影.监控.beijingOptions.districtBaseColor.a})`,
+					'line-width': setting.人影.监控.beijingOptions.districtBaseWidth,
+				}
+			},
+			{
+				'id': 'beijingLineOver',
+				'type': 'line',
+				'source': 'beijing',
+				'layout': {
+					'visibility':setting.人影.监控.beijingOptions.districtLine?'visible':'none',
+					'line-join':'round',
+					'line-cap':'round',
+				},
+				'paint': {
+					'line-color': `rgba(${setting.人影.监控.beijingOptions.districtLineColor.r},${setting.人影.监控.beijingOptions.districtLineColor.g},${setting.人影.监控.beijingOptions.districtLineColor.b},${setting.人影.监控.beijingOptions.districtLineColor.a})`,
+					'line-width': setting.人影.监控.beijingOptions.districtLineWidth,
 					// 'line-dasharray': [1,1],
 				}
 			},
