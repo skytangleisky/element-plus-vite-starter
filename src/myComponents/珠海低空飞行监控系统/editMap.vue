@@ -275,7 +275,6 @@ onMounted(() => {
     container: (mapRef.value as unknown) as HTMLCanvasElement,
     // projection: "globe",
     // style: raster,
-    performanceMetricsCollection: false,
     style,
     // fadeDuration: 0,
     // dragRotate: false,

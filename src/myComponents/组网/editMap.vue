@@ -273,7 +273,6 @@ onMounted(() => {
     container: (mapRef.value as unknown) as HTMLCanvasElement,
     // projection: "globe",
     // style: raster,
-    // performanceMetricsCollection: false,
     style: style as mapboxgl.Style,
     // fadeDuration: 0,
     // dragRotate: false,

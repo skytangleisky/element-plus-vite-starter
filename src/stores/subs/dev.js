@@ -126,9 +126,18 @@ export default {
       path: 'test',
       name: 'c4961e04-e574-0e1f-ae23-94f157b14a44',
       component: '/src/myComponents/zrender/test.vue',
-      svg:'c7cbf623-7172-4238-84e0-f70323c60b4f',
+      svg:'3eae773b-557e-4dad-8fe1-b7cfffb49282',
       meta:{
         label: 'test',
+      }
+    },
+    {
+      path: 'contour',
+      name: 'c4961e04-e574-0e1f-be23-94f157b14f44',
+      component: '/src/myComponents/等值线压力测试/index.vue',
+      svg:'4e8b7a84-7e66-4a55-a35c-52f0da4b3358',
+      meta:{
+        label: 'contour',
       }
     },
     {

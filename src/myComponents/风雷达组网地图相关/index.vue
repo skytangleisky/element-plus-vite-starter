@@ -1662,7 +1662,6 @@ onMounted(() => {
   map = new mapboxgl.Map({
     container: mapRef.value as any,
     // style: raster,
-    performanceMetricsCollection: false,
     style:style as any,
     dragRotate: false,
     touchRotate: false,

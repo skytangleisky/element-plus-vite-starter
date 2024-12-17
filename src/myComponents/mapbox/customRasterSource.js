@@ -4,7 +4,7 @@ export default class CustomRasterSource {
       // Setting type to `custom` is required to use CustomSource API
       this.type = 'custom';
       this.cache = new Map();
-      this.tileSize = 512;
+      this.tileSize = 514;
       this.url='https://terrain.tanglei.site/?lyrs=terrain&x={x}&y={y}&z={z}'
   }
 
@@ -32,12 +32,12 @@ export default class CustomRasterSource {
 
     const dom = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 
-    const contours = d3.contours().size([cvs.width, cvs.height]).thresholds(d3.range(0, 8000, 100));
+    const contours = d3.contours().size([cvs.width, cvs.height]).thresholds(d3.range(0, 8000, 80));
     const svg = d3.select(dom)
       .attr("opacity",1)
       .attr("viewBox", `0 0 ${cvs.width} ${cvs.height}`)
-      .attr("width", 512)
-      .attr("height", 512);
+      .attr("width", 514)
+      .attr("height", 514);
     svg.append("defs")
       .append("clipPath")
       .attr("id", "clip")

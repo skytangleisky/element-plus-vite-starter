@@ -279,11 +279,9 @@ onMounted(() => {
   map = new mapboxgl.Map({
     container: mapRef.value,
     // style: raster,
-    performanceMetricsCollection: false,
-    style,
-    projection: setting.projection,
+    style:style as any,
+    projection: setting.projection as any,
     // bounds: turf.bbox(boundaries),
-    // localIdeographFontFamily: "Microsoft YoHei",
     localIdeographFontFamily: "",
     antialias: true,
     renderWorldCopies: true,
@@ -293,7 +291,7 @@ onMounted(() => {
     //   [160.0, 60],
     // ],
     zoom: setting.mapbox.zoom,
-    center: setting.mapbox.center,
+    center: setting.mapbox.center as any,
     // pitch: 60,
     pitch: 0,
   });

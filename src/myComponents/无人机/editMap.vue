@@ -186,7 +186,6 @@ onMounted(() => {
     container: mapRef.value,
     // projection: "globe",
     // style: raster,
-    performanceMetricsCollection: false,
     style,
     dragRotate: false,
     touchRotate: false,

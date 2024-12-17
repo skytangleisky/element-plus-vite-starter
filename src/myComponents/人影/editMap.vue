@@ -478,8 +478,7 @@ onMounted(() => {
   map = new Map({
     container: (mapRef.value as unknown) as HTMLCanvasElement,
     // projection: "globe",
-    // style: raster,
-    // performanceMetricsCollection: false,
+    // style: raster,/Users/admin/Desktop/3D/mapbox-gl-js/dist/mapbox-gl.js.map
     style: style as mapboxgl.Style,
     fadeDuration: 0,
     // dragRotate: false,

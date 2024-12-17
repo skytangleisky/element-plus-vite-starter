@@ -18,6 +18,7 @@
     "@rollup/plugin-inject": "^5.0.3",
     "@turf/helpers": "^6.5.0",
     "@turf/turf": "5.1.6",
+    "@types/d3": "^7.4.3",
     "@types/fabric": "^5.3.6",
     "@types/mapbox-gl": "^2.7.17",
     "@types/mapbox__mapbox-gl-draw": "^1.4.6",
