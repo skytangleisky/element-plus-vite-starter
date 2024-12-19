@@ -26,36 +26,46 @@ export default class CustomRasterSource {
       const g = imageData.data[i + 1];
       const b = imageData.data[i + 2];
       let h = (r*255*255+g*255+b)*0.1-10000//rgb->高度(米)
-      grayData.push(h); // 标准化到 [0, 1]
+      grayData.push(h);
     }
 
 
     const dom = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-
-    const contours = d3.contours().size([cvs.width, cvs.height]).thresholds(d3.range(0, 8000, 80));
+    let time = performance.now();
+    let delta;
+    if(z>=14){
+      delta = 50
+    }else if(z>=12){
+      delta = 100
+    }else if(z>=10){
+      delta = 200
+    }else if(z>=8){
+      delta = 400
+    }else{
+      delta = 800
+    }
+    console.log(delta)
+    const contours = d3.contours().size([cvs.width, cvs.height]).thresholds(d3.range(0, 5000, delta));
+    const data = contours(grayData)
+    console.log('等值线提取时间',performance.now()-time,'ms')
+    const lineWidth = 1
     const svg = d3.select(dom)
-      .attr("opacity",1)
-      .attr("viewBox", `0 0 ${cvs.width} ${cvs.height}`)
+      .attr("opacity",0.5)
+      .attr("viewBox", `${lineWidth/2} ${lineWidth/2} ${cvs.width-lineWidth} ${cvs.height-lineWidth}`)
       .attr("width", 514)
       .attr("height", 514);
-    svg.append("defs")
-      .append("clipPath")
-      .attr("id", "clip")
-      .append("rect")
-      .attr("x", 0)
-      .attr("y", 0)
-      .attr("width", 514)
-      .attr("height", 514);
-    const color = d3.scaleSequential(d3.interpolateViridis).domain([0, 8000]);
+    const color = d3.scaleSequential(d3.interpolateTurbo).domain([0, 5000]);
     svg.selectAll("path")
-      .data(contours(grayData))
+      .data(data)
       .join("path")
+      .attr('stroke-linejoin','round')
+      .attr('stroke-linecap','round')
       .attr("d", d3.geoPath()) // 使用 d3.geoPath() 渲染等高线路径
-      // .attr("fill", d => color(d.value)) // 填充颜色
-      .attr('fill','none')
-      .attr("stroke", d => color(d.value))
-      .attr("clip-path", "url(#clip)")
-      .attr("stroke-width", 1)
+      .attr("fill", d => color(d.value)) // 填充颜色
+      // .attr('fill','none')
+      // .attr("stroke", d => color(d.value))
+      .attr("stroke", '#000')
+      .attr("stroke-width", lineWidth)
 
     const img = await svg2Image(dom).catch(e=>{
       throw e

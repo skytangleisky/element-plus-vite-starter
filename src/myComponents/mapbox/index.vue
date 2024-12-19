@@ -292,6 +292,7 @@ onMounted(() => {
     // ],
     zoom: setting.mapbox.zoom,
     center: setting.mapbox.center as any,
+    maxZoom:21,
     // pitch: 60,
     pitch: 0,
   });
@@ -464,7 +465,46 @@ onMounted(() => {
       );
     }
   });
+  map.on('click', (e) => {
+    console.log(e.lngLat)
+  })
   map.on("load", () => {
+    // map.addLayer({
+    //   id: 'customRasterLayer',
+    //   type: 'raster',
+    //   source: new CustomRasterSource() as any,
+    //   paint: {
+    //     'raster-opacity': 1,
+    //   }
+    // });
+    map.addSource('flight-path', {
+      "type": "geojson",
+      "data": {
+        "type": "Feature",
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [104.06337515944892, 30.65995447500198, 300], // 起点（经度, 纬度, 高度）
+            [104.06338515944892, 30.65985447500198, 500], // 中间点
+            [104.06337515944892, 30.65985447500198, 700]  // 终点
+          ]
+        }
+      }
+    });
+    map.addLayer({
+      "id": "flight-route",
+      "type": "line",
+      "source": "flight-path",
+      "layout": {
+        "line-join": "round",
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": "#ff8800",
+        "line-width": 4,
+        "line-opacity": 0.8
+      }
+    });
     watch(
       () => setting.mapbox.showStation,
       (v) => {
@@ -534,51 +574,6 @@ onMounted(() => {
               },
             });
           });
-          getMicapsData(uvUrl).then(async(result:any)=>{
-            console.log("===>",result)
-            let cvs = document.createElement('canvas')
-            cvs.width = result.lngCount
-            cvs.height = result.latCount
-            let ctx = cvs.getContext('2d')!
-            let imgData = ctx.getImageData(0,0,cvs.width,cvs.height)
-            let us = result.data.slice(0,result.data.length/2)
-            let vs = result.data.slice(result.data.length/2)
-            const uMin = Math.min(...us);
-            const uMax = Math.max(...us);
-            const vMin = Math.min(...vs);
-            const vMax = Math.max(...vs);
-            for(let y = 0; y < imgData.height; y++){
-              for(let x = 0; x < imgData.width; x++){
-                let i = (y * 4) * imgData.width + x * 4
-                imgData.data[i + 0] = (us[imgData.width*y+x]-uMin)/(uMax-uMin)*255
-                imgData.data[i + 1] = (vs[imgData.width*y+x]-vMin)/(vMax-vMin)*255
-                imgData.data[i + 2] = 0
-                imgData.data[i + 3] = 255
-              }
-            }
-            ctx.putImageData(imgData,0,0)
-            let json = {
-              "source": "http://nomads.ncep.noaa.gov",
-              "date": "2016-11-20T00:00Z",
-              "width": cvs.width,
-              "height": cvs.height,
-              "uMin": uMin,
-              "uMax": uMax,
-              "vMin": vMin,
-              "vMax": vMax
-            }
-            let url = cvs.toDataURL()
-            //map.removeLayer("null-island");
-            map.addLayer(new CustomLayer(json,url) as any)
-            map.addLayer({
-              id: 'customRasterLayer',
-              type: 'raster',
-              source: new CustomRasterSource() as any,
-              paint: {
-                'raster-opacity': 1,
-              }
-            });
-          })
         } else {
           map.getLayer("plane") && map.removeLayer("plane");
           map.getSource("point") && map.removeSource("point");
@@ -586,6 +581,45 @@ onMounted(() => {
       },
       { immediate: true }
     );
+
+
+    getMicapsData(uvUrl).then(async(result:any)=>{
+      console.log("===>",result)
+      let cvs = document.createElement('canvas')
+      cvs.width = result.lngCount
+      cvs.height = result.latCount
+      let ctx = cvs.getContext('2d')!
+      let imgData = ctx.getImageData(0,0,cvs.width,cvs.height)
+      let us = result.data.slice(0,result.data.length/2)
+      let vs = result.data.slice(result.data.length/2)
+      const uMin = Math.min(...us);
+      const uMax = Math.max(...us);
+      const vMin = Math.min(...vs);
+      const vMax = Math.max(...vs);
+      for(let y = 0; y < imgData.height; y++){
+        for(let x = 0; x < imgData.width; x++){
+          let i = (y * 4) * imgData.width + x * 4
+          imgData.data[i + 0] = (us[imgData.width*y+x]-uMin)/(uMax-uMin)*255
+          imgData.data[i + 1] = (vs[imgData.width*y+x]-vMin)/(vMax-vMin)*255
+          imgData.data[i + 2] = 0
+          imgData.data[i + 3] = 255
+        }
+      }
+      ctx.putImageData(imgData,0,0)
+      let json = {
+        "source": "http://nomads.ncep.noaa.gov",
+        "date": "2016-11-20T00:00Z",
+        "width": cvs.width,
+        "height": cvs.height,
+        "uMin": uMin,
+        "uMax": uMax,
+        "vMin": vMin,
+        "vMax": vMax
+      }
+      let url = cvs.toDataURL()
+      map.getLayer("null-island") && map.removeLayer("null-island");
+      map.addLayer(new CustomLayer(json,url) as any)
+    })
 
     // map.addLayer({
     //   id: "park-volcanoes",

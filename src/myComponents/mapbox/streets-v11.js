@@ -274,6 +274,10 @@ export default {
 			"type":"geojson",
 			"data": window.location.origin+"/resources/100000_full.json"
 		},
+		"chengdu":{
+			"type":"geojson",
+			"data": window.location.origin+"/resources/510100_full.geojson"
+		},
 		"composite": {
 				"url_origin": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2",
 				"tiles":["https://vector.tanglei.site?lyrs=v&x={x}&y={y}&z={z}"],
@@ -283,19 +287,20 @@ export default {
 			"type": "raster-dem",
 			"url_origin": 'mapbox://mapbox.mapbox-terrain-dem-v1',
 			"tiles":["https://terrain.tanglei.site?lyrs=terrain&x={x}&y={y}&z={z}"],
-			"tileSize": 512,
+			"tileSize": 514,
 			"maxzoom": 14
 		},
 		"raster-tiles": {
 			"type": "raster",
 			url,
-			// "tiles": [
-			// 	"https://tile.tanglei.site/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}"
-			// ],
+			"tiles": [
+				"https://tile.tanglei.site/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}"
+			],
+			"maxzoom": 22,
 			"tileSize": 256
 		}
 	},
-	"terrain": { 'source': 'mapbox-dem', 'exaggeration': 1.0 },
+	"terrain": { 'source': 'mapbox-dem', 'exaggeration': 0 },
 	"sprite_origin": "mapbox://sprites/tanglei201314/clons7b5v00dm01prgrblhncs/6iqitl5z21pbbxxwuij8b59i2",
 	"glyphs_origin": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
 	"sprite": window.location.origin+"/resources/sprite",
@@ -7043,7 +7048,7 @@ export default {
 				'layout': {},
 				'paint': {
 					'fill-color': '#000',
-					'fill-opacity': 0.2
+					'fill-opacity': 0
 				}
 			},
 			{
@@ -7059,6 +7064,18 @@ export default {
 				}
 			},
 			{
+				'id': 'chengduOutline',
+				'type': 'line',
+				'source': 'chengdu',
+				'layout': {
+					'visibility':'visible'
+				},
+				'paint': {
+					'line-color': 'black',
+					'line-width': 1
+				}
+			},
+			{
 				'id': '3d-buildings',
 				'source': 'composite',
 				'source-layer': 'building',
@@ -7068,40 +7085,41 @@ export default {
 				'paint': {
 						'fill-extrusion-color': '#fff',
 						// 地图放大的时候，使用插值的方式，添加更细节的建筑物，这种方式，视觉过渡更平滑
-						'fill-extrusion-height': [
-								'interpolate',
-								['linear'],
-								['zoom'],
-								15,
-								0,
-								15.05,
-								['get', 'height']
-						],
-						'fill-extrusion-base': [
-								'interpolate',
-								['linear'],
-								['zoom'],
-								15,
-								0,
-								15.05,
-								['get', 'min_height']
-						],
-						'fill-extrusion-opacity': 1
+						// 'fill-extrusion-height': [
+						// 		'interpolate',
+						// 		['linear'],
+						// 		['zoom'],
+						// 		15,
+						// 		0,
+						// 		15.05,
+						// 		['get', 'height']
+						// ],
+						// 'fill-extrusion-base': [
+						// 		'interpolate',
+						// 		['linear'],
+						// 		['zoom'],
+						// 		15,
+						// 		0,
+						// 		15.05,
+						// 		['get', 'min_height']
+						// ],
+						'fill-extrusion-height': ['get', 'height'],
+						'fill-extrusion-opacity': 0.9
 				},
 				layout:{
 					visibility:'visible'
 				}
 			},
-			// {
-			// 	"id": "tmp-tiles",
-			// 	"type": "raster",
-			// 	"source": "raster-tiles",
-			// 	"minzoom": 0,
-			// 	"maxzoom": 22,
-			// 	layout:{
-			// 		visibility:'visible'
-			// 	}
-			// },
+			{
+				"id": "tmp-tiles",
+				"type": "raster",
+				"source": "raster-tiles",
+				"minzoom": 0,
+				"maxzoom": 22,
+				layout:{
+					visibility:'visible'
+				}
+			},
 	],
 	"created": "2023-11-07T03:38:34.435Z",
 	"modified": "2023-11-14T11:53:57.549Z",

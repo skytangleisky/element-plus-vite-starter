@@ -2,7 +2,7 @@ import WindGL from './index';
 import json from "../data/2016112000.json";
 import png from "../data/2016112000.png?url";
 import {mat4} from 'gl-matrix';
-
+/*
 export default class CustomLayer {
     constructor(json,png) {
         this.id = 'null-island';
@@ -59,13 +59,15 @@ export default class CustomLayer {
             this.map.triggerRepaint();
         }
     }
-}
+}*/
 
-/*
+
+import { wgs84togcj02 } from '~/myComponents/map/workers/mapUtil.js';
 import './three.min.js'
 import './GLTFLoader.js'
-const modelOrigin = [148.9819, -35.39847];
-const modelAltitude = 0;
+// const modelOrigin = [148.9819, -35.39847];//澳大利亚天文台
+const modelOrigin = [104.06337515944892, 30.65985447500198];//成都
+const modelAltitude = 3;
 const modelRotate = [Math.PI / 2, 0, 0];
 
 const modelAsMercatorCoordinate = mapboxgl.MercatorCoordinate.fromLngLat(
@@ -80,7 +82,7 @@ const modelTransform = {
     rotateY: modelRotate[1],
     rotateZ: modelRotate[2],
     //  Since the 3D model is in real world meters, a scale transform needs to be applied since the CustomLayerInterface expects units in MercatorCoordinates.
-    scale: modelAsMercatorCoordinate.meterInMercatorCoordinateUnits()
+    scale: modelAsMercatorCoordinate.meterInMercatorCoordinateUnits()*0.1
 };
 export default class CustomLayer{
     constructor(){
@@ -89,6 +91,7 @@ export default class CustomLayer{
         this.renderingMode = '3d'
     }
     onAdd(map, gl) {
+        this.clock = new THREE.Clock();
         this.camera = new THREE.Camera();
         this.scene = new THREE.Scene();
         // create two three.js lights to illuminate the model
@@ -101,9 +104,19 @@ export default class CustomLayer{
 
         // use the three.js GLTF loader to add the 3D model to the three.js scene
         const loader = new THREE.GLTFLoader();
-        loader.load(location.origin+'/resources/34M_17.gltf',(gltf) => {
-            this.scene.add(gltf.scene);
-        });
+        // let resource = location.origin+'/resources/34M_17.gltf'
+        let resource = location.origin+'/resources/CesiumDrone.glb'
+        // let resource = location.origin+'/resources/sr71.glb'
+        loader.load(resource,(gltf) => {
+            const scene = gltf.scene;
+            this.scene.add(scene);
+            const animations = gltf.animations;
+            this.mixer = new THREE.AnimationMixer(scene);
+            animations.forEach((clip) => {
+                const action = this.mixer.clipAction(clip);
+                action.play();
+            });
+        })
         this.map = map;
 
         // use the Mapbox GL JS map canvas for three.js
@@ -136,10 +149,13 @@ export default class CustomLayer{
         this.camera.projectionMatrix = m.multiply(l);
         this.renderer.resetState();
         this.renderer.render(this.scene, this.camera);
-        // this.map.triggerRepaint();
+        this.map.triggerRepaint();
+        if (this.mixer) {
+            this.mixer.update(this.clock.getDelta()); // 更新动画
+        }
     }
 }
-*/
+
 
 
 
