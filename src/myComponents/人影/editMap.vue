@@ -70,6 +70,7 @@ import { addFeatherImages,View,getLngLat } from "~/tools";
 import CustomLayer from "./webglLayer/CustomLayer.js";
 import airstrip from "./airstrip.js";
 import { exec } from "~/api/index.js";
+import {getTodayRecords,airspaceApply} from "~/api/人影/index.js"
 import { loadImage2Map } from "~/tools/index.ts";
 import contour from './gridContour'
 import contour2 from './discreteContour'
@@ -229,7 +230,9 @@ const moveFunc = () => {
   emits("update:center", map.getCenter());
 };
 function 网络上报(data:prevRequestDataType){
-  console.log(data)
+  airspaceApply(data).then((res:any)=>{
+    console.log(res.data)
+  })
   dialogOptions.menus.map((item: stationData) => {
     if(item.strID == data.strID){
       let zyddata:zyddataType = {
@@ -305,7 +308,6 @@ function 网络上报(data:prevRequestDataType){
       // })
       emits('update:prevRequestShow',false)//关闭弹窗
     }
-
     let v = data.strPos;
     let lng = v.substring(0, v.indexOf("E"));
     let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
@@ -1346,6 +1348,10 @@ onMounted(() => {
       .setLngLat([0, 0])
       .setOffset([0, 0])
       .addTo(map);
+    getTodayRecords().then((res:any)=>{
+      console.log(res.data)
+      planProps.今日作业记录 = res.data.data;
+    })
     exec({
       database:
         "host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
@@ -1353,7 +1359,7 @@ onMounted(() => {
         sqls: [
           "select z.*,u.strName as unitName FROM `zydpara` z left join `units` u on z.strMgrUnit = u.strID",
           "SELECT z.*,u.strName as unitName FROM `zyddata` z left join `units` u on z.strATCUnitID = u.strID",
-          "SELECT z.*,u.strName as unitName FROM `zydhisdata` z left join `units` u on z.strATCUnitID=u.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = CURDATE()",
+          // "SELECT z.*,u.strName as unitName FROM `zydhisdata` z left join `units` u on z.strATCUnitID=u.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = CURDATE()",//当天的数据
           // "SELECT z.*,u.strName as unitName FROM `zydhisdata` z left join `units` u on z.strATCUnitID=u.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = DATE_FORMAT((select MAX(DATE(tmBeginApply)) from zydhisdata),'%Y-%m-%d')",//最后一天的数据
         ],
       },
@@ -1361,6 +1367,9 @@ onMounted(() => {
       dialogOptions.menus = res.data[0];
       let features: any = [];
       dialogOptions.menus.map((item: stationData) => {
+        if(item.iShortAngelBegin==null){
+          item.iShortAngelBegin = 0
+        }
         let v = item.strPos;
         if (v) {
           let lng = v.substring(0, v.indexOf("E"));
@@ -1682,8 +1691,6 @@ onMounted(() => {
         type: "FeatureCollection",
         features: circleFeatures,
       });
-
-      planProps.今日作业记录 = res.data[2];
     });
     // getDevice().then((res) => {
     //   dialogOptions.menus = res.data;

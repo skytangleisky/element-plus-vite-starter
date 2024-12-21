@@ -167,6 +167,13 @@ export default defineConfig({
         changeOrigin:true,
         ws:true,
       },
+      '/ry_api':{//人影接口
+        target:'http://192.168.0.131:8080',
+        rewrite:path=>path.replace(/^\/ry_api/,''), // 设置重写的路径
+        secure:false,
+        changeOrigin:true,
+        ws:true,
+      },
       '/python':{//ppi实时数据
         // target:'http://192.168.0.114:8000',
         target:'http://tanglei.top:8000',
