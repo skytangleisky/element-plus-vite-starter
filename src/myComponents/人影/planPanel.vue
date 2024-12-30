@@ -2,7 +2,7 @@
   <div v-dialogDrag class="planPanel z-1">
     <el-tabs
       type="border-card"
-      style="width: 580px; padding: 7px; border-radius: 8px; box-sizing: border-box"
+      style="width: 660px; padding: 7px; border-radius: 8px; box-sizing: border-box"
     >
       <el-tab-pane v-for="(v, k) in props" :label="k">
         <div
@@ -29,16 +29,17 @@
               "
             >
               <div class="flex flex-col">
-                <span>{{ item.strZydID }}</span
-                ><span class="font-size-14px font-extrabold">{{ item.strName }}</span>
+                {{ moment(item.tmBeginApply).format("HH:mm:ss") }}
+                <span>{{ item.strZydID }}</span>
+                <span class="font-size-14px font-extrabold">{{ item.strName }}</span>
               </div>
             </div>
             <div class="flex flex-col w-full">
               <div class="flex">
                 <div class="flex flex-col" style="border: 1px solid grey">
                   <div>作业状态</div>
-                  <div style="font-weight: bolder; font-size: 16px">
-                    {{ 工作状态格式化(item.ubyStatus) }}
+                  <div :style="`font-weight: bolder; font-size: 16px;color:${工作状态格式化(item.ubyStatus,item)=='作业开始'?'red':'inherit'}`">
+                    {{ 工作状态格式化(item.ubyStatus,item) }}
                   </div>
                 </div>
                 <div class="flex flex-col" style="border: 1px solid grey">
@@ -56,13 +57,13 @@
                 <div class="flex flex-col" style="border: 1px solid grey">
                   <div>申请时间</div>
                   <div style="font-weight: bolder; font-size: 16px">
-                    {{ item.tmBeginApply.substring(10, 19) }}
+                    {{ item.tmBeginApply.substring(10, 16) }}
                   </div>
                 </div>
                 <div class="flex flex-col" style="border: 1px solid grey">
                   <div>申请时长</div>
                   <div style="font-weight: bolder; font-size: 16px">
-                    {{ item.iApplyTimeLen * 60 }}秒
+                    {{ item.iApplyTimeLen }}秒
                   </div>
                 </div>
                 <div
@@ -75,7 +76,8 @@
                 >
                   <div>上报单位</div>
                   <div style="font-weight: bolder; font-size: 16px">
-                    {{ item.unitName }}
+                    <!-- {{ item.unitName }} -->
+                    北京人影指挥中心
                   </div>
                 </div>
               </div>
@@ -84,25 +86,25 @@
                   :class="`flex justify-center items-center ${申请(item)}`"
                   style="border: 1px solid grey; font-weight: bolder"
                 >
-                  申请({{ moment(item.tmBeginApply).format("HH:mm:ss") }})
+                  申请({{ moment(item.tmBeginApply).format("HH:mm") }})
                 </div>
                 <div
                   :class="`flex-1 flex justify-center items-center ${批复(item)}`"
                   style="border: 1px solid grey; font-weight: bolder"
                 >
-                  批复
+                  批复{{ item.tmBeginAnswer?'('+moment(item.tmBeginAnswer,'YYYY-MM-DD HH:mm:ss').format('HH:mm')+')':'' }}
                 </div>
                 <div
                   :class="`flex-1 flex justify-center items-center ${开始(item)}`"
                   style="border: 1px solid grey; font-weight: bolder"
                 >
-                  开始
+                  开始{{ item.tmBeginAnswer?'('+moment(item.tmBeginAnswer,'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss')+')':'' }}
                 </div>
                 <div
                   :class="`flex-1 flex justify-center items-center ${结束(item)}`"
                   style="border: 1px solid grey; font-weight: bolder"
                 >
-                  结束
+                  结束{{ item.tmBeginAnswer?'('+moment(item.tmBeginAnswer).add(item.iAnswerTimeLen,'s').format('HH:mm:ss')+')':'' }}
                 </div>
                 <div
                   :class="`flex-1 flex justify-center items-center ${完成(item)}`"
@@ -124,6 +126,7 @@
   </div>
 </template>
 <script lang="ts" setup>
+import {watch} from 'vue'
 import { useStationStore } from "~/stores/station";
 import { eventbus } from "~/eventbus";
 import moment from "moment";
@@ -191,7 +194,10 @@ const props = withDefaults(
     今日作业记录: () => new Array<planDataType>(),
   }
 );
-const 工作状态格式化 = (key: number) => {
+watch(props.当前作业进度, (newValue) => {
+  console.log(newValue.当前作业进度);
+},{deep:true})
+const 工作状态格式化 = (key: number,item:any) => {
   let status = [
     { key: 0, value: "空闲" },
     { key: 9, value: "作业完成" },
@@ -208,7 +214,11 @@ const 工作状态格式化 = (key: number) => {
     { key: 99, value: "人工移除" },
     { key: 100, value: "作业结束" },
   ];
-  return status.filter((item) => item.key == key)[0]?.value || `未知状态${key}`;
+  let str = status.filter((item) => item.key == key)[0]?.value || `未知状态${key}`
+  if(item&&'作业批准'==str&&moment(item.tmBeginApply).isBefore(moment())){
+    str = '作业开始'
+  }
+  return str;
 };
 const 发送状态格式化 = (key: number) => {
   let status = [
@@ -225,7 +235,11 @@ const 申请 = (item: planDataType) => {
     case "作业结束":
       return "bg-gray-4";
     case "作业申请待批复":
-      return "bg-green-6";
+      return "bg-#0f0";
+    case "作业不批准":
+      return "bg-gray-4";
+    case "作业批准":
+      return "bg-#0f0";
     default:
       return "";
   }
@@ -234,6 +248,10 @@ const 批复 = (item: planDataType) => {
   switch (工作状态格式化(item.ubyStatus)) {
     case "作业结束":
       return "bg-gray-4";
+    case "作业不批准":
+      return "bg-gray-4";
+    case "作业批准":
+      return "bg-#0f0";
     default:
       return "";
   }
@@ -242,6 +260,10 @@ const 开始 = (item: planDataType) => {
   switch (工作状态格式化(item.ubyStatus)) {
     case "作业结束":
       return "bg-gray-4";
+    case "作业不批准":
+      return "bg-red";
+    case "作业批准":
+      return "bg-#0f0";
     default:
       return "";
   }
@@ -250,6 +272,8 @@ const 结束 = (item: planDataType) => {
   switch (工作状态格式化(item.ubyStatus)) {
     case "作业结束":
       return "bg-gray-4";
+    case "作业不批准":
+      return "bg-red";
     default:
       return "";
   }
@@ -258,6 +282,8 @@ const 完成 = (item: planDataType) => {
   switch (工作状态格式化(item.ubyStatus)) {
     case "作业结束":
       return "bg-gray-4";
+    case "作业不批准":
+      return "bg-red";
     default:
       return "";
   }
@@ -309,6 +335,7 @@ const 完成 = (item: planDataType) => {
 </style>
 <style scoped lang="scss">
 .planPanel {
+  color:rgb(9,100,196);
   position: absolute;
   left: 10px;
   top: 240px;
@@ -332,7 +359,7 @@ const 完成 = (item: planDataType) => {
 }
 .dark .planPanel {
   .item {
-    background: #ffffff22;
+    background: #00000080;
   }
 }
 </style>

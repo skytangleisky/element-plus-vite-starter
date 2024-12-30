@@ -326,7 +326,7 @@ export const useSettingStore = defineStore({
         navigationStation:true,
         districtOptions:{
           district:true,
-          districtFillColor:{r:0,g:255,b:0,a:0.2},
+          districtFillColor:{r:0,g:0,b:0,a:0.2},
           districtBase:false,
           districtBaseWidth:3,
           districtBaseColor:{r:0,g:0,b:0,a:0.5},
@@ -336,7 +336,7 @@ export const useSettingStore = defineStore({
         },
         beijingOptions:{
           district:true,
-          districtFillColor:{r:0,g:255,b:0,a:0.5},
+          districtFillColor:{r:88,g:158,b:248,a:0.5},
           districtBase:true,
           districtBaseWidth:3,
           districtBaseColor:{r:0,g:0,b:0,a:0.5},
@@ -643,7 +643,7 @@ export const useSettingStore = defineStore({
         path:'ry_synthesis',
         name:'b7ef7b88-5e6a-0c62-129b-a0a18980cd11',
         component:'/src/myComponents/人影/pages/synthesis.vue',
-        hide:false,
+        hide:true,
         svg:'0ca86c9c-7cf8-4ffa-8b38-82bf6771c25f',
         meta:{
           label:'首页'

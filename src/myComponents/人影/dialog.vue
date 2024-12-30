@@ -1,5 +1,5 @@
 <template>
-  <div class="!collapse dragDialog absolute w-564px">
+  <div class="!collapse dragDialog absolute w-660px">
     <div class="flex flex-row" style="align-items: center">
       <input
         @mousedown.stop
@@ -283,11 +283,12 @@ const toggleCollapse = () => {
   }
 }
 .dragDialog {
+  box-sizing: border-box;
   border: 1px solid gray;
   display: flex;
   flex-direction: column;
   border-radius: 10px;
-  padding: 0.5rem;
+  padding: 7px;
   // background: linear-gradient(172.98deg,hsla(0,0%,100%,0.08) 1.49%,hsla(0,0%,100%,0.0208) 99.64%);
   background: white;
   // box-shadow: 0 23px 20px -20px rgb(9 10 18 / 10%), 0 0 15px rgb(9 10 18 / 6%);

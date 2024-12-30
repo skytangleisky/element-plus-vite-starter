@@ -1,5 +1,5 @@
 import request from '../../utils/request'
-const url = 'backend/db/菜单?host=127.0.0.1&port=3306&user=root&password=tanglei&database=union'
+const url = 'backend/db/菜单?host=192.168.0.240&port=3306&user=root&password=mysql&database=union'
 export function getMenu() {
   const data = {
     "select":["*"], // 需要获取的字段，"*"代表所有字段

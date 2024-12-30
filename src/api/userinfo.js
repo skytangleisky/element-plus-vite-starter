@@ -1,6 +1,6 @@
 import request from '../utils/request'
 const tableName='userinfo'
-let options = '?host=127.0.0.1&port=3306&user=root&password=tanglei&database=union'
+let options = '?host=192.168.0.240&port=3306&user=root&password=mysql&database=union'
 const url = 'backend/db/'+tableName+options
 export function getColumns(){
   return request({

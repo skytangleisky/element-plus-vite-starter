@@ -270,11 +270,11 @@ export default {
 	// 		]
 	// },
 	"sources": {
-		'mapbox-terrain': {
-			type: 'vector',
-			// url: 'mapbox://mapbox.mapbox-terrain-v2'
-			tiles: ['https://dem.tanglei.site?lyrs=d&x={x}&y={y}&z={z}'],
-		},
+		// 'mapbox-terrain': {
+		// 	type: 'vector',
+		// 	// url: 'mapbox://mapbox.mapbox-terrain-v2'
+		// 	tiles: ['https://dem.tanglei.site?lyrs=d&x={x}&y={y}&z={z}'],
+		// },
 		"district":{
 			"type":"geojson",
 			"data": city
@@ -283,11 +283,11 @@ export default {
 			"type":"geojson",
 			"data": beijing
 		},
-		"composite": {
-				"url_origin": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2",
-				"tiles":["https://vector.tanglei.site?lyrs=v&x={x}&y={y}&z={z}"],
-				"type": "vector"
-		},
+		// "composite": {
+		// 		"url_origin": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2",
+		// 		"tiles":["https://vector.tanglei.site?lyrs=v&x={x}&y={y}&z={z}"],
+		// 		"type": "vector"
+		// },
 		"raster-tiles": {
 			"type": "raster",
 			url:null,//代码中设置
@@ -320,7 +320,7 @@ export default {
 			"maxzoom": 14,
 		},
 	},
-	"terrain": { 'source': 'mapbox-dem', 'exaggeration': 1 },
+	// "terrain": { 'source': 'mapbox-dem', 'exaggeration': 1 },
 	// "sprite_origin": "mapbox://sprites/tanglei201314/clons7b5v00dm01prgrblhncs/6iqitl5z21pbbxxwuij8b59i2",
 	"sprite": window.location.origin+"/resources/sprite",
 	// "glyphs_origin": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",

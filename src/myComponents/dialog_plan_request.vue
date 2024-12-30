@@ -81,6 +81,7 @@
           <div class="flex justify-between items-center pl-10px">
             射击装备<el-select
               v-model="data.iWeapon"
+              :teleported="false"
               placeholder="射击装备"
               style="width: 150px"
             >
@@ -96,6 +97,7 @@
           ><div class="flex justify-between items-center pl-10px">
             作业目的<el-select
               v-model="data.iWorkType"
+              :teleported="false"
               placeholder="作业目的"
               style="width: 150px"
             >
@@ -134,6 +136,7 @@
         <el-col :span="12"
           ><div class="flex justify-between items-center pl-10px">
             开始时间<el-time-picker
+              :teleported="false"
               value-format="HH:mm:ss"
               v-model="data.beginTime"
               placeholder="请输入开始时间"
@@ -165,7 +168,8 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive } from "vue";
+import { reactive,onMounted,onBeforeUnmount } from "vue";
+import moment from "moment";
 const weaponOptions = reactive([
   { value: 0, label: "火箭" },
   { value: 1, label: "高炮" },
@@ -201,7 +205,7 @@ type zyddataType = {
 export type prevRequestDataType = {
   unitName: string;
 } & zyddataType;
-withDefaults(
+const props = withDefaults(
   defineProps<{
     show?: boolean;
     data?: prevRequestDataType;
@@ -229,6 +233,15 @@ const emit = defineEmits(["update:show", "click"]);
 const cancel = () => {
   emit("update:show", false);
 };
+let timer:number;
+onMounted(()=>{
+  timer = setInterval(()=>{
+    props.data.beginTime = moment().format('HH:mm:ss')
+  },1000)
+})
+onBeforeUnmount(()=>{
+  clearInterval(timer)
+})
 </script>
 <style lang="scss">
 .modal {

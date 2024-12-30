@@ -3,7 +3,7 @@
     <div
       v-resize="resize"
       ref="mapRef"
-      class="dark:bg-#000 bg-white"
+      class="dark:bg-#666 bg-white"
       style="
         position: absolute;
         left: 0;
@@ -45,10 +45,10 @@
     <div class="stationMenu" ref="stationMenuRef" @mousedown.stop>
       <ul>
         <li @click="作业申请()">地面作业申请</li>
-        <li>查看作业点信息</li>
-        <li>人工批复</li>
+        <!-- <li>查看作业点信息</li> -->
+        <!-- <li>人工批复</li>
         <li>人工移除</li>
-        <li>手动发结束报</li>
+        <li>手动发结束报</li> -->
       </ul>
     </div>
   </div>
@@ -85,6 +85,7 @@ const dialogOptions = reactive({ menus: [] });
 const stationMenuRef = ref<HTMLDivElement>();
 let stationMenu: HTMLDivElement;
 let circleFeatures: any = [];
+let forewarningFeatures: any = [];
 const emits = defineEmits([
   "update:center",
   "update:zoom",
@@ -118,6 +119,7 @@ const NavigationControl = mapboxgl.NavigationControl;
 const FullscreenControl = mapboxgl.FullscreenControl;
 let timer = 0;
 let graphTimer = 0;
+let taskTimer = 0;
 let frameCounter = 0;
 const mapRef = ref<HTMLCanvasElement>();
 // const color = ref("red");
@@ -344,6 +346,7 @@ function 网络上报(data:prevRequestDataType){
         if(circleFeatures[i].properties.strID == data.strID){
           circleFeatures[i].geometry.coordinates = sectorPolygon.geometry?.coordinates
           circleFeatures[i].properties.color = '#0f0'
+          circleFeatures[i].properties.fillColor = 'rgba(255,255,255,0.2)'
         }
       }
     } else {//不足一个圆
@@ -376,13 +379,45 @@ function 网络上报(data:prevRequestDataType){
         if(circleFeatures[i].properties.strID == data.strID){
           circleFeatures[i].geometry.coordinates = sectorPolygon.geometry?.coordinates
           circleFeatures[i].properties.color = '#0f0'
+          circleFeatures[i].properties.fillColor = 'rgba(255,255,255,0.2)'
         }
+      }
+    }
+    const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
+      number,
+      number
+    ]; // 圆心点的经纬度
+    const radius: number = 20e3; // 半径（单位：米
+    const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
+    const units: turf.Units = "meters"; // 半径的单位
+    const sectorPoints: [number, number][] = calculateCirclePoints(
+      center,
+      radius,
+      steps,
+      units
+    );
+    const sectorPolygon = turf.polygon([sectorPoints], {
+      strID: item.strID,
+      color: "transparent",
+      fillColor: "transparent",
+    });
+    //预警圈
+    for(let i=0;i<forewarningFeatures.length;i++){
+      if(forewarningFeatures[i].properties.strID == data.strID){
+        forewarningFeatures[i].geometry.coordinates = sectorPolygon.geometry?.coordinates
+        forewarningFeatures[i].properties.color = '#0f0'
+        forewarningFeatures[i].properties.fillColor = 'rgba(255,255,255,0.2)'
       }
     }
     let source = map.getSource("最大射程source");
     source.setData({
       type: "FeatureCollection",
       features: circleFeatures,
+    });
+    source = map.getSource("警戒圈source");
+    source.setData({
+      type: "FeatureCollection",
+      features: forewarningFeatures,
     });
   })
 }
@@ -457,7 +492,7 @@ const flyTo = (item: any) => {
     let position = wgs84togcj02(pt.lng, pt.lat);
     map.flyTo({
       center: position, // 新的中心点 [经度, 纬度]
-      zoom: item.zoom || 12, // 目标缩放级别
+      zoom: item.zoom || 9, // 目标缩放级别
       speed: 1, // 飞行速度，1 为默认速度
       // curve: 1, // 飞行路径的曲率, 1 是直线
       // easing: function (t) {
@@ -1097,7 +1132,9 @@ onMounted(() => {
       return { x: Cx, y: Cy };
     }
     exec({
-      database:"host=127.0.0.1&port=3306&user=root&password=tanglei&database=union",
+      // database:"host=127.0.0.1&port=3306&user=root&password=tanglei&database=union",
+      // database:"host=10.224.153.90&port=3306&user=bjryb&password=ryb115&database=union",
+      database:"host=localhost&port=3306&user=bjryb&password=ryb115&database=union",
       query:{sqls:["select * from `华北飞行区域`"]}
     }).then(res=>{
       let areas = []
@@ -1245,7 +1282,9 @@ onMounted(() => {
 			})
     })
     exec({
-      database:"host=127.0.0.1&port=3306&user=root&password=tanglei&database=union",
+      // database:"host=127.0.0.1&port=3306&user=root&password=tanglei&database=union",
+      // database:"host=10.224.153.90&port=3306&user=bjryb&password=ryb115&database=union",
+      database:"host=localhost&port=3306&user=bjryb&password=ryb115&database=union",
       query:{sqls:["select * from `airport`"]}
     }).then(res=>{
       let data = res.data[0]
@@ -1348,24 +1387,25 @@ onMounted(() => {
       .setLngLat([0, 0])
       .setOffset([0, 0])
       .addTo(map);
-    getTodayRecords().then((res:any)=>{
-      console.log(res.data)
-      planProps.今日作业记录 = res.data.data;
-    })
+    // getTodayRecords().then((res:any)=>{
+    //   planProps.今日作业记录 = res.data.data;
+    // })
     exec({
       database:
-        "host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
+        // "host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
+        // "host=10.224.153.90&port=3306&user=bjryb&password=ryb115&database=ryplat",
+        "host=localhost&port=3306&user=bjryb&password=ryb115&database=ryplat",
       query: {
         sqls: [
           "select z.*,u.strName as unitName FROM `zydpara` z left join `units` u on z.strMgrUnit = u.strID",
-          "SELECT z.*,u.strName as unitName FROM `zyddata` z left join `units` u on z.strATCUnitID = u.strID",
-          // "SELECT z.*,u.strName as unitName FROM `zydhisdata` z left join `units` u on z.strATCUnitID=u.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = CURDATE()",//当天的数据
-          // "SELECT z.*,u.strName as unitName FROM `zydhisdata` z left join `units` u on z.strATCUnitID=u.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = DATE_FORMAT((select MAX(DATE(tmBeginApply)) from zydhisdata),'%Y-%m-%d')",//最后一天的数据
-        ],
+        ]
       },
     }).then((res) => {
-      dialogOptions.menus = res.data[0];
+      dialogOptions.menus = res.data[0].filter((item:stationData)=>item.strID.startsWith('110')&&item.strWeapon!=3);
+      console.log(dialogOptions.menus)
       let features: any = [];
+      forewarningFeatures.length = 0;
+      circleFeatures.length = 0;
       dialogOptions.menus.map((item: stationData) => {
         if(item.iShortAngelBegin==null){
           item.iShortAngelBegin = 0
@@ -1423,7 +1463,6 @@ onMounted(() => {
           //   },
           // });
           // circleFeatures.push(circle);
-
           if (item.iShortAngelEnd - item.iShortAngelBegin >= 360) {
             const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
               number,
@@ -1472,89 +1511,142 @@ onMounted(() => {
             });
             circleFeatures.push(sectorPolygon);
           }
+          //加入警戒圈
+          const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
+            number,
+            number
+          ]; // 圆心点的经纬度
+          const radius: number = 20e3; // 半径（单位：米
+          const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
+          const units: turf.Units = "meters"; // 半径的单位
+          const sectorPoints: [number, number][] = calculateCirclePoints(
+            center,
+            radius,
+            steps,
+            units
+          );
+          const sectorPolygon = turf.polygon([sectorPoints], {
+            strID: item.strID,
+            color: "transparent",
+            fillColor: "transparent",
+          });
+          forewarningFeatures.push(sectorPolygon);
         }
       });
-      map.addSource("zydSource", {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: features,
-        },
-      });
-      map.addLayer({
-        id: "zydLayer",
-        type: "symbol",
-        source: "zydSource",
-        layout: {
-          visibility: props.zyd ? "visible" : "none",
-          // This icon is a part of the Mapbox Streets style.
-          // To view all images available in a Mapbox style, open
-          // the style in Mapbox Studio and click the "Images" tab.
-          // To add a new image to the style at runtime see
-          // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-          "icon-anchor": "center",
-          "icon-image": ["get", "icon-image"],
-          // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
-          "icon-rotate": 0,
-          // "icon-offset": [10, 0],
-          "icon-rotation-alignment": "map",
-          "text-pitch-alignment": "map",
-          "icon-allow-overlap": true,
-          "icon-ignore-placement": true,
-          "text-field": ["get", "strName"],
-          "text-font": ["simkai"],
-          "text-size": 16,
-          "text-transform": "uppercase",
-          // "text-letter-spacing": 0.05,
-          "text-anchor": "bottom",
-          "text-line-height": 1,
-          "text-justify": "center",
-          "text-offset": [0, -1],
-          "text-ignore-placement": true,
-          "text-allow-overlap": true,
-          "text-rotation-alignment": "map",
-          "text-max-width": 400,
-        },
-        paint: {
-          "icon-opacity": 1,
-          "text-color": "white",
-          "text-halo-color": "black",
-          "text-halo-width": 1,
-        },
-        filter: ["==", ["get", "type"], "站点"],
-      });
-      map.addSource("最大射程source", {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: circleFeatures,
-        },
-      });
-      map.addLayer({
-        id: "最大射程-fill",
-        type: "fill",
-        source: "最大射程source",
-        layout: {
-          visibility: props.zyd ? "visible" : "none",
-        },
-        paint: {
-          "fill-color": ["get", "fillColor"],
-          "fill-opacity": 0.5,
-        },
-      });
-      map.addLayer({
-        id: "最大射程-line",
-        type: "line",
-        source: "最大射程source",
-        layout: {
-          visibility: props.zyd ? "visible" : "none",
-        },
-        paint: {
-          "line-color": ["get", "color"],
-          "line-width": 1,
-          // "line-dasharray": [1, 1],
-        },
-      });
+      if(!map.getSource("zydSource")){
+        map.addSource("zydSource", {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: features,
+          },
+        });
+      }
+      if(!map.getLayer("zydLayer")){
+        map.addLayer({
+          id: "zydLayer",
+          type: "symbol",
+          source: "zydSource",
+          layout: {
+            visibility: props.zyd ? "visible" : "none",
+            // This icon is a part of the Mapbox Streets style.
+            // To view all images available in a Mapbox style, open
+            // the style in Mapbox Studio and click the "Images" tab.
+            // To add a new image to the style at runtime see
+            // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+            "icon-anchor": "center",
+            "icon-image": ["get", "icon-image"],
+            // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
+            "icon-rotate": 0,
+            // "icon-offset": [10, 0],
+            "icon-rotation-alignment": "map",
+            "text-pitch-alignment": "map",
+            "icon-allow-overlap": true,
+            "icon-ignore-placement": true,
+            "text-field": ["get", "strName"],
+            "text-font": ["simkai"],
+            "text-size": 16,
+            "text-transform": "uppercase",
+            // "text-letter-spacing": 0.05,
+            "text-anchor": "bottom",
+            "text-line-height": 1,
+            "text-justify": "center",
+            "text-offset": [0, -1],
+            "text-ignore-placement": true,
+            "text-allow-overlap": true,
+            "text-rotation-alignment": "map",
+            "text-max-width": 400,
+          },
+          paint: {
+            "icon-opacity": 1,
+            "text-color": "white",
+            "text-halo-color": "black",
+            "text-halo-width": 1,
+          },
+          filter: ["==", ["get", "type"], "站点"],
+        });
+      }
+      if(!map.getSource("最大射程source")){
+        map.addSource("最大射程source", {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: circleFeatures,
+          },
+        });
+      }
+      if(!map.getLayer('最大射程-fill')){
+        map.addLayer({
+          id: "最大射程-fill",
+          type: "fill",
+          source: "最大射程source",
+          layout: {
+            visibility: props.zyd ? "visible" : "none",
+          },
+          paint: {
+            "fill-color": ["get", "fillColor"],
+          },
+        });
+      }
+      if(!map.getLayer("最大射程-line")){
+        map.addLayer({
+          id: "最大射程-line",
+          type: "line",
+          source: "最大射程source",
+          layout: {
+            visibility: props.zyd ? "visible" : "none",
+          },
+          paint: {
+            "line-color": ["get", "color"],
+            "line-width": 1,
+            // "line-dasharray": [1, 1],
+          },
+        });
+      }
+      if(!map.getSource("警戒圈source")){
+        map.addSource("警戒圈source", {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: forewarningFeatures,
+          },
+        });
+      }
+      if(!map.getLayer("预警圈-line")){
+        map.addLayer({
+          id: "预警圈-line",
+          type: "line",
+          source: "警戒圈source",
+          layout: {
+            visibility: props.zyd ? "visible" : "none",
+          },
+          paint: {
+            "line-color": ["get", "color"],
+            "line-width": 2,
+            "line-dasharray": [4, 2],
+          },
+        });
+      }
       map.on("contextmenu", "zydLayer", (e: any) => {
         e.preventDefault();
         const fs = map.queryRenderedFeatures(e.point, {
@@ -1576,13 +1668,12 @@ onMounted(() => {
         const fs = map.queryRenderedFeatures(e.point, {
           layers: ["zydLayer"],
         });
-
         if (!fs.length) {
           return;
         }
-
         const feature = fs[0];
         station.人影界面被选中的设备 = feature.properties.strID;
+        active()
       });
       map.on("mousedown", () => {
         $(stationMenu).css({display:'none'});
@@ -1605,93 +1696,133 @@ onMounted(() => {
         circleFeatures = circleFeatures.map((item: any) => {
           if (item.properties.strID == station.人影界面被选中的设备) {
             item.properties.color = "white";
-            item.properties.fillColor = "#000";
+            item.properties.fillColor = "rgba(0,0,0,0.5)";
+            if(planProps.当前作业进度.filter(item=>item.strZydID==station.人影界面被选中的设备).length>0){
+              item.properties.color = "#0f0";
+              item.properties.fillColor = "rgba(0,0,0,0.5)";
+            }
           } else {
             item.properties.color = "transparent";
             item.properties.fillColor = "transparent";
           }
           return item;
         });
+        forewarningFeatures = forewarningFeatures.map((item: any) => {
+          if (item.properties.strID == station.人影界面被选中的设备) {
+            item.properties.color = "white";
+            if(planProps.当前作业进度.filter(item=>item.strZydID==station.人影界面被选中的设备).length>0){
+              item.properties.color = "#0f0";
+            }
+          } else {
+            item.properties.color = "transparent";
+          }
+          return item;
+        });
+
         source = map.getSource("最大射程source");
         source.setData({
           type: "FeatureCollection",
           features: circleFeatures,
         });
+        source = map.getSource("警戒圈source");
+        source.setData({
+          type: "FeatureCollection",
+          features: forewarningFeatures,
+        });
       };
-
-      planProps.当前作业进度 = res.data[1];
-      planProps.当前作业进度.map((item: planDataType) => {
-        for (let i = 0; i < circleFeatures.length; i++) {
-          if (circleFeatures[i].properties.strID == item.strZydID) {
-            let v = item.strCurPos;
-            let lng = v.substring(0, v.indexOf("E"));
-            let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
-            let pt = {
-              lng:
-                Number(lng.substring(0, 3)) +
-                Number(lng.substring(3, 5)) / 60 +
-                Number(lng.substring(5, 9)) / 100 / 3600,
-              lat:
-                Number(lat.substring(0, 2)) +
-                Number(lat.substring(2, 4)) / 60 +
-                Number(lat.substring(4, 8)) / 100 / 3600,
-            };
-            const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
-              number,
-              number
-            ]; // 圆心点的经纬度
-            const radius: number = item.iRange; // 半径（单位：米）
-            const startAngle: number = item.iAngleBegin; // 起始角度（单位：度）
-            const endAngle: number = item.iAngleEnd; // 终止角度（单位：度）
-            const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
-            const units: turf.Units = "meters"; // 半径的单位
-            if (endAngle - startAngle >= 360) {
+    })
+    let work = ()=>{
+      exec({
+        database:
+          // "host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
+          // "host=10.224.153.90&port=3306&user=bjryb&password=ryb115&database=ryplat",
+          "host=localhost&port=3306&user=bjryb&password=ryb115&database=ryplat",
+        query: {
+          sqls: [
+            "SELECT z.*,u.strName as unitName FROM `zyddata` z left join `units` u on z.strATCUnitID = u.strID ORDER BY z.tmBeginApply ASC",
+            "SELECT z.*,u.strName as unitName FROM `zydhisdata` z left join `units` u on z.strATCUnitID=u.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = CURDATE() ORDER BY z.tmBeginApply ASC",//当天的数据
+            // "SELECT z.*,u.strName as unitName FROM `zydhisdata` z left join `units` u on z.strATCUnitID=u.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = DATE_FORMAT((select MAX(DATE(tmBeginApply)) from zydhisdata),'%Y-%m-%d')",//最后一天的数据
+          ],
+        },
+      }).then((res) => {
+        planProps.当前作业进度 = res.data[0];
+        planProps.当前作业进度.map((item: planDataType) => {
+          for (let i = 0; i < circleFeatures.length; i++) {
+            if (circleFeatures[i].properties.strID == item.strZydID) {
+              let v = item.strCurPos;
+              let lng = v.substring(0, v.indexOf("E"));
+              let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
+              let pt = {
+                lng:
+                  Number(lng.substring(0, 3)) +
+                  Number(lng.substring(3, 5)) / 60 +
+                  Number(lng.substring(5, 9)) / 100 / 3600,
+                lat:
+                  Number(lat.substring(0, 2)) +
+                  Number(lat.substring(2, 4)) / 60 +
+                  Number(lat.substring(4, 8)) / 100 / 3600,
+              };
               const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
                 number,
                 number
               ]; // 圆心点的经纬度
-              const radius: number = item.iRange; // 半径（单位：米
+              const radius: number = item.iRange; // 半径（单位：米）
+              const startAngle: number = item.iAngleBegin; // 起始角度（单位：度）
+              const endAngle: number = item.iAngleEnd; // 终止角度（单位：度）
               const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
               const units: turf.Units = "meters"; // 半径的单位
-              const sectorPoints: [number, number][] = calculateCirclePoints(
-                center,
-                radius,
-                steps,
-                units
-              );
-              const sectorPolygon = turf.polygon([sectorPoints], {
-                strID: item.strZydID,
-                color: "transparent",
-                fillColor: "transparent",
-              });
-              circleFeatures[i].geometry.coordinates =
-                sectorPolygon.geometry?.coordinates;
-            } else {
-              const sectorPoints: [number, number][] = calculateSectorPoints(
-                center,
-                radius,
-                startAngle,
-                endAngle,
-                steps,
-                units
-              );
-              const sectorPolygon = turf.polygon([sectorPoints], {
-                strID: item.strZydID,
-                color: "transparent",
-                fillColor: "transparent",
-              });
-              circleFeatures[i].geometry.coordinates =
-                sectorPolygon.geometry?.coordinates;
+              if (endAngle - startAngle >= 360) {
+                const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
+                  number,
+                  number
+                ]; // 圆心点的经纬度
+                const radius: number = item.iRange; // 半径（单位：米
+                const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
+                const units: turf.Units = "meters"; // 半径的单位
+                const sectorPoints: [number, number][] = calculateCirclePoints(
+                  center,
+                  radius,
+                  steps,
+                  units
+                );
+                const sectorPolygon = turf.polygon([sectorPoints], {
+                  strID: item.strZydID,
+                  color: "transparent",
+                  fillColor: "transparent",
+                });
+                circleFeatures[i].geometry.coordinates =
+                  sectorPolygon.geometry?.coordinates;
+              } else {
+                const sectorPoints: [number, number][] = calculateSectorPoints(
+                  center,
+                  radius,
+                  startAngle,
+                  endAngle,
+                  steps,
+                  units
+                );
+                const sectorPolygon = turf.polygon([sectorPoints], {
+                  strID: item.strZydID,
+                  color: "transparent",
+                  fillColor: "transparent",
+                });
+                circleFeatures[i].geometry.coordinates =
+                  sectorPolygon.geometry?.coordinates;
+              }
             }
           }
-        }
+        });
+        let source = map.getSource("最大射程source");
+        source.setData({
+          type: "FeatureCollection",
+          features: circleFeatures,
+        });
+        planProps.今日作业记录 = res.data[1];
       });
-      let source = map.getSource("最大射程source");
-      source.setData({
-        type: "FeatureCollection",
-        features: circleFeatures,
-      });
-    });
+    }
+    taskTimer = setInterval(() => {
+      work();
+    }, 1000);
     // getDevice().then((res) => {
     //   dialogOptions.menus = res.data;
     //   let features: any = [];
@@ -2227,6 +2358,7 @@ onBeforeUnmount(() => {
   console.log("onBeforeUnmount");
   clearInterval(timer);
   clearInterval(graphTimer);
+  clearInterval(taskTimer);
   eventbus.off("人影-将站点移动到屏幕中心", flyTo);
   eventbus.off("人影-地面作业申请-网络上报", 网络上报);
   eventbus.off("人影-飞机位置", 处理飞机实时位置);
@@ -2379,6 +2511,11 @@ watch(
       newVal
         ? map.setLayoutProperty("最大射程-fill", "visibility", "visible")
         : map.setLayoutProperty("最大射程-fill", "visibility", "none");
+    }
+    if (map.getLayer("预警圈-line")) {
+      newVal
+       ? map.setLayoutProperty("预警圈-line", "visibility", "visible")
+        : map.setLayoutProperty("预警圈-line", "visibility", "none");
     }
   }
 );
