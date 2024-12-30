@@ -99,27 +99,27 @@ onBeforeUnmount(()=>{
       background: #4c7cc8;
     }
   }
-}
-.ep-input__wrapper{
-  height: 12px;
-  line-height: 12px;
-  box-shadow: none;
-  font-size: 12px;
-  background-color:transparent;
-  .ep-input__inner{
-    color:inherit;
-  }
-  &.is-focus,&:hover{
+  .ep-input__wrapper{
+    height: 12px;
+    line-height: 12px;
     box-shadow: none;
-  }
-  .ep-input__prefix{
-    display: none;
-  }
-  input{
-    text-align: center;
-  }
-  .ep-input__suffix{
-    display: none;
+    font-size: 12px;
+    background-color:transparent;
+    .ep-input__inner{
+      color:inherit;
+    }
+    &.is-focus,&:hover{
+      box-shadow: none;
+    }
+    .ep-input__prefix{
+      display: none;
+    }
+    input{
+      text-align: center;
+    }
+    .ep-input__suffix{
+      display: none;
+    }
   }
 }
 .dark .timestep-container .btn{

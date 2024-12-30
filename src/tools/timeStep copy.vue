@@ -153,23 +153,23 @@ function setDate(value:string,data:any){
       background: #4c7cc8;
     }
   }
-}
-.ep-input__wrapper{
-  height: 12px;
-  line-height: 12px;
-  box-shadow: none;
-  font-size: 12px;
-  &.is-focus,&:hover{
+  .ep-input__wrapper{
+    height: 12px;
+    line-height: 12px;
     box-shadow: none;
-  }
-  .ep-input__prefix{
-    display: none;
-  }
-  input{
-    text-align: center;
-  }
-  .ep-input__suffix{
-    display: none;
+    font-size: 12px;
+    &.is-focus,&:hover{
+      box-shadow: none;
+    }
+    .ep-input__prefix{
+      display: none;
+    }
+    input{
+      text-align: center;
+    }
+    .ep-input__suffix{
+      display: none;
+    }
   }
 }
 .timestep-container{
