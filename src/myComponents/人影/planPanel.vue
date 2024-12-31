@@ -38,8 +38,8 @@
               <div class="flex">
                 <div class="flex flex-col" style="border: 1px solid grey">
                   <div>作业状态</div>
-                  <div :style="`font-weight: bolder; font-size: 16px;color:${工作状态格式化(item.ubyStatus,item)=='作业开始'?'red':'inherit'}`">
-                    {{ 工作状态格式化(item.ubyStatus,item) }}
+                  <div :style="`font-weight: bolder; font-size: 16px;color:${工作状态格式化(item.ubyStatus)=='作业开始'?'red':'inherit'}`">
+                    {{ 工作状态格式化(item.ubyStatus) }}
                   </div>
                 </div>
                 <div class="flex flex-col" style="border: 1px solid grey">
@@ -55,16 +55,32 @@
                   </div>
                 </div>
                 <div class="flex flex-col" style="border: 1px solid grey">
-                  <div>申请时间</div>
-                  <div style="font-weight: bolder; font-size: 16px">
-                    {{ item.tmBeginApply.substring(10, 16) }}
-                  </div>
+                  <template v-if="!item.bAnswerAccept">
+                    <div>申请时间</div>
+                    <div style="font-weight: bolder; font-size: 16px">
+                      {{ item.tmBeginApply.substring(10, 16) }}
+                    </div>
+                  </template>
+                  <template v-else>
+                    <div>批准时间</div>
+                    <div style="font-weight: bolder; font-size: 16px">
+                      {{ item.tmAnswerRev?item.tmAnswerRev.substring(10, 16):'' }}
+                    </div>
+                  </template>
                 </div>
                 <div class="flex flex-col" style="border: 1px solid grey">
-                  <div>申请时长</div>
-                  <div style="font-weight: bolder; font-size: 16px">
-                    {{ item.iApplyTimeLen }}秒
-                  </div>
+                  <template v-if="!item.bAnswerAccept">
+                    <div>申请时长</div>
+                    <div style="font-weight: bolder; font-size: 16px">
+                      {{ item.iApplyTimeLen }}秒
+                    </div>
+                  </template>
+                  <template v-else>
+                    <div>批准时长</div>
+                    <div style="font-weight: bolder; font-size: 16px">
+                      {{ item.iAnswerTimeLen }}秒
+                    </div>
+                  </template>
                 </div>
                 <div
                   class="flex-1 flex flex-col"
@@ -92,19 +108,26 @@
                   :class="`flex-1 flex justify-center items-center ${批复(item)}`"
                   style="border: 1px solid grey; font-weight: bolder"
                 >
-                  批复{{ item.tmBeginAnswer?'('+moment(item.tmBeginAnswer,'YYYY-MM-DD HH:mm:ss').format('HH:mm')+')':'' }}
+                  批复{{ item.tmAnswerRev?'('+moment(item.tmAnswerRev,'YYYY-MM-DD HH:mm:ss').format('HH:mm')+')':'' }}
                 </div>
                 <div
                   :class="`flex-1 flex justify-center items-center ${开始(item)}`"
                   style="border: 1px solid grey; font-weight: bolder"
                 >
-                  开始{{ item.tmBeginAnswer?'('+moment(item.tmBeginAnswer,'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss')+')':'' }}
+                  {{ beginText(item) }}
                 </div>
                 <div
                   :class="`flex-1 flex justify-center items-center ${结束(item)}`"
                   style="border: 1px solid grey; font-weight: bolder"
                 >
-                  结束{{ item.tmBeginAnswer?'('+moment(item.tmBeginAnswer).add(item.iAnswerTimeLen,'s').format('HH:mm:ss')+')':'' }}
+                  <template v-if="工作状态格式化(item.ubyStatus)=='作业开始'">
+                    (<div :class="`${endSeconds(item)<10?'color-#f00':'color-inherit'}`">
+                      {{ Math.floor(endSeconds(item)/60)+':'+endSeconds(item)%60 }}
+                    </div>)结束
+                  </template>
+                  <template v-else>
+                    {{ '结束' + (item.tmBeginAnswer?'('+moment(item.tmBeginAnswer).add(item.iAnswerTimeLen,'s').format('HH:mm:ss')+')':'') }}
+                  </template>
                 </div>
                 <div
                   :class="`flex-1 flex justify-center items-center ${完成(item)}`"
@@ -126,7 +149,6 @@
   </div>
 </template>
 <script lang="ts" setup>
-import {watch} from 'vue'
 import { useStationStore } from "~/stores/station";
 import { eventbus } from "~/eventbus";
 import moment from "moment";
@@ -135,7 +157,16 @@ const click = (item: planDataType) => {
   station.人影界面被选中的设备 = item.strZydID;
   eventbus.emit("人影-将站点移动到屏幕中心", { strPos: item.strCurPos });
 };
-
+function beginText(item: planDataType) {
+  if (工作状态格式化(item.ubyStatus)=='作业批准') {
+    let seconds = moment(item.tmBeginAnswer).diff(moment(), 'seconds')
+    return '('+Math.floor(seconds/60)+':'+seconds%60+')开始';
+  }
+  return "开始"+(item.tmBeginAnswer?'('+moment(item.tmBeginAnswer,'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss')+')':'')
+}
+function endSeconds(item:planDataType){
+  return moment(item.tmBeginAnswer).add(item.iAnswerTimeLen,'s').diff(moment(),'seconds')
+}
 export type zyddataType = {
   strWorkID: string;
   strZydID: string;
@@ -155,7 +186,7 @@ export type zyddataType = {
   tmApplySend: null;
   tmApplyCreate: string;
   strApplyMark: "";
-  tmBeginAnswer: string | null;
+  tmBeginAnswer: string;
   iAnswerTimeLen: number;
   strAnswerUnit: string;
   tmAnswerRev: string;
@@ -194,10 +225,7 @@ const props = withDefaults(
     今日作业记录: () => new Array<planDataType>(),
   }
 );
-watch(props.当前作业进度, (newValue) => {
-  console.log(newValue.当前作业进度);
-},{deep:true})
-const 工作状态格式化 = (key: number,item:any) => {
+const 工作状态格式化 = (key: number) => {
   let status = [
     { key: 0, value: "空闲" },
     { key: 9, value: "作业完成" },
@@ -214,11 +242,7 @@ const 工作状态格式化 = (key: number,item:any) => {
     { key: 99, value: "人工移除" },
     { key: 100, value: "作业结束" },
   ];
-  let str = status.filter((item) => item.key == key)[0]?.value || `未知状态${key}`
-  if(item&&'作业批准'==str&&moment(item.tmBeginApply).isBefore(moment())){
-    str = '作业开始'
-  }
-  return str;
+  return status.filter((item) => item.key == key)[0]?.value || `未知状态${key}`;
 };
 const 发送状态格式化 = (key: number) => {
   let status = [
@@ -240,6 +264,8 @@ const 申请 = (item: planDataType) => {
       return "bg-gray-4";
     case "作业批准":
       return "bg-#0f0";
+    case "作业开始":
+      return "bg-#0f0"
     default:
       return "";
   }
@@ -252,6 +278,8 @@ const 批复 = (item: planDataType) => {
       return "bg-gray-4";
     case "作业批准":
       return "bg-#0f0";
+    case "作业开始":
+      return "bg-#0f0";
     default:
       return "";
   }
@@ -262,7 +290,7 @@ const 开始 = (item: planDataType) => {
       return "bg-gray-4";
     case "作业不批准":
       return "bg-red";
-    case "作业批准":
+    case "作业开始":
       return "bg-#0f0";
     default:
       return "";

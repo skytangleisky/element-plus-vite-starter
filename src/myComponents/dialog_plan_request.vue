@@ -146,8 +146,8 @@
         <el-col :span="12"
           ><div class="flex justify-between items-center pl-10px">
             作业时长(分钟)<el-input-number
-              :min="0"
-              :max="120"
+              :min="1"
+              :max="5"
               v-model="data.duration"
               size="default"
               @mousedown.stop
@@ -233,14 +233,14 @@ const emit = defineEmits(["update:show", "click"]);
 const cancel = () => {
   emit("update:show", false);
 };
-let timer:number;
+// let timer:number;
 onMounted(()=>{
-  timer = setInterval(()=>{
-    props.data.beginTime = moment().format('HH:mm:ss')
-  },1000)
+  // timer = setInterval(()=>{
+  //   props.data.beginTime = moment().format('HH:mm:ss')
+  // },1000)
 })
 onBeforeUnmount(()=>{
-  clearInterval(timer)
+  // clearInterval(timer)
 })
 </script>
 <style lang="scss">

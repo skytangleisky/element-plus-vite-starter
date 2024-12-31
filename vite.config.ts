@@ -121,7 +121,7 @@ export default defineConfig({
       },
       '/backend':{
         // target:'https://websocket.tanglei.top',//替换的服务端地址
-        target:'http://victorysoft.cn:3000',//替换的服务端地址
+        target:'http://victorysoft.cn:3003',//替换的服务端地址
         // target:'https://test.tanglei.site',//替换的服务端地址
         secure:false,
         changeOrigin:true,

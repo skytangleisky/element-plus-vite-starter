@@ -86,6 +86,25 @@ const stationMenuRef = ref<HTMLDivElement>();
 let stationMenu: HTMLDivElement;
 let circleFeatures: any = [];
 let forewarningFeatures: any = [];
+function status2value(key:number){
+  let ubyStatus = [
+    { key: 0, value: "空闲" },
+    { key: 9, value: "作业完成" },
+    { key: 70, vlaue: "作业保存" },
+    { key: 72, value: "作业申请待批复" },
+    { key: 73, value: "撤销申请待回执" },
+    { key: 74, value: "已撤销" },
+    { key: 75, value: "作业批准" },
+    { key: 76, value: "作业不批准" },
+    { key: 90, value: "作业开始带回执" },
+    { key: 91, value: "作业开始" },
+    { key: 92, value: "作业暂停待回执" },
+    { key: 93, value: "作业强制终止" },
+    { key: 99, value: "人工移除" },
+    { key: 100, value: "作业结束" },
+  ]
+  return ubyStatus.filter((item) => item.key == key)[0]?.value || `未知状态${key}`;
+}
 const emits = defineEmits([
   "update:center",
   "update:zoom",
@@ -235,6 +254,8 @@ function 网络上报(data:prevRequestDataType){
   airspaceApply(data).then((res:any)=>{
     console.log(res.data)
   })
+  emits('update:prevRequestShow',false)//关闭弹窗
+  return;
   dialogOptions.menus.map((item: stationData) => {
     if(item.strID == data.strID){
       let zyddata:zyddataType = {
@@ -308,7 +329,6 @@ function 网络上报(data:prevRequestDataType){
       // }).then(res=>{
       //   console.log(res.data)
       // })
-      emits('update:prevRequestShow',false)//关闭弹窗
     }
     let v = data.strPos;
     let lng = v.substring(0, v.indexOf("E"));
@@ -345,8 +365,7 @@ function 网络上报(data:prevRequestDataType){
       for(let i=0;i<circleFeatures.length;i++){
         if(circleFeatures[i].properties.strID == data.strID){
           circleFeatures[i].geometry.coordinates = sectorPolygon.geometry?.coordinates
-          circleFeatures[i].properties.color = '#0f0'
-          circleFeatures[i].properties.fillColor = 'rgba(255,255,255,0.2)'
+          circleFeatures[i].properties.ubyStatus = '作业申请待批复'
         }
       }
     } else {//不足一个圆
@@ -378,8 +397,7 @@ function 网络上报(data:prevRequestDataType){
       for(let i=0;i<circleFeatures.length;i++){
         if(circleFeatures[i].properties.strID == data.strID){
           circleFeatures[i].geometry.coordinates = sectorPolygon.geometry?.coordinates
-          circleFeatures[i].properties.color = '#0f0'
-          circleFeatures[i].properties.fillColor = 'rgba(255,255,255,0.2)'
+          circleFeatures[i].properties.ubyStatus = '作业申请待批复'
         }
       }
     }
@@ -400,13 +418,13 @@ function 网络上报(data:prevRequestDataType){
       strID: item.strID,
       color: "transparent",
       fillColor: "transparent",
+      
     });
     //预警圈
     for(let i=0;i<forewarningFeatures.length;i++){
       if(forewarningFeatures[i].properties.strID == data.strID){
         forewarningFeatures[i].geometry.coordinates = sectorPolygon.geometry?.coordinates
-        forewarningFeatures[i].properties.color = '#0f0'
-        forewarningFeatures[i].properties.fillColor = 'rgba(255,255,255,0.2)'
+        forewarningFeatures[i].properties.ubyStatus = '作业申请待批复'
       }
     }
     let source = map.getSource("最大射程source");
@@ -1479,8 +1497,7 @@ onMounted(() => {
             );
             const sectorPolygon = turf.polygon([sectorPoints], {
               strID: item.strID,
-              color: "transparent",
-              fillColor: "transparent",
+              opacity:0
             });
             circleFeatures.push(sectorPolygon);
           } else {
@@ -1506,8 +1523,7 @@ onMounted(() => {
             );
             const sectorPolygon = turf.polygon([sectorPoints], {
               strID: item.strID,
-              color: "transparent",
-              fillColor: "transparent",
+              opacity:0
             });
             circleFeatures.push(sectorPolygon);
           }
@@ -1527,8 +1543,7 @@ onMounted(() => {
           );
           const sectorPolygon = turf.polygon([sectorPoints], {
             strID: item.strID,
-            color: "transparent",
-            fillColor: "transparent",
+            opacity:0
           });
           forewarningFeatures.push(sectorPolygon);
         }
@@ -1604,7 +1619,8 @@ onMounted(() => {
             visibility: props.zyd ? "visible" : "none",
           },
           paint: {
-            "fill-color": ["get", "fillColor"],
+            "fill-color": 'rgba(0,0,0,0.5)',
+            "fill-opacity": ['get','opacity'],
           },
         });
       }
@@ -1617,8 +1633,16 @@ onMounted(() => {
             visibility: props.zyd ? "visible" : "none",
           },
           paint: {
-            "line-color": ["get", "color"],
+            "line-color": [
+              "match",
+              ["get", "ubyStatus"],
+              '作业申请待批复','#0f0',
+              '作业批准','#00f',
+              '作业开始','#f00',
+              '#fff'
+            ],
             "line-width": 1,
+            "line-opacity": ['get','opacity'],
             // "line-dasharray": [1, 1],
           },
         });
@@ -1641,7 +1665,15 @@ onMounted(() => {
             visibility: props.zyd ? "visible" : "none",
           },
           paint: {
-            "line-color": ["get", "color"],
+            "line-color": [
+              "match",
+              ["get", "ubyStatus"],
+              '作业申请待批复','#0f0',
+              '作业批准','#00f',
+              '作业开始','#f00',
+              '#fff'
+            ],
+            "line-opacity": ['get','opacity'],
             "line-width": 2,
             "line-dasharray": [4, 2],
           },
@@ -1694,27 +1726,24 @@ onMounted(() => {
         });
 
         circleFeatures = circleFeatures.map((item: any) => {
-          if (item.properties.strID == station.人影界面被选中的设备) {
-            item.properties.color = "white";
-            item.properties.fillColor = "rgba(0,0,0,0.5)";
-            if(planProps.当前作业进度.filter(item=>item.strZydID==station.人影界面被选中的设备).length>0){
-              item.properties.color = "#0f0";
-              item.properties.fillColor = "rgba(0,0,0,0.5)";
-            }
+          if (item.properties.strID == station.人影界面被选中的设备
+            ||item.properties.ubyStatus == '作业申请待批复'
+            ||item.properties.ubyStatus == '作业批准'
+            ||item.properties.ubyStatus == '作业开始') {
+            item.properties.opacity = 1;
           } else {
-            item.properties.color = "transparent";
-            item.properties.fillColor = "transparent";
+            item.properties.opacity = 0;
           }
           return item;
         });
         forewarningFeatures = forewarningFeatures.map((item: any) => {
-          if (item.properties.strID == station.人影界面被选中的设备) {
-            item.properties.color = "white";
-            if(planProps.当前作业进度.filter(item=>item.strZydID==station.人影界面被选中的设备).length>0){
-              item.properties.color = "#0f0";
-            }
+          if (item.properties.strID == station.人影界面被选中的设备
+            ||item.properties.ubyStatus == '作业申请待批复'
+            ||item.properties.ubyStatus == '作业批准'
+            ||item.properties.ubyStatus == '作业开始') {
+            item.properties.opacity = 1
           } else {
-            item.properties.color = "transparent";
+            item.properties.opacity = 0
           }
           return item;
         });
@@ -1746,10 +1775,27 @@ onMounted(() => {
         },
       }).then((res) => {
         planProps.当前作业进度 = res.data[0];
-        planProps.当前作业进度.map((item: planDataType) => {
+        planProps.当前作业进度.map((row: planDataType) => {
+
+          row.ubySendStatus = 3//发送成功
+          if(status2value(row.ubyStatus) == '作业批准' && moment(row.tmBeginAnswer).isBefore(moment())){
+            row.ubyStatus = 91
+          }
+          if(status2value(row.ubyStatus) == '作业申请待批复'&&moment(row.tmBeginApply).add(row.iApplyTimeLen+10*60,'s').isBefore(moment())){
+            row.ubyStatus = 100
+          }
+          if(status2value(row.ubyStatus) == '作业开始'&&moment(row.tmBeginAnswer).add(row.iAnswerTimeLen,'s').isBefore(moment())){
+            row.ubyStatus = 100
+          }
+
+
           for (let i = 0; i < circleFeatures.length; i++) {
-            if (circleFeatures[i].properties.strID == item.strZydID) {
-              let v = item.strCurPos;
+            if (circleFeatures[i].properties.strID == row.strZydID) {
+              circleFeatures[i].properties.ubyStatus = status2value(row.ubyStatus);
+              if(row.ubyStatus!=100){//未结束的当前空域需要显示
+                circleFeatures[i].properties.opacity = 1;
+              }
+              let v = row.strCurPos;
               let lng = v.substring(0, v.indexOf("E"));
               let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
               let pt = {
@@ -1766,17 +1812,17 @@ onMounted(() => {
                 number,
                 number
               ]; // 圆心点的经纬度
-              const radius: number = item.iRange; // 半径（单位：米）
-              const startAngle: number = item.iAngleBegin; // 起始角度（单位：度）
-              const endAngle: number = item.iAngleEnd; // 终止角度（单位：度）
-              const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
+              const radius: number = row.iRange; // 半径（单位：米）
+              const startAngle: number = row.iAngleBegin; // 起始角度（单位：度）
+              const endAngle: number = row.iAngleEnd; // 终止角度（单位：度）
+              const steps: number = 3600; // 用于生成圆弧的步数，越大越平滑
               const units: turf.Units = "meters"; // 半径的单位
               if (endAngle - startAngle >= 360) {
                 const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
                   number,
                   number
                 ]; // 圆心点的经纬度
-                const radius: number = item.iRange; // 半径（单位：米
+                const radius: number = row.iRange; // 半径（单位：米
                 const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
                 const units: turf.Units = "meters"; // 半径的单位
                 const sectorPoints: [number, number][] = calculateCirclePoints(
@@ -1786,38 +1832,60 @@ onMounted(() => {
                   units
                 );
                 const sectorPolygon = turf.polygon([sectorPoints], {
-                  strID: item.strZydID,
-                  color: "transparent",
-                  fillColor: "transparent",
+                  strID: row.strZydID,
+                  opacity:0
                 });
-                circleFeatures[i].geometry.coordinates =
-                  sectorPolygon.geometry?.coordinates;
+                circleFeatures[i].geometry.coordinates = sectorPolygon.geometry?.coordinates;
               } else {
-                const sectorPoints: [number, number][] = calculateSectorPoints(
-                  center,
-                  radius,
-                  startAngle,
-                  endAngle,
-                  steps,
-                  units
-                );
-                const sectorPolygon = turf.polygon([sectorPoints], {
-                  strID: item.strZydID,
-                  color: "transparent",
-                  fillColor: "transparent",
-                });
-                circleFeatures[i].geometry.coordinates =
-                  sectorPolygon.geometry?.coordinates;
+                // const sectorPoints: [number, number][] = calculateSectorPoints(
+                //   center,
+                //   radius,
+                //   startAngle,
+                //   endAngle,
+                //   steps,
+                //   units
+                // );
+                // const sectorPolygon = turf.polygon([sectorPoints], {
+                //   strID: row.strZydID,
+                //   opacity:0
+                // });
+                // circleFeatures[i].geometry.coordinates = sectorPolygon.geometry?.coordinates;
+              }
+            }
+          }
+          for(let i=0;i<forewarningFeatures.length;i++){
+            if(forewarningFeatures[i].properties.strID == row.strZydID){
+              forewarningFeatures[i].properties.ubyStatus = status2value(row.ubyStatus);
+              console.log(forewarningFeatures[i].properties.ubyStatus)
+              if(row.ubyStatus!=100){//未结束的当前空域需要显示
+                forewarningFeatures[i].properties.opacity = 1;
               }
             }
           }
         });
-        let source = map.getSource("最大射程source");
-        source.setData({
+        let source1 = map.getSource("最大射程source");
+        source1.setData({
           type: "FeatureCollection",
           features: circleFeatures,
         });
+        let source2 = map.getSource("警戒圈source");
+        source2.setData({
+          type: "FeatureCollection",
+          features: forewarningFeatures,
+        });
         planProps.今日作业记录 = res.data[1];
+        planProps.今日作业记录.map((row:any)=>{
+          row.ubySendStatus = 3//发送成功
+          if(status2value(row.ubyStatus) == '作业批准' && moment(row.tmBeginAnswer).isBefore(moment())){
+            row.ubyStatus = 91//作业开始
+          }
+          if(status2value(row.ubyStatus) == '作业申请待批复'&&moment(row.tmBeginApply).add(row.iApplyTimeLen+10*60,'s').isBefore(moment())){
+            row.ubyStatus = 100
+          }
+          if(status2value(row.ubyStatus) == '作业开始'&&moment(row.tmBeginAnswer).add(row.iAnswerTimeLen,'s').isBefore(moment())){
+            row.ubyStatus = 100
+          }
+        })
       });
     }
     taskTimer = setInterval(() => {
