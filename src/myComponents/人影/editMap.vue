@@ -1794,6 +1794,110 @@ onMounted(() => {
               circleFeatures[i].properties.ubyStatus = status2value(row.ubyStatus);
               if(row.ubyStatus!=100){//未结束的当前空域需要显示
                 circleFeatures[i].properties.opacity = 1;
+                  if(row.bAnswerAccept){
+                  const millisecond = moment().diff(moment(row.tmAnswerRev),'ms')
+                  star(circleFeatures[i],millisecond)
+                }
+              }
+              circleFeatures[i].properties.opacity = 0
+              let v = row.strCurPos;
+              let lng = v.substring(0, v.indexOf("E"));
+              let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
+              let pt = {
+                lng:
+                  Number(lng.substring(0, 3)) +
+                  Number(lng.substring(3, 5)) / 60 +
+                  Number(lng.substring(5, 9)) / 100 / 3600,
+                lat:
+                  Number(lat.substring(0, 2)) +
+                  Number(lat.substring(2, 4)) / 60 +
+                  Number(lat.substring(4, 8)) / 100 / 3600,
+              };
+              const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
+                number,
+                number
+              ]; // 圆心点的经纬度
+              const radius: number = row.iRange; // 半径（单位：米）
+              const startAngle: number = row.iAngleBegin; // 起始角度（单位：度）
+              const endAngle: number = row.iAngleEnd; // 终止角度（单位：度）
+              const steps: number = 3600; // 用于生成圆弧的步数，越大越平滑
+              const units: turf.Units = "meters"; // 半径的单位
+              if (endAngle - startAngle >= 360) {
+                const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
+                  number,
+                  number
+                ]; // 圆心点的经纬度
+                const radius: number = row.iRange; // 半径（单位：米
+                const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
+                const units: turf.Units = "meters"; // 半径的单位
+                const sectorPoints: [number, number][] = calculateCirclePoints(
+                  center,
+                  radius,
+                  steps,
+                  units
+                );
+                const sectorPolygon = turf.polygon([sectorPoints], {
+                  strID: row.strZydID,
+                  opacity:0
+                });
+                circleFeatures[i].geometry.coordinates = sectorPolygon.geometry?.coordinates;
+              } else {
+                // const sectorPoints: [number, number][] = calculateSectorPoints(
+                //   center,
+                //   radius,
+                //   startAngle,
+                //   endAngle,
+                //   steps,
+                //   units
+                // );
+                // const sectorPolygon = turf.polygon([sectorPoints], {
+                //   strID: row.strZydID,
+                //   opacity:0
+                // });
+                // circleFeatures[i].geometry.coordinates = sectorPolygon.geometry?.coordinates;
+              }
+            }
+          }
+          for(let i=0;i<forewarningFeatures.length;i++){
+            if(forewarningFeatures[i].properties.strID == row.strZydID){
+              forewarningFeatures[i].properties.ubyStatus = status2value(row.ubyStatus);
+              if(row.ubyStatus!=100){//未结束的当前空域需要显示
+                forewarningFeatures[i].properties.opacity = 1;
+                if(row.bAnswerAccept){
+                  const millisecond = moment().diff(moment(row.tmAnswerRev),'ms')
+                  star(forewarningFeatures[i],millisecond)
+                }
+              }
+            }
+          }
+        });
+        function star(feature:any,millisecond:number){
+          feature.properties.opacity = Math.floor(millisecond/1000)%2
+          if(millisecond>10e3){
+            feature.properties.opacity=1
+          }
+        }
+        planProps.今日作业记录 = res.data[1];
+        planProps.今日作业记录.map((row:any)=>{
+          row.ubySendStatus = 3//发送成功
+          if(status2value(row.ubyStatus) == '作业批准' && moment(row.tmBeginAnswer).isBefore(moment())){
+            row.ubyStatus = 91//作业开始
+          }
+          if(status2value(row.ubyStatus) == '作业申请待批复'&&moment(row.tmBeginApply).add(row.iApplyTimeLen+10*60,'s').isBefore(moment())){
+            row.ubyStatus = 100
+          }
+          if(status2value(row.ubyStatus) == '作业开始'&&moment(row.tmBeginAnswer).add(row.iAnswerTimeLen,'s').isBefore(moment())){
+            row.ubyStatus = 100
+          }
+          for (let i = 0; i < circleFeatures.length; i++) {
+            if (circleFeatures[i].properties.strID == row.strZydID) {
+              circleFeatures[i].properties.ubyStatus = status2value(row.ubyStatus);
+              if(row.ubyStatus!=100){//未结束的当前空域需要显示
+                circleFeatures[i].properties.opacity = 1;
+                if(row.bAnswerAccept){
+                  const millisecond = moment().diff(moment(row.tmAnswerRev),'ms')
+                  star(circleFeatures[i],millisecond)
+                }
               }
               let v = row.strCurPos;
               let lng = v.substring(0, v.indexOf("E"));
@@ -1856,13 +1960,16 @@ onMounted(() => {
           for(let i=0;i<forewarningFeatures.length;i++){
             if(forewarningFeatures[i].properties.strID == row.strZydID){
               forewarningFeatures[i].properties.ubyStatus = status2value(row.ubyStatus);
-              console.log(forewarningFeatures[i].properties.ubyStatus)
               if(row.ubyStatus!=100){//未结束的当前空域需要显示
                 forewarningFeatures[i].properties.opacity = 1;
+                if(row.bAnswerAccept){
+                  const millisecond = moment().diff(moment(row.tmAnswerRev),'ms')
+                  star(forewarningFeatures[i],millisecond)
+                }
               }
             }
           }
-        });
+        })
         let source1 = map.getSource("最大射程source");
         source1.setData({
           type: "FeatureCollection",
@@ -1873,19 +1980,6 @@ onMounted(() => {
           type: "FeatureCollection",
           features: forewarningFeatures,
         });
-        planProps.今日作业记录 = res.data[1];
-        planProps.今日作业记录.map((row:any)=>{
-          row.ubySendStatus = 3//发送成功
-          if(status2value(row.ubyStatus) == '作业批准' && moment(row.tmBeginAnswer).isBefore(moment())){
-            row.ubyStatus = 91//作业开始
-          }
-          if(status2value(row.ubyStatus) == '作业申请待批复'&&moment(row.tmBeginApply).add(row.iApplyTimeLen+10*60,'s').isBefore(moment())){
-            row.ubyStatus = 100
-          }
-          if(status2value(row.ubyStatus) == '作业开始'&&moment(row.tmBeginAnswer).add(row.iAnswerTimeLen,'s').isBefore(moment())){
-            row.ubyStatus = 100
-          }
-        })
       });
     }
     taskTimer = setInterval(() => {

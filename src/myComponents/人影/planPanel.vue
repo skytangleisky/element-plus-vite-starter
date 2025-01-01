@@ -2,7 +2,7 @@
   <div v-dialogDrag class="planPanel z-1">
     <el-tabs
       type="border-card"
-      style="width: 660px; padding: 7px; border-radius: 8px; box-sizing: border-box"
+      style="width: 700px; padding: 7px; border-radius: 8px; box-sizing: border-box"
     >
       <el-tab-pane v-for="(v, k) in props" :label="k">
         <div
@@ -11,6 +11,7 @@
             margin: 10px;
             height: -webkit-fill-available;
             overflow: auto;
+            color:rgb(9,100,196);
           "
         >
           <div
@@ -82,6 +83,12 @@
                     </div>
                   </template>
                 </div>
+                <div class="flex flex-col" style="border: 1px solid grey">
+                  <div>空域状态</div>
+                  <div :class="`${获取空域状态(item)=='未使用'?'notuse-warning':''}`" style="font-weight: bolder; font-size: 16px">
+                    {{ 获取空域状态(item) }}
+                  </div>
+                </div>
                 <div
                   class="flex-1 flex flex-col"
                   style="
@@ -108,7 +115,12 @@
                   :class="`flex-1 flex justify-center items-center ${批复(item)}`"
                   style="border: 1px solid grey; font-weight: bolder"
                 >
-                  批复{{ item.tmAnswerRev?'('+moment(item.tmAnswerRev,'YYYY-MM-DD HH:mm:ss').format('HH:mm')+')':'' }}
+                  <template v-if="!item.bAnswerAccept">
+                    批复
+                  </template>
+                  <template v-else>
+                    北空批复{{ '('+moment(item.tmAnswerRev,'YYYY-MM-DD HH:mm:ss').format('HH:mm')+')' }}
+                  </template>
                 </div>
                 <div
                   :class="`flex-1 flex justify-center items-center ${开始(item)}`"
@@ -144,7 +156,9 @@
           </div>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="人影飞机"></el-tab-pane>
+      <el-tab-pane label="空域流转信息">
+        <Transport :data="props.今日作业记录"/>
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -152,6 +166,7 @@
 import { useStationStore } from "~/stores/station";
 import { eventbus } from "~/eventbus";
 import moment from "moment";
+import Transport from "./transport.vue";
 const station = useStationStore();
 const click = (item: planDataType) => {
   station.人影界面被选中的设备 = item.strZydID;
@@ -225,6 +240,15 @@ const props = withDefaults(
     今日作业记录: () => new Array<planDataType>(),
   }
 );
+function 获取空域状态(item: planDataType) {
+  if(item.ubyStatus==91) {
+    return '地面作业使用中'
+  }else if(item.ubyStatus==75) {
+    return '未使用'
+  }{
+    return ''
+  }
+}
 const 工作状态格式化 = (key: number) => {
   let status = [
     { key: 0, value: "空闲" },
@@ -363,7 +387,6 @@ const 完成 = (item: planDataType) => {
 </style>
 <style scoped lang="scss">
 .planPanel {
-  color:rgb(9,100,196);
   position: absolute;
   left: 10px;
   top: 240px;
@@ -382,6 +405,15 @@ const 完成 = (item: planDataType) => {
     }
     &:not(:last-child) {
       margin-bottom: 2px;
+    }
+    .notuse-warning{
+      color:#f00;
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0; }
+      100% { opacity: 1; }
     }
   }
 }
