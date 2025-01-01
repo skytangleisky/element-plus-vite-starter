@@ -523,7 +523,20 @@ const flyTo = (item: any) => {
     console.log(error);
   }
 };
+const loop = ()=>{
+  // aid = requestAnimationFrame(loop)
+  // forewarningFeatures.map(item=>{
+  //   item.properties.opacity = Math.random()
+  // })
+  // map.getSource("警戒圈source")?.setData({
+  //   type: "FeatureCollection",
+  //   features: forewarningFeatures,
+  // })
+
+}
+let aid = 0;
 onMounted(() => {
+  aid = requestAnimationFrame(loop)
   graphTimer = setInterval(() => {
     graphArgs.fps.value = map.painter.frameCounter - frameCounter;
     frameCounter = map.painter.frameCounter;
@@ -1525,6 +1538,7 @@ onMounted(() => {
               strID: item.strID,
               opacity:0
             });
+            sectorPolygon.id = '空域'+item.strID
             circleFeatures.push(sectorPolygon);
           }
           //加入警戒圈
@@ -1545,6 +1559,7 @@ onMounted(() => {
             strID: item.strID,
             opacity:0
           });
+          sectorPolygon.id = '警戒圈' + item.strID
           forewarningFeatures.push(sectorPolygon);
         }
       });
@@ -1713,9 +1728,9 @@ onMounted(() => {
       active = () => {
         features = features.map((item: any) => {
           if (item.properties.id == station.人影界面被选中的设备) {
-            item.properties["icon-image"] = "projectile-white";
+            item.properties["icon-image"] = "火箭弹图标";
           } else {
-            item.properties["icon-image"] = "projectile-white";
+            item.properties["icon-image"] = "火箭弹图标";
           }
           return item;
         });
@@ -1747,14 +1762,13 @@ onMounted(() => {
           }
           return item;
         });
-
         source = map.getSource("最大射程source");
-        source.setData({
+        source?.setData({
           type: "FeatureCollection",
           features: circleFeatures,
         });
         source = map.getSource("警戒圈source");
-        source.setData({
+        source?.setData({
           type: "FeatureCollection",
           features: forewarningFeatures,
         });
@@ -1774,6 +1788,16 @@ onMounted(() => {
           ],
         },
       }).then((res) => {
+        function star(feature:any,row:any){
+          if(row.ubyStatus == 75||row.ubyStatus == 91){
+            const millisecond = moment().diff(moment(row.tmAnswerRev,'YYYY-MM-DD HH:mm:ss'),'ms')
+            feature.properties.opacity=Math.floor(millisecond / 1000) % 2
+            console.log(Math.round(millisecond/1000))
+            if(millisecond>50e3){
+              feature.properties.opacity = 1
+            }
+          }
+        }
         planProps.当前作业进度 = res.data[0];
         planProps.当前作业进度.map((row: planDataType) => {
 
@@ -1794,12 +1818,8 @@ onMounted(() => {
               circleFeatures[i].properties.ubyStatus = status2value(row.ubyStatus);
               if(row.ubyStatus!=100){//未结束的当前空域需要显示
                 circleFeatures[i].properties.opacity = 1;
-                  if(row.bAnswerAccept){
-                  const millisecond = moment().diff(moment(row.tmAnswerRev),'ms')
-                  star(circleFeatures[i],millisecond)
-                }
               }
-              circleFeatures[i].properties.opacity = 0
+              star(circleFeatures[i],row)
               let v = row.strCurPos;
               let lng = v.substring(0, v.indexOf("E"));
               let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
@@ -1863,20 +1883,12 @@ onMounted(() => {
               forewarningFeatures[i].properties.ubyStatus = status2value(row.ubyStatus);
               if(row.ubyStatus!=100){//未结束的当前空域需要显示
                 forewarningFeatures[i].properties.opacity = 1;
-                if(row.bAnswerAccept){
-                  const millisecond = moment().diff(moment(row.tmAnswerRev),'ms')
-                  star(forewarningFeatures[i],millisecond)
-                }
               }
+              star(forewarningFeatures[i],row)
             }
           }
         });
-        function star(feature:any,millisecond:number){
-          feature.properties.opacity = Math.floor(millisecond/1000)%2
-          if(millisecond>10e3){
-            feature.properties.opacity=1
-          }
-        }
+        console.log(moment().format('YYYY-MM-DD HH:mm:ss'))
         planProps.今日作业记录 = res.data[1];
         planProps.今日作业记录.map((row:any)=>{
           row.ubySendStatus = 3//发送成功
@@ -1894,11 +1906,8 @@ onMounted(() => {
               circleFeatures[i].properties.ubyStatus = status2value(row.ubyStatus);
               if(row.ubyStatus!=100){//未结束的当前空域需要显示
                 circleFeatures[i].properties.opacity = 1;
-                if(row.bAnswerAccept){
-                  const millisecond = moment().diff(moment(row.tmAnswerRev),'ms')
-                  star(circleFeatures[i],millisecond)
-                }
               }
+              star(circleFeatures[i],row)
               let v = row.strCurPos;
               let lng = v.substring(0, v.indexOf("E"));
               let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
@@ -1962,21 +1971,18 @@ onMounted(() => {
               forewarningFeatures[i].properties.ubyStatus = status2value(row.ubyStatus);
               if(row.ubyStatus!=100){//未结束的当前空域需要显示
                 forewarningFeatures[i].properties.opacity = 1;
-                if(row.bAnswerAccept){
-                  const millisecond = moment().diff(moment(row.tmAnswerRev),'ms')
-                  star(forewarningFeatures[i],millisecond)
-                }
               }
+              star(forewarningFeatures[i],row)
             }
           }
         })
         let source1 = map.getSource("最大射程source");
-        source1.setData({
+        source1?.setData({
           type: "FeatureCollection",
           features: circleFeatures,
         });
         let source2 = map.getSource("警戒圈source");
-        source2.setData({
+        source2?.setData({
           type: "FeatureCollection",
           features: forewarningFeatures,
         });
@@ -2517,6 +2523,7 @@ onMounted(() => {
   eventbus.on("人影-飞机位置", 处理飞机实时位置);
 });
 onBeforeUnmount(() => {
+  cancelAnimationFrame(aid)
   console.log("onBeforeUnmount");
   clearInterval(timer);
   clearInterval(graphTimer);

@@ -343,6 +343,7 @@ const 完成 = (item: planDataType) => {
 </script>
 <style lang="scss">
 .planPanel{
+  opacity: 0.8;
   .ep-tabs.ep-tabs--border-card {
     --ep-border-color: gray;
     --ep-border-color-light: gray;
