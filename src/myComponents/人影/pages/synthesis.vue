@@ -47,7 +47,7 @@
               label="显示瓦片地图"
             ></el-checkbox>
             <div class="flex items-center"><el-checkbox name="控制区划" v-model="setting.人影.监控.districtOptions.district"></el-checkbox><div class="p-l-8px">显示行政区划</div></div>
-            <el-checkbox name="控制人影飞行区" v-model="setting.人影.监控.ryAirspaces.fill" label="人影飞行区"></el-checkbox>
+            <el-checkbox name="控制华北飞行区" v-model="setting.人影.监控.ryAirspaces.fill" label="华北飞行区"></el-checkbox>
             <el-checkbox name="控制航线" v-model="setting.人影.监控.routeLine" label="航路航线"></el-checkbox>
             <el-checkbox name="控制作业点" v-model="setting.人影.监控.zyd" label="显示作业点"></el-checkbox>
             <el-checkbox name="飞机" v-model="setting.人影.监控.plane" label="显示飞机"></el-checkbox>
@@ -63,7 +63,7 @@
           </div>
         </fieldset>
         <fieldset class="b-solid b-1px rounded-lg">
-          <legend class="font-size-14px">人影飞行区域 显示风格</legend>
+          <legend class="font-size-14px">华北飞行区域 显示风格</legend>
           <div class="flex flex-col">
             <el-checkbox name="图层显示控制" class="row-start-1 col-span-3" label="图层显示"></el-checkbox>
             <label class="flex"><input type="radio" class="m-0" name="选择颜色" :value="0" v-model="setting.人影.监控.showColorSelector">图层颜色<div :style="`background:rgba(${setting.人影.监控.districtOptions.districtLineColor.r},${setting.人影.监控.districtOptions.districtLineColor.g},${setting.人影.监控.districtOptions.districtLineColor.b},${setting.人影.监控.districtOptions.districtLineColor.a});flex:1;`"></div></label>
@@ -193,8 +193,8 @@ onMounted(()=>{
     })
   }
 
-  {// 人影飞行区图层配置
-    const folder = pane.addFolder({title: '人影飞行区',expanded:false});
+  {// 华北飞行区图层配置
+    const folder = pane.addFolder({title: '华北飞行区',expanded:false});
     folder.addBinding(setting.人影.监控.ryAirspaces, 'fill',{label:'填充'});
     const fillColor = folder.addBinding(setting.人影.监控.ryAirspaces, 'fillColor',{label:'填充颜色',picker:'popup',expanded:false});
     fillColor.on('change', (ev:any) => {

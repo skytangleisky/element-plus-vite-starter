@@ -820,7 +820,7 @@ onMounted(() => {
     /*
     axios({
       method: 'get',
-      url: 'https://data.tanglei.top/人影飞行区域.map',
+      url: 'https://data.tanglei.top/华北飞行区域.map',
       responseType: 'arraybuffer',
     }).then(res=>{
       let view = new View(res.data,true);
