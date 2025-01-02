@@ -37,7 +37,7 @@
         <el-icon v-html="rightSvg"></el-icon>
       </div>
       <div class="p-4px" style="overflow: auto">
-        <selectTile v-model:list="tileList"></selectTile>
+        <!-- <selectTile v-model:list="tileList"></selectTile> -->
         <fieldset class="b-solid b-1px rounded-lg">
           <legend class="font-size-20px">图层设置</legend>
           <div style="display: flex; flex-direction: column; padding: 0 4px">
@@ -75,6 +75,7 @@
       </div>
     </div>
     <div
+      v-if="false"
       :class="`bottom-drawer hidden ${setting.人影.监控.bottom_disappear ? 'disappear' : ''}`"
     >
       <div class="handle p-8px">

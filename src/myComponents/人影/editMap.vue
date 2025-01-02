@@ -545,7 +545,7 @@ onMounted(() => {
   }, 1000);
   map = new Map({
     container: (mapRef.value as unknown) as HTMLCanvasElement,
-    // projection: "globe",
+    projection: "globe",
     // style: raster,/Users/admin/Desktop/3D/mapbox-gl-js/dist/mapbox-gl.js.map
     style: style as mapboxgl.Style,
     fadeDuration: 0,
@@ -1433,7 +1433,6 @@ onMounted(() => {
       },
     }).then((res) => {
       dialogOptions.menus = res.data[0].filter((item:stationData)=>item.strID.startsWith('110')&&item.strWeapon!=3);
-      console.log(dialogOptions.menus)
       let features: any = [];
       forewarningFeatures.length = 0;
       circleFeatures.length = 0;
@@ -1792,8 +1791,7 @@ onMounted(() => {
           if(row.ubyStatus == 75||row.ubyStatus == 91){
             const millisecond = moment().diff(moment(row.tmAnswerRev,'YYYY-MM-DD HH:mm:ss'),'ms')
             feature.properties.opacity=Math.floor(millisecond / 1000) % 2
-            console.log(Math.round(millisecond/1000))
-            if(millisecond>50e3){
+            if(millisecond>20e3){
               feature.properties.opacity = 1
             }
           }
@@ -1888,7 +1886,6 @@ onMounted(() => {
             }
           }
         });
-        console.log(moment().format('YYYY-MM-DD HH:mm:ss'))
         planProps.今日作业记录 = res.data[1];
         planProps.今日作业记录.map((row:any)=>{
           row.ubySendStatus = 3//发送成功
