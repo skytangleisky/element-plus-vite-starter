@@ -283,7 +283,7 @@ const toggleCollapse = () => {
   }
 }
 .dragDialog {
-  opacity: 0.8;
+  opacity: 0.9;
   box-sizing: border-box;
   border: 1px solid gray;
   display: flex;
