@@ -331,23 +331,23 @@ const tileList = ref([
   //     "http://t7.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=img_w&tk=2dc8b729dfa88525897633f08a61ad5c",
   //   ],
   // },
-  {
-    selected: false,
-    name: "天地图(矢量图)",
-    url: formatUrl(
-      "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c"
-    ),
-    tileData: [
-      "/tianditu/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      // "http://t1.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      // "http://t2.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      // "http://t3.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      // "http://t4.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      // "http://t5.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      // "http://t6.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-      // "http://t7.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
-    ],
-  },
+  // {
+  //   selected: false,
+  //   name: "天地图(矢量图)",
+  //   url: formatUrl(
+  //     "http://t0.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c"
+  //   ),
+  //   tileData: [
+  //     "/tianditu/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     // "http://t1.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     // "http://t2.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     // "http://t3.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     // "http://t4.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     // "http://t5.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     // "http://t6.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //     // "http://t7.tianditu.com/DataServer?x={x}&y={y}&l={z}&T=vec_w&tk=2dc8b729dfa88525897633f08a61ad5c",
+  //   ],
+  // },
   // {
   //   selected: false,
   //   name: "天地图(标注)",
@@ -390,49 +390,49 @@ const tileList = ref([
   //   ),
   //   tileData: ["http://10.1.65.144:81/DataServer?T=vec_c&x={x}&y={y}&l={z}"],
   // },
-  {
-    selected: false,
-    name: "高德街道地图",
-    url: formatUrl(
-      "https://wprd01.is.autonavi.com/appmaptile?style=10&x={x}&y={y}&z={z}"
-    ),
-    tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=10&x={x}&y={y}&z={z}"],
-  },
+  // {
+  //   selected: false,
+  //   name: "高德街道地图",
+  //   url: formatUrl(
+  //     "https://wprd01.is.autonavi.com/appmaptile?style=10&x={x}&y={y}&z={z}"
+  //   ),
+  //   tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=10&x={x}&y={y}&z={z}"],
+  // },
   {
     name: "高德卫星地图",
     url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
     tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
   },
-  {
-    name: "谷歌卫星地图",
-    url: formatUrl("https://tile.tanglei.site/maps/vt?lyrs=y&x={x}&y={y}&z={z}"),
-    tileData: ["https://tile.tanglei.site/maps/vt?lyrs=y&x={x}&y={y}&z={z}"],
-  },
-  {
-    name: "谷歌卫星地图",
-    url: formatUrl("https://tile.tanglei.site/maps/vt?lyrs=s&x={x}&y={y}&z={z}"),
-    tileData: ["https://tile.tanglei.site/maps/vt?lyrs=s&x={x}&y={y}&z={z}"],
-  },
-  {
-    name: "谷歌卫星地图",
-    url: formatUrl("https://tile.tanglei.site/maps/vt?lyrs=h&x={x}&y={y}&z={z}"),
-    tileData: ["https://tile.tanglei.site/maps/vt?lyrs=h&x={x}&y={y}&z={z}"],
-  },
-  {
-    name: "谷歌地形地图",
-    url: formatUrl("https://tile.tanglei.site/maps/vt?lyrs=t&x={x}&y={y}&z={z}"),
-    tileData: ["https://tile.tanglei.site/maps/vt?lyrs=t&x={x}&y={y}&z={z}"],
-  },
-  {
-    name: "谷歌地形地图",
-    url: formatUrl("https://tile.tanglei.site/maps/vt?lyrs=p&x={x}&y={y}&z={z}"),
-    tileData: ["https://tile.tanglei.site/maps/vt?lyrs=p&x={x}&y={y}&z={z}"],
-  },
-  {
-    name: "谷歌地形地图",
-    url: formatUrl("https://tile.tanglei.site/maps/vt?lyrs=m&x={x}&y={y}&z={z}"),
-    tileData: ["https://tile.tanglei.site/maps/vt?lyrs=m&x={x}&y={y}&z={z}"],
-  },
+  // {
+  //   name: "谷歌卫星地图",
+  //   url: formatUrl("https://tile.tanglei.site/maps/vt?lyrs=y&x={x}&y={y}&z={z}"),
+  //   tileData: ["https://tile.tanglei.site/maps/vt?lyrs=y&x={x}&y={y}&z={z}"],
+  // },
+  // {
+  //   name: "谷歌卫星地图",
+  //   url: formatUrl("https://tile.tanglei.site/maps/vt?lyrs=s&x={x}&y={y}&z={z}"),
+  //   tileData: ["https://tile.tanglei.site/maps/vt?lyrs=s&x={x}&y={y}&z={z}"],
+  // },
+  // {
+  //   name: "谷歌卫星地图",
+  //   url: formatUrl("https://tile.tanglei.site/maps/vt?lyrs=h&x={x}&y={y}&z={z}"),
+  //   tileData: ["https://tile.tanglei.site/maps/vt?lyrs=h&x={x}&y={y}&z={z}"],
+  // },
+  // {
+  //   name: "谷歌地形地图",
+  //   url: formatUrl("https://tile.tanglei.site/maps/vt?lyrs=t&x={x}&y={y}&z={z}"),
+  //   tileData: ["https://tile.tanglei.site/maps/vt?lyrs=t&x={x}&y={y}&z={z}"],
+  // },
+  // {
+  //   name: "谷歌地形地图",
+  //   url: formatUrl("https://tile.tanglei.site/maps/vt?lyrs=p&x={x}&y={y}&z={z}"),
+  //   tileData: ["https://tile.tanglei.site/maps/vt?lyrs=p&x={x}&y={y}&z={z}"],
+  // },
+  // {
+  //   name: "谷歌地形地图",
+  //   url: formatUrl("https://tile.tanglei.site/maps/vt?lyrs=m&x={x}&y={y}&z={z}"),
+  //   tileData: ["https://tile.tanglei.site/maps/vt?lyrs=m&x={x}&y={y}&z={z}"],
+  // },
 ]);
 tileList.value.map((item: any, k: number) => {
   if (k == setting.人影.监控.tile.index) {

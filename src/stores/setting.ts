@@ -357,7 +357,7 @@ export const useSettingStore = defineStore({
           labelColor:{r:255,g:128,b:0,a:1.0},
         },
         showColorSelector:-1,
-        loadmap:true,
+        loadmap:false,
         disappear:false,//右侧菜单
         prevPlanRequestShow:false,
         prevPlanRequestData:{

@@ -311,14 +311,14 @@ export default {
 			"tileSize": 512,
 			"maxzoom":14
 		},
-		"mapbox-dem": {
-			"type": "raster-dem",
-			"url_origin": 'mapbox://mapbox.mapbox-terrain-dem-v1',
-			"tiles":["https://terrain.tanglei.site?lyrs=terrain&x={x}&y={y}&z={z}"],
-			// "tiles":[window.location.origin+"/backend/demImage?lyrs=terrain&x={x}&y={y}&z={z}"],
-			"tileSize": 512,
-			"maxzoom": 14,
-		},
+		// "mapbox-dem": {
+		// 	"type": "raster-dem",
+		// 	"url_origin": 'mapbox://mapbox.mapbox-terrain-dem-v1',
+		// 	"tiles":["https://terrain.tanglei.site?lyrs=terrain&x={x}&y={y}&z={z}"],
+		// 	// "tiles":[window.location.origin+"/backend/demImage?lyrs=terrain&x={x}&y={y}&z={z}"],
+		// 	"tileSize": 512,
+		// 	"maxzoom": 14,
+		// },
 	},
 	// "terrain": { 'source': 'mapbox-dem', 'exaggeration': 1 },
 	// "sprite_origin": "mapbox://sprites/tanglei201314/clons7b5v00dm01prgrblhncs/6iqitl5z21pbbxxwuij8b59i2",

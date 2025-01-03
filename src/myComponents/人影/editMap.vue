@@ -86,6 +86,10 @@ const stationMenuRef = ref<HTMLDivElement>();
 let stationMenu: HTMLDivElement;
 let circleFeatures: any = [];
 let forewarningFeatures: any = [];
+
+// const dbUrl = "host=127.0.0.1&port=3306&user=root&password=tanglei",
+// const dbUrl = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115",
+const dbUrl = "host=172.18.7.116&port=3306&user=bjryb&password=ryb115";
 function status2value(key:number){
   let ubyStatus = [
     { key: 0, value: "空闲" },
@@ -469,7 +473,7 @@ function 处理飞机实时位置(d:Array<{
     for(let j=0;j<d.length;j++){
       let has = false,i=0;
       for(;i<data.features.length;i++){
-        if(d[j].uiTrackNo===data.features[i].properties.uiTrackNo){
+        if(d[j]&&d[j].uiTrackNo===data.features[i].properties.uiTrackNo){
           has = true;
           break;
         }
@@ -1163,9 +1167,7 @@ onMounted(() => {
       return { x: Cx, y: Cy };
     }
     exec({
-      // database:"host=127.0.0.1&port=3306&user=root&password=tanglei&database=union",
-      // database:"host=10.224.153.90&port=3306&user=bjryb&password=ryb115&database=union",
-      database:"host=localhost&port=3306&user=bjryb&password=ryb115&database=union",
+      database:dbUrl+"&database=union",
       query:{sqls:["select * from `华北飞行区域`"]}
     }).then(res=>{
       let areas = []
@@ -1313,9 +1315,7 @@ onMounted(() => {
 			})
     })
     exec({
-      // database:"host=127.0.0.1&port=3306&user=root&password=tanglei&database=union",
-      // database:"host=10.224.153.90&port=3306&user=bjryb&password=ryb115&database=union",
-      database:"host=localhost&port=3306&user=bjryb&password=ryb115&database=union",
+      database:dbUrl+"&database=union",
       query:{sqls:["select * from `airport`"]}
     }).then(res=>{
       let data = res.data[0]
@@ -1422,10 +1422,7 @@ onMounted(() => {
     //   planProps.今日作业记录 = res.data.data;
     // })
     exec({
-      database:
-        // "host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
-        // "host=10.224.153.90&port=3306&user=bjryb&password=ryb115&database=ryplat",
-        "host=localhost&port=3306&user=bjryb&password=ryb115&database=ryplat",
+      database: dbUrl+"&database=ryplat",
       query: {
         sqls: [
           "select z.*,u.strName as unitName FROM `zydpara` z left join `units` u on z.strMgrUnit = u.strID",
@@ -1775,10 +1772,7 @@ onMounted(() => {
     })
     let work = ()=>{
       exec({
-        database:
-          // "host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
-          // "host=10.224.153.90&port=3306&user=bjryb&password=ryb115&database=ryplat",
-          "host=localhost&port=3306&user=bjryb&password=ryb115&database=ryplat",
+        database: dbUrl+"&database=ryplat",
         query: {
           sqls: [
             "SELECT z.*,u.strName as unitName FROM `zyddata` z left join `units` u on z.strATCUnitID = u.strID ORDER BY z.tmBeginApply ASC",
