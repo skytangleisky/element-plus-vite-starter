@@ -30,8 +30,7 @@
             d="M64 320l64-64 384 384L896 256l64 64-448 448z"
             p-id="9959"
             data-spm-anchor-id="a313x.search_index.0.i4.4d423a814g60B1"
-          ></path></svg
-      ></el-icon>
+          ></path></svg></el-icon>
     </div>
     <div class="contain" @mousedown.stop>
       <div

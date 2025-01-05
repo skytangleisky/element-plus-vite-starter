@@ -145,6 +145,7 @@ import { nextTick, onBeforeUnmount, onMounted,reactive,ref,watch } from 'vue';
   align-items: center;
   justify-content: center;
   background:#ffffff80;
+  border:1px solid black;
   padding:0 0px;;
   border-radius:10px;
   position: relative;

@@ -30,8 +30,7 @@
             p-id="9959"
             data-spm-anchor-id="a313x.search_index.0.i4.4d423a814g60B1"
             class="selected"
-          ></path></svg
-      ></el-icon>
+          ></path></svg></el-icon>
     </div>
     <div class="contain" @mousedown.stop>
       <div

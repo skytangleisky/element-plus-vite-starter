@@ -3,7 +3,7 @@
     <Carousel :percent="100/13" :keep-number="6" v-model:currentIndex="currentIndex" style="width: 100%" @change="change">
       <template #default="{data,currentIndex}">
         <div :class="`item w-full h-full flex items-center relative justify-center font-size-20px flex flex-col ${data.index==currentIndex?'currentItem':''}`">
-          <div v-if="data.index == currentIndex" class="day absolute top-0px font-size-12px line-height-12px">{{ getDay(data) }}D</div>
+          <div v-if="data.index == currentIndex" class="day absolute top-2px font-size-12px line-height-12px">{{ getDay(data) }}D</div>
           <!-- <div class="day absolute top-0px font-size-12px line-height-12px">{{ data.index }}</div> -->
           {{ format(data) }}
           <div v-if="data.index == currentIndex" class="absolute bottom--10px font-size-12px line-height-12px cursor-pointer">
@@ -97,6 +97,7 @@ onBeforeUnmount(()=>{
     height: 50px;
     &.currentItem{
       background: #4c7cc8;
+      border:1px solid black;
     }
   }
   .ep-input__wrapper{
@@ -124,6 +125,7 @@ onBeforeUnmount(()=>{
 }
 .dark .timestep-container .btn{
   background: #80808080;
+  border:1px solid black;
 }
 .timestep-container{
   position: absolute;
@@ -136,6 +138,7 @@ onBeforeUnmount(()=>{
   width: 80%;
   height: 38px;
   .btn{
+    border:1px solid black;
     position: absolute;
     right:0;
     transform: translateX(calc(100% + 10px));

@@ -121,7 +121,7 @@ export default defineConfig({
       },
       '/backend':{
         // target:'https://websocket.tanglei.top',//替换的服务端地址
-        target:'http://victorysoft.cn:3003',//替换的服务端地址
+        target:'http://127.0.0.1:3000',//替换的服务端地址
         // target:'https://test.tanglei.site',//替换的服务端地址
         secure:false,
         changeOrigin:true,
@@ -168,7 +168,7 @@ export default defineConfig({
         ws:true,
       },
       '/ry_api':{//人影接口
-        target:'http://victorysoft.cn:8080',
+        target:'http://192.168.0.135:8080',
         rewrite:path=>path.replace(/^\/ry_api/,''), // 设置重写的路径
         secure:false,
         changeOrigin:true,
@@ -176,7 +176,7 @@ export default defineConfig({
       },
       '/python':{
         // target:'http://192.168.0.114:8000',
-        target:'http://victorysoft.cn:8000',
+        target:'http://192.168.0.135:8000',
         rewrite:path=>path.replace(/^\/python/,''), // 设置重写的路径
         secure:false,
         changeOrigin:true,

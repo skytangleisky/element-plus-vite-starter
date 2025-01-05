@@ -18,21 +18,22 @@
           align-items: center;
         "
         @click="toggleCollapse"
-        @mousedown.stop
-        ><svg
+        @mousedown.stop>
+        <svg
           t="1692335429583"
           class="icon"
           viewBox="0 0 1024 1024"
           version="1.1"
           xmlns="http://www.w3.org/2000/svg"
-          p-id="9958"
-        >
+          p-id="9958">
           <path
             d="M64 320l64-64 384 384L896 256l64 64-448 448z"
             p-id="9959"
             data-spm-anchor-id="a313x.search_index.0.i4.4d423a814g60B1"
-          ></path></svg
-      ></el-icon>
+            >
+          </path>
+        </svg>
+      </el-icon>
     </div>
     <div class="contain" @mousedown.stop>
       <div
@@ -44,8 +45,7 @@
           position: relative;
           margin-top: 7px;
           scroll-padding-top: 1rem;
-        "
-      >
+        ">
         <table>
           <thead>
             <tr
@@ -290,9 +290,6 @@ const toggleCollapse = () => {
     border-collapse: collapse;
     overflow: auto;
     min-width: 100%;
-    tr {
-      line-height: 1.4rem;
-    }
     thead {
       tr {
         th {
@@ -326,8 +323,7 @@ const toggleCollapse = () => {
         border-bottom: none;
       }
     }
-    th,
-    td {
+    th,td {
       text-align: left;
       border: 1px solid #ccc;
     }
@@ -348,6 +344,7 @@ const toggleCollapse = () => {
       }
     }
     th,td {
+      text-align: left;
       border: 1px solid #2b2b2b;
     }
     td {
