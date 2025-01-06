@@ -333,35 +333,31 @@ const init = () => {
     { immediate: true }
   );
 };
-var interval = 0;
+var interval = 1000 / 60;
 var then = 0;
 let frame = 0;
 let lastTime = 0;
 let spend = 0;
-const loop = (time: number) => {
-  aid = requestAnimationFrame(loop);
-  if (time - then > interval) {
-    interval > 0 && (then = time - ((time - then) % interval));
+const loop = (timestamp: number) => {
+  if (timestamp - then > interval) {
+    interval > 0 && (then = timestamp - ((timestamp - then) % interval));
     frame++;
-    if (time - lastTime > 1000) {
-      eventbus.emit("systemInfo", {
-        fps: ((frame * 1000) / (time - lastTime)).toFixed(2),
-      });
-      eventbus.emit("systemInfo", { frameTime: spend.toFixed(2) + "ms" });
-      eventbus.emit("systemInfo", {
-        occupy: ((spend / (time - lastTime)) * frame * 100).toFixed(2) + "%",
-      });
-      eventbus.emit("systemInfo", {
-        periodTime: ((time - lastTime) / frame).toFixed(2) + "ms",
-      });
-      lastTime = time;
-      frame = 0;
-    }
     let start = performance.now();
     draw();
     let end = performance.now();
     spend = end - start;
+    if (timestamp - lastTime >= 1000) {
+      eventbus.emit("systemInfo", {
+        fps: ((frame * 1000) / (timestamp - lastTime)).toFixed(2),
+        frameTime: spend.toFixed(2) + "ms",
+        occupy: ((spend / (timestamp - lastTime)) * frame * 100).toFixed(2) + "%",
+        periodTime: ((timestamp - lastTime) / frame).toFixed(2) + "ms",
+      });
+      lastTime = timestamp;
+      frame = 0;
+    }
   }
+  aid = requestAnimationFrame(loop);
 };
 const draw = () => {
   ctx.clearRect(0, 0, cvs.width, cvs.height);
