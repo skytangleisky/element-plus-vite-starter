@@ -720,7 +720,7 @@ const loadFunc = async () => {
       //   2,
       // ],
       "circle-stroke-width": 1,
-      // "circle-stroke-color": "hsl(220, 20%, 85%)",
+      "circle-stroke-color": isDark.value?'white':'black',
       "circle-pitch-alignment": "map",
     },
     filter: ["==", ["get", "type"], "站点"],
