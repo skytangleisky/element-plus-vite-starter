@@ -34,7 +34,7 @@ import irUrl9 from "./data/ir/m/0604092000.000?url";
 import irUrl10 from "./data/ir/m/0604092100.000?url";
 import irUrl11 from "./data/ir/m/0604092200.000?url";
 import irUrl12 from "./data/ir/m/0604092300.000?url";
-import { onMounted, ref, onBeforeUnmount, watch } from "vue";
+import { onMounted, ref, onBeforeUnmount, watch, toRefs } from "vue";
 import * as turf from "@turf/turf";
 import raster from "./raster.js";
 // import style from "./streets-v11.js";
@@ -50,7 +50,6 @@ import { getMicapsData } from "./data/plot/micaps";
 import CustomLayer from "./WindGL/CustomLayer";
 import CustomRasterSource from './customRasterSource.js'
 import { useSettingStore } from "~/stores/setting";
-import { storeToRefs } from "pinia";
 import { getFeather, getColor, getCoord, addFeatherImages } from "~/tools";
 const setting = useSettingStore();
 const options = ref([
@@ -63,7 +62,7 @@ const options = ref([
   // { value: "winkelTripel", label: "winkelTripel" },
   { value: "globe", label: "globe" },
 ]);
-watch(storeToRefs(setting).projection, (projection) => {
+watch(toRefs(setting).projection, (projection) => {
   map && map.setProjection(projection);
 });
 let boundaries = {

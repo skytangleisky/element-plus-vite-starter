@@ -98,7 +98,7 @@
       <datatable
         :database="'host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry'"
         :table="'zydpara'"
-      ></datatable>
+      />
     </div>
   </div>
   <dialog-plan-request
@@ -109,6 +109,7 @@
   ></dialog-plan-request>
   <ColorSelector v-show="setting.人影.监控.showColorSelector !== -1" v-model:selectorColor="selectorColor" style="z-index: 2010;" @cancel="setting.人影.监控.showColorSelector=-1"></ColorSelector>
   <div ref="tweakPaneRef" class="tp-dfwv default" data-pane-lighttheme style="z-index: 1;"></div>
+  <control-pane style="top:10px;right:400px;" :list="list"></control-pane>
 </template>
 <script lang="ts" setup>
 import editMap from "../editMap.vue";
@@ -121,12 +122,85 @@ import recordSvg from "~/assets/record.svg?raw";
 import whitelistSvg from "~/assets/whitelist.svg?raw";
 import statisticSvg from "~/assets/statistic.svg?raw";
 import selectTile from "../selectTile.vue";
-import { watch, ref, reactive,computed,onMounted, onBeforeUnmount } from "vue";
+import { watch, ref, reactive,computed,onMounted, onBeforeUnmount,toRefs } from "vue";
 import DialogPlanRequest, { prevRequestDataType } from "../../dialog_plan_request.vue";
 import { useSettingStore } from "~/stores/setting";
+const setting = useSettingStore();
 import { eventbus } from "~/eventbus/index";
-import ColorSelector from "~/myComponents/colorSelector/index.vue"
+import ColorSelector from "~/myComponents/colorSelector/index.vue";
 import { Pane } from 'controlpane';
+import ControlPane from '../../controlPane/index.vue';
+const 监控 = toRefs(setting.人影.监控)
+const list = reactive([
+  {label:'瓦片地图',value:监控.loadmap,type:'checkbox'},
+  {label:'全国行政区划',type:'folder',children:[
+    {label:'填充',type:'folder',children:[
+      {label:'显示',value:toRefs(setting.人影.监控.districtOptions).district,type:'checkbox'},
+      {label:'颜色',value:toRefs(setting.人影.监控.districtOptions).districtFillColor,type:'color'},
+      {label:'透明度',value:toRefs(setting.人影.监控.districtOptions).districtFillOpacity,type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
+    ]},
+    {label:'底线',type:'folder',children:[
+      {label:'显示',value:toRefs(setting.人影.监控.districtOptions).districtBase,type:'checkbox'},
+      {label:'颜色',value:toRefs(setting.人影.监控.districtOptions).districtBaseColor,type:'color'},
+      {label:'透明度',value:toRefs(setting.人影.监控.districtOptions).districtBaseOpacity,type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
+      {label:'宽度',value:toRefs(setting.人影.监控.districtOptions).districtBaseWidth,type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>i/100*5)},
+    ]},
+    {label:'界线',type:'folder',children:[
+      {label:'显示',value:toRefs(setting.人影.监控.districtOptions).districtLine,type:'checkbox'},
+      {label:'颜色',value:toRefs(setting.人影.监控.districtOptions).districtLineColor,type:'color'},
+      {label:'透明度',value:toRefs(setting.人影.监控.districtOptions).districtLineOpacity,type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
+      {label:'宽度',value:toRefs(setting.人影.监控.districtOptions).districtLineWidth,type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>i/100*5)},
+    ]},
+  ]},
+  {label:'北京行政区划',type:'folder',children:[
+    {label:'填充',type:'folder',children:[
+      {label:'显示',value:toRefs(setting.人影.监控.beijingOptions).district,type:'checkbox'},
+      {label:'颜色',value:toRefs(setting.人影.监控.beijingOptions).districtFillColor,type:'color'},
+      {label:'透明度',value:toRefs(setting.人影.监控.beijingOptions).districtFillOpacity,type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
+    ]},
+    {label:'底线',type:'folder',children:[
+      {label:'显示',value:toRefs(setting.人影.监控.beijingOptions).districtBase,type:'checkbox'},
+      {label:'颜色',value:toRefs(setting.人影.监控.beijingOptions).districtBaseColor,type:'color'},
+      {label:'透明度',value:toRefs(setting.人影.监控.beijingOptions).districtBaseOpacity,type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
+      {label:'宽度',value:toRefs(setting.人影.监控.beijingOptions).districtBaseWidth,type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>i/100*5)},
+    ]},
+    {label:'界线',type:'folder',children:[
+      {label:'显示',value:toRefs(setting.人影.监控.beijingOptions).districtLine,type:'checkbox'},
+      {label:'颜色',value:toRefs(setting.人影.监控.beijingOptions).districtLineColor,type:'color'},
+      {label:'透明度',value:toRefs(setting.人影.监控.beijingOptions).districtLineOpacity,type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
+      {label:'宽度',value:toRefs(setting.人影.监控.beijingOptions).districtLineWidth,type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>i/100*5)},
+    ]},
+  ]},
+  {label:'华北飞行区域',type:'folder',children:[
+    {label:'填充',type:'folder',children:[
+      {label:'显示',value:toRefs(setting.人影.监控.ryAirspaces).fill,type:'checkbox'},
+      {label:'颜色',value:toRefs(setting.人影.监控.ryAirspaces).fillColor,type:'color'},
+      {label:'透明度',value:toRefs(setting.人影.监控.ryAirspaces).fillOpacity,type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
+    ]},
+    {label:'底线',type:'folder',children:[
+      {label:'显示',value:toRefs(setting.人影.监控.ryAirspaces).base,type:'checkbox'},
+      {label:'颜色',value:toRefs(setting.人影.监控.ryAirspaces).baseColor,type:'color'},
+      {label:'透明度',value:toRefs(setting.人影.监控.ryAirspaces).baseOpacity,type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
+      {label:'宽度',value:toRefs(setting.人影.监控.ryAirspaces).baseWidth,type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>i/100*5)},
+    ]},
+    {label:'界线',type:'folder',children:[
+      {label:'显示',value:toRefs(setting.人影.监控.ryAirspaces).line,type:'checkbox'},
+      {label:'颜色',value:toRefs(setting.人影.监控.ryAirspaces).lineColor,type:'color'},
+      {label:'透明度',value:toRefs(setting.人影.监控.ryAirspaces).lineOpacity,type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
+      {label:'宽度',value:toRefs(setting.人影.监控.ryAirspaces).lineWidth,type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>i/100*5)},
+    ]},
+    {label:'标签',type:'folder',children:[
+      {label:'显示',value:toRefs(setting.人影.监控.ryAirspaces).label,type:'checkbox'},
+      {label:'颜色',value:toRefs(setting.人影.监控.ryAirspaces).labelColor,type:'color'},
+      {label:'透明度',value:toRefs(setting.人影.监控.ryAirspaces).labelOpacity,type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
+    ]}
+  ]},
+  {label:'航路航线',value:监控.routeLine,type:'checkbox'},
+  {label:'机场',value:监控.airport,type:'checkbox'},
+  {label:'飞机',value:监控.plane,type:'checkbox'},
+  {label:'作业点',value:监控.zyd,type:'checkbox'},
+  {label:'导航台',value:监控.navigationStation,type:'checkbox'},
+]);
 let pane:any
 onMounted(()=>{
   pane = new Pane({
@@ -242,9 +316,8 @@ onMounted(()=>{
   // pane.addBinding(setting.人影.监控, 'isobands',{label:'等值带'});
 })
 onBeforeUnmount(()=>{
-  pane.dispose();
+  pane&&pane.dispose();
 })
-const setting = useSettingStore();
 watch([
   ()=>setting.人影.监控.loadmap,
   ()=>setting.人影.监控.districtOptions.district,

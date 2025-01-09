@@ -91,12 +91,19 @@ onBeforeUnmount(()=>{
 })
 </script>
 <style lang="scss">
+.dark .my-carousel{
+  .item{
+    &.currentItem{
+      background: #4c7cc8;
+    }
+  }
+}
 .my-carousel{
   .item{
     border-radius: 10px;
     height: 50px;
     &.currentItem{
-      background: #4c7cc8;
+      background: #adc6ee;
       border:1px solid black;
     }
   }

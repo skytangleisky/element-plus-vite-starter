@@ -259,15 +259,15 @@ export default {
 				7,
 				0.08
 			],
-			"star-intensity": [
-				"interpolate",
-				["exponential", 1.2],
-				["zoom"],
-				5,
-				0.1,
-				7,
-				0
-			]
+			// "star-intensity": [
+			// 	"interpolate",
+			// 	["exponential", 1.2],
+			// 	["zoom"],
+			// 	5,
+			// 	0.1,
+			// 	7,
+			// 	0
+			// ]
 	},
 	"sources": {
 		// 'mapbox-terrain': {
@@ -327,26 +327,26 @@ export default {
 	"glyphs": window.location.origin+"/resources/glyphs/{fontstack}/{range}.pbf",
 	"projection": {"name": "mercator"},//albers, equalEarth, equirectangular, lambertConformalConic, mercator, naturalEarth, winkelTripel, globe
 	"layers": [
-			// {
-			// 		"id": "land",
-			// 		"type": "background",
-			// 		"metadata": {
-			// 				"mapbox:featureComponent": "land-and-water",
-			// 				"mapbox:group": "Land & water, land"
-			// 		},
-			// 		"layout": {},
-			// 		"paint": {
-			// 				"background-color": [
-			// 						"interpolate",
-			// 						["linear"],
-			// 						["zoom"],
-			// 						9,
-			// 						"#2b2b2b",
-			// 						11,
-			// 						"#2b2b2b"
-			// 				]
-			// 		}
-			// },
+			{
+				"id": "land",
+				"type": "background",
+				"metadata": {
+					"mapbox:featureComponent": "land-and-water",
+					"mapbox:group": "Land & water, land"
+				},
+				"layout": {},
+				"paint": {
+					"background-color": [
+						"interpolate",
+						["linear"],
+						["zoom"],
+						9,
+						"#2b2b2b",
+						11,
+						"#2b2b2b"
+					]
+				}
+			},
 			{
 				"id": "simple-tiles",
 				"type": "raster",
@@ -354,7 +354,7 @@ export default {
 				"minzoom": 0,
 				"maxzoom": 22,
 				layout:{
-					visibility:setting.人影.模拟.loadmap?'visible':'none'
+					visibility:setting.人影.监控.loadmap?'visible':'none'
 				}
 			},
 			{
@@ -376,6 +376,7 @@ export default {
 				},
 				'paint': {
 					'fill-color': `rgba(${setting.人影.监控.districtOptions.districtFillColor.r},${setting.人影.监控.districtOptions.districtFillColor.g},${setting.人影.监控.districtOptions.districtFillColor.b},${setting.人影.监控.districtOptions.districtFillColor.a})`,
+					'fill-opacity': setting.人影.监控.districtOptions.districtFillOpacity,
 					'fill-outline-color':'transparent'
 				}
 			},
@@ -391,6 +392,7 @@ export default {
 				'paint': {
 					'line-color': `rgba(${setting.人影.监控.districtOptions.districtBaseColor.r},${setting.人影.监控.districtOptions.districtBaseColor.g},${setting.人影.监控.districtOptions.districtBaseColor.b},${setting.人影.监控.districtOptions.districtBaseColor.a})`,
 					'line-width': setting.人影.监控.districtOptions.districtBaseWidth,
+					'line-opacity': setting.人影.监控.districtOptions.districtBaseOpacity,
 				}
 			},
 			{
@@ -405,47 +407,7 @@ export default {
 				'paint': {
 					'line-color': `rgba(${setting.人影.监控.districtOptions.districtLineColor.r},${setting.人影.监控.districtOptions.districtLineColor.g},${setting.人影.监控.districtOptions.districtLineColor.b},${setting.人影.监控.districtOptions.districtLineColor.a})`,
 					'line-width': setting.人影.监控.districtOptions.districtLineWidth,
-					// 'line-dasharray': [1,1],
-				}
-			},
-			{
-				'id': 'beijingLayer',
-				'type': 'fill',
-				'source': 'beijing', // reference the data source
-				'layout': {
-					visibility:setting.人影.监控.beijingOptions.district?'visible':'none'
-				},
-				'paint': {
-					'fill-color': `rgba(${setting.人影.监控.beijingOptions.districtFillColor.r},${setting.人影.监控.beijingOptions.districtFillColor.g},${setting.人影.监控.beijingOptions.districtFillColor.b},${setting.人影.监控.beijingOptions.districtFillColor.a})`,
-					'fill-outline-color':'transparent'
-				}
-			},
-			{
-				'id': 'beijingLineBase',
-				'type': 'line',
-				'source': 'beijing',
-				'layout': {
-					'visibility':setting.人影.监控.beijingOptions.districtBase?'visible':'none',
-					'line-join':'round',
-					'line-cap':'round',
-				},
-				'paint': {
-					'line-color': `rgba(${setting.人影.监控.beijingOptions.districtBaseColor.r},${setting.人影.监控.beijingOptions.districtBaseColor.g},${setting.人影.监控.beijingOptions.districtBaseColor.b},${setting.人影.监控.beijingOptions.districtBaseColor.a})`,
-					'line-width': setting.人影.监控.beijingOptions.districtBaseWidth,
-				}
-			},
-			{
-				'id': 'beijingLineOver',
-				'type': 'line',
-				'source': 'beijing',
-				'layout': {
-					'visibility':setting.人影.监控.beijingOptions.districtLine?'visible':'none',
-					'line-join':'round',
-					'line-cap':'round',
-				},
-				'paint': {
-					'line-color': `rgba(${setting.人影.监控.beijingOptions.districtLineColor.r},${setting.人影.监控.beijingOptions.districtLineColor.g},${setting.人影.监控.beijingOptions.districtLineColor.b},${setting.人影.监控.beijingOptions.districtLineColor.a})`,
-					'line-width': setting.人影.监控.beijingOptions.districtLineWidth,
+					'line-opacity': setting.人影.监控.districtOptions.districtLineOpacity,
 					// 'line-dasharray': [1,1],
 				}
 			},

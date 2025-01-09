@@ -14,4 +14,3 @@ pnpm-lock.yaml
 
 *.log
 report.html
-src/myComponents/menu

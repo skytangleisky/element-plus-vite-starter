@@ -186,7 +186,7 @@ const toggleCollapse = () => {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 170px;
+  height: 169px;
   .menuUl {
     outline: none;
     position: absolute;

@@ -90,6 +90,7 @@ let forewarningFeatures: any = [];
 const dbUrl = "host=192.168.0.240&port=3306&user=root&password=mysql";
 // const dbUrl = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115";
 // const dbUrl = "host=172.18.7.116&port=3306&user=bjryb&password=ryb115";
+// const dbUrl = "host=victorysoft.cn&port=3308&user=root&password=mysql";
 function status2value(key:number){
   let ubyStatus = [
     { key: 0, value: "空闲" },
@@ -233,13 +234,13 @@ const props = withDefaults(
   }
 );
 import style from "./editMap.js";
-style.layers.map((v: any) => {
-  if (v.id == "simple-tiles") {
-    v.layout.visibility = props.loadmap ? "visible" : "none";
-  } else if (v.id == "districtLineOver" || v.id == "districtLineBase") {
-    v.layout.visibility = props.district ? "visible" : "none";
-  }
-});
+// style.layers.map((v: any) => {
+//   if (v.id == "simple-tiles") {
+//     v.layout.visibility = props.loadmap ? "visible" : "none";
+//   } else if (v.id == "districtLineOver" || v.id == "districtLineBase") {
+//     // v.layout.visibility = props.district ? "visible" : "none";
+//   }
+// });
 let active = () => {};
 const zoomFunc = () => {
   emits("update:zoom", map.getZoom());
@@ -482,14 +483,18 @@ function 处理飞机实时位置(d:Array<{
         Object.assign(data.features[i].properties,d[j])
         data.features[i].geometry.coordinates = wgs84togcj02(d[j].fLongitude,d[j].fLatitude)
       }else{
-        data.features.push({
-          type: "Feature",
-          properties: d[j],
-          geometry: {
-            type: "Point",
-            coordinates: wgs84togcj02(d[j].fLongitude,d[j].fLatitude),
-          },
-        })
+        if(d[j]){
+          data.features.push({
+            type: "Feature",
+            properties: d[j],
+            geometry: {
+              type: "Point",
+              coordinates: wgs84togcj02(d[j].fLongitude,d[j].fLatitude),
+            },
+          })
+        }else{
+          console.log(`共${d.length}架，第${j}架飞机数据错误`,d[j])
+        }
       }
     }
     source.setData(data);
@@ -1211,7 +1216,8 @@ onMounted(() => {
         },
         paint: {
           "fill-color": `rgba(${setting.人影.监控.ryAirspaces.fillColor.r},${setting.人影.监控.ryAirspaces.fillColor.g},${setting.人影.监控.ryAirspaces.fillColor.b},${setting.人影.监控.ryAirspaces.fillColor.a})`,
-          "fill-outline-color":'transparent'
+          "fill-outline-color":'transparent',
+          "fill-opacity":setting.人影.监控.ryAirspaces.fillOpacity,
         },
       });
       map.addLayer({
@@ -1228,14 +1234,14 @@ onMounted(() => {
           },
         },
         layout: {
-          visibility: setting.人影.监控.ryAirspaces.fill ? "visible" : "none",
+          visibility: setting.人影.监控.ryAirspaces.base ? "visible" : "none",
           'line-cap': 'round',
           'line-join': 'round'
         },
         paint: {
-          "line-color": "#000",
-          "line-width": 3,
-          "line-opacity": 1,
+          "line-color": `rgba(${setting.人影.监控.ryAirspaces.baseColor.r},${setting.人影.监控.ryAirspaces.baseColor.g},${setting.人影.监控.ryAirspaces.baseColor.b},${setting.人影.监控.ryAirspaces.baseColor.a})`,
+          "line-width": setting.人影.监控.ryAirspaces.baseWidth,
+          "line-opacity": setting.人影.监控.ryAirspaces.baseOpacity,
         },
       });
       map.addLayer({
@@ -1252,14 +1258,14 @@ onMounted(() => {
           },
         },
         layout: {
-          visibility: setting.人影.监控.ryAirspaces.fill ? "visible" : "none",
+          visibility: setting.人影.监控.ryAirspaces.line ? "visible" : "none",
           'line-cap': 'round',
           'line-join': 'round'
         },
         paint: {
-          "line-color": "white",
-          "line-width": 1,
-          "line-opacity": 1,
+          "line-color": `rgba(${setting.人影.监控.ryAirspaces.lineColor.r},${setting.人影.监控.ryAirspaces.lineColor.g},${setting.人影.监控.ryAirspaces.lineColor.b},${setting.人影.监控.ryAirspaces.lineColor.a})`,
+          "line-width": setting.人影.监控.ryAirspaces.lineWidth,
+          "line-opacity": setting.人影.监控.ryAirspaces.lineOpacity,
         },
       });
       map.addLayer({
@@ -1273,7 +1279,7 @@ onMounted(() => {
           }
         },
         layout: {
-          visibility: setting.人影.监控.ryAirspaces.fill ? "visible" : "none",
+          visibility: setting.人影.监控.ryAirspaces.label ? "visible" : "none",
           // This icon is a part of the Mapbox Streets style.
           // To view all images available in a Mapbox style, open
           // the style in Mapbox Studio and click the "Images" tab.
@@ -1297,12 +1303,55 @@ onMounted(() => {
           "text-max-width": 400,
         },
         paint: {
-          "icon-opacity": 1,
+          "text-opacity": setting.人影.监控.ryAirspaces.labelOpacity,
           "text-color": `rgba(${setting.人影.监控.ryAirspaces.labelColor.r},${setting.人影.监控.ryAirspaces.labelColor.g},${setting.人影.监控.ryAirspaces.labelColor.b},${setting.人影.监控.ryAirspaces.labelColor.a})`,
           "text-halo-color": "black",
           "text-halo-width": 0.1,
         }
       });
+      map.addLayer({
+				'id': 'beijingLayer',
+				'type': 'fill',
+				'source': 'beijing', // reference the data source
+				'layout': {
+					visibility:setting.人影.监控.beijingOptions.district?'visible':'none'
+				},
+				'paint': {
+					'fill-color': `rgba(${setting.人影.监控.beijingOptions.districtFillColor.r},${setting.人影.监控.beijingOptions.districtFillColor.g},${setting.人影.监控.beijingOptions.districtFillColor.b},${setting.人影.监控.beijingOptions.districtFillColor.a})`,
+					'fill-outline-color':'transparent'
+				}
+			})
+      map.addLayer({
+				'id': 'beijingLineBase',
+				'type': 'line',
+				'source': 'beijing',
+				'layout': {
+					'visibility':setting.人影.监控.beijingOptions.districtBase?'visible':'none',
+					'line-join':'round',
+					'line-cap':'round',
+				},
+				'paint': {
+					'line-color': `rgba(${setting.人影.监控.beijingOptions.districtBaseColor.r},${setting.人影.监控.beijingOptions.districtBaseColor.g},${setting.人影.监控.beijingOptions.districtBaseColor.b},${setting.人影.监控.beijingOptions.districtBaseColor.a})`,
+					'line-width': setting.人影.监控.beijingOptions.districtBaseWidth,
+          'line-opacity':setting.人影.监控.beijingOptions.districtBaseOpacity,
+				}
+			})
+      map.addLayer({
+				'id': 'beijingLineOver',
+				'type': 'line',
+				'source': 'beijing',
+				'layout': {
+					'visibility':setting.人影.监控.beijingOptions.districtLine?'visible':'none',
+					'line-join':'round',
+					'line-cap':'round',
+				},
+				'paint': {
+					'line-color': `rgba(${setting.人影.监控.beijingOptions.districtLineColor.r},${setting.人影.监控.beijingOptions.districtLineColor.g},${setting.人影.监控.beijingOptions.districtLineColor.b},${setting.人影.监控.beijingOptions.districtLineColor.a})`,
+					'line-width': setting.人影.监控.beijingOptions.districtLineWidth,
+          'line-opacity':setting.人影.监控.beijingOptions.districtLineOpacity,
+					// 'line-dasharray': [1,1],
+				}
+			})
       map.addLayer({
 				"id": "routeLineLayer",
 				"type": "raster",
@@ -1979,9 +2028,9 @@ onMounted(() => {
         });
       });
     }
-    taskTimer = setInterval(() => {
-      work();
-    }, 1000);
+    // taskTimer = setInterval(() => {
+    //   work();
+    // }, 1000);
     // getDevice().then((res) => {
     //   dialogOptions.menus = res.data;
     //   let features: any = [];
@@ -2564,13 +2613,13 @@ watch(
     if(tile.tileData.length>0){
       let s = map ? map.getStyle() : style;
       s.sources["raster-tiles"].url = processTileData(tile.tileData);
-      s.layers.map((v: any) => {
-        if (v.id == "simple-tiles") {
-          v.layout.visibility = props.loadmap ? "visible" : "none";
-        } else if (v.id == "districtLineBase" || v.id == "districtLineOver") {
-          v.layout.visibility = props.district ? "visible" : "none";
-        }
-      });
+      // s.layers.map((v: any) => {
+      //   if (v.id == "simple-tiles") {
+      //     v.layout.visibility = props.loadmap ? "visible" : "none";
+      //   } else if (v.id == "districtLineBase" || v.id == "districtLineOver") {
+      //     // v.layout.visibility = props.district ? "visible" : "none";
+      //   }
+      // });
       map && map.setStyle(s);
     }
   },
@@ -2736,6 +2785,12 @@ watch(
     }
   }
 );
+watch(
+  () => setting.人影.监控.beijingOptions.districtFillOpacity,
+  (newVal) => {
+    map.setPaintProperty("beijingLayer",'fill-opacity', newVal);
+  }
+);
 watch(()=>setting.人影.监控.districtOptions.districtBase,(newVal)=>{
   if(newVal){
     map.setLayoutProperty("districtLineBase", "visibility", "visible");
@@ -2743,12 +2798,21 @@ watch(()=>setting.人影.监控.districtOptions.districtBase,(newVal)=>{
     map.setLayoutProperty("districtLineBase", "visibility", "none");
   }
 })
+watch(()=>setting.人影.监控.districtOptions.districtBaseOpacity,(newVal)=>{
+  map.setPaintProperty("districtLineBase", "line-opacity", newVal);
+})
+watch(()=>setting.人影.监控.districtOptions.districtLineOpacity,(newVal)=>{
+  map.setPaintProperty("districtLineOver", "line-opacity", newVal);
+})
 watch(()=>setting.人影.监控.beijingOptions.districtBase,(newVal)=>{
   if(newVal){
     map.setLayoutProperty("beijingLineBase", "visibility", "visible");
   }else{
     map.setLayoutProperty("beijingLineBase", "visibility", "none");
   }
+})
+watch(()=>setting.人影.监控.beijingOptions.districtBaseOpacity,(newVal)=>{
+  map.setPaintProperty("beijingLineBase", "line-opacity", newVal);
 })
 watch(()=>setting.人影.监控.districtOptions.districtLine,(newVal)=>{
   if(newVal){
@@ -2763,6 +2827,9 @@ watch(()=>setting.人影.监控.beijingOptions.districtLine,(newVal)=>{
   }else{
     map.setLayoutProperty("beijingLineOver", "visibility", "none");
   }
+})
+watch(()=>setting.人影.监控.beijingOptions.districtLineOpacity,(newVal)=>{
+  map.setPaintProperty("beijingLineOver", "line-opacity", newVal);
 })
 watch(
   () => setting.人影.监控.districtOptions.districtBaseWidth,
@@ -2780,12 +2847,6 @@ watch(
   () => setting.人影.监控.districtOptions.districtBaseColor,
   (newVal) => {
     map.setPaintProperty("districtLineBase","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
-  }
-);
-watch(
-  () => setting.人影.监控.beijingOptions.districtBaseColor,
-  (newVal) => {
-    map.setPaintProperty("beijingLineBase","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
   }
 );
 watch(
@@ -2813,9 +2874,21 @@ watch(
   }
 );
 watch(
+  () => setting.人影.监控.beijingOptions.districtBaseColor,
+  (newVal) => {
+    map.setPaintProperty("beijingLineBase","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+  }
+);
+watch(
   () => setting.人影.监控.districtOptions.districtFillColor,
   (newVal) => {
     map.setPaintProperty("districtLayer","fill-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+  }
+);
+watch(
+  () => setting.人影.监控.districtOptions.districtFillOpacity,
+  (newVal) => {
+    map.setPaintProperty("districtLayer","fill-opacity",newVal)
   }
 );
 watch(
@@ -2824,22 +2897,15 @@ watch(
     map.setPaintProperty("beijingLayer","fill-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
   }
 );
-watch(
-  () => props.loadmap,
-  (newVal) => {
-    if (newVal) {
-      map.setLayoutProperty("simple-tiles", "visibility", "visible");
-    } else {
-      map.setLayoutProperty("simple-tiles", "visibility", "none");
-    }
-  }
-);
 watch(()=>setting.人影.监控.ryAirspaces.fill,(newVal)=>{
   if(newVal){
     map.setLayoutProperty("华北飞行区域area","visibility","visible")
   }else{
     map.setLayoutProperty("华北飞行区域area","visibility","none")
   }
+})
+watch(()=>setting.人影.监控.ryAirspaces.fillOpacity,(newVal)=>{
+  map.setPaintProperty("华北飞行区域area","fill-opacity",newVal)
 })
 watch(()=>setting.人影.监控.ryAirspaces.fillColor,(newVal)=>{
   map.setPaintProperty("华北飞行区域area","fill-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
@@ -2850,6 +2916,9 @@ watch(()=>setting.人影.监控.ryAirspaces.base,(newVal)=>{
   }else{
     map.setLayoutProperty("华北飞行区域baseLine","visibility","none")
   }
+})
+watch(()=>setting.人影.监控.ryAirspaces.baseOpacity,(newVal)=>{
+  map.setPaintProperty("华北飞行区域baseLine","line-opacity",newVal)
 })
 watch(()=>setting.人影.监控.ryAirspaces.baseWidth,(newVal)=>{
   map.setPaintProperty("华北飞行区域baseLine","line-width",newVal)
@@ -2863,6 +2932,9 @@ watch(()=>setting.人影.监控.ryAirspaces.line,(newVal)=>{
   }else{
     map.setLayoutProperty("华北飞行区域line","visibility","none")
   }
+})
+watch(()=>setting.人影.监控.ryAirspaces.lineOpacity,(newVal)=>{
+  map.setPaintProperty("华北飞行区域line","line-opacity",newVal)
 })
 watch(()=>setting.人影.监控.ryAirspaces.lineWidth,(newVal)=>{
   map.setPaintProperty("华北飞行区域line","line-width",newVal)
@@ -2882,6 +2954,9 @@ watch(()=>setting.人影.监控.ryAirspaces.label,(newVal)=>{
 })
 watch(()=>setting.人影.监控.ryAirspaces.labelColor,(newVal)=>{
   map.setPaintProperty("华北飞行区域标签","text-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+})
+watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
+  map.setPaintProperty("华北飞行区域标签","text-opacity",newVal)
 })
 </script>
 
