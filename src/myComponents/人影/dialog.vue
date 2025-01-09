@@ -172,7 +172,7 @@ const toggleCollapse = () => {
   $(".dragDialog").toggleClass("collapse");
 };
 </script>
-<style lang="scss">
+<style scoped lang="scss">
 .dropdown {
   transform: rotate(180deg);
   user-select: none;
