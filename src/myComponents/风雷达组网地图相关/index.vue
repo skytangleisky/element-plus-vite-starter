@@ -146,9 +146,9 @@ const 单站数据 = ()=>{
 }
 import chromatography from "../激光测风尾涡/chromatography.vue";
 import * as turf from "@turf/turf";
-// import ppiDataUrl from "../组网/CDL_S10000_Lidar10HKF00631450_PPI_FrmAzm30.00_ToAzm29.00_Pth3.00_Spd6.00_Res060_StartIdx003_Start003_Stop191_LOSWind_20230515 000240.csv?url";//S10000
-// import ppiDataUrl from "./level1/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pth30.00_Spd6.00_Res030_StartIdx002_Start002_Stop190_LOSWind_20240715 203223.csv?url";//S4000
-// import ppiInversionData from "./level2/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pth30.00_Spd6.00_Res030_StartIdx002_VADStart002_VADStop190_VADWind_Sec_20240715 203223.csv?url";
+// import ppiDataRaw from "../组网/CDL_S10000_Lidar10HKF00631450_PPI_FrmAzm30.00_ToAzm29.00_Pth3.00_Spd6.00_Res060_StartIdx003_Start003_Stop191_LOSWind_20230515 000240.csv?raw";//S10000
+// import ppiDataRaw from "./level1/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pth30.00_Spd6.00_Res030_StartIdx002_Start002_Stop190_LOSWind_20240715 203223.csv?raw";//S4000
+// import ppiInversionData from "./level2/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pth30.00_Spd6.00_Res030_StartIdx002_VADStart002_VADStop190_VADWind_Sec_20240715 203223.csv?raw";
 import { exec } from "~/api/index.js";
 import { getFkxRealData,getFkxData } from "../../api/重庆.ts";
 import {hasPermission,sixty2Float,addFeatherImages,addArrowImages,getFeather,View,calculateBlockPoints,calculateCirclePoints,removeLayerAndSource} from "~/tools";
@@ -429,29 +429,6 @@ let inversionPPIData:{type:'FeatureCollection',features:Array<any>} = {
   features:[]
 };
 function processData(result: any, position: [number, number]) {
-  //测试
-  // for (let i = 0; i < 100; i++) {
-  //   polygons.push({
-  //     type: "Feature",
-  //     geometry: {
-  //       type: "Polygon",
-  //       coordinates: [
-  //         calculateSectorPoints(
-  //           [120.477398, 36.16953],
-  //           200.25 - 100.5 / 2 + 100.5 * i,
-  //           200.25 - 100.5 / 2 + 100.5 * (i + 1),
-  //           -1,
-  //           90,
-  //           360,
-  //           "meters"
-  //         ),
-  //       ],
-  //     },
-  //     properties: {
-  //       fillColor: "#" + Math.random().toString(16).substring(2, 8).toUpperCase(),
-  //     },
-  //   });
-  // }
   let List = result.data.slice(0);
   if (List.length >= 2) {
     //定义始末两条径向内的径向位置
@@ -1440,14 +1417,10 @@ async function updateData(altitude:number){
           }*/
           /* S4000 */
           const d = new TextDecoder("utf8");
-          // let v = new View(this.response),
-          let v = new View(encoder.encode(res.data.data.file.file_data).buffer),
-            result: { [key: string]: any } = {};
-          let firstLine = d
-            .decode(v.getLine())
-            .trim()
-            .replace(/,$/, "")
-            .split(",");
+          // let v = new View(encoder.encode(ppiDataRaw).buffer)
+          let v = new View(encoder.encode(res.data.data.file.file_data).buffer);
+          let result: { [key: string]: any } = {};
+          let firstLine = d.decode(v.getLine()).trim().replace(/,$/, "").split(",");
           result.HeaderInfo = {};
           for (let i = 1; i < firstLine.length; i++) {
             let kv = firstLine[i].split(":");
@@ -1455,18 +1428,10 @@ async function updateData(altitude:number){
               result.HeaderInfo[kv[0]] = kv[1]
             }
           }
-          let secondLine = d
-            .decode(v.getLine())
-            .trim()
-            .replace(/,$/, "")
-            .split(",");
+          let secondLine = d.decode(v.getLine()).trim().replace(/,$/, "").split(",");
           let data: Array<any> = (result.data = []);
           while (!v.reachEnd()) {
-            let thirdLine = d
-              .decode(v.getLine())
-              .trim()
-              .replace(/,$/, "")
-              .split(",");
+            let thirdLine = d.decode(v.getLine()).trim().replace(/,$/, "").split(",");
             let radial:{[key:string]:any} = { Azimuth: 0, list: new Array<any>() };
             for (let i = 0; i < 11; i++) {
               radial[secondLine[i]] = thirdLine[i]
