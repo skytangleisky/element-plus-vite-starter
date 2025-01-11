@@ -70,7 +70,7 @@ varying vec2 uv_pos;
 uniform mat4 u_matrix;  // update by limz
 uniform vec4 u_boundaries;// boundaries
 void main() {
-    gl_PointSize = 2.0;
+    gl_PointSize = 3.0;
     vec4 color = texture2D(u_particles, vec2(fract(a_index / u_particles_res),floor(a_index / u_particles_res) / u_particles_res));
     // decode current particle position from the pixel's RGBA value
     uv_pos = vec2(color.r / 255.0 + color.b, color.g / 255.0 + color.a);

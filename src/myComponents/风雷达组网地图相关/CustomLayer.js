@@ -14,7 +14,7 @@ export default class CustomLayer {
     this.map = map
     this.projectionName = this.map.getProjection().name
     this.wind = new WindGL(gl,{boundaries:this.json.boundaries})
-    this.wind.numParticles = 2048
+    this.wind.numParticles = 2048*2
     let windData = this.json
     const windImage = new Image();
     windImage.width = windData.width

@@ -12,8 +12,8 @@
 </template>
 <script lang="ts" setup>
 import { interfaceRange } from './def'
-let leftGap = 7
-let rightGap = 7
+let leftGap = 5
+let rightGap = 5
 const modelValue = defineModel<interfaceRange>('modelValue',{
   default:{
     min:0,
@@ -87,36 +87,35 @@ function valueChange(evt:Event){
     .ranger{
       width: 100px;
       margin: 2px;
-      --track-height:6px;
+      --track-height:2px;
       --progress:10%;
-      --color:#409eff;
       position: relative;
       .track{
         height: var(--track-height);
         overflow: hidden;
-        border-radius: 5px;
+        border-radius: calc(var(--track-height) / 2);
         width: 100%;
-        background:gray;
+        background:var(--tp-input-background-color);
         position: relative;
         .progress{
           overflow: hidden;
           position: absolute;
           width: var(--progress);
           height: 100%;
-          background: var(--color);
+          background: var(--tp-input-foreground-color);
         }
       }
       .thumb{
-        --left:-7px;
-        --top:-7px;
+        --left:-6px;
+        --top:-6px;
         position: absolute;
         left:calc(var(--progress) + var(--left));
         top:calc(var(--track-height)/2 + var(--top));
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        background-color: var(--color);
-        border:2px solid #ddd;
+        width: 12px;
+        height: 12px;
+        border-radius: 2px;
+        background-color: var(--tp-button-background-color);
+        // border:2px solid #ddd;
         box-sizing: border-box;
         &:hover{
           transform: scale(1);

@@ -324,50 +324,63 @@ export const useSettingStore = defineStore({
         plane:true,
         airport:true,
         navigationStation:true,
+        districtOptionsOpened:true,
         districtOptions:{
+          districtOpened:true,
           district:false,
           districtFillColor:{r:0,g:0,b:0,a:1},
           districtFillOpacity:0.2,
+          districtBaseOpened:true,
           districtBase:true,
           districtBaseWidth:3,
           districtBaseColor:{r:0,g:0,b:0,a:1},
           districtBaseOpacity:0.5,
+          districtLineOpened:true,
           districtLine:true,
           districtLineWidth:2,
           districtLineColor:{r:255,g:0,b:0,a:1},
           districtLineOpacity:0.5,
         },
+        beijingOptionsOpened:true,
         beijingOptions:{
+          districtOpened:true,
           district:true,
           districtFillColor:{r:88,g:158,b:248,a:1},
           districtFillOpacity:0.5,
+          districtBaseOpened:true,
           districtBase:true,
           districtBaseWidth:3,
           districtBaseColor:{r:0,g:0,b:0,a:1},
           districtBaseOpacity:0.5,
+          districtLineOpened:true,
           districtLine:true,
           districtLineWidth:2,
           districtLineColor:{r:255,g:0,b:0,a:0},
           districtLineOpacity:0.5,
         },
+        ryAirspacesOpened:true,
         ryAirspaces:{
+          fillOpened:true,
           fill:true,
           fillColor:{r:255,g:255,b:255,a:1},
           fillOpacity:0.4,
+          baseOpened:true,
           base:false,
           baseWidth:3,
           baseColor:{r:0,g:0,b:0,a:1},
           baseOpacity:0.5,
+          lineOpened:true,
           line:false,
           lineWidth:2,
           lineColor:{r:255,g:0,b:0,a:1},
           lineOpacity:0.5,
+          labelOpened:true,
           label:true,
           labelColor:{r:255,g:128,b:0,a:1.0},
           labelOpacity:1,
         },
         showColorSelector:-1,
-        loadmap:false,
+        loadmap:true,
         disappear:false,//右侧菜单
         prevPlanRequestShow:false,
         prevPlanRequestData:{
@@ -650,6 +663,16 @@ export const useSettingStore = defineStore({
         }
       },
       {
+        path:'cq_synthesis',
+        name:'b7ef7b88-5e6a-0c62-12aa-a0a18980cd11',
+        component:'/src/myComponents/风雷达组网地图相关/index演示.vue',
+        hide:true,
+        svg:'0ca86c9c-7cf8-4ffa-8b38-82bf6771c25f',
+        meta:{
+          label:'首页'
+        }
+      },
+      {
         path:'ry_synthesis',
         name:'b7ef7b88-5e6a-0c62-129b-a0a18980cd11',
         component:'/src/myComponents/人影/pages/synthesis.vue',
@@ -755,4 +778,4 @@ export const useSettingStore = defineStore({
 })
 if(import.meta.hot){
   import.meta.hot.accept(acceptHMRUpdate2(useSettingStore, import.meta.hot))
-}import { ToRefs } from 'vue-demi';
+}

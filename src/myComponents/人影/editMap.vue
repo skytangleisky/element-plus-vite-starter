@@ -547,10 +547,12 @@ let aid = 0;
 onMounted(() => {
   aid = requestAnimationFrame(loop)
   graphTimer = setInterval(() => {
-    graphArgs.fps.value = map.painter.frameCounter - frameCounter;
-    frameCounter = map.painter.frameCounter;
-    // graphArgs.memory.value = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
-    // graphArgs.memory.max = Math.round(performance.memory.jsHeapSizeLimit / 1024 / 1024);
+    if(map){
+      graphArgs.fps.value = map.painter.frameCounter - frameCounter;
+      frameCounter = map.painter.frameCounter;
+      // graphArgs.memory.value = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
+      // graphArgs.memory.max = Math.round(performance.memory.jsHeapSizeLimit / 1024 / 1024);
+    }
   }, 1000);
   map = new Map({
     container: (mapRef.value as unknown) as HTMLCanvasElement,
@@ -1365,6 +1367,32 @@ onMounted(() => {
           throw new Error('Unknow GISTYPE: '+result.tagLayerPara.sLayerType)
       }
     })
+    let airplanesData = {
+      type: "FeatureCollection",
+      features: new Array<any>(),
+    }
+    let airplanesMockData = {
+      type: "FeatureCollection",
+      features: new Array<any>(),
+    }
+    // 模拟飞机
+    // for (let i = 0; i < 60; i++) {
+    //   airplanesMockData.features.push({
+    //     type: "Feature",
+    //     properties: {
+    //       name: "Example Point",
+    //       fHeading: 360 * Math.random(),
+    //       speed: ((800 + 200 * Math.random()) / 3.6 / 1000) * 33,
+    //     },
+    //     geometry: {
+    //       type: "Point",
+    //       coordinates: [115 + 3 * Math.random(), 36 + 3 * Math.random()],
+    //       // coordinates: [0, 0],
+    //     },
+    //   });
+    // }
+    map.addSource("飞机原数据", {type:'geojson',data:airplanesData});
+    map.addSource("模拟飞机", {type:'geojson',data:airplanesMockData});
     map.addLayer({
       id: "飞机",
       type: "symbol",
@@ -2449,32 +2477,6 @@ onMounted(() => {
     //     },
     //   });
     // });
-    let airplanesData = {
-        type: "FeatureCollection",
-        features: new Array<any>(),
-    }
-    let airplanesMockData = {
-        type: "FeatureCollection",
-        features: new Array<any>(),
-    }
-    // 模拟飞机
-    // for (let i = 0; i < 60; i++) {
-    //   airplanesMockData.features.push({
-    //     type: "Feature",
-    //     properties: {
-    //       name: "Example Point",
-    //       fHeading: 360 * Math.random(),
-    //       speed: ((800 + 200 * Math.random()) / 3.6 / 1000) * 33,
-    //     },
-    //     geometry: {
-    //       type: "Point",
-    //       coordinates: [115 + 3 * Math.random(), 36 + 3 * Math.random()],
-    //       // coordinates: [0, 0],
-    //     },
-    //   });
-    // }
-    map.addSource("飞机原数据", {type:'geojson',data:airplanesData});
-    map.addSource("模拟飞机", {type:'geojson',data:airplanesMockData});
     // const points = turf.randomPoint(50, { bbox: [100, 35, 103, 38] });
     // points.features.forEach(
     //   (pt: any) => (pt.properties.elevation = Math.random() * 1000)
