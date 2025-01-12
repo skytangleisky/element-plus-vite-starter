@@ -157,6 +157,7 @@ const list = defineModel<Item[]>('list',{
   position: absolute;
   background:var(--tp-base-background-color);
   box-shadow: 0 2px 4px var(--tp-base-shadow-color);
+  overflow: hidden;
   border-radius: 6px;
   font-size: 11px;
   font-family: Roboto Mono, Source Code Pro, Menlo, Courier, monospace;

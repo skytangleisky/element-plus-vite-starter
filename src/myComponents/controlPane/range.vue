@@ -62,6 +62,8 @@ function setValue(v:number){
   let rect = rangerRef.value.getBoundingClientRect()
   const mouseX = leftGap + (val- modelValue.value.min)/(modelValue.value.max-modelValue.value.min)*(rect.width - leftGap - rightGap)
   rangerRef.value.style.setProperty('--progress',mouseX+'px')
+  // rangerRef.value.style.setProperty('--padding-left',leftGap+'px')
+  // rangerRef.value.style.setProperty('--padding-right',rightGap+'px')
 }
 watch(()=>modelValue.value.value,(val)=>{
   setValue(val)
@@ -83,12 +85,15 @@ function valueChange(evt:Event){
     position: relative;
     display: flex;
     align-items: center;
-    // box-sizing: border-box;
     .ranger{
+      --padding-left:0px;
+      --padding-right:0px;
       width: 100px;
       margin: 2px;
       --track-height:2px;
       --progress:10%;
+      padding:0 var(--padding-right) 0 var(--padding-left);
+      box-sizing: border-box;
       position: relative;
       .track{
         height: var(--track-height);
@@ -97,10 +102,11 @@ function valueChange(evt:Event){
         width: 100%;
         background:var(--tp-input-background-color);
         position: relative;
+        outline: 1px solid var(--tp-input-foreground-color);
         .progress{
           overflow: hidden;
           position: absolute;
-          width: var(--progress);
+          width: calc(var(--progress) - var(--padding-left));
           height: 100%;
           background: var(--tp-input-foreground-color);
         }

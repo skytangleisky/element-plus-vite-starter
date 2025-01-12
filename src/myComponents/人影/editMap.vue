@@ -1677,59 +1677,6 @@ onMounted(() => {
           forewarningFeatures.push(sectorPolygon);
         }
       });
-      if(!map.getSource("zydSource")){
-        map.addSource("zydSource", {
-          type: "geojson",
-          data: {
-            type: "FeatureCollection",
-            features: features,
-          },
-        });
-      }
-      if(!map.getLayer("zydLayer")){
-        map.addLayer({
-          id: "zydLayer",
-          type: "symbol",
-          source: "zydSource",
-          layout: {
-            visibility: props.zyd ? "visible" : "none",
-            // This icon is a part of the Mapbox Streets style.
-            // To view all images available in a Mapbox style, open
-            // the style in Mapbox Studio and click the "Images" tab.
-            // To add a new image to the style at runtime see
-            // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-            "icon-anchor": "center",
-            "icon-image": ["get", "icon-image"],
-            // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
-            "icon-rotate": 0,
-            // "icon-offset": [10, 0],
-            "icon-rotation-alignment": "map",
-            "text-pitch-alignment": "map",
-            "icon-allow-overlap": true,
-            "icon-ignore-placement": true,
-            "text-field": ["get", "strName"],
-            "text-font": ["simkai"],
-            "text-size": 16,
-            "text-transform": "uppercase",
-            // "text-letter-spacing": 0.05,
-            "text-anchor": "bottom",
-            "text-line-height": 1,
-            "text-justify": "center",
-            "text-offset": [0, -1],
-            "text-ignore-placement": true,
-            "text-allow-overlap": true,
-            "text-rotation-alignment": "map",
-            "text-max-width": 400,
-          },
-          paint: {
-            "icon-opacity": 1,
-            "text-color": "white",
-            "text-halo-color": "black",
-            "text-halo-width": 1,
-          },
-          filter: ["==", ["get", "type"], "站点"],
-        });
-      }
       if(!map.getSource("最大射程source")){
         map.addSource("最大射程source", {
           type: "geojson",
@@ -1806,6 +1753,59 @@ onMounted(() => {
             "line-width": 2,
             "line-dasharray": [4, 2],
           },
+        });
+      }
+      if(!map.getSource("zydSource")){
+        map.addSource("zydSource", {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: features,
+          },
+        });
+      }
+      if(!map.getLayer("zydLayer")){
+        map.addLayer({
+          id: "zydLayer",
+          type: "symbol",
+          source: "zydSource",
+          layout: {
+            visibility: props.zyd ? "visible" : "none",
+            // This icon is a part of the Mapbox Streets style.
+            // To view all images available in a Mapbox style, open
+            // the style in Mapbox Studio and click the "Images" tab.
+            // To add a new image to the style at runtime see
+            // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+            "icon-anchor": "center",
+            "icon-image": ["get", "icon-image"],
+            // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
+            "icon-rotate": 0,
+            // "icon-offset": [10, 0],
+            "icon-rotation-alignment": "map",
+            "text-pitch-alignment": "map",
+            "icon-allow-overlap": true,
+            "icon-ignore-placement": true,
+            "text-field": ["get", "strName"],
+            "text-font": ["simkai"],
+            "text-size": 16,
+            "text-transform": "uppercase",
+            // "text-letter-spacing": 0.05,
+            "text-anchor": "bottom",
+            "text-line-height": 1,
+            "text-justify": "center",
+            "text-offset": [0, -1],
+            "text-ignore-placement": true,
+            "text-allow-overlap": true,
+            "text-rotation-alignment": "map",
+            "text-max-width": 400,
+          },
+          paint: {
+            "icon-opacity": 1,
+            "text-color": "white",
+            "text-halo-color": "black",
+            "text-halo-width": 1,
+          },
+          filter: ["==", ["get", "type"], "站点"],
         });
       }
       map.on("contextmenu", "zydLayer", (e: any) => {
