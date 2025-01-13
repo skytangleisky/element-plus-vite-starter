@@ -540,7 +540,7 @@ onMounted(() => {
               }
             });
             map.addSource("point", points);
-            await addFeatherImages(map);
+            await addFeatherImages(map,isDark.value?'#fff':'#000');
             map.addLayer({
               id: "plane",
               source: "point",

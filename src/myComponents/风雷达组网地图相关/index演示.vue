@@ -567,8 +567,8 @@ function processData(result: any, position: [number, number]) {
 }
 let customLayer:any;
 const loadFunc = async () => {
-  await addFeatherImages(map);
-  await addArrowImages(map);
+  await addFeatherImages(map,isDark.value?'#fff':'#000');
+  await addArrowImages(map,isDark.value?'#fff':'#000');
   map.addSource("radar", {
     type: "geojson",
     data: {
@@ -1692,6 +1692,7 @@ onBeforeUnmount(() => {
   mapboxgl.clearStorage();
 });
 watch(isDark,isDark=>{
+  addFeatherImages(map,isDark?'#fff':'#000');
   if(isDark){
     map.setPaintProperty('等距环','line-color','white')
     map.setPaintProperty('等距环的单位','text-color','white')

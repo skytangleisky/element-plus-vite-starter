@@ -617,7 +617,7 @@ onMounted(() => {
     pitch: 0,
   });
   map.repaint = false;
-  addFeatherImages(map);
+  addFeatherImages(map,isDark.value?'#fff':'#000');
   map.on("zoom", zoomFunc);
   map.on("move", moveFunc);
   map.on("load", loadFunc);

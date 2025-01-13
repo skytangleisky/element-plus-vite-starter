@@ -44,6 +44,7 @@
 </template>
 <script setup lang="ts">
 import moment from "moment";
+import { isDark } from "~/composables/dark.js";
 import { checkPermission } from "~/tools/index.ts";
 import CustomLayer from "./webglLayer/CustomLayer.js";
 import graph from "~/tools/graph.vue";
@@ -327,7 +328,7 @@ onMounted(() => {
     pitch: props.pitch,
   });
   map.on("load", async () => {
-    await addFeatherImages(map);
+    await addFeatherImages(map,isDark.value?'#fff':'#000');
     map.addLayer(new CustomLayer());
     map.addLayer({
       id: "maine",

@@ -222,6 +222,7 @@ watch([() => props.zoom, () => props.center], ([zoom, center]) => {
   //无法通过监听变量的变化实时设置地图的视角
 });
 import { useStationStore } from "~/stores/station";
+import { isDark } from "~/composables/dark.js";
 let enclosureList = new Array<any>();
 const station = useStationStore();
 const mapRef = ref(null);
@@ -316,7 +317,7 @@ onMounted(() => {
       // .setLngLat(wgs84togcj02(...[120.477398, 36.16953]) as [number, number])
       .setLngLat(wgs84togcj02(...getLngLat('102015755E36314538N')) as [number, number])
       .addTo(map);
-    await addFeatherImages(map);
+    await addFeatherImages(map,isDark.value?'#fff':'#000');
     map.addLayer({
       id: "maine",
       type: "fill",
