@@ -16,7 +16,7 @@ import { computed } from "vue";
 import { useRouter } from "vue-router";
 const router = useRouter();
 const breadcrumbs = computed(() => {
-  return router.currentRoute.value.matched;
+  return router.currentRoute.value.matched.slice(1);
 });
 const click = (crumb: any) => {
   router.push({

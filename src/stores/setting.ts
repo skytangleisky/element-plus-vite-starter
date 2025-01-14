@@ -9,6 +9,7 @@ import cq_permission from "./permission/cq.js"
 export const useSettingStore = defineStore({
   id: 'setting',
   state:()=>({
+    hueRotate:0,
     channel:3,//调色板通道
     scrollTop:0,
     isCollapse:false,

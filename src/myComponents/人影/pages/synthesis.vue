@@ -133,6 +133,7 @@ import ControlPane from '../../controlPane/index.vue';
 const 监控 = toRefs(setting.人影.监控)
 const list = reactive([
   {label:'devtools',type:'folder',expanded:false,children:[
+    {label:'色相',value:toRefs(setting).hueRotate,type:'range',min:0,max:360,step:1,arr:Array.from({length:361},(_,i:number)=>i)},
     {label:'瓦片地图',value:监控.loadmap,type:'checkbox'},
     {label:'全国行政区划',type:'folder',opened:toRefs(setting.人影.监控).districtOptionsOpened,children:[
       {label:'填充',type:'folder',opened:toRefs(setting.人影.监控.districtOptions).districtOpened,children:[

@@ -41,7 +41,7 @@ const editUserShow = ref(false)
 // import TestButton from './elementplus/basic/button.vue'
 // import TestBorder from './elementplus/basic/border.vue'
 // import Search from "./myComponents/search.vue";
-import myHeader from "./header.vue";
+import myHeader from "./header/index.vue";
 import leftMenu from "./myComponents/leftMenu/index.vue";
 import { useExclude } from "./myComponents/bus";
 const exclude = useExclude();
