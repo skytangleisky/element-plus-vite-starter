@@ -1,17 +1,19 @@
 <template>
-  <div :class="`control-pane ${isDark?'default':''}`">
+  <div :class="`control-pane ${theme}`">
     <ul>
       <SubItem v-for="(item,key) in list" :key="key" :item="item"></SubItem>
     </ul>
   </div>
 </template>
 <script lang="ts" setup>
-import { isDark } from '~/composables';
 import type { Item } from './def'
 import SubItem from './SubItem.vue'
 import { reactive } from 'vue';
 const list = defineModel<Item[]>('list',{
   default:()=>reactive([])
+})
+const theme = defineModel<string>('theme',{
+  default:'default'
 })
 </script>
 <style lang="scss">
