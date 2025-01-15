@@ -18,7 +18,9 @@ export const useSettingStore = defineStore({
       files:[],
     },
     mapbox:{
-      showStation:false,
+      windRaster:true,
+      projection:'globe',
+      showStation:true,
       showStream:true,
       satellite:false,
       center:[0,0],
@@ -489,7 +491,6 @@ export const useSettingStore = defineStore({
         tile:'街道地图',
       }
     },
-    projection: 'mercator',// mercator|globe
     webgpu:false,
     loadmap:true,
     district:true,

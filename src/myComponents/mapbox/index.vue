@@ -1,25 +1,12 @@
 <template>
   <div ref="mapRef" class="w-full h-full bg-white"></div>
-  <!-- <el-button
-    type="primary"
-    style="position: absolute; left: 0; top: 0"
-    @click="setting.mapbox.showStream = !setting.mapbox.showStream"
-  ></el-button> -->
-  <el-select
-    v-model="setting.projection"
-    placeholder="projection"
-    size="small"
-    style="position: absolute; left: 20px; top: 20px; width: 150px"
-  >
-    <el-option
-      v-for="item in options"
-      :key="item.value"
-      :value="item.value"
-      :label="item.label"
-    ></el-option>
-  </el-select>
+  <control-pane style="position: absolute;top:100px" :list="list"></control-pane>
 </template>
 <script lang="ts" setup>
+import {layer,windParticles} from "./windRaster";
+import { isDark } from "~/composables/dark.js";
+import { onMounted, ref, onBeforeUnmount, watch, toRefs,reactive } from "vue";
+import ControlPane from '../controlPane/index.vue'
 import uvUrl from "./data/06040808.000?url";
 import plotUrl from "./data/plot/06040802.000?url";
 import irUrl1 from "./data/ir/m/0604091200.000?url";
@@ -34,7 +21,6 @@ import irUrl9 from "./data/ir/m/0604092000.000?url";
 import irUrl10 from "./data/ir/m/0604092100.000?url";
 import irUrl11 from "./data/ir/m/0604092200.000?url";
 import irUrl12 from "./data/ir/m/0604092300.000?url";
-import { onMounted, ref, onBeforeUnmount, watch, toRefs } from "vue";
 import * as turf from "@turf/turf";
 import raster from "./raster.js";
 // import style from "./streets-v11.js";
@@ -52,17 +38,23 @@ import CustomRasterSource from './customRasterSource.js'
 import { useSettingStore } from "~/stores/setting";
 import { getFeather, getColor, getCoord, addFeatherImages } from "~/tools";
 const setting = useSettingStore();
-const options = ref([
-  // { value: "albers", label: "albers" },
-  // { value: "equalEarth", label: "equalEarth" },
-  // { value: "equirectangular", label: "equirectangular" },
-  // { value: "lambertConformalConic", label: "lambertConformalConic" },
-  { value: "mercator", label: "mercator" },
-  // { value: "naturalEarth", label: "naturalEarth" },
-  // { value: "winkelTripel", label: "winkelTripel" },
-  { value: "globe", label: "globe" },
-]);
-watch(toRefs(setting).projection, (projection) => {
+const list = reactive([{label:'devtools',type:'folder',opened:true,children:[
+  {label:'投影方式',value:toRefs(setting.mapbox).projection,type:'select',options:[
+    { value: "mercator", label: "mercator" },
+    { value: "globe", label: "globe" },
+    { value: "equirectangular", label: "equirectangular" },
+    { value: "naturalEarth", label: "naturalEarth" },
+    { value: "lambertConformalConic", label: "lambertConformalConic" },
+    { value: "albers", label: "albers" },
+    { value: "equalEarth", label: "equalEarth" },
+    { value: "winkelTripel", label: "winkelTripel" },
+  ]},
+  {label:'卫星云图',value:toRefs(setting.mapbox).satellite,type:'checkbox'},
+  {label:'流线',value:toRefs(setting.mapbox).showStream,type:'checkbox'},
+  {label:'自动站',value:toRefs(setting.mapbox).showStation,type:'checkbox'},
+  {label:'windRaster',value:toRefs(setting.mapbox).windRaster,type:'checkbox'},
+]}])
+watch(()=>setting.mapbox.projection, (projection) => {
   map && map.setProjection(projection);
 });
 let boundaries = {
@@ -279,7 +271,7 @@ onMounted(() => {
     container: mapRef.value,
     // style: raster,
     style:style as any,
-    projection: setting.projection as any,
+    projection: setting.mapbox.projection as any,
     // bounds: turf.bbox(boundaries),
     localIdeographFontFamily: "",
     antialias: true,
@@ -300,7 +292,20 @@ onMounted(() => {
   map.addControl(new mapboxgl.ScaleControl());
   map.addControl(new mapboxgl.FullscreenControl());
   // map.setStyle(raster as mapboxgl.Style);
+  watch(()=>setting.mapbox.windRaster,(val)=>{
+    if(val){
+      // map.addLayer(layer)
+      map.addLayer(windParticles)
+    }else{
+      // map.removeLayer('wind')
+      map.removeLayer('wind-particles')
+    }
+  })
   map.on("load", function () {
+    if(setting.mapbox.windRaster){
+      // map.addLayer(layer)
+      map.addLayer(windParticles)
+    }
     // 逐个添加过程中的数据
     map.addSource("boundaries", {
       type: "geojson",
@@ -581,44 +586,48 @@ onMounted(() => {
       { immediate: true }
     );
 
-
-    getMicapsData(uvUrl).then(async(result:any)=>{
-      console.log("===>",result)
-      let cvs = document.createElement('canvas')
-      cvs.width = result.lngCount
-      cvs.height = result.latCount
-      let ctx = cvs.getContext('2d')!
-      let imgData = ctx.getImageData(0,0,cvs.width,cvs.height)
-      let us = result.data.slice(0,result.data.length/2)
-      let vs = result.data.slice(result.data.length/2)
-      const uMin = Math.min(...us);
-      const uMax = Math.max(...us);
-      const vMin = Math.min(...vs);
-      const vMax = Math.max(...vs);
-      for(let y = 0; y < imgData.height; y++){
-        for(let x = 0; x < imgData.width; x++){
-          let i = (y * 4) * imgData.width + x * 4
-          imgData.data[i + 0] = (us[imgData.width*y+x]-uMin)/(uMax-uMin)*255
-          imgData.data[i + 1] = (vs[imgData.width*y+x]-vMin)/(vMax-vMin)*255
-          imgData.data[i + 2] = 0
-          imgData.data[i + 3] = 255
-        }
+    watch(()=>setting.mapbox.showStream,val=>{
+      if(val){
+        getMicapsData(uvUrl).then(async(result:any)=>{
+          console.log("===>",result)
+          let cvs = document.createElement('canvas')
+          cvs.width = result.lngCount
+          cvs.height = result.latCount
+          let ctx = cvs.getContext('2d')!
+          let imgData = ctx.getImageData(0,0,cvs.width,cvs.height)
+          let us = result.data.slice(0,result.data.length/2)
+          let vs = result.data.slice(result.data.length/2)
+          const uMin = Math.min(...us);
+          const uMax = Math.max(...us);
+          const vMin = Math.min(...vs);
+          const vMax = Math.max(...vs);
+          for(let y = 0; y < imgData.height; y++){
+            for(let x = 0; x < imgData.width; x++){
+              let i = (y * 4) * imgData.width + x * 4
+              imgData.data[i + 0] = (us[imgData.width*y+x]-uMin)/(uMax-uMin)*255
+              imgData.data[i + 1] = (vs[imgData.width*y+x]-vMin)/(vMax-vMin)*255
+              imgData.data[i + 2] = 0
+              imgData.data[i + 3] = 255
+            }
+          }
+          ctx.putImageData(imgData,0,0)
+          let json = {
+            "source": "http://nomads.ncep.noaa.gov",
+            "date": "2016-11-20T00:00Z",
+            "width": cvs.width,
+            "height": cvs.height,
+            "uMin": uMin,
+            "uMax": uMax,
+            "vMin": vMin,
+            "vMax": vMax
+          }
+          let url = cvs.toDataURL()
+          map.addLayer(new CustomLayer(json,url) as any)
+        })
+      }else{
+        map.getLayer("null-island") && map.removeLayer("null-island");
       }
-      ctx.putImageData(imgData,0,0)
-      let json = {
-        "source": "http://nomads.ncep.noaa.gov",
-        "date": "2016-11-20T00:00Z",
-        "width": cvs.width,
-        "height": cvs.height,
-        "uMin": uMin,
-        "uMax": uMax,
-        "vMin": vMin,
-        "vMax": vMax
-      }
-      let url = cvs.toDataURL()
-      map.getLayer("null-island") && map.removeLayer("null-island");
-      map.addLayer(new CustomLayer(json,url) as any)
-    })
+    },{immediate:true})
 
     // map.addLayer({
     //   id: "park-volcanoes",
@@ -666,6 +675,7 @@ onMounted(() => {
       () => setting.mapbox.satellite,
       (v: boolean) => {
         if (v) {
+
           getMicapsData(url).then((result: any) => {
             let minLng = result.minLng;
             let minLat = result.minLat;
@@ -767,6 +777,7 @@ onMounted(() => {
             }
           });
         } else {
+          clearInterval(timer)
           map.getLayer("irLayer") && map.removeLayer("irLayer");
           map.getSource("irSource") && map.removeSource("irSource");
         }

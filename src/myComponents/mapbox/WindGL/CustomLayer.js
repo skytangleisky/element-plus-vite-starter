@@ -2,7 +2,7 @@ import WindGL from './index';
 import json from "../data/2016112000.json";
 import png from "../data/2016112000.png?url";
 import {mat4} from 'gl-matrix';
-/*
+
 export default class CustomLayer {
     constructor(json,png) {
         this.id = 'null-island';
@@ -16,7 +16,7 @@ export default class CustomLayer {
         this.projectionName = this.map.getProjection().name
         this.wind = new WindGL(gl,{boundaries:[32,160,12,80]})//和micaps数据范围对应
         // this.wind = new WindGL(gl,{boundaries:[100.57,169.42999999999998,-10.38,50.30088389285023]})//和卫星云图位置对应
-		this.wind.numParticles = 65535
+		this.wind.numParticles = 1024
             let windData = this.json
             const windImage = new Image();
             windImage.width = windData.width
@@ -58,9 +58,15 @@ export default class CustomLayer {
             }
             this.map.triggerRepaint();
         }
+    },
+    onRemove(map,gl){
+        this.wind.dispose(map,gl)
+        this.map.off("wheel",this.resize)
+        this.map.off("dragstart",this.resize)
+        this.map.off("move",this.resize)
     }
-}*/
-
+}
+/*GLB,GLTF格式支持
 
 import { wgs84togcj02 } from '~/myComponents/map/workers/mapUtil.js';
 import './three.min.js'
@@ -156,7 +162,7 @@ export default class CustomLayer{
     }
 }
 
-
+*/
 
 
 

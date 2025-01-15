@@ -1,8 +1,13 @@
-interface Color{
-  r:number//0~255
-  g:number//0~255
-  b:number//0~255
-  a:number//0~1
+export interface interfaceSelect{
+  type:'select'
+  label:string
+  value:boolean
+  placeholder:string
+  options:Array<{
+    key:any
+    label:string
+    value:any
+  }>
 }
 export interface interfaceCheckbox{
   type:'checkbox'
@@ -12,7 +17,12 @@ export interface interfaceCheckbox{
 export interface interfaceColor{
   type:'color'
   label:string
-  value:Color
+  value:{
+    r:number//0~255
+    g:number//0~255
+    b:number//0~255
+    a:number//0~1
+  }
 }
 export interface interfaceRange{
   type:'range'
@@ -27,6 +37,6 @@ export interface interfaceFolder{
   opened:boolean
   label:string
 }
-export type Item = (interfaceCheckbox|interfaceColor|interfaceRange|interfaceFolder) & {
+export type Item = (interfaceCheckbox|interfaceColor|interfaceRange|interfaceFolder|interfaceSelect) & {
   children?:Item[]
 }

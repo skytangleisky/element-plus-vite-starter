@@ -149,7 +149,7 @@ onMounted(()=>{
   width: 100%;
   height: 56px;
   line-height: 56px;
-  background-color: #000;
+  background-color: #fff;
   display: flex;
   justify-content: space-between;
   --angle: 0deg;
@@ -199,8 +199,19 @@ onMounted(()=>{
     // clip-path: polygon(10px 100%, calc(100% - 10px) 100%, 100% 0, 0 0);
   }
 }
-.dark .nav::before {
-  // filter:hue-rotate(310deg);
+.dark .nav{
+  background-color: #000;
+  &::before{
+    filter:hue-rotate(310deg);
+  }
+  .title{
+    &::before{
+      filter:hue-rotate(310deg);
+    }
+    &::after{
+      filter:hue-rotate(310deg);
+    }
+  }
 }
 
 .dark .DigitalClock{

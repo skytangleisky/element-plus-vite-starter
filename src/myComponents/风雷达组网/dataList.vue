@@ -53,7 +53,6 @@ const handleNodeClick = (data: Tree) => {
 };
 let radar_id = location.href.substring(location.href.lastIndexOf('/')+1,location.href.length)
 import type Node from 'element-plus/es/components/tree/src/model/node'
-import { isLeaf } from "element-plus/es/utils";
 import moment from 'moment';
 const loadNode = (node: Node, resolve: (data: Tree[]) => void) => {
   if (node.level === 0) {
