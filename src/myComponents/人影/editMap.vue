@@ -2097,9 +2097,9 @@ onMounted(() => {
         });
       });
     }
-    // taskTimer = setInterval(() => {
-    //   work();
-    // }, 1000);
+    taskTimer = setInterval(() => {
+      work();
+    }, 1000);
     // getDevice().then((res) => {
     //   dialogOptions.menus = res.data;
     //   let features: any = [];
@@ -2523,22 +2523,22 @@ onMounted(() => {
     // });
 
     //模拟飞机移动
-    timer = setInterval(() => {
-      let source = map.getSource("模拟飞机");
-      if (source) {
-        let data = source.serialize().data;
-        data.features.map((item: any) => {
-          let coordinates = item.geometry.coordinates;
-          let deg = item.properties.fHeading;
-          let speed = item.properties.speed;
-          const pt = turf.destination(turf.point(coordinates), speed, deg, {
-            units: "meters",
-          });
-          item.geometry.coordinates = pt.geometry?.coordinates;
-        });
-        source.setData(data);
-      }
-    }, 1000);
+    // timer = setInterval(() => {
+    //   let source = map.getSource("模拟飞机");
+    //   if (source) {
+    //     let data = source.serialize().data;
+    //     data.features.map((item: any) => {
+    //       let coordinates = item.geometry.coordinates;
+    //       let deg = item.properties.fHeading;
+    //       let speed = item.properties.speed;
+    //       const pt = turf.destination(turf.point(coordinates), speed, deg, {
+    //         units: "meters",
+    //       });
+    //       item.geometry.coordinates = pt.geometry?.coordinates;
+    //     });
+    //     source.setData(data);
+    //   }
+    // }, 1000);
     if(false){
       contour2(map,{
         isobands:props.isobands,
