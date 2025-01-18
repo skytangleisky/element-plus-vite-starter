@@ -14,7 +14,7 @@ export class Restrictor {
   }
 }
 //计算帧率
-export class FPS{
+export class FPSTool{
   lastTime:number;
   frames:number;
   measureTime:number;

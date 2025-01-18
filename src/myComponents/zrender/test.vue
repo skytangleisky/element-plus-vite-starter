@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import { useSettingStore } from '~/stores/setting';
-import { Restrictor,FPS } from './tool';
+import { Restrictor,FPSTool } from './tool';
 const setting = useSettingStore();
 import ControlPane from '~/myComponents/controlPane/index.vue'
 import { ref, onMounted, watch, reactive,toRefs, onBeforeUnmount } from "vue";
 const restrictor =  new Restrictor(16.67);
-const fps = new FPS(1000);
-const options = reactive({
-  fps:'0.00',
-})
+const fpsTool = new FPSTool(1000);
+const fps = ref('0.00')
 const canvasRef = ref<HTMLCanvasElement>();
 let cvs: HTMLCanvasElement;
 let ctx: CanvasRenderingContext2D;
@@ -61,7 +59,7 @@ onMounted(() => {
       aid = requestAnimationFrame(animate)
     }else{
       cancelAnimationFrame(aid)
-      options.fps = '0.00'
+      fps.value = '0.00'
     }
   },{
     immediate:true
@@ -97,7 +95,7 @@ const draw = () => {
 
 function animate(timestamp:number) {
   restrictor.process(timestamp,()=>{
-    fps.measure(timestamp,(fps:number)=>{options.fps = fps.toFixed(2)})
+    fpsTool.measure(timestamp,(frameRate:number)=>{fps.value = frameRate.toFixed(2)})
     draw();
   })
   aid = requestAnimationFrame(animate);
@@ -116,10 +114,10 @@ const list = reactive<any>([
   {label:'devtools',type:'folder',opened:toRefs(setting.canvas).devtoolsOpen,children:[
     {label:'粒子数量',value:toRefs(setting.canvas).particleCount,type:'range',min:1,max:100000,arr:Array.from({length:100000},(_,i:number)=>i+1)},
     {label:'渲染',value:toRefs(setting.canvas).render,type:'checkbox'},
-    {label:'FPS',value:toRefs(options).fps,type:'text'},
+    {label:'FPS',value:fps,type:'text'},
     {label:'曲线',value:{
       fps: {
-        value: toRefs(options).fps,
+        value: fps,
         min: 0,
         max: 200,
         strokeStyle: "white",
