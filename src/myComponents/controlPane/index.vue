@@ -12,7 +12,7 @@ import { reactive } from 'vue';
 const list = defineModel<Item[]>('list',{
   default:()=>reactive([])
 })
-const theme = defineModel<string>('theme',{
+const theme = defineModel<'default'|'jetblack'|'iceberg'|'retro'|'translucent'|'vivid'>('theme',{
   default:'default'
 })
 </script>
@@ -159,7 +159,7 @@ const theme = defineModel<string>('theme',{
   position: absolute;
   background:var(--tp-base-background-color);
   box-shadow: 0 2px 4px var(--tp-base-shadow-color);
-  overflow: hidden;
+  // overflow: hidden;
   border-radius: 6px;
   font-size: 11px;
   font-family: Roboto Mono, Source Code Pro, Menlo, Courier, monospace;
@@ -195,6 +195,7 @@ const theme = defineModel<string>('theme',{
       display: flex;
       flex-direction: row;
       position: relative;
+      align-items: center;
       .label{
         flex:1;
         padding:4px 0 4px 6px;

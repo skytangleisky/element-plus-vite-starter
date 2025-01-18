@@ -58,7 +58,7 @@ export default class CustomLayer {
             }
             this.map.triggerRepaint();
         }
-    },
+    }
     onRemove(map,gl){
         this.wind.dispose(map,gl)
         this.map.off("wheel",this.resize)

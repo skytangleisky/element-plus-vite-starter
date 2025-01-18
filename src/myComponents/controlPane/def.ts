@@ -1,3 +1,21 @@
+export interface interfaceCurve{
+  type:'curve'
+  label:string
+  value:
+  {
+    [key: string]: {
+      value?: number;
+      max?: number;
+      min?: number;
+      strokeStyle?: string;
+    }
+  }
+}
+export interface interfaceText{
+  type:'text'
+  label:string
+  value:string
+}
 export interface interfaceSelect{
   type:'select'
   label:string
@@ -37,6 +55,6 @@ export interface interfaceFolder{
   opened:boolean
   label:string
 }
-export type Item = (interfaceCheckbox|interfaceColor|interfaceRange|interfaceFolder|interfaceSelect) & {
+export type Item = (interfaceCheckbox|interfaceColor|interfaceRange|interfaceFolder|interfaceSelect|interfaceText|interfaceCurve) & {
   children?:Item[]
 }

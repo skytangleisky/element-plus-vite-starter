@@ -9,6 +9,11 @@ import cq_permission from "./permission/cq.js"
 export const useSettingStore = defineStore({
   id: 'setting',
   state:()=>({
+    canvas:{
+      devtoolsOpen:false,
+      particleCount:10,
+      render:true,
+    },
     hueRotate:0,
     channel:3,//调色板通道
     scrollTop:0,

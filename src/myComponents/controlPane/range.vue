@@ -1,13 +1,15 @@
 <template>
   <div class="range">
     <span class="label">{{modelValue.label}}</span>
-    <div ref="rangerRef" class="ranger">
-      <div class="track">
-        <div class="progress"></div>
+    <div class="w-150px h-full flex items-center">
+      <div ref="rangerRef" class="ranger" style="margin:3px 3px 3px 4px">
+        <div class="track">
+          <div class="progress"></div>
+        </div>
+        <div class="thumb" :style="`${isDragging?'transform: scale(1);':''}`"></div>
       </div>
-      <div class="thumb" :style="`${isDragging?'transform: scale(1);':''}`"></div>
+      <input type="text" :name="Math.random().toString()" maxlength="6" style="width: 6ch;font-family: Menlo,Consolas,Monaco;margin:2px;" :value="inputValue" @change="valueChange">
     </div>
-    <input type="text" :name="Math.random().toString()" maxlength="4" style="width: 4ch;font-family: Menlo,Consolas,Monaco;margin:2px;" :value="inputValue" @change="valueChange">
   </div>
 </template>
 <script lang="ts" setup>
@@ -88,7 +90,7 @@ function valueChange(evt:Event){
     .ranger{
       --padding-left:0px;
       --padding-right:0px;
-      width: 100px;
+      flex:1;
       margin: 2px;
       --track-height:2px;
       --progress:10%;
