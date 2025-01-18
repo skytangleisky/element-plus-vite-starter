@@ -2,8 +2,8 @@
   <span class="label">{{ modelValue.label }}</span>
   <div class="value" style="display: flex;align-items: center;">
     <div style="margin:3px 3px 3px 4px;width: 100%;">
-      <div class="graph h-auto flex flex-row justify-center w-100%" tabindex="-1">
-        <div class="relative h-60px" style="width: 100%;margin-right: 20px;">
+      <div class="graph" style="height: auto;display:flex;flex-direction: row;justify-content: center;width: 100%;;" tabindex="-1">
+        <div style="position: relative;height: 60px;width: 100%;margin-right: 20px;">
           <canvas
             class="canvas"
             v-resize="resize"
