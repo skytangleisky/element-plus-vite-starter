@@ -111,6 +111,7 @@
   </div>
 </template>
 <script setup>
+import { isDark } from "~/composables/dark";
 import { checkPermission } from "~/tools";
 import { addFeatherImages, getFeather } from "~/tools";
 import { destinationPoint } from "~/myComponents/map/js/core.js";

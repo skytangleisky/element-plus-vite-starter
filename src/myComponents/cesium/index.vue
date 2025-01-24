@@ -5,7 +5,7 @@
   import { onMounted,ref,reactive, onBeforeUnmount,watch,toRefs } from 'vue';
   import { FPSTool } from '../zrender/tool';
   import { useCesiumStore } from '~/stores/cesium';
-import { isDark } from '~/composables';
+  import { isDark } from '~/composables';
   const cesiumStore = useCesiumStore();
   const fpsTool = new FPSTool();
   const fps = ref('0.00');
@@ -34,7 +34,7 @@ import { isDark } from '~/composables';
       // navigationHelpButton:cesiumStore.navigationHelpButton,
       creditContainer:document.createElement("div"),
     })
-    viewer.imageryLayers.addImageryProvider(gaodeImageryProvider)
+    // viewer.imageryLayers.addImageryProvider(gaodeImageryProvider)
     viewer.scene.postRender.addEventListener(()=>{
       fpsTool.measure(performance.now(),(frameRate:number)=>{
         fps.value = frameRate.toFixed(2)
