@@ -132,6 +132,15 @@ export default {
       }
     },
     {
+      path: 'cesium',
+      name: 'c4961e04-e574-0e1f-ae23-eeffaab14a44',
+      component: '/src/myComponents/cesium/index.vue',
+      svg:'8b3fec3e-7dcc-445f-866e-a4c4db79ebd7',
+      meta:{
+        label: 'cesium',
+      }
+    },
+    {
       path: 'contour',
       name: 'c4961e04-e574-0e1f-be23-94f157b14f44',
       component: '/src/myComponents/等值线压力测试/index.vue',

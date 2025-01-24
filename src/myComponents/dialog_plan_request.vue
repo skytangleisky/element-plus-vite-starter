@@ -248,13 +248,18 @@ onBeforeUnmount(()=>{
   z-index: 4;
   background: #00000088;
   .dragDialog {
-    background: #2b2b2b;
+    background: #fff;
     padding:10px;
     border-radius: 10px;
     box-shadow: 0 0 0 1px #757575, 0 0 0 2px #010201;
     .ep-row {
       padding: 5px;
     }
+  }
+}
+.dark .modal {
+  .dragDialog{
+    background: #2b2b2b;
   }
 }
 </style>

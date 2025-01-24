@@ -37,11 +37,6 @@
         :key="k"
       ></el-option>
     </el-select> -->
-    <graph
-      v-if="checkPermission(['admin'])"
-      class="absolute left-0 bottom-0px"
-      v-model:args="graphArgs"
-    ></graph>
     <div class="stationMenu" ref="stationMenuRef" @mousedown.stop>
       <ul>
         <li @click="作业申请()">地面作业申请</li>
@@ -65,7 +60,6 @@ import { eventbus } from "~/eventbus";
 import { reactive, onMounted, onBeforeUnmount, ref, watch } from "vue";
 import PlanPanel, { planDataType,zyddataType } from "./planPanel.vue";
 import Dialog from "./dialog.vue";
-import graph from "~/tools/graph.vue";
 import { addFeatherImages,View,getLngLat } from "~/tools";
 import CustomLayer from "./webglLayer/CustomLayer.js";
 import airstrip from "./airstrip.js";
@@ -131,10 +125,6 @@ import {
   calculateCirclePoints,
 } from "~/tools/index.ts";
 import { prevRequestDataType } from "../dialog_plan_request.vue";
-let graphArgs = reactive({
-  fps: { value: 0, min: 0, max: 144, strokeStyle: "#ffffff88" },
-  // memory: { value: 0, min: 0, max: 120, strokeStyle: "#0f0" },
-});
 mapboxgl.accessToken = "pk.eyJ1IjoidGFuZ2xlaTIwMTMxNCIsImEiOiJjbGtmOTdyNWoxY2F1M3Jqczk4cGllYXp3In0.9N-H_79ehy4dJeuykZa0xA";
 const Map = mapboxgl.Map;
 const Marker = mapboxgl.Marker;
@@ -142,7 +132,6 @@ const Popup = mapboxgl.Popup;
 const NavigationControl = mapboxgl.NavigationControl;
 const FullscreenControl = mapboxgl.FullscreenControl;
 let timer = 0;
-let graphTimer = 0;
 let taskTimer = 0;
 let frameCounter = 0;
 const mapRef = ref<HTMLCanvasElement>();
@@ -546,14 +535,6 @@ const loop = ()=>{
 let aid = 0;
 onMounted(() => {
   aid = requestAnimationFrame(loop)
-  graphTimer = setInterval(() => {
-    if(map){
-      graphArgs.fps.value = map.painter.frameCounter - frameCounter;
-      frameCounter = map.painter.frameCounter;
-      // graphArgs.memory.value = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
-      // graphArgs.memory.max = Math.round(performance.memory.jsHeapSizeLimit / 1024 / 1024);
-    }
-  }, 1000);
   map = new Map({
     container: (mapRef.value as unknown) as HTMLCanvasElement,
     projection: "globe",
@@ -2569,7 +2550,6 @@ onBeforeUnmount(() => {
   cancelAnimationFrame(aid)
   console.log("onBeforeUnmount");
   clearInterval(timer);
-  clearInterval(graphTimer);
   clearInterval(taskTimer);
   eventbus.off("人影-将站点移动到屏幕中心", flyTo);
   eventbus.off("人影-地面作业申请-网络上报", 网络上报);

@@ -18,11 +18,7 @@
             "
           ></canvas>
           <template v-for="(v, k) in data" :key="k">
-            <span
-              class="tp-grlv_t tp-ttv"
-              :style="`left: ${data[k].left}px;top:${data[k].top}px`"
-              >{{ data[k].value }}</span
-            >
+            <span class="tp-grlv_t_temp tp-ttv_temp" :style="`left: ${data[k].left}px;top:${data[k].top}px`">{{ data[k].value }}</span>
           </template>
         </div>
       </div>
@@ -172,25 +168,25 @@
   .canvas{
     background-color: var(--tp-monitor-background-color);
   }
-  .tp-grlv_t {
+  .tp-grlv_t_temp {
     margin-top: -4px;
     transition: left 0.05s, top 0.05s;
     /* visibility: hidden; */
-    .tp-ttv {
+    .tp-ttv_temp {
       background-color: #bbbcc4b3;
       &::before {
         border-top-color: rgba(0, 0, 0, 0.2);
       }
     }
   }
-  .tp-ttv {
+  .tp-ttv_temp {
     left: 0px;
     top: 100%;
     background-color: #bbbcc4;
     border-radius: 2px;
     color: #28292e;
     padding: 2px 4px;
-    pointer-events: none;
+    // pointer-events: none;
     position: absolute;
     transform: translate(-50%, -100%);
     border: 1px solid gray;

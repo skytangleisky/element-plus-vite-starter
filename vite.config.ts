@@ -10,7 +10,7 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Unocss from 'unocss/vite'
 import wasm from 'vite-plugin-wasm';
 import compression from 'vite-plugin-compression';
-
+import cesium from 'vite-plugin-cesium'
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import {
   presetAttributify,
@@ -47,6 +47,7 @@ export default defineConfig({
   plugins: [
     wasm(),
     vue(),
+    cesium(),
     compression({
       verbose: true,
       disable: true,
@@ -60,8 +61,8 @@ export default defineConfig({
     vueSetupExtend({}),
     inject({
       $: "jquery",
-      jQuery: "jquery",
-      "window.jQuery": "jquery"
+      // jQuery: "jquery",
+      // "window.jQuery": "jquery"
     }),
     Components({
       // allow auto load markdown components under `./src/components/`
@@ -121,7 +122,7 @@ export default defineConfig({
       },
       '/backend':{
         // target:'https://websocket.tanglei.top',//替换的服务端地址
-        target:'http://victorysoft.cn:3000',//替换的服务端地址
+        target:'http://192.168.0.135:3000',//替换的服务端地址
         // target:'https://test.tanglei.site',//替换的服务端地址
         secure:false,
         changeOrigin:true,

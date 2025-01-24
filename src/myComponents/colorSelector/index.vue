@@ -66,14 +66,16 @@ const selectorColor = defineModel<{r:number;g:number;b:number;a:number}>('select
   default:{r:255,g:255,b:255,a:1.0}
 })
 watch(selectorColor,()=>{
-  let color = `rgb(${selectorColor.value.r},${selectorColor.value.g},${selectorColor.value.b})`
-  $('#csactive').css('background-color',color)
-  $('#cscolor').css('background-color',color)
-  let matches = (getComputedStyle($('#cscolor')[0]) as any)['background-color'].match(/(?<=\().*(?=\))/g)
-  let rgb = matches[0].split(',').map((item:any)=>Number(item.trim()))
-  colorSelector.setRgb(rgb[0],rgb[1],rgb[2])
-  colorSelector.update()
-  colorSelector.channelChanged()
+  if($('#cscolor')[0]){
+    let color = `rgb(${selectorColor.value.r},${selectorColor.value.g},${selectorColor.value.b})`
+    $('#csactive').css('background-color',color)
+    $('#cscolor').css('background-color',color)
+    let matches = (getComputedStyle($('#cscolor')[0]) as any)['background-color'].match(/(?<=\().*(?=\))/g)
+    let rgb = matches[0].split(',').map((item:any)=>Number(item.trim()))
+    colorSelector.setRgb(rgb[0],rgb[1],rgb[2])
+    colorSelector.update()
+    colorSelector.channelChanged()
+  }
 })
 const emit = defineEmits(['update:selectorColor','cancel'])
 let colorSelector:ColorSelector;

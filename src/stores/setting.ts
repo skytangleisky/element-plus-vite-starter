@@ -6,9 +6,11 @@ import dev from "./subs/dev.js";
 import zh from "./subs/zh.js";
 import cq from "./subs/cq.js";
 import cq_permission from "./permission/cq.js"
+import { useCesiumStore } from "./cesium.js";
 export const useSettingStore = defineStore({
   id: 'setting',
   state:()=>({
+    cesium:()=>useCesiumStore(),
     canvas:{
       devtoolsOpen:false,
       particleCount:10,
@@ -733,6 +735,7 @@ export const useSettingStore = defineStore({
         path: '',
         name: '99961e04-e574-0e1f-3e23-94f157b14a43',
         redirect: '/ry/synthesis',
+        // redirect: '/dev/cesium',
         hide:true,
         meta:{
           label:'超级用户',
