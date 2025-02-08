@@ -106,7 +106,7 @@
       const rotatedX = offsetX * cosAngle - offsetY * sinAngle;
       const rotatedY = offsetX * sinAngle + offsetY * cosAngle;
       const position = Cesium.Cartesian3.fromDegrees(120*Math.random(), 30*Math.random(), 0);
-      const imageIndex = Math.floor(Math.random()*images.length)
+      const imageIndex = Math.floor(Math.random()*images.length);
       billboardCollection.add({
         position,
         image: images[imageIndex],
