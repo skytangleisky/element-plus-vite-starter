@@ -12,7 +12,7 @@
     </div>
     <div class="w-full h-full flex justify-center">
       <div style="position: relative; width: 80px; height: 80px; overflow: hidden">
-        <img src="/src/assets/feathers/12.svg" class="imgClass" />
+        <img src="/feathers/12.svg" class="imgClass" />
         <canvas
           v-resize="resize"
           ref="canvasRef"
