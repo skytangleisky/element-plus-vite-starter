@@ -1,7 +1,9 @@
+import { SceneMode } from 'cesium'
 import { defineStore, acceptHMRUpdate } from "pinia"
 
 export const useCesiumStore = defineStore('cesium',{
   state: () => ({
+    sceneMode: SceneMode.SCENE3D,
     timeline:false,
     geocoder:false,
     homeButton:false,
