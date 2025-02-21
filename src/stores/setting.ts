@@ -10,6 +10,7 @@ import { useCesiumStore } from "./cesium.js";
 export const useSettingStore = defineStore({
   id: 'setting',
   state:()=>({
+    menus:true,
     cesium:()=>useCesiumStore(),
     canvas:{
       devtoolsOpen:false,
@@ -334,7 +335,7 @@ export const useSettingStore = defineStore({
         plane:true,
         airport:true,
         navigationStation:true,
-        districtOptionsOpened:true,
+        districtOptionsOpened:false,
         districtOptions:{
           districtOpened:true,
           district:false,
@@ -351,7 +352,7 @@ export const useSettingStore = defineStore({
           districtLineColor:{r:255,g:0,b:0,a:1},
           districtLineOpacity:0.5,
         },
-        beijingOptionsOpened:true,
+        beijingOptionsOpened:false,
         beijingOptions:{
           districtOpened:true,
           district:true,
@@ -368,7 +369,7 @@ export const useSettingStore = defineStore({
           districtLineColor:{r:255,g:0,b:0,a:0},
           districtLineOpacity:0.5,
         },
-        ryAirspacesOpened:true,
+        ryAirspacesOpened:false,
         ryAirspaces:{
           fillOpened:true,
           fill:true,

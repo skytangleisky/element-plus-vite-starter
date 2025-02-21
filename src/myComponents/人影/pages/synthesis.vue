@@ -108,8 +108,8 @@
     style="z-index:2010"
   ></dialog-plan-request>
   <ColorSelector v-show="setting.人影.监控.showColorSelector !== -1" v-model:selectorColor="selectorColor" style="z-index: 2010;" @cancel="setting.人影.监控.showColorSelector=-1"></ColorSelector>
-  <div ref="tweakPaneRef" class="tp-dfwv default" data-pane-lighttheme style="z-index: 1;"></div>
-  <control-pane style="top:10px;right:400px;" :list="list"></control-pane>
+  <div ref="tweakPaneRef" class="tp-dfwv default hidden" data-pane-lighttheme style="z-index: 1;"></div>
+  <control-pane style="top:10px;right:10px;" :list="list" :theme="isDark?'default':'retro'"></control-pane>
 </template>
 <script lang="ts" setup>
 import editMap from "../editMap.vue";
@@ -133,6 +133,8 @@ import ControlPane from '../../controlPane/index.vue';
 const 监控 = toRefs(setting.人影.监控)
 const list = reactive([
   {label:'devtools',type:'folder',expanded:false,children:[
+    {label:'菜单',value:toRefs(setting).menus,type:'checkbox'},
+    {label:'暗黑主题',value:isDark,type:'checkbox'},
     {label:'色相',value:toRefs(setting).hueRotate,type:'range',min:0,max:360,step:1,arr:Array.from({length:361},(_,i:number)=>i)},
     {label:'瓦片地图',value:监控.loadmap,type:'checkbox'},
     {label:'全国行政区划',type:'folder',opened:toRefs(setting.人影.监控).districtOptionsOpened,children:[
@@ -202,6 +204,11 @@ const list = reactive([
     {label:'飞机',value:监控.plane,type:'checkbox'},
     {label:'作业点',value:监控.zyd,type:'checkbox'},
     {label:'导航台',value:监控.navigationStation,type:'checkbox'},
+    {label:'自动站',value:监控.zdz,type:'checkbox'},
+    {label:'网格点',value:监控.gridPoint,type:'checkbox'},
+    {label:'网格值',value:监控.gridValue,type:'checkbox'},
+    {label:'等值线',value:监控.isolines,type:'checkbox'},
+    {label:'等值带',value:监控.isobands,type:'checkbox'},
   ]}
 ]);
 let pane:any
@@ -312,11 +319,11 @@ onMounted(()=>{
   pane.addBinding(setting.人影.监控, 'plane',{label:'飞机'});
   pane.addBinding(setting.人影.监控, 'zyd',{label:'作业点'});
   pane.addBinding(setting.人影.监控, 'navigationStation',{label:'导航台'});
-  // pane.addBinding(setting.人影.监控, 'zdz',{label:'自动站'});
-  // pane.addBinding(setting.人影.监控, 'gridPoint',{label:'网格点'});
-  // pane.addBinding(setting.人影.监控, 'gridValue',{label:'网格值'});
-  // pane.addBinding(setting.人影.监控, 'isolines',{label:'等值线'});
-  // pane.addBinding(setting.人影.监控, 'isobands',{label:'等值带'});
+  pane.addBinding(setting.人影.监控, 'zdz',{label:'自动站'});
+  pane.addBinding(setting.人影.监控, 'gridPoint',{label:'网格点'});
+  pane.addBinding(setting.人影.监控, 'gridValue',{label:'网格值'});
+  pane.addBinding(setting.人影.监控, 'isolines',{label:'等值线'});
+  pane.addBinding(setting.人影.监控, 'isobands',{label:'等值带'});
 })
 onBeforeUnmount(()=>{
   pane&&pane.dispose();
@@ -357,6 +364,7 @@ const selectorColor = computed({
 })
 const tweakPaneRef = ref<HTMLElement>();
 import { checkPermission } from "~/tools";
+import { isDark } from "~/composables";
 const confirm = (data: prevRequestDataType) => {
   eventbus.emit("人影-地面作业申请-网络上报", data);
 };

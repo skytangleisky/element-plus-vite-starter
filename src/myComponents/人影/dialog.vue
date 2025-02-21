@@ -8,7 +8,7 @@
         placeholder="请输入过滤条件"
         v-model="options.value"
       />
-      <el-icon
+      <!-- <el-icon
         class="dropdown"
         style="
           width: 30px;
@@ -19,7 +19,8 @@
         "
         @click="toggleCollapse"
         @mousedown.stop
-        ><svg
+        >
+        <svg
           t="1692335429583"
           class="icon"
           viewBox="0 0 1024 1024"
@@ -30,7 +31,10 @@
             d="M64 320l64-64 384 384L896 256l64 64-448 448z"
             p-id="9959"
             data-spm-anchor-id="a313x.search_index.0.i4.4d423a814g60B1"
-          ></path></svg></el-icon>
+          >
+          </path>
+        </svg>
+      </el-icon> -->
     </div>
     <div class="contain" @mousedown.stop>
       <div

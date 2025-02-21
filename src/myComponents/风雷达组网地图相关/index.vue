@@ -133,6 +133,8 @@
   </div>
 </template>
 <script setup lang="ts">
+import { getMicapsData } from '../mapbox/data/plot/micaps.ts';
+import plotUrl from '/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pth15.00_Spd6.00_Res030_StartIdx002_VADStart002_VADStop190_VADWind_Sec_20250113 000000.000?url'
 import TimeStep from '~/tools/timeStep.vue';
 import FKX from './风廓线.vue';
 import uvUrl from "../mapbox/data/06040808.000?url";
@@ -1022,6 +1024,7 @@ import {databaseRaw,getPPIData} from '~/api/重庆'
 import interpolate from "~/tools/idw.js";
 let res:any
 async function work(){
+  console.log('------------------------>')
   res = await exec({
     // database: "host=127.0.0.1&port=3306&user=root&password=tanglei&database=weatherservice",
     database: databaseRaw,
@@ -1575,6 +1578,41 @@ async function updateData(altitude:number){
       (map.getSource("point") as any).setData(points.data);
     }
   })
+
+  // getMicapsData(plotUrl).then((result:any)=>{
+  //   const beginLng = result.beginLng
+  //   const beginLat = result.beginLat
+  //   const endLng = result.endLng
+  //   const endLat = result.endLat
+  //   const lngCount = result.lngCount
+  //   const latCount = result.latCount
+  //   let dLng = (endLng-beginLng)/(lngCount-1)
+  //   let dLat = (endLat-beginLat)/(latCount-1)
+  //   for(let j=0;j<latCount;j++){
+  //     for(let i=0;i<lngCount;i++){
+  //       let index = j*lngCount+i
+  //       let u = result.data.slice(0,result.data.length/2)
+  //       let v = result.data.slice(result.data.length/2,result.data.length)
+  //       let value = [u[index],v[index]]
+  //       let speed = Math.sqrt(Math.pow(value[0],2)+Math.pow(value[1],2))
+  //       let pt = wgs84togcj02(beginLng+i*dLng,beginLat+j*dLat)
+  //       inversionPPIData.features.push({
+  //         type: "Feature",
+  //         geometry: {
+  //           type: "Point",
+  //           coordinates: pt,
+  //         },
+  //         properties: {
+  //           风向:Math.atan2(value[0],value[1])*180/Math.PI,
+  //           风速:Number(speed),
+  //           image:`${setting.风雷达组网地图相关.反演风场=='风矢'?'arrow':'feather'}${getFeather(speed)}`
+  //         },
+  //       })
+  //     }
+  //   }
+  //   map.getSource('inversionPPIData').setData(inversionPPIData)
+  //   console.log(result)
+  // })
 }
 let circleDataFeatures = {
   type: "FeatureCollection",

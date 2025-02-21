@@ -1,5 +1,5 @@
 <template>
-  <div v-dialogDrag class="planPanel z-1">
+  <div class="planPanel z-1">
     <el-tabs
       type="border-card"
       style="width: 700px; padding: 7px; border-radius: 8px; box-sizing: border-box"

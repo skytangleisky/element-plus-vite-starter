@@ -150,7 +150,7 @@ export default defineConfig({
         changeOrigin:true,
       },
       '/qt':{
-        // target:'http://192.168.0.114:9090',//替换的服务端地址
+        // target:'http://192.168.0.135:9090',//替换的服务端地址
         target:'http://qt.tanglei.top',//替换的服务端地址
         changeOrigin:true,
         rewrite:path=>path.replace(/^\/qt/,'') // 设置重写的路径
@@ -162,7 +162,8 @@ export default defineConfig({
         rewrite:path=>path.replace(/^\/amap/,'') // 设置重写的路径
       },
       '/aircraft_position':{//人影飞机
-        target:'http://victorysoft.cn:8081',
+        target:'http://192.168.0.135:8081',
+        // target:'http://victorysoft.cn:8081',
         rewrite:path=>path.replace(/^\/aircraft_position/,''), // 设置重写的路径
         secure:false,
         changeOrigin:true,
@@ -176,7 +177,7 @@ export default defineConfig({
         ws:true,
       },
       '/python':{
-        // target:'http://192.168.0.114:8000',
+        // target:'http://192.168.0.135:8000',
         target:'http://victorysoft.cn:8000',
         rewrite:path=>path.replace(/^\/python/,''), // 设置重写的路径
         secure:false,

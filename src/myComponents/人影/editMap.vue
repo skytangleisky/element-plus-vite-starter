@@ -14,12 +14,14 @@
         outline: none;
       "
     ></div>
+    <el-icon v-show="!(setting.menus)" v-html="menusSvg" :style="`font-size: 40px;top:10px;left:10px;fill:${isDark?'black':'white'}`" @click="setting.menus=true"></el-icon>
     <Dialog
-      v-dialogDrag
+      v-show="setting.menus"
       class="stationDialog"
       v-model:menus="dialogOptions.menus"
     ></Dialog>
     <plan-panel
+      v-show="setting.menus"
       :当前作业进度="planProps.当前作业进度"
       :今日作业记录="planProps.今日作业记录"
     ></plan-panel>
@@ -49,6 +51,7 @@
   </div>
 </template>
 <script lang="ts" setup>
+import menusSvg from '~/assets/menus.svg?raw'
 import banSvg from '~/assets/ban.svg?url'
 import planeUrl from "~/assets/飞机.svg?url";
 import projectileUrl from "~/assets/projectile.svg?url";
@@ -66,7 +69,8 @@ import airstrip from "./airstrip.js";
 import { exec } from "~/api/index.js";
 import {getTodayRecords,airspaceApply} from "~/api/人影/index.js"
 import { loadImage2Map } from "~/tools/index.ts";
-import contour from './gridContour'
+// import contour from './gridContour'
+import contour from './testContour'
 import contour2 from './discreteContour'
 import moment from "moment";
 import { wgs84togcj02 } from "~/myComponents/map/workers/mapUtil";
@@ -223,6 +227,7 @@ const props = withDefaults(
   }
 );
 import style from "./editMap.js";
+import { isDark } from '~/composables/dark.js';
 // style.layers.map((v: any) => {
 //   if (v.id == "simple-tiles") {
 //     v.layout.visibility = props.loadmap ? "visible" : "none";
@@ -587,7 +592,7 @@ onMounted(() => {
         style: 'fill:#0f0;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
       }
     })
-    await loadImage2Map(map,planeUrl,32,32,{
+    await loadImage2Map(map,planeUrl,24,24,{
       airplane:{
         style: 'fill:yellow;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
       }
@@ -605,7 +610,7 @@ onMounted(() => {
         style:"fill:red;stroke:black;stroke-width:1px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       }
     })
-    await loadImage2Map(map,导航台图标,18,18,{
+    await loadImage2Map(map,导航台图标,14,14,{
       导航台图标:{
         style:'fill:white;stroke:black;stroke-width:1px',
       }
