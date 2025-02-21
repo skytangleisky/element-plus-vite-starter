@@ -3,10 +3,11 @@
     <div
       style="
         display: flex;
+        flex-direction: column;
         align-items: center;
         position: absolute;
         bottom: 100%;
-        transform: translateY(-40px);
+        transform: translateY(-50px);
       "
     >
       <img
@@ -185,13 +186,17 @@ watch(
   align-items: center;
   flex-direction: column;
   .title {
+    position: relative;
+    z-index: 1;
     background-size: cover;
-    font-family: "SourceHanSansSC-Bold";
     font-weight: 600;
     text-align: left;
-    font-size: 35px;
-    color: #40b9ff;
-    text-shadow: 5px 4px 5px rgba(0, 0, 0, 0.15);
+    font-size: 40px;
+    background:linear-gradient(180deg,#03f4ff 0%, #1A8AC2 100%);
+    filter:drop-shadow(0 4px 2px rgba(0, 0, 0, 1));
+    z-index: 1;
+    color:transparent;
+    background-clip: text;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -206,8 +211,8 @@ watch(
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    backdrop-filter:blur(5px);
-    border:1px solid #80808080;
+    backdrop-filter:blur(10px);
+    border:2px solid #185378;
     border-radius: 10px;
     box-sizing: border-box;
     .ep-input {
@@ -245,8 +250,8 @@ watch(
 </style>
 <style lang="scss" scoped>
 .fourCorners::before {
-  --offset: -2px;
-  --borderWidth: 3px;
+  --offset: -3px;
+  --borderWidth: 4px;
   position: absolute;
   left: var(--offset);
   top: var(--offset);
@@ -256,7 +261,7 @@ watch(
   border-radius: 10px;
   box-sizing: border-box;
   border: var(--borderWidth) solid #469dee;
-  --len: 15px;
+  --len: 20px;
   mask: conic-gradient(at var(--len) var(--len), transparent 270deg, red 270deg) 0 0 / calc(100% - var(--len)) calc(100% - var(--len));
 }
 </style>

@@ -1024,7 +1024,6 @@ import {databaseRaw,getPPIData} from '~/api/重庆'
 import interpolate from "~/tools/idw.js";
 let res:any
 async function work(){
-  console.log('------------------------>')
   res = await exec({
     // database: "host=127.0.0.1&port=3306&user=root&password=tanglei&database=weatherservice",
     database: databaseRaw,
