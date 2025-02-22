@@ -366,7 +366,7 @@ export const useSettingStore = defineStore({
           districtLineOpened:true,
           districtLine:true,
           districtLineWidth:2,
-          districtLineColor:{r:255,g:0,b:0,a:0},
+          districtLineColor:{r:255,g:0,b:255,a:1},
           districtLineOpacity:0.5,
         },
         ryAirspacesOpened:false,
