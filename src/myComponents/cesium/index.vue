@@ -6,6 +6,7 @@
   import { FPSTool } from '../zrender/tool';
   import { useCesiumStore } from '~/stores/cesium';
   import { isDark } from '~/composables';
+  import { getFeather } from '~/tools';
   const cesiumStore = useCesiumStore();
   const fpsTool = new FPSTool();
   const fps = ref('0.00');
@@ -57,40 +58,6 @@
     }));
     const billboardCollection = new Cesium.BillboardCollection({scene: viewer.scene});
     viewer.scene.primitives.add(billboardCollection);
-    const images = [
-      '/feathers/0.svg',
-      '/feathers/1.svg',
-      '/feathers/2.svg',
-      '/feathers/4.svg',
-      '/feathers/6.svg',
-      '/feathers/8.svg',
-      '/feathers/10.svg',
-      '/feathers/12.svg',
-      '/feathers/14.svg',
-      '/feathers/16.svg',
-      '/feathers/18.svg',
-      '/feathers/20.svg',
-      '/feathers/22.svg',
-      '/feathers/24.svg',
-      '/feathers/26.svg',
-      '/feathers/28.svg',
-      '/feathers/30.svg',
-      '/feathers/32.svg',
-      '/feathers/34.svg',
-      '/feathers/36.svg',
-      '/feathers/38.svg',
-      '/feathers/40.svg',
-      '/feathers/42.svg',
-      '/feathers/44.svg',
-      '/feathers/46.svg',
-      '/feathers/48.svg',
-      '/feathers/50.svg',
-      '/feathers/52.svg',
-      '/feathers/54.svg',
-      '/feathers/56.svg',
-      '/feathers/58.svg',
-      '/feathers/60.svg',
-    ]
     for(let i=0;i<1000;i++){
       // 设置中心为左下角
       const width = 16; // Billboard 宽度
@@ -106,10 +73,11 @@
       const rotatedX = offsetX * cosAngle - offsetY * sinAngle;
       const rotatedY = offsetX * sinAngle + offsetY * cosAngle;
       const position = Cesium.Cartesian3.fromDegrees(120*Math.random(), 30*Math.random(), 0);
-      const imageIndex = Math.floor(Math.random()*images.length);
+
+      let feather = getFeather(Math.random()*60)
       billboardCollection.add({
         position,
-        image: images[imageIndex],
+        image: `/feathers/${feather}.svg`,
         // image: '/气象预警图标/暴雪-红.svg',
         width,
         height,
@@ -118,7 +86,7 @@
         rotation: angle,
         verticalOrigin:Cesium.VerticalOrigin.CENTER,
         horizontalOrigin:Cesium.HorizontalOrigin.CENTER,
-        pixelOffset:imageIndex==0?new Cesium.Cartesian2(0,0):new Cesium.Cartesian2(-rotatedX, rotatedY),
+        pixelOffset:feather==0?new Cesium.Cartesian2(0,0):new Cesium.Cartesian2(-rotatedX, rotatedY),
       })
     }
     viewer.scene.postRender.addEventListener(()=>{
