@@ -22,6 +22,24 @@ import {
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  build: {
+    outDir: "lib",
+    lib: {
+      entry: "src/myComponents/人影/pages/synthesis.vue",
+      // entry: "src/App.vue",
+      // formats: ["umd"],
+      name: "index",
+      fileName: (format) => `index.${format}.js`,
+    },
+    rollupOptions: {
+      external: ["vue","mapboxgl","@mapbox/mapbox-gl-draw"],
+      output: {
+        globals: {
+          vue: "Vue",
+        },
+      },
+    },
+  },
   define: {
     __DEV__: true,
     __TEST__: true,

@@ -6,6 +6,7 @@ node_modules
 uploads
 dist-ssr
 *.local
+lib
 
 # lock
 yarn.lock

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>空域申报</title>
+  <link rel="icon" type="image/svg+xml" href="puzzle.svg">
+  <script src="vue.global.prod.min.js"></script>
+  <script src="index.umd.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    html,
+    body {
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+    #app {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <rgyx-work-point></rgyx-work-point>
+    <!-- <div>{{ message }}</div>
+    <button @click="changeMessage">点击我改变消息</button> -->
+  </div>
+
+  <script type="module">
+    const app = Vue.createApp({
+      setup() {
+        // const message = Vue.ref('Hello, Vue 3 with setup!');
+        // const changeMessage = () => {
+        //   message.value = '消息已更改！';
+        // }
+        // return {
+        //   message,
+        //   changeMessage,
+        // };
+      },
+      components:{
+        // RgyxWorkPoint:index[0],
+        RgyxWorkPoint:index
+      }
+    });
+    // const app = Vue.createApp(window.index);
+    app.mount('#app');
+  </script>
+
+</body>
+</html>
