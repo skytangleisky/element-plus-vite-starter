@@ -1,135 +1,137 @@
 <template>
-  <Header></Header>
-  <div class="main-container" style="width: 100%; height: 100%; overflow: hidden; position: absolute">
-    <div
-      v-resize="resize"
-      ref="mapRef"
-      class="map dark:bg-#2b2b2b bg-white"
-      style="
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        line-height: 1;
-        outline: none;
-      "
-    ></div>
-    <div ref="popup" class="ol-popup" style="display: none">
+  <div class="absolute w-full h-full flex flex-col">
+    <Header></Header>
+    <div class="main-container" style="width: 100%; height: 100%; overflow: hidden; position: relative">
       <div
+        v-resize="resize"
+        ref="mapRef"
+        class="map dark:bg-#2b2b2b bg-white"
         style="
           position: absolute;
-          background-color: rgb(73, 208, 37);
           left: 0;
-          right: 0;
           top: 0;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          padding-left: 10px;
-          padding-right: 25px;
-          align-items: center;
+          width: 100%;
+          height: 100%;
+          line-height: 1;
+          outline: none;
         "
-      >
-        <div class="title">{{ info.title }}</div>
-        <div class="latestTime">{{ info.time }} 更新</div>
-      </div>
-      <div
-        ref="popup_content"
-        style="
-          position: absolute;
-          display: flex;
-          flex-direction: column;
-          top: 30px;
-          justify-content: start;
-        "
-      >
-        <div style="color: #e83e8c">状&emsp;态：{{ info.status }}</div>
-        <div style="color: #e83e8c">速&emsp;度：{{ info.speed }}</div>
-        <div style="color: #e83e8c">经&emsp;度：{{ info.longitude }}</div>
-        <div style="color: #e83e8c">纬&emsp;度：{{ info.latitude }}</div>
-        <div style="color: #e83e8c">方位角：{{ info.deg }}</div>
-      </div>
-      <div ref="popup_closer" class="ol-popup-closer"></div>
-    </div>
-    <radar-statistic style="top:80px"></radar-statistic>
-    <Dialog class="absolute" style="left: 240px; top: calc(80px + 10px)"></Dialog>
-    <Legend class="legend" style="z-index: 1;"></Legend>
-    <div
-      :class="`right-drawer ${
-        setting.disappear ? 'disappear' : ''
-      } b-solid b-0 b-l-1px dark:b-color-#888`"
-    >
-      <div style="display:flex;flex-direction: column;overflow: auto; scroll-snap-type: none;height: 100%;">
-        <chart-info></chart-info>
-        <FKX></FKX>
-        <chart-fkx v-if="hasPermission(['2353f2f5-b27b-473c-b281-4aa76858ff51'])"></chart-fkx>
-        <chart-dom v-if="hasPermission(['aa0f5674-ca38-4987-9964-f232024f0992'])"></chart-dom>
-        <chartDirection v-if="hasPermission(['ecd5d757-94eb-4b5e-9275-0ffb25a7cbc9'])"></chartDirection>
-        <chartSpeed v-if="hasPermission(['d16bc38f-4b41-4294-b8e6-6230f7633120'])"></chartSpeed>
-        <chartSNR v-if="hasPermission(['fc040225-820d-42f0-8e1a-239c9a76058a'])"></chartSNR>
-        <chart-th v-if="hasPermission(['31aba6cc-6da7-432a-87a3-576e4d5f59f2'])"></chart-th>
-      </div>
-      <el-icon
-        class="left--29px z-999 bg-#eee dark:bg-#304156 dark:color-#888"
-        style="
-          font-size: 28px;
-          position: absolute;
-          border-bottom-left-radius: 50%;
-          border-left: 1px solid grey;
-          border-bottom: 1px solid grey;
-        "
-        @click="disappear"
-      >
-        <svg
-          t="1695093760888"
-          class="icon"
-          viewBox="0 0 1024 1024"
-          version="1.1"
-          xmlns="http://www.w3.org/2000/svg"
-          p-id="5105"
+      ></div>
+      <div ref="popup" class="ol-popup" style="display: none">
+        <div
+          style="
+            position: absolute;
+            background-color: rgb(73, 208, 37);
+            left: 0;
+            right: 0;
+            top: 0;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            padding-left: 10px;
+            padding-right: 25px;
+            align-items: center;
+          "
         >
-          <path
-            d="M557.397333 167.204571l293.059048 293.059048L902.192762 512l-51.712 51.712-293.059048 293.083429-51.736381-51.712L762.148571 548.571429H121.904762v-73.142858h640.243809L505.660952 218.940952l51.736381-51.736381z"
-            p-id="5106"
-          ></path>
-        </svg>
-      </el-icon>
-    </div>
-    <TimeStep @change="TimeStepChange"></TimeStep>
-    <time-line
-      v-if="hasPermission(['e44f37e1-f642-4dbf-83ca-052313b217f5'])"
-      :data="data"
-      @toLeft="change"
-      @toRight="change"
-      @toMiddle="change"
-      v-model:now="setting.now"
-      v-model:status="setting.status"
-      v-model:level="setting.level"
-      class="timeline absolute bottom-0"
-    ></time-line>
-    <!-- <graph
-      v-if="checkPermission(['admin'])"
-      class="absolute left-0 bottom-30px"
-      v-model:args="graphArgs"
-    ></graph> -->
-    <chromatography
-      ref="chromatographyRef"
-      :arr="chromatographyOption.arr"
-      style="
-        right: 30px;
-        color: white;
-        top: 50%;
-        transform: translateY(-50%);
-        bottom: 0;
-        height: 300px;
-        position: absolute;
-      "
-    ></chromatography>
-    <div class="stationMenu" ref="stationMenuRef" @mousedown.stop>
-      <ul>
-        <li @click="单站数据">单站数据</li>
-      </ul>
+          <div class="title">{{ info.title }}</div>
+          <div class="latestTime">{{ info.time }} 更新</div>
+        </div>
+        <div
+          ref="popup_content"
+          style="
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            top: 30px;
+            justify-content: start;
+          "
+        >
+          <div style="color: #e83e8c">状&emsp;态：{{ info.status }}</div>
+          <div style="color: #e83e8c">速&emsp;度：{{ info.speed }}</div>
+          <div style="color: #e83e8c">经&emsp;度：{{ info.longitude }}</div>
+          <div style="color: #e83e8c">纬&emsp;度：{{ info.latitude }}</div>
+          <div style="color: #e83e8c">方位角：{{ info.deg }}</div>
+        </div>
+        <div ref="popup_closer" class="ol-popup-closer"></div>
+      </div>
+      <radar-statistic></radar-statistic>
+      <Dialog class="absolute" style="left: 240px; top:10px"></Dialog>
+      <Legend class="legend" style="z-index: 1;"></Legend>
+      <div
+        :class="`right-drawer ${
+          setting.disappear ? 'disappear' : ''
+        } b-solid b-0 b-l-1px dark:b-color-#888`"
+      >
+        <div style="display:flex;flex-direction: column;overflow: auto; scroll-snap-type: none;height: 100%;">
+          <chart-info></chart-info>
+          <FKX></FKX>
+          <chart-fkx v-if="hasPermission(['2353f2f5-b27b-473c-b281-4aa76858ff51'])"></chart-fkx>
+          <chart-dom v-if="hasPermission(['aa0f5674-ca38-4987-9964-f232024f0992'])"></chart-dom>
+          <chartDirection v-if="hasPermission(['ecd5d757-94eb-4b5e-9275-0ffb25a7cbc9'])"></chartDirection>
+          <chartSpeed v-if="hasPermission(['d16bc38f-4b41-4294-b8e6-6230f7633120'])"></chartSpeed>
+          <chartSNR v-if="hasPermission(['fc040225-820d-42f0-8e1a-239c9a76058a'])"></chartSNR>
+          <chart-th v-if="hasPermission(['31aba6cc-6da7-432a-87a3-576e4d5f59f2'])"></chart-th>
+        </div>
+        <el-icon
+          class="left--29px z-999 bg-#eee dark:bg-#304156 dark:color-#888"
+          style="
+            font-size: 28px;
+            position: absolute;
+            border-bottom-left-radius: 50%;
+            border-left: 1px solid grey;
+            border-bottom: 1px solid grey;
+          "
+          @click="disappear"
+        >
+          <svg
+            t="1695093760888"
+            class="icon"
+            viewBox="0 0 1024 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="5105"
+          >
+            <path
+              d="M557.397333 167.204571l293.059048 293.059048L902.192762 512l-51.712 51.712-293.059048 293.083429-51.736381-51.712L762.148571 548.571429H121.904762v-73.142858h640.243809L505.660952 218.940952l51.736381-51.736381z"
+              p-id="5106"
+            ></path>
+          </svg>
+        </el-icon>
+      </div>
+      <TimeStep @change="TimeStepChange"></TimeStep>
+      <time-line
+        v-if="hasPermission(['e44f37e1-f642-4dbf-83ca-052313b217f5'])"
+        :data="data"
+        @toLeft="change"
+        @toRight="change"
+        @toMiddle="change"
+        v-model:now="setting.now"
+        v-model:status="setting.status"
+        v-model:level="setting.level"
+        class="timeline absolute bottom-0"
+      ></time-line>
+      <!-- <graph
+        v-if="checkPermission(['admin'])"
+        class="absolute left-0 bottom-30px"
+        v-model:args="graphArgs"
+      ></graph> -->
+      <chromatography
+        ref="chromatographyRef"
+        :arr="chromatographyOption.arr"
+        style="
+          right: 30px;
+          color: white;
+          top: 50%;
+          transform: translateY(-50%);
+          bottom: 0;
+          height: 300px;
+          position: absolute;
+        "
+      ></chromatography>
+      <div class="stationMenu" ref="stationMenuRef" @mousedown.stop>
+        <ul>
+          <li @click="单站数据">单站数据</li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>

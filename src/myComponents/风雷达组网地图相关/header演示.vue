@@ -33,9 +33,7 @@ onBeforeUnmount(() => {
   background-repeat: no-repeat;
   background-size: 100% 100%;
   display: flex;
-  position: absolute;
-  top: 0;
-  left:0 ;
+  position: relative;
   z-index: 99;
   .left{
     flex: 1;
