@@ -12,7 +12,7 @@ import { reactive } from 'vue';
 const list = defineModel<Item[]>('list',{
   default:()=>reactive([])
 })
-const theme = defineModel<'default'|'jetblack'|'iceberg'|'retro'|'translucent'|'vivid'>('theme',{
+const theme = defineModel<'default'|'jetblack'|'iceberg'|'retro'|'translucent'|'vivid'|'light'>('theme',{
   default:'default'
 })
 </script>

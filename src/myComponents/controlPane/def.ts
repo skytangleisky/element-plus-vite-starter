@@ -1,3 +1,9 @@
+export interface interfaceButton{
+  type:'button'
+  label:string
+  value:string
+  click:Function
+}
 export interface interfaceCurve{
   type:'curve'
   label:string
@@ -55,6 +61,6 @@ export interface interfaceFolder{
   opened:boolean
   label:string
 }
-export type Item = (interfaceCheckbox|interfaceColor|interfaceRange|interfaceFolder|interfaceSelect|interfaceText|interfaceCurve) & {
+export type Item = (interfaceCheckbox|interfaceColor|interfaceRange|interfaceFolder|interfaceSelect|interfaceText|interfaceCurve|interfaceButton) & {
   children?:Item[]
 }
