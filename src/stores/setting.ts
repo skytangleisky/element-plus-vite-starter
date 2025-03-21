@@ -1,4 +1,4 @@
-import { defineStore, acceptHMRUpdate2 } from "pinia"
+import { defineStore, acceptHMRUpdate } from "pinia"
 import moment from 'moment'
 import ry from "./subs/ry.js";
 import jx from "./subs/jx.js";
@@ -391,7 +391,7 @@ export const useSettingStore = defineStore({
           labelOpacity:1,
         },
         showColorSelector:-1,
-        loadmap:true,
+        loadmap:false,
         disappear:false,//右侧菜单
         prevPlanRequestShow:false,
         prevPlanRequestData:{
@@ -693,6 +693,60 @@ export const useSettingStore = defineStore({
         }
       },
       {
+        path: 'A6418',
+        name: 'da20fee1-5ad7-51e1-2786-5e0933011f11',
+        component: '/src/myComponents/风雷达组网/pages/A6418.vue',
+        hide:true,
+        meta:{
+          label: '渝北激光测风雷达',
+        }
+      },
+      {
+        path: 'A6419',
+        name: 'da20fee1-5ad7-51e1-2785-5e0933011a11',
+        component: '/src/myComponents/风雷达组网/pages/A6419.vue',
+        hide:true,
+        meta:{
+          label: '北碚激光测风雷达',
+        }
+      },
+      {
+        path: 'A6420',
+        name: 'da20fee1-5ad7-51e1-2784-5e0933011a11',
+        component: '/src/myComponents/风雷达组网/pages/A6420.vue',
+        hide:true,
+        meta:{
+          label: '巴南激光测风雷达',
+        }
+      },
+      {
+        path: 'A6421',
+        name: 'da20fee1-5ad7-5111-2783-5e0933011a11',
+        component: '/src/myComponents/风雷达组网/pages/A6421.vue',
+        hide:true,
+        meta:{
+          label: '綦江激光测风雷达',
+        }
+      },
+      {
+        path: 'A6422',
+        name: 'da20fee1-5ad7-5121-2782-5e0933011a11',
+        component: '/src/myComponents/风雷达组网/pages/A6422.vue',
+        hide:true,
+        meta:{
+          label: '万州激光测风雷达',
+        }
+      },
+      {
+        path: 'A6423',
+        name: 'da20fee1-5ad7-5131-2781-5e0933011a11',
+        component: '/src/myComponents/风雷达组网/pages/A6423.vue',
+        hide:true,
+        meta:{
+          label: '城口激光测风雷达',
+        }
+      },
+      {
         path: '',
         name: '99961e04-e574-0e1f-1e23-94f157b14a41',
         redirect: '/ry/synthesis',
@@ -788,5 +842,5 @@ export const useSettingStore = defineStore({
   persist: true
 })
 if(import.meta.hot){
-  import.meta.hot.accept(acceptHMRUpdate2(useSettingStore, import.meta.hot))
+  import.meta.hot.accept(acceptHMRUpdate(useSettingStore, import.meta.hot))
 }
