@@ -321,26 +321,14 @@ const points = {
   type: "geojson",
   data: {
     type: "FeatureCollection",
-    features: [
-      {
-        type: "Feature",
-        properties: {
-          altitude:NaN,
-          radar_id:'',
-          风速: speed,
-          image: "feather" + getFeather(speed),
-          风向: NaN,
-          高度:"",
-          垂直气流:"",
-          时间:NaN,
-          color:isDark.value?'#fff':'#000'
-        },
-        geometry: {
-          type: "Point",
-          coordinates: [-122.414, 37.776],
-        },
-      },
-    ],
+    features: [],
+  },
+};
+const 风场数据 = {
+  type: "geojson",
+  data: {
+    type: "FeatureCollection",
+    features: [],
   },
 };
 const contextmenu = (e: any) => {
@@ -667,6 +655,7 @@ const loadFunc = async () => {
     }
   });
   map.addSource("point", points);
+  map.addSource('风场数据',风场数据)
   map.addLayer({
     id: "stationLayer",
     source: "point",
@@ -978,6 +967,38 @@ const loadFunc = async () => {
       "icon-opacity": setting.feather ? 1 : 0,
     },
   });
+  map.addLayer({
+    id: "风场图层",
+    source: "风场数据",
+    type: "symbol",
+    layout: {
+      visibility: setting.风雷达组网地图相关.风场 ? "visible" : "none",
+      // This icon is a part of the Mapbox Streets style.
+      // To view all images available in a Mapbox style, open
+      // the style in Mapbox Studio and click the "Images" tab.
+      // To add a new image to the style at runtime see
+      // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+      "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
+      "icon-image": ["get", "image"],
+      "icon-size": 1,
+      "icon-rotate": ["get", "风向"],
+      "icon-rotation-alignment": "map",
+      "icon-allow-overlap": true,
+      "icon-ignore-placement": true,
+      // "text-field": ["get", "风速"],
+      // "text-font": ["simkai"],
+      // "text-size": 14,
+      // "text-transform": "uppercase",
+      // // "text-letter-spacing": 0.05,
+      // "text-anchor": "center",
+      // "text-line-height": 1,
+      // // "text-justify": "center",
+      // "text-offset": [0, 0],
+      // "text-ignore-placement": true,
+      // "text-allow-overlap": true,
+      // "text-rotation-alignment": "map",
+    }
+  });
   bus.avgWindData = [];
   bus.secondWindData = [];
   bus.radialWindData = [];
@@ -1184,6 +1205,31 @@ async function updateData(altitude:number){
     }
   }
 
+  风场数据.data.features.length = 0;
+  for(let j=0;j<grid1.length;j++){
+    for(let i=0;i<grid1[j].length;i++){
+      const position = [
+        interpolateOptions.boundary.lng+i*interpolateOptions.boundary.width/(interpolateOptions.sizeU-1),
+        interpolateOptions.boundary.lat+j*interpolateOptions.boundary.height/(interpolateOptions.sizeV-1),
+      ]
+      const 风速 = Math.sqrt(grid1[j][i]**2+grid2[j][i]**2)
+      风场数据.data.features.push({
+        type: "Feature",
+        properties: {
+          风速,
+          风向: -Math.atan2(grid1[j][i],-grid2[j][i])*180/Math.PI,
+          image: "feather" + getFeather(风速),
+          color: isDark.value?'#fff':'#000',
+        },
+        geometry: {
+          type: "Point",
+          coordinates: position,
+        },
+      })
+    }
+  }
+  (map.getSource('风场数据') as any).setData(风场数据.data)
+
   const uMin = Math.min(...us);
   let uMax = Math.max(...us);
   const vMin = Math.min(...vs);
@@ -1198,7 +1244,7 @@ async function updateData(altitude:number){
   let imgData = ctx.getImageData(0,0,cvs.width,cvs.height)
   for(let y = 0; y < imgData.height; y++){
     for(let x = 0; x < imgData.width; x++){
-      let i = (y * 4) * imgData.width + x * 4
+      let i = 4 * (y * imgData.width + x)
       imgData.data[i + 0] = (us[imgData.width*(imgData.height - y - 1)+x]-uMin)/(uMax-uMin)*255
       imgData.data[i + 1] = (vs[imgData.width*(imgData.height - y - 1)+x]-vMin)/(vMax-vMin)*255
       imgData.data[i + 2] = 0
@@ -1251,7 +1297,7 @@ async function updateData(altitude:number){
           radar_id: Item.no,
           高度: "",
           风速: NaN,
-          风向: NaN,
+          风向: 0,
           垂直气流: "",
           时间:NaN,
           time: moment().format("YYYY-MM-DD HH:mm:ss"),
@@ -1552,7 +1598,7 @@ async function updateData(altitude:number){
               item.properties.image = "feather" + getFeather(lib['WindSpeed']);
             }else{
               item.properties.风速 = NaN;
-              item.properties.风向 = NaN;
+              item.properties.风向 = 0;
               item.properties.垂直气流 = ""
               item.properties.高度 = (Number(lib['altitude'])).toFixed(2)
               item.properties.时间 = lib['dataTime']
@@ -1565,7 +1611,7 @@ async function updateData(altitude:number){
         points.data.features = points.data.features.map((item) => {
           if (item.properties.radar_id === radar_id) {
             item.properties.风速 = NaN;
-            item.properties.风向 = NaN;
+            item.properties.风向 = 0;
             item.properties.垂直气流 = ""
             item.properties.高度 = ""
             item.properties.时间 = NaN
@@ -1669,6 +1715,7 @@ onMounted(() => {
     touchRotate: false,
     touchPitch: false,
     dragPitch: false,
+    projection:'mercator', // globe
     // bounds: turf.bbox(boundaries),
     // localIdeographFontFamily: "Microsoft YoHei",
     localIdeographFontFamily: "",
@@ -1855,6 +1902,13 @@ watch(()=>setting.风雷达组网地图相关.格点,(val)=>{
   }else{
     map.setLayoutProperty("网格点", "visibility", 'none');
     map.setLayoutProperty("网格值", "visibility", 'none');
+  }
+})
+watch(()=>setting.风雷达组网地图相关.风场,(val)=>{
+  if(val){
+    map.setLayoutProperty("风场图层", "visibility", 'visible');
+  }else{
+    map.setLayoutProperty("风场图层", "visibility", 'none');
   }
 })
 watch(()=>setting.风雷达组网地图相关.流线,(val)=>{

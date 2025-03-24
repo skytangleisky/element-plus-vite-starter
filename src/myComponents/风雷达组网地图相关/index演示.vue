@@ -1,6 +1,6 @@
 <template>
   <div class="absolute w-full h-full flex flex-col">
-    <Header></Header>
+    <!-- <Header></Header> -->
     <div class="main-container" style="width: 100%; height: 100%; overflow: hidden; position: relative">
       <div
         v-resize="resize"

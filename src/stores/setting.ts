@@ -58,6 +58,7 @@ export const useSettingStore = defineStore({
       等值线:false,
       等值带:false,
       格点:false,
+      风场:false,
       流线:false,
       时间:false,
       请求时间:"",

@@ -14,7 +14,7 @@ export default class WindGL{
 		this.fadeOpacity = 0.90;// how fast the particle trails fade on each frame
 		this.speedFactor = 2; // how fast the particles move
 		this.dropRate = 0.003; // how often the particles move to a random place
-		this.dropRateBump = 0.001; // drop rate increase relative to individual particle speed
+		this.dropRateBump = 0.01; // drop rate increase relative to individual particle speed
 
 		this.drawProgram = util.createProgram(gl, drawVert, drawFrag);
 		this.screenProgram = util.createProgram(gl, quadVert, screenFrag);

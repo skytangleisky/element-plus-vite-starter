@@ -2614,7 +2614,7 @@ watch(
   { deep: true, immediate: true }
 );
 watch(
-  () => props.loadmap,
+  () => setting.人影.监控.loadmap,
   (newVal) => {
     if (newVal) {
       map.setLayoutProperty("simple-tiles", "visibility", "visible");

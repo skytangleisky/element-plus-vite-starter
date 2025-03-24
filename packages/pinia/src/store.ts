@@ -591,6 +591,11 @@ function createSetupStore<
   if (__DEV__) {
     store._hotUpdate = markRaw((newStore) => {
       store._hotUpdating = true
+      // to do 需要将newStore.$state 赋值给store.$state,注意不要破坏源数据的响应式
+      // store.$state.人影.监控.loadmap = newStore.$state.人影.监控.loadmap
+      // console.log(store.人影.监控.loadmap)
+      // const 监控 = store.人影.监控
+      // 监控.loadmap = newStore.$state.人影.监控.loadmap
       /*
       newStore._hmrPayload.state.forEach((stateKey) => {
         if (stateKey in store.$state) {

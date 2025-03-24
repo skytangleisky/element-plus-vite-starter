@@ -44,7 +44,7 @@ export default defineConfig({
     __DEV__: true,
     __TEST__: true,
     __BROWSER__: true,
-    __USE_DEVTOOLS__: false,
+    __USE_DEVTOOLS__: true,
     __VUE_PROD_HYDRATION_MISMATCH_DETAILS__:true
   },
   resolve: {
@@ -125,7 +125,7 @@ export default defineConfig({
     // },
     // open:'http://localhost:5173',
     host:true,
-    port:5174,
+    port:5173,
     strictPort:true,
     proxy:{
       // '/guangheng':{
@@ -180,7 +180,7 @@ export default defineConfig({
         rewrite:path=>path.replace(/^\/amap/,'') // 设置重写的路径
       },
       '/aircraft_position':{//人影飞机
-        target:'http://192.168.0.135:8081',
+        target:'http://victorysoft.cn:8081',
         // target:'http://victorysoft.cn:8081',
         rewrite:path=>path.replace(/^\/aircraft_position/,''), // 设置重写的路径
         secure:false,

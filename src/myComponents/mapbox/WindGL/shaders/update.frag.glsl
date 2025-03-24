@@ -9,7 +9,7 @@ uniform float u_rand_seed;
 uniform float u_speed_factor;
 uniform float u_drop_rate;
 uniform float u_drop_rate_bump;
-
+uniform vec4 u_boundaries;// boundaries
 varying vec2 v_tex_pos;
 
 #define PI 3.141592653589793
@@ -52,10 +52,16 @@ void main() {
     // vec2 offset = vec2(velocity.x / distortion, -velocity.y) * 0.0001 * u_speed_factor;
 
 
-    float startLng = 32.0;
-    float stopLng = 160.0;
-    float startLat = 0.0;
-    float stopLat = 80.0;
+    // float startLng = 32.0;
+    // float stopLng = 160.0;
+    // float startLat = 0.0;
+    // float stopLat = 80.0;
+
+    float startLng = u_boundaries[0];
+    float stopLng = u_boundaries[1];
+    float startLat = u_boundaries[2];
+    float stopLat = u_boundaries[3];
+
 
     // float LAT = atan(sinh(PI))*RAD_TO_DEG;
     // float startLng = -180.0;

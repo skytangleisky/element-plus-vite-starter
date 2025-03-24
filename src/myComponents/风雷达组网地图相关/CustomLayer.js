@@ -14,7 +14,7 @@ export default class CustomLayer {
     this.map = map
     this.projectionName = this.map.getProjection().name
     this.wind = new WindGL(gl,{boundaries:this.json.boundaries})
-    this.wind.numParticles = 2048*2
+    this.wind.numParticles = 100*100
     let windData = this.json
     const windImage = new Image();
     windImage.width = windData.width
@@ -33,7 +33,7 @@ export default class CustomLayer {
       if (this.wind.windData) {
         if (projection && projection.name === 'globe') {
           if(this.projectionName!='globe'){
-            resize()
+            this.resize()
             this.projectionName='globe'
           }
           gl.enable(gl.BLEND);
@@ -42,7 +42,7 @@ export default class CustomLayer {
           this.wind.draw(projectionMatrix,1);
         }else{
           if(this.projectionName!='mercator'){
-            wind.resize()
+            this.wind.resize()
             this.projectionName='mercator'
           }
           gl.enable(gl.BLEND);

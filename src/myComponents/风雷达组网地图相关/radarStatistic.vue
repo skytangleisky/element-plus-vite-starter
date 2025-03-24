@@ -178,6 +178,16 @@
             size="small"
           />
         </div>
+        <div class="subitem" v-if="hasPermission(['5dd862f4-112f-46cf-a843-11c3f5aba1cf'])">
+          <span>风场</span>
+          <el-switch
+            v-model="setting.风雷达组网地图相关.风场"
+            inline-prompt
+            :active-icon="Check"
+            :inactive-icon="Close"
+            size="small"
+          />
+        </div>
         <div class="subitem" v-if="hasPermission(['df127f84-1983-42c1-b718-a0d04fc92720'])">
           <span>等值线</span>
           <el-switch

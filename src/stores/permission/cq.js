@@ -1,7 +1,7 @@
 export default {
   name:'16d44138-0721-49cf-8f32-49c6894512bd',
   meta:{
-    label:'重庆测风激光雷达组网系统',
+    label:'重庆测风雷达组网系统',
     roles:['admin','cq','device']
   },
   children:[
@@ -36,6 +36,13 @@ export default {
               checked:false,
               meta:{
                 label: '重庆组网界面-数据融合-格点',
+              }
+            },
+            {
+              name: '5dd862f4-112f-46cf-a843-11c3f5aba1cf',
+              checked:true,
+              meta:{
+                label: '重庆组网界面-数据融合-风场',
               }
             },
             {

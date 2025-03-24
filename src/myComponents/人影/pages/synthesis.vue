@@ -21,6 +21,7 @@
       v-model:isolines="setting.人影.监控.isolines"
       v-model:isobands="setting.人影.监控.isobands"
     ></edit-map>
+    <el-checkbox v-model="setting.人影.监控.loadmap" style="position: absolute; right:250px"></el-checkbox>
     <div
       class="absolute left-10px top-10px b-solid b-1px dark:b-gray-5 b-gray dark:bg-#2b2b2b bg-white dark:color-white color-black w-150px h-80px flex flex-col justify-between p-10px"
       style="border-radius: 8px; font-size: 16px; display: none"
@@ -108,8 +109,8 @@
     style="z-index:2010"
   ></dialog-plan-request>
   <ColorSelector v-show="setting.人影.监控.showColorSelector !== -1" v-model:selectorColor="selectorColor" style="z-index: 2010;" @cancel="setting.人影.监控.showColorSelector=-1"></ColorSelector>
-  <div ref="tweakPaneRef" class="tp-dfwv default hidden" data-pane-lighttheme style="z-index: 1;"></div>
-  <control-pane style="top:10px;right:10px;" :list="list" :theme="isDark?'default':'retro'"></control-pane>
+  <div ref="tweakPaneRef" class="tp-dfwv default" data-pane-lighttheme style="z-index: 1;right:300px;"></div>
+  <control-pane style="top:10px;right:10px;" :list="list" :theme="isDark?'default':'light'"></control-pane>
 </template>
 <script lang="ts" setup>
 import editMap from "../editMap.vue";
@@ -122,7 +123,7 @@ import recordSvg from "~/assets/record.svg?raw";
 import whitelistSvg from "~/assets/whitelist.svg?raw";
 import statisticSvg from "~/assets/statistic.svg?raw";
 import selectTile from "../selectTile.vue";
-import { watch, ref, reactive,computed,onMounted, onBeforeUnmount,toRefs } from "vue";
+import { watch, ref, reactive,computed,onMounted, onBeforeUnmount,toRefs,toRef } from "vue";
 import DialogPlanRequest, { prevRequestDataType } from "../../dialog_plan_request.vue";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
@@ -130,13 +131,15 @@ import { eventbus } from "~/eventbus/index";
 import ColorSelector from "~/myComponents/colorSelector/index.vue";
 import { Pane } from 'controlpane';
 import ControlPane from '../../controlPane/index.vue';
-const 监控 = toRefs(setting.人影.监控)
 const list = reactive([
-  {label:'devtools',type:'folder',expanded:false,children:[
+  {label:'devtools',type:'folder',opened:true,children:[
+    {label:'重置',value:'重置',type:'button',click(){setting.$resetFields('人影.监控.loadmap')}},
     {label:'菜单',value:toRefs(setting).menus,type:'checkbox'},
     {label:'暗黑主题',value:isDark,type:'checkbox'},
     {label:'色相',value:toRefs(setting).hueRotate,type:'range',min:0,max:360,step:1,arr:Array.from({length:361},(_,i:number)=>i)},
-    {label:'瓦片地图',value:监控.loadmap,type:'checkbox'},
+    {label:'xxx',value:setting.人影.监控.loadmap,type:'checkbox'},
+    {label:'瓦片地图1',value:toRef(setting.人影.监控,'loadmap'),type:'checkbox'},
+    {label:'瓦片地图2',value:computed({get:()=>setting.人影.监控.loadmap,set(v){setting.人影.监控.loadmap=v}}),type:'checkbox'},
     {label:'全国行政区划',type:'folder',opened:toRefs(setting.人影.监控).districtOptionsOpened,children:[
       {label:'填充',type:'folder',opened:toRefs(setting.人影.监控.districtOptions).districtOpened,children:[
         {label:'显示',value:toRefs(setting.人影.监控.districtOptions).district,type:'checkbox'},
@@ -199,16 +202,16 @@ const list = reactive([
         {label:'透明度',value:toRefs(setting.人影.监控.ryAirspaces).labelOpacity,type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
       ]}
     ]},
-    {label:'航路航线',value:监控.routeLine,type:'checkbox'},
-    {label:'机场',value:监控.airport,type:'checkbox'},
-    {label:'飞机',value:监控.plane,type:'checkbox'},
-    {label:'作业点',value:监控.zyd,type:'checkbox'},
-    {label:'导航台',value:监控.navigationStation,type:'checkbox'},
-    {label:'自动站',value:监控.zdz,type:'checkbox'},
-    {label:'网格点',value:监控.gridPoint,type:'checkbox'},
-    {label:'网格值',value:监控.gridValue,type:'checkbox'},
-    {label:'等值线',value:监控.isolines,type:'checkbox'},
-    {label:'等值带',value:监控.isobands,type:'checkbox'},
+    {label:'航路航线',value:toRefs(setting.人影.监控).routeLine,type:'checkbox'},
+    {label:'机场',value:toRefs(setting.人影.监控).airport,type:'checkbox'},
+    {label:'飞机',value:toRefs(setting.人影.监控).plane,type:'checkbox'},
+    {label:'作业点',value:toRefs(setting.人影.监控).zyd,type:'checkbox'},
+    {label:'导航台',value:toRefs(setting.人影.监控).navigationStation,type:'checkbox'},
+    {label:'自动站',value:toRefs(setting.人影.监控).zdz,type:'checkbox'},
+    {label:'网格点',value:toRefs(setting.人影.监控).gridPoint,type:'checkbox'},
+    {label:'网格值',value:toRefs(setting.人影.监控).gridValue,type:'checkbox'},
+    {label:'等值线',value:toRefs(setting.人影.监控).isolines,type:'checkbox'},
+    {label:'等值带',value:toRefs(setting.人影.监控).isobands,type:'checkbox'},
   ]}
 ]);
 let pane:any
@@ -343,6 +346,7 @@ watch([
   ()=>setting.人影.监控.isolines,
   ()=>setting.人影.监控.isobands,
 ],()=>{
+  console.log('loadmap',setting.loadmap)
   pane&&pane.refresh()
 })
 import datatable from "~/myComponents/datatable/index.vue";
