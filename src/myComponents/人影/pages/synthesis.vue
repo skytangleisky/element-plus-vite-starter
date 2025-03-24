@@ -133,7 +133,7 @@ import { Pane } from 'controlpane';
 import ControlPane from '../../controlPane/index.vue';
 const list = reactive([
   {label:'devtools',type:'folder',opened:true,children:[
-    {label:'重置',value:'重置',type:'button',click(){setting.$resetFields('人影.监控.loadmap')}},
+    {label:'重置',type:'button',click(){setting.$resetFields('人影.监控.loadmap')}},
     {label:'菜单',value:toRefs(setting).menus,type:'checkbox'},
     {label:'暗黑主题',value:isDark,type:'checkbox'},
     {label:'色相',value:toRefs(setting).hueRotate,type:'range',min:0,max:360,step:1,arr:Array.from({length:361},(_,i:number)=>i)},

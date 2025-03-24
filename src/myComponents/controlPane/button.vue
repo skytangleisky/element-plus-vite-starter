@@ -1,5 +1,5 @@
 <template>
-  <div class="control-button" style="margin:4px 2px 4px 6px" @click="modelValue.click($event)">{{ modelValue.label }}</div>
+  <div class="control-button" style="margin:4px 3px 4px 3px" @click="modelValue.click($event)">{{ modelValue.label }}</div>
 </template>
 <script lang="ts" setup>
   import { interfaceButton } from './def';
@@ -9,6 +9,8 @@
 </script>
 <style scoped lang="scss">
 .control-button{
+  user-select: none;
+  -webkit-user-drag: none;
   width:100%;
   border-radius: 2px;
   text-align: center;
