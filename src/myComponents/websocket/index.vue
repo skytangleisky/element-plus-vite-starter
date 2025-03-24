@@ -1,35 +1,27 @@
 <template>
-  <div class="absolute bottom-0 z-5 left-0">
-    <div>{{ infos.num }}</div>
-    <div>{{ infos.delay }}</div>
-    <div>{{ infos.usedJSHeapSize }}</div>
-  </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, onBeforeUnmount, reactive } from "vue";
+import { onMounted, onBeforeUnmount } from "vue";
 import { useBus } from "../bus";
+import { eventbus } from "~/eventbus";
 import Sleeper from "../zrender/sleeper";
+import { useSettingStore } from "../../stores/setting";
+let countdown = 0
+const setting = useSettingStore();
 let sleeper = new Sleeper();
 let bus = useBus();
-const infos = reactive({
-  num: "",
-  delay: "",
-  usedJSHeapSize: "",
-});
 class MyWebSocket extends WebSocket {
   dead: boolean = false;
 }
 let ws: MyWebSocket;
 function connect() {
   ws = new MyWebSocket(
-    `${window.location.protocol == "https:" ? "wss:" : "ws:"}//` +
-      window.location.host +
-      "/backend"
+    `${window.location.protocol == "https:" ? "wss:" : "ws:"}//` + window.location.host + "/backend"
   );
   ws.onopen = function () {
-    ws.send(JSON.stringify({ type: "login", content: Math.ceil(Math.random() * 10000) }));
+    setting.网络状态 = "已连接"
+    ws.send(JSON.stringify({ type: "login", content: Date.now()}));
     const loop = async () => {
-      //心跳检测
       try {
         ws.readyState === WebSocket.OPEN &&
           ws.send(
@@ -47,15 +39,15 @@ function connect() {
         //不做处理
       }
     };
-    loop();
+    loop();//心跳检测
   };
   ws.onmessage = function (e) {
     var obj = JSON.parse(e.data);
     switch (obj.type) {
       case "heart2": //客户端延时
         obj.clientTime2 = performance.now();
-        infos.delay = (obj.clientTime2 - obj.clientTime1).toFixed(2) + "ms";
-        infos.usedJSHeapSize =
+        setting.网络状态 = (obj.clientTime2 - obj.clientTime1).toFixed(2) + "ms";
+        setting.内存占用 =
           (performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(2) + "MB";
         break;
       case "heart4": //服务端延时
@@ -63,13 +55,12 @@ function connect() {
         // ws.readyState === WebSocket.OPEN && ws.send(JSON.stringify(obj));
         break;
       case "handshake":
-        infos.num = obj.content;
+        setting.在线人数 = obj.content;
         break;
       case "login":
         break;
       case "logout":
-        infos.num = obj.content;
-        console.log(obj);
+        setting.在线人数 = obj.content;
         break;
       case "目录信息":
         console.log(obj.dirs, obj.files);
@@ -86,29 +77,58 @@ function connect() {
       case "rhi":
         bus.wsData = obj;
         break;
+      case "人影航迹数据":
+        eventbus.emit('人影-飞机位置',obj.data.aircrafts)
+        break;
+      default:
+        console.log(obj)
     }
-    infos.usedJSHeapSize =
-      (performance.memory.usedJSHeapSize / 1000 / 1000).toFixed(2) + "MB";
+    // infos.usedJSHeapSize = (performance.memory.usedJSHeapSize / 1000 / 1000).toFixed(2) + "MB";
   };
-  ws.onerror = function (err) {
-    console.log(err);
-  };
+  ws.onerror = (err)=>{
+    // console.log(err)
+  }
   ws.onclose = function () {
+    countdown = 5;
     sleeper.abort();
-    infos.num = "-";
+    setting.在线人数 = "-";
     if (!ws.dead) {
-      setTimeout(() => {
-        sleeper = new Sleeper();
-        connect();
-      }, 4000);
+      reconnect()
     }
   };
 }
+let timer:any = 0
+let reconnect = ()=>{
+  timer = setTimeout(() => {
+    if(countdown<1){
+      sleeper = new Sleeper();
+      setting.网络状态 = "重连中..."
+      connect();
+    }else{
+      setting.网络状态 = `${countdown}秒后重连`
+      countdown -= 1;
+      reconnect()
+    }
+
+  }, 1000);
+}
+function process(){
+  ws.send(
+    JSON.stringify({
+      content: '',
+      type: "获取nps数据",
+      user_list: [],
+      clientTime1: performance.now(),
+    })
+  );
+}
 onMounted(() => {
+  eventbus.on('获取nps数据',process)
   connect();
   window.addEventListener("beforeunload", dispose);
 });
 function dispose() {
+  clearTimeout(timer)
   sleeper.abort();
   if (ws) {
     ws.dead = true;
@@ -116,9 +136,10 @@ function dispose() {
   }
 }
 onBeforeUnmount(() => {
-  infos.num = "";
-  infos.delay = "";
-  infos.usedJSHeapSize = "";
+  clearInterval(timer)
+  setting.在线人数 = "";
+  setting.网络状态 = "";
+  setting.内存占用 = "";
   dispose();
 });
 </script>

@@ -10,6 +10,9 @@ import { useCesiumStore } from "./cesium.js";
 export const useSettingStore = defineStore({
   id: 'setting',
   state:()=>({
+    网络状态:'',
+    内存占用:'',
+    在线人数:'',
     menus:true,
     cesium:()=>useCesiumStore(),
     canvas:{

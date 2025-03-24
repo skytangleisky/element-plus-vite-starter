@@ -212,6 +212,9 @@ const list = reactive([
     {label:'网格值',value:toRefs(setting.人影.监控).gridValue,type:'checkbox'},
     {label:'等值线',value:toRefs(setting.人影.监控).isolines,type:'checkbox'},
     {label:'等值带',value:toRefs(setting.人影.监控).isobands,type:'checkbox'},
+    {label:'在线人数',value:toRefs(setting).在线人数,type:'text'},
+    {label:'网络状态',value:toRefs(setting).网络状态,type:'text'},
+    {label:'内存占用',value:toRefs(setting).内存占用,type:'text'},
   ]}
 ]);
 let pane:any
