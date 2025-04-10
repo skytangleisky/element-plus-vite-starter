@@ -12,7 +12,16 @@
   const fps = ref('0.00');
   const cesiumContainerRef = ref();
   let viewer:any;
-  let imageryProviderViewModels = [new Cesium.ProviderViewModel({
+  let imageryProviderViewModels = [
+    new Cesium.ProviderViewModel({
+      name: '高德地图',
+      iconUrl: 'https://webst01.is.autonavi.com/appmaptile?style=6&x=0&y=0&z=0',
+      tooltip: '高德地图',
+      creationFunction: () => new Cesium.UrlTemplateImageryProvider({
+        url: 'https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
+      }),
+    }),
+    new Cesium.ProviderViewModel({
     name: '谷歌地图',
     iconUrl: 'https://tile.tanglei.site/maps/vt?lyrs=s&gl=CN&x=0&y=0&z=0', // 可以自定义图标
     tooltip: '谷歌地图',
