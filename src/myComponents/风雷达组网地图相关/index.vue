@@ -1173,8 +1173,8 @@ async function updateData(altitude:number){
     },
   });*/
   let interpolateOptions = {
-    sizeU: 20,
-    sizeV: 20,
+    sizeU: 80,
+    sizeV: 80,
     boundary: {
       lng: 105,
       lat: 28,

@@ -23,6 +23,7 @@ export const useSettingStore = defineStore({
     hueRotate:0,
     channel:3,//调色板通道
     scrollTop:0,
+    dialogCollapsed:true,
     isCollapse:false,
     catalogue:{
       dirs:[],

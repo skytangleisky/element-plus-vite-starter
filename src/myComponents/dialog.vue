@@ -1,5 +1,5 @@
 <template>
-  <div class="collapse dragDialog absolute w-500px" style="left: 20px; top: 20px">
+  <div :class="`${setting.dialogCollapsed ? 'collapse' : ''} dragDialog absolute w-500px`" style="left: 20px; top: 20px">
     <div class="flex flex-row" style="align-items: center">
       <input
         @mousedown.stop
@@ -7,6 +7,7 @@
         class="operation_filter flex-1"
         placeholder="请输入过滤条件"
         v-model="options.value"
+        @focus="setting.dialogCollapsed = false"
       />
       <el-icon
         class="dropdown"
@@ -31,8 +32,8 @@
             p-id="9959"
             data-spm-anchor-id="a313x.search_index.0.i4.4d423a814g60B1"
             class="selected"
-          ></path></svg
-      ></el-icon>
+          ></path></svg>
+        </el-icon>
     </div>
     <div class="contain" @mousedown.stop>
       <div
@@ -46,7 +47,7 @@
           scroll-padding-top: 1rem;
         "
       >
-        <table>
+        <table style="font-family:Menlo,Ubuntu Mono,Consolas,Monaco;">
           <thead>
             <tr
               class="bg-blue z-1"
@@ -71,7 +72,7 @@
               @click="flyTo($event, v)"
             >
               <td>{{ k + 1 }}</td>
-              <td style="overflow: auto;white-space: nowrap;max-width:150px">{{ v.name }}</td>
+              <td style="overflow: auto;white-space: nowrap;"><el-scrollbar>{{ v.name }}</el-scrollbar></td>
               <td>{{ v.status?(v.status.longitude==0||v.status.longitude==-1000?'':v.status.longitude):'' }}</td>
               <td>{{ v.status?(v.status.latitude==0||v.status.longitude==-1000?'':v.status.latitude):'' }}</td>
               <td :class="v.is_online == true ? 'color-green' : 'color-red'" style="white-space: nowrap">
@@ -102,6 +103,8 @@
 import { reactive, onMounted, watch } from "vue";
 import { useStationStore } from "~/stores/station";
 import { eventbus } from "~/eventbus";
+import { useSettingStore } from "~/stores/setting";
+const setting = useSettingStore();
 const station = useStationStore();
 import { useBus } from "~/myComponents/bus";
 const bus = useBus();
@@ -159,7 +162,7 @@ const flyTo = (event: any, v: any) => {
   eventbus.emit("光恒-将站点移动到屏幕中心", v);
 };
 const toggleCollapse = () => {
-  $(".dragDialog").toggleClass("collapse");
+  setting.dialogCollapsed = !setting.dialogCollapsed;
 };
 </script>
 <style scoped lang="scss">

@@ -57,7 +57,7 @@
     <div
       :class="`right-drawer ${
         setting.disappear ? 'disappear' : ''
-      } b-solid b-0 b-l-1px dark:b-color-#888`"
+      } b-solid b-0 b-l-1px dark:b-color-#888 cursor-pointer`"
     >
       <div style="overflow: auto; scroll-snap-type: none">
         <chart-info></chart-info>
@@ -69,9 +69,9 @@
         <chart-th></chart-th>
       </div>
       <el-icon
-        class="left--29px z-999 bg-#eee dark:bg-#304156 dark:color-#888"
+        class="left--49px z-999 bg-#eee dark:bg-#304156 dark:color-#888 p-4px"
         style="
-          font-size: 28px;
+          font-size: 40px;
           position: absolute;
           border-bottom-left-radius: 50%;
           border-left: 1px solid grey;
@@ -301,6 +301,15 @@ const moveFunc = () => {
   let center = map.getCenter();
   setting.openlayers.center = [center.lng, center.lat];
 };
+const dragstartFunc = () => {
+  console.log('dragstart')
+  setting.disappear = true;
+  setting.dialogCollapsed = true;
+};
+const dragendFunc = () => {
+  console.log('dragend')
+};
+
 const task = () => {
   // if (prevDate === new Date(setting.now).Format("yyyyMMdd")) {
   station
@@ -623,6 +632,8 @@ onMounted(() => {
   map.on("move", moveFunc);
   map.on("load", loadFunc);
   map.on("click", "stationLayer", clickFunc);
+  map.on("dragstart",dragstartFunc);
+  map.on("dragend",dragendFunc);
   eventbus.on("光恒-将站点移动到屏幕中心", flyTo);
   const closer = popup_closer.value;
   closer.onclick = function () {
@@ -641,6 +652,8 @@ onBeforeUnmount(() => {
   map.off("move", moveFunc);
   map.off("load", loadFunc);
   map.off("click", "stationLayer", clickFunc);
+  map.off("dragstart",dragstartFunc);
+  map.off("dragend",dragendFunc);
   map.remove();
 });
 watch(
