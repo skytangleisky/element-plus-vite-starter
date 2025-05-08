@@ -2,7 +2,6 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import inject from '@rollup/plugin-inject'
 import { visualizer } from 'rollup-plugin-visualizer'
-import { mock } from './packages/plugin-vite-mock'
 import fs from 'fs'
 import Components from 'unplugin-vue-components/vite'
 import vueSetupExtend from 'unplugin-vue-setup-extend-plus/vite'
@@ -74,7 +73,6 @@ export default defineConfig({
       ext: '.gz', // 压缩文件后缀名
       deleteOriginFile:false
     }),
-    // mock(),
     vueJsx(),
     vueSetupExtend({}),
     inject({
