@@ -2225,14 +2225,10 @@ watch(
   (newVal) => {
     if (newVal) {
       map.setLayoutProperty("districtLineBase", "visibility", "visible");
-      map.setLayoutProperty("districtLine", "visibility", "visible");
       map.setLayoutProperty("districtOutlineBase", "visibility", "visible");
-      map.setLayoutProperty("districtOutline", "visibility", "visible");
     } else {
       map.setLayoutProperty("districtLineBase", "visibility", "none");
-      map.setLayoutProperty("districtLine", "visibility", "none");
       map.setLayoutProperty("districtOutlineBase", "visibility", "none");
-      map.setLayoutProperty("districtOutline", "visibility", "none");
     }
   }
 );
