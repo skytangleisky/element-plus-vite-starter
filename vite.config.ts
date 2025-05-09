@@ -176,7 +176,7 @@ export default defineConfig({
         rewrite:path=>path.replace(/^\/amap/,'') // 设置重写的路径
       },
       '/ry_api':{//人影接口
-        target:'http://192.168.0.135:8080',
+        target:'http://tanglei.top:8080',
         rewrite:path=>path.replace(/^\/ry_api/,''), // 设置重写的路径
         secure:false,
         changeOrigin:true,

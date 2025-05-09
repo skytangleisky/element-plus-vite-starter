@@ -1078,7 +1078,7 @@ async function updateData(altitude:number){
   let data: Array<any> = []
   res.data[0].map((item:any)=>{
     let convert = wgs84togcj02(sixty2Float(item.lng),sixty2Float(item.lat))
-    if(item.wind&&item.wind.WindSpeed!=null&&item.wind.WindSpeed!=999){
+    if(item.wind&&item.wind.WindSpeed!=null&&item.wind.WindSpeed!=999&&item.hide!=='true'){
       data.push({
         lng:convert[0],
         lat:convert[1],
@@ -1176,10 +1176,10 @@ async function updateData(altitude:number){
     sizeU: 80,
     sizeV: 80,
     boundary: {
-      lng: 105,
-      lat: 28,
-      width: 6,
-      height: 4.5,
+      lng: 110,
+      lat: 34.48,
+      width: 114.75 - 110,
+      height: 40.83 - 34.48,
     },
     power: 6,
   };
@@ -1723,10 +1723,10 @@ onMounted(() => {
     renderWorldCopies: true,
     maxZoom: 17,
     // minZoom: 1,
-    maxBounds: [
-      [102.0, 27.5],
-      [114.0, 32.7],
-    ],
+    // maxBounds: [
+    //   [102.0, 27.5],
+    //   [114.0, 32.7],
+    // ],
     // zoom: 18,
     // center: [148.9819, -35.3981],
     // pitch: 60,

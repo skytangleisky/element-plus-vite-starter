@@ -275,11 +275,11 @@ export default {
 		"district":{
 			"type":"geojson",
 			// "data": window.location.origin+"/resources/100000_full.json"
-			"data": window.location.origin+"/resources/重庆区划.geojson"
+			"data": window.location.origin+"/resources/山西省区划.geojson"
 		},
 		"districtOutline":{
 			"type":"geojson",
-			"data": window.location.origin+"/resources/重庆市.geojson"
+			"data": window.location.origin+"/resources/山西省.geojson"
 		},
 		"composite": {
 				"url_origin": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2",

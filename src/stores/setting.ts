@@ -66,13 +66,13 @@ export const useSettingStore = defineStore({
       流线:false,
       时间:false,
       请求时间:"",
-      "zoom": 6.612522982969934,
+      "zoom": 6.211297504545232,
       "center": [
-        108,
-        30.286192617004076
+        112.78956135407321,
+        37.61863966296778
       ],
       ppiOpacity:1,
-      mapOpacity:1,
+      mapOpacity:0.25,
       factor:[
         {toolTips:'站名',name:'ZN',val:true,visible:false},
         {toolTips:'站号',name:'ZH',val:false,visible:false},
