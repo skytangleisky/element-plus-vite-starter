@@ -1,5 +1,5 @@
 import { rgb2Hsl } from "~/myComponents/map/js/core";
-import palette from "../mapbox/data/温度/tempreture.xml?raw";
+import palette from "../mapbox/data/温度/垂直气流.xml?raw";
 import plotUrl from "../mapbox/data/plot/06040802.000?url";
 import { getMicapsData } from "../mapbox/data/plot/micaps";
 import interpolate from "~/tools/idw.js";
@@ -48,8 +48,8 @@ export default function(map:mapboxgl.Map,data:any,opts:{isobands:boolean,isoline
   //     value: Number((Math.random() * 20).toFixed(2)),
   //   });
   // }
-  data.map((item:{lng:number,lat:number,speed:number,orientation:number})=>{
-    pts.push({lng:item.lng,lat:item.lat,value:item.speed})
+  data.map((item:{lng:number,lat:number,speed:number,orientation:number,ZWind:number})=>{
+    pts.push({lng:item.lng,lat:item.lat,value:item.ZWind})
   })
   // let convert;
   // convert = wgs84togcj02(sixty2Float('106°37′39″'),sixty2Float('29°44′28″'))
@@ -67,12 +67,7 @@ export default function(map:mapboxgl.Map,data:any,opts:{isobands:boolean,isoline
 
   let colors = {
     0.0: '#3288bd',
-    0.1: '#66c2a5',
-    0.2: '#abdda4',
-    0.3: '#e6f598',
-    0.4: '#fee08b',
-    0.5: '#fdae61',
-    0.6: '#f46d43',
+    0.5: '#e6f598',
     1.0: '#d53e4f',
   };
   var canvas = document.createElement('canvas') as HTMLCanvasElement;
@@ -88,29 +83,29 @@ export default function(map:mapboxgl.Map,data:any,opts:{isobands:boolean,isoline
   let imgData = ctx.getImageData(0, 0, 256, 1);
 
   let breaks = new Array<number>();
-  var Color: { [key: string]: any } = {};
-  let xmlDoc = new DOMParser().parseFromString(palette, "text/xml");
-  let collections = xmlDoc.getElementsByTagName("entry");
-  for (let i = 0; i < collections.length; i++) {
-    let value = parseInt(Number(collections[i].getAttribute("value")).toFixed());
-    breaks.push(value)
-    let strPalette = collections[i].getAttribute("rgba");
-    if (strPalette) {
-      let rgba: [number,number,number,number] = strPalette.split(",").map((v) => Number(v)) as unknown as [number,number,number,number];
-      let hsl = rgb2Hsl(rgba[0],rgba[1],rgba[2])
-      // Color[value.toFixed()] = `hsl(${hsl[0]},${hsl[1]}%,${hsl[2]}%)`;
-      Color[value.toFixed()] = '#' + ((1 << 24) + (rgba[0] << 16) + (rgba[1] << 8) + rgba[2]).toString(16).slice(1);
-    }
-  }
+  // var Color: { [key: string]: any } = {};
+  // let xmlDoc = new DOMParser().parseFromString(palette, "text/xml");
+  // let collections = xmlDoc.getElementsByTagName("entry");
+  // for (let i = 0; i < collections.length; i++) {
+  //   let value = parseInt(Number(collections[i].getAttribute("value")).toFixed());
+  //   breaks.push(value)
+  //   let strPalette = collections[i].getAttribute("rgba");
+  //   if (strPalette) {
+  //     let rgba: [number,number,number,number] = strPalette.split(",").map((v) => Number(v)) as unknown as [number,number,number,number];
+  //     let hsl = rgb2Hsl(rgba[0],rgba[1],rgba[2])
+  //     // Color[value.toFixed()] = `hsl(${hsl[0]},${hsl[1]}%,${hsl[2]}%)`;
+  //     Color[value.toFixed()] = '#' + ((1 << 24) + (rgba[0] << 16) + (rgba[1] << 8) + rgba[2]).toString(16).slice(1);
+  //   }
+  // }
 
   let strokeColors = [];
   breaks=[]
-  for(let i=0;i<=40;i++){
-    breaks.push(i*0.5);
+  for(let i=0;i<=60;i++){
+    breaks.push(-2+i*0.1);
   }
   for (let i = 0; i < breaks.length; i++) {
-    let min = 0;
-    let max = 20;
+    let min = -2;
+    let max = 3;
     let index = Math.round((breaks[i]-min)/(max-min)*imgData.width)
     let r = imgData.data[4*index+0]
     let g = imgData.data[4*index+1]
@@ -126,13 +121,13 @@ export default function(map:mapboxgl.Map,data:any,opts:{isobands:boolean,isoline
   //   strokeColors.push(Color[breaks[i].toFixed()]);
   // }
   let interpolateOptions = {
-    sizeU: 20,
-    sizeV: 20,
+    sizeU: 80,
+    sizeV: 80,
     boundary: {
-      lng: 105,
-      lat: 28,
-      width: 6,
-      height: 4.5,
+      lng: 110,
+      lat: 34.48,
+      width: 114.75 - 110,
+      height: 40.83 - 34.48,
     },
     power: 6,
   };
@@ -253,7 +248,7 @@ export default function(map:mapboxgl.Map,data:any,opts:{isobands:boolean,isoline
   for (let j = 0; j < multiLines.length; j++) {
     let feature = {
       type: "Feature",
-      properties: { threshold: breaks[j],textColor:strokeColors[j]},
+      properties: { threshold: breaks[j].toFixed(2),textColor:strokeColors[j]},
       geometry: {
         type: "MultiLineString",
         coordinates: new Array<any>(),
@@ -261,7 +256,7 @@ export default function(map:mapboxgl.Map,data:any,opts:{isobands:boolean,isoline
     };
     let featureValue = {
       type: "Feature",
-      properties: { threshold: breaks[j],textColor: strokeColors[j]},
+      properties: { threshold: breaks[j].toFixed(2),textColor: strokeColors[j]},
       geometry: {
         type: "MultiPoint",
         coordinates: new Array<any>(),

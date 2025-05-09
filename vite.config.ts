@@ -137,7 +137,7 @@ export default defineConfig({
         changeOrigin:true,
       },
       '/backend':{
-        target:'http://192.168.0.114:3000',//替换的服务端地址
+        target:'http://backend.tanglei.top',//替换的服务端地址
         secure:false,
         changeOrigin:true,
         // rewrite:path=>path.replace(/^\/backend/,''), // 设置重写的路径
@@ -183,7 +183,7 @@ export default defineConfig({
         ws:true,
       },
       '/python':{
-        target:'http://192.168.0.135:8000',
+        target:'http://tanglei.top:8000',
         rewrite:path=>path.replace(/^\/python/,''), // 设置重写的路径
         secure:false,
         changeOrigin:true,

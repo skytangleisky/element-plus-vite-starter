@@ -47,7 +47,7 @@ export default {
             },
             {
               name: 'df127f84-1983-42c1-b718-a0d04fc92720',
-              checked:false,
+              checked:true,
               meta:{
                 label: '重庆组网界面-数据融合-等值线',
               }

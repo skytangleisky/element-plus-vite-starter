@@ -1049,7 +1049,7 @@ async function work(){
     // database: "host=127.0.0.1&port=3306&user=root&password=tanglei&database=weatherservice",
     database: databaseRaw,
     query: {
-      sqls: ["select * from `device`"],
+      sqls: ["select * from `device` where hide != 'true' or hide is NULL"],
     },
   })
   updateData(setting.风雷达组网地图相关.altitudeHeight)
@@ -1078,12 +1078,15 @@ async function updateData(altitude:number){
   let data: Array<any> = []
   res.data[0].map((item:any)=>{
     let convert = wgs84togcj02(sixty2Float(item.lng),sixty2Float(item.lat))
-    if(item.wind&&item.wind.WindSpeed!=null&&item.wind.WindSpeed!=999&&item.hide!=='true'){
+    console.log(item)
+    if(item.wind&&item.wind.WindSpeed!=null&&item.wind.WindSpeed!=999){
+      console.log(item);
       data.push({
         lng:convert[0],
         lat:convert[1],
         speed:item.wind.WindSpeed,
         orientation:item.wind.WindDirection,
+        ZWind:item.wind.ZWind,
       })
     }
   })
@@ -1109,6 +1112,7 @@ async function updateData(altitude:number){
     // {lng:convert5[0],lat:convert5[1],speed:4.706,orientation:200.173},
     // {lng:convert6[0],lat:convert6[1],speed:5,orientation:0},
   ];*/
+  console.log(data)
   discreteContour(map,data,{isobands:setting.风雷达组网地图相关.等值带,isolines:setting.风雷达组网地图相关.等值线,gridValue:setting.风雷达组网地图相关.格点,discrete:false})
   /*let source = {
     type: "geojson",
