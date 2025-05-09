@@ -3,7 +3,7 @@
     <div
       v-resize="resize"
       ref="mapRef"
-      class="map dark:bg-#2b2b2b bg-white"
+      class="map"
       style="
         position: absolute;
         left: 0;
@@ -52,48 +52,47 @@
       <div ref="popup_closer" class="ol-popup-closer"></div>
     </div>
     <radar-statistic></radar-statistic>
-    <Dialog class="absolute" style="left: 240px; top: 10px"></Dialog>
+    <Dialog class="absolute" style="left: 230px; top: 20px"></Dialog>
     <Legend class="legend" style="z-index: 1;"></Legend>
     <div
-      :class="`right-drawer ${
-        setting.disappear ? 'disappear' : ''
-      } b-solid b-0 b-l-1px dark:b-color-#888`"
+      class="right-drawer"
     >
-      <div style="display:flex;flex-direction: column;overflow: auto; scroll-snap-type: none;height: 100%;">
-        <chart-info></chart-info>
-        <FKX></FKX>
-        <chart-fkx v-if="hasPermission(['2353f2f5-b27b-473c-b281-4aa76858ff51'])"></chart-fkx>
-        <chart-dom v-if="hasPermission(['aa0f5674-ca38-4987-9964-f232024f0992'])"></chart-dom>
-        <chartDirection v-if="hasPermission(['ecd5d757-94eb-4b5e-9275-0ffb25a7cbc9'])"></chartDirection>
-        <chartSpeed v-if="hasPermission(['d16bc38f-4b41-4294-b8e6-6230f7633120'])"></chartSpeed>
-        <chartSNR v-if="hasPermission(['fc040225-820d-42f0-8e1a-239c9a76058a'])"></chartSNR>
-        <chart-th v-if="hasPermission(['31aba6cc-6da7-432a-87a3-576e4d5f59f2'])"></chart-th>
-      </div>
-      <el-icon
-        class="left--29px z-999 bg-#eee dark:bg-#304156 dark:color-#888"
-        style="
-          font-size: 28px;
-          position: absolute;
-          border-bottom-left-radius: 50%;
-          border-left: 1px solid grey;
-          border-bottom: 1px solid grey;
-        "
-        @click="disappear"
-      >
-        <svg
-          t="1695093760888"
-          class="icon"
-          viewBox="0 0 1024 1024"
-          version="1.1"
-          xmlns="http://www.w3.org/2000/svg"
-          p-id="5105"
-        >
-          <path
-            d="M557.397333 167.204571l293.059048 293.059048L902.192762 512l-51.712 51.712-293.059048 293.083429-51.736381-51.712L762.148571 548.571429H121.904762v-73.142858h640.243809L505.660952 218.940952l51.736381-51.736381z"
-            p-id="5106"
-          ></path>
-        </svg>
-      </el-icon>
+      <fkx-info></fkx-info>
+<!--      <div style="display:flex;flex-direction: column;overflow: auto; scroll-snap-type: none;height: 100%;">-->
+<!--        <chart-info></chart-info>-->
+<!--        <FKX></FKX>-->
+<!--        <chart-fkx v-if="hasPermission(['2353f2f5-b27b-473c-b281-4aa76858ff51'])"></chart-fkx>-->
+<!--        <chart-dom v-if="hasPermission(['aa0f5674-ca38-4987-9964-f232024f0992'])"></chart-dom>-->
+<!--        <chartDirection v-if="hasPermission(['ecd5d757-94eb-4b5e-9275-0ffb25a7cbc9'])"></chartDirection>-->
+<!--        <chartSpeed v-if="hasPermission(['d16bc38f-4b41-4294-b8e6-6230f7633120'])"></chartSpeed>-->
+<!--        <chartSNR v-if="hasPermission(['fc040225-820d-42f0-8e1a-239c9a76058a'])"></chartSNR>-->
+<!--        <chart-th v-if="hasPermission(['31aba6cc-6da7-432a-87a3-576e4d5f59f2'])"></chart-th>-->
+<!--      </div>-->
+<!--      <el-icon-->
+<!--        class="left&#45;&#45;29px z-999 bg-#eee dark:bg-#304156 dark:color-#888"-->
+<!--        style="-->
+<!--          font-size: 28px;-->
+<!--          position: absolute;-->
+<!--          border-bottom-left-radius: 50%;-->
+<!--          border-left: 1px solid grey;-->
+<!--          border-bottom: 1px solid grey;-->
+<!--        "-->
+<!--        @click="disappear"-->
+<!--      >-->
+<!--        <svg-->
+<!--          t="1695093760888"-->
+<!--          class="icon"-->
+<!--          viewBox="0 0 1024 1024"-->
+<!--          version="1.1"-->
+<!--          xmlns="http://www.w3.org/2000/svg"-->
+<!--          p-id="5105"-->
+<!--        >-->
+<!--          <path-->
+<!--            d="M557.397333 167.204571l293.059048 293.059048L902.192762 512l-51.712 51.712-293.059048 293.083429-51.736381-51.712L762.148571 548.571429H121.904762v-73.142858h640.243809L505.660952 218.940952l51.736381-51.736381z"-->
+<!--            p-id="5106"-->
+<!--          ></path>-->
+<!--        </svg>-->
+<!--      </el-icon>-->
     </div>
     <TimeStep @change="TimeStepChange"></TimeStep>
     <time-line
@@ -137,6 +136,7 @@ import { getMicapsData } from '../mapbox/data/plot/micaps.ts';
 import plotUrl from '/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pth15.00_Spd6.00_Res030_StartIdx002_VADStart002_VADStop190_VADWind_Sec_20250113 000000.000?url'
 import TimeStep from '~/tools/timeStep.vue';
 import FKX from './风廓线.vue';
+import fkxInfo from './fkxInfo.vue'
 import uvUrl from "../mapbox/data/06040808.000?url";
 import CustomLayer from './CustomLayer.js'//绘制流线
 import discreteContour from "./discreteContour.ts";//绘制等值线
@@ -2264,6 +2264,7 @@ watch(
   box-sizing: border-box;
   bottom:10px;
   width:90%;
+  
 }
 </style>
 <style scoped lang="scss">
@@ -2378,11 +2379,11 @@ watch(
 .right-drawer {
   z-index: 1;
   position: absolute;
-  right: 0;
-  width: 610px;
+  top: 20px;
+  right:20px;
+  width:500px;
   box-sizing: border-box;
-  height: 100%;
-  background-color: white;
+  height:calc(100% - 80px);
   display: flex;
   flex-direction: column;
   transition: all 250ms;
@@ -2391,7 +2392,7 @@ watch(
     box-sizing: border-box;
   }
   & > div > div:nth-child(odd) {
-    background: #eee;
+    //background: #eee;
   }
 }
 .dark .right-drawer {
@@ -2415,5 +2416,9 @@ watch(
 }
 .main-container:has(.timeline) .legend{
   bottom:40px;
+
+}
+.map{
+  background-color: #F4FBFF;
 }
 </style>

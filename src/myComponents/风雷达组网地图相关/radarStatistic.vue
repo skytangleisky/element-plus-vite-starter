@@ -1,7 +1,7 @@
 <template>
   <div
-    class="radarStatistic absolute left-0 top-0 w-240px box-border bg-blue-9 dark:bg-gray-8"
-    style="background-color: transparent; overflow: auto; max-height: 100%"
+    class="radarStatistic"
+
   >
     <!-- <div class="item">
       <collapse-card
@@ -28,8 +28,7 @@
           <el-switch
             v-model="setting.风雷达组网地图相关.站名"
             inline-prompt
-            :active-icon="Check"
-            :inactive-icon="Close"
+            
             size="small"
           />
         </div>
@@ -38,8 +37,7 @@
           <el-switch
             v-model="setting.风雷达组网地图相关.站号"
             inline-prompt
-            :active-icon="Check"
-            :inactive-icon="Close"
+            
             size="small"
           />
         </div>
@@ -96,11 +94,11 @@
               :label="item.label"
             ></el-option>
           </el-select>
-          <el-icon @click="upward2()" style="font-size:large">
-            <svg t="1721356236932" class="icon hover:color-red active:color-inherit" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M600.064 119.68l342.336 730.24a64 64 0 0 1-88.064 83.584L544 768l-340.288 170.112a64 64 0 0 1-85.824-85.824l367.04-734.08a64 64 0 0 1 115.2 1.472z"></path></svg>
+          <el-icon @click="upward2()" >
+            <svg t="1721356236932"  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M600.064 119.68l342.336 730.24a64 64 0 0 1-88.064 83.584L544 768l-340.288 170.112a64 64 0 0 1-85.824-85.824l367.04-734.08a64 64 0 0 1 115.2 1.472z"></path></svg>
           </el-icon>
-          <el-icon @click="downward2()" style="font-size:large">
-            <svg t="1721356236932" class="icon hover:color-red active:color-inherit rotate-180deg" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M600.064 119.68l342.336 730.24a64 64 0 0 1-88.064 83.584L544 768l-340.288 170.112a64 64 0 0 1-85.824-85.824l367.04-734.08a64 64 0 0 1 115.2 1.472z"></path></svg>
+          <el-icon @click="downward2()" >
+            <svg t="1721356236932" class="rotate-180deg" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M600.064 119.68l342.336 730.24a64 64 0 0 1-88.064 83.584L544 768l-340.288 170.112a64 64 0 0 1-85.824-85.824l367.04-734.08a64 64 0 0 1 115.2 1.472z"></path></svg>
           </el-icon>
         </div>
         <div class="subitem">
@@ -108,8 +106,7 @@
           <el-switch
             v-model="setting.feather"
             inline-prompt
-            :active-icon="Check"
-            :inactive-icon="Close"
+            
             size="small"
           />
         </div>
@@ -118,8 +115,7 @@
           <el-switch
             v-model="setting.风雷达组网地图相关.高度"
             inline-prompt
-            :active-icon="Check"
-            :inactive-icon="Close"
+            
             size="small"
           />
         </div> -->
@@ -128,8 +124,7 @@
           <el-switch
             v-model="setting.风雷达组网地图相关.风向"
             inline-prompt
-            :active-icon="Check"
-            :inactive-icon="Close"
+            
             size="small"
           />
         </div>
@@ -138,8 +133,7 @@
           <el-switch
             v-model="setting.风雷达组网地图相关.风速"
             inline-prompt
-            :active-icon="Check"
-            :inactive-icon="Close"
+            
             size="small"
           />
         </div> -->
@@ -148,8 +142,7 @@
           <el-switch
             v-model="setting.风雷达组网地图相关.垂直气流"
             inline-prompt
-            :active-icon="Check"
-            :inactive-icon="Close"
+            
             size="small"
           />
         </div>
@@ -159,8 +152,7 @@
           <el-switch
             v-model="setting.风雷达组网地图相关.时间"
             inline-prompt
-            :active-icon="Check"
-            :inactive-icon="Close"
+            
             size="small"
           />
         </div> -->
@@ -173,8 +165,7 @@
           <el-switch
             v-model="setting.风雷达组网地图相关.格点"
             inline-prompt
-            :active-icon="Check"
-            :inactive-icon="Close"
+            
             size="small"
           />
         </div>
@@ -183,8 +174,7 @@
           <el-switch
             v-model="setting.风雷达组网地图相关.风场"
             inline-prompt
-            :active-icon="Check"
-            :inactive-icon="Close"
+            
             size="small"
           />
         </div>
@@ -193,8 +183,7 @@
           <el-switch
             v-model="setting.风雷达组网地图相关.等值线"
             inline-prompt
-            :active-icon="Check"
-            :inactive-icon="Close"
+            
             size="small"
           />
         </div>
@@ -203,8 +192,7 @@
           <el-switch
             v-model="setting.风雷达组网地图相关.等值带"
             inline-prompt
-            :active-icon="Check"
-            :inactive-icon="Close"
+            
             size="small"
           />
         </div>
@@ -213,8 +201,7 @@
           <el-switch
             v-model="setting.风雷达组网地图相关.流线"
             inline-prompt
-            :active-icon="Check"
-            :inactive-icon="Close"
+            
             size="small"
           />
         </div>
@@ -286,8 +273,7 @@
           <el-switch
             v-model="setting.graticule"
             inline-prompt
-            :active-icon="Check"
-            :inactive-icon="Close"
+            
             size="small"
           />
         </div> -->
@@ -296,8 +282,7 @@
           <el-switch
             v-model="setting.district"
             inline-prompt
-            :active-icon="Check"
-            :inactive-icon="Close"
+            
             size="small"
           />
         </div>
@@ -306,8 +291,7 @@
           <el-switch
             v-model="setting.station"
             inline-prompt
-            :active-icon="Check"
-            :inactive-icon="Close"
+            
             size="small"
           />
         </div>
@@ -316,8 +300,7 @@
           <el-switch
             v-model="setting.风雷达组网地图相关.等距环"
             inline-prompt
-            :active-icon="Check"
-            :inactive-icon="Close"
+            
             size="small"
           />
         </div>
@@ -325,7 +308,7 @@
           <span>默认位置</span>
           <el-icon
             @click="resetLocation"
-            style="min-width: 30px; height: 32px; cursor: pointer"
+            style=" cursor: pointer"
           >
             <HomeFilled></HomeFilled>
           </el-icon>
@@ -531,31 +514,38 @@ onBeforeUnmount(() => {
 });
 </script>
 <style lang="scss">
+.ep-switch__core{
+  background:#ccc;
+}
 .radarStatistic {
+  position: absolute;
+  top:20px;
+  left: 20px;
+  overflow-y: auto;
   .item {
-    border-radius: 8px;
-    margin: 8px 10px;
-    padding-right: 10px;
-    background: #ffffff;
-    box-shadow: 0 0 10px 10px #00000011;
-    border-color: #00000011;
 
-    & > div:not(:first-child) {
+   &:not(:last-child) {
+     margin-bottom: 12px;
+   }
+
+
+
+    & > div:not(:first-child)
+    {
       border-top: 1px solid rgb(243, 244, 246);
     }
-    .collapse-card {
-      margin-left: 10px;
-    }
+
     .subitem {
       width: 100%;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      &:first-of-type {
-        border-top: 1px solid rgb(243, 244, 246);
-      }
+      //&:first-of-type {
+        //border-top: 1px solid rgb(243, 244, 246);
+      //}
       &:not(:last-child) {
-        border-bottom: 1px solid rgb(243, 244, 246);
+        //border-bottom: 1px solid rgb(243, 244, 246);
+        margin-bottom: 8px;
       }
     }
   }
@@ -565,7 +555,6 @@ onBeforeUnmount(() => {
 }
 .dark .radarStatistic {
   .item {
-    background: #304156;
     & > div:not(:first-child) {
       border-top: 1px solid rgba(0, 0, 0, 0.27);
     }

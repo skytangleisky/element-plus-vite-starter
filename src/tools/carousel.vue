@@ -141,15 +141,13 @@ import { nextTick, onBeforeUnmount, onMounted,reactive,ref,watch } from 'vue';
 }
 .my-carousel{
   display: flex;
-  height: 30px;
+  height: 32px;
+  line-height: 32px;
   align-items: center;
   justify-content: center;
-  background:#ffffff80;
-  border:1px solid black;
-  padding:0 0px;;
-  border-radius:10px;
+  background:var(--bg-color-overlay-opacity-8);
+  border-radius:4px;
   position: relative;
-  line-height: 30px;
   // &::before{
   //   content:'';
   //   position: absolute;
@@ -177,6 +175,10 @@ import { nextTick, onBeforeUnmount, onMounted,reactive,ref,watch } from 'vue';
         display: flex;
         justify-content: center;
         align-items: center;
+        font-size: 16px;
+        &:hover{
+         color: var(--ep-color-primary);
+        }
       }
     }
     .carousel-arrow{

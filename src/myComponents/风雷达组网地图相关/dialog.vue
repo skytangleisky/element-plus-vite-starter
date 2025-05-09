@@ -1,6 +1,6 @@
 <template>
-  <div class="!collapse dragDialog absolute w-320px" style="left: 20px; top: 20px">
-    <div class="flex flex-row" style="align-items: center">
+  <div class="!collapse dragDialog" >
+    <div class="dragDialog-top">
       <input
         @mousedown.stop
         name="过滤条件"
@@ -38,14 +38,8 @@
     <div class="contain" @mousedown.stop>
       <div
         @scroll="scrolling"
-        class="b-solid dark:b-#444 b-#ccc b-1px"
-        style="
-          overflow: auto;
-          box-sizing: border-box;
-          position: relative;
-          margin-top: 7px;
-          scroll-padding-top: 1rem;
-        ">
+        class="contain-table"
+      >
         <table>
           <thead>
             <tr
@@ -75,7 +69,7 @@
                 <td>{{ v.altitude }}</td>
                 <td>{{ (setting.风雷达组网地图相关.altitudeHeight-v.altitude).toFixed(1) }}</td>
                 <td>{{ v.time }}</td>
-                <td :class="v.status==0 ? '未知' : v.status == 1 ? 'color-#0f0' : v.status == 2 ? 'color-#f80' : v.status == 3 ? 'color-#f00' : 'color-inherit'">
+                <td :class="v.status==0 ? '未知' : v.status == 1 ? 'color-#50aa23' : v.status == 2 ? 'color-#f80' : v.status == 3 ? 'color-#f00' : 'color-inherit'">
                   {{ v.status==0 ? '未知' : v.status==1 ? '正常' : v.status==2 ? '延迟' : v.status==3 ? '缺失' : v.status }}
                 </td>
               </tr>
@@ -186,7 +180,7 @@ const toggleCollapse = () => {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 169px;
+
   .menuUl {
     outline: none;
     position: absolute;
@@ -278,22 +272,30 @@ const toggleCollapse = () => {
   }
 }
 .dragDialog {
-  border: 1px solid gray;
+
+  width: 320px;
   display: flex;
   flex-direction: column;
-  border-radius: 10px;
-  padding: 0.5rem;
-  // background: linear-gradient(172.98deg,hsla(0,0%,100%,0.08) 1.49%,hsla(0,0%,100%,0.0208) 99.64%);
-  background: white;
-  // box-shadow: 0 23px 20px -20px rgb(9 10 18 / 10%), 0 0 15px rgb(9 10 18 / 6%);
+  padding: 12px;
+  background: url("~/assets/theme-img/map-module-bg.png") no-repeat;
+  background-size: 100% 100%;
+  .contain-table{
+    overflow: auto;
+    box-sizing: border-box;
+    position: relative;
+    margin-top: 8px;
+    scroll-padding-top: 1rem;
+    max-height: 230px;
+  }
   table {
     border-collapse: collapse;
-    overflow: auto;
+
     min-width: 100%;
     thead {
       tr {
         th {
           border-top: none;
+          color: #fff;
         }
         th:first-child {
           border-left: none;
@@ -306,12 +308,12 @@ const toggleCollapse = () => {
     tbody {
       tr {
         &:hover {
-          background: #00000022;
+          background: var(--ep-color-primary-light-7);
         }
         cursor: pointer;
       }
       tr.selected {
-        background: #00000066;
+        background: var(--ep-color-primary-light-5);
       }
       td:first-child {
         border-left: none;
@@ -325,7 +327,7 @@ const toggleCollapse = () => {
     }
     th,td {
       text-align: left;
-      border: 1px solid #ccc;
+      //border: 1px solid #ccc;
     }
   }
 }
@@ -345,11 +347,18 @@ const toggleCollapse = () => {
     }
     th,td {
       text-align: left;
-      border: 1px solid #2b2b2b;
+      border: 1px solid var(--ep-border-color);
     }
     td {
       border-top: 0;
     }
+  }
+}
+.dragDialog-top{
+  display: flex;
+  align-items: center;
+  .ep-icon{
+    color: var(--ep-text-color-regular);
   }
 }
 </style>

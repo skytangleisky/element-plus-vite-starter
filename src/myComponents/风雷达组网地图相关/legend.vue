@@ -29,11 +29,11 @@ const click = () => {
 // }
 .legendContainer {
   color: black;
-  background: white;
+  background:var(--bg-color-overlay-opacity-8);
   position: absolute;
-  bottom: 10px;
+  bottom: 16px !important;
   left: 10px;
-  padding: 10px;
+  padding: 4px 10px;
   border-radius: 4px;
   cursor: pointer;
   user-select: none;
@@ -44,7 +44,7 @@ const click = () => {
     bottom: calc(100% + 10px);
     position: absolute;
     border-radius: 8px;
-    background: white;
+    background: var(--bg-color-overlay-opacity-8);
     box-shadow: 0px 0px 6px 1px #00000044;
     cursor: auto;
     &:empty {

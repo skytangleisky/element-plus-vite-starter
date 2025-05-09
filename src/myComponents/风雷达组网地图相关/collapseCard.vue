@@ -1,10 +1,10 @@
 <template>
   <div class="collapse-card">
     <div
-      class="title h-30px left-0 box-border flex flex-row justify-between items-center"
+      class="card-top"
       @click="click"
     >
-      <div style="font-size: 16px; color: rgb(78, 129, 184)">{{ title }}</div>
+      <div class="card-title">{{ title }}</div>
       <span v-show="showVal">{{ val }}</span>
       <el-switch
         v-show="showSelect"
@@ -38,7 +38,7 @@
       </el-icon>
     </div>
     <el-collapse-transition>
-      <div v-show="show" class="collapse" style="flex-direction: column">
+      <div v-show="show" class="card-bottom" >
         <slot></slot>
       </div>
     </el-collapse-transition>
@@ -80,3 +80,38 @@ const select = computed({
   },
 });
 </script>
+
+<style lang="scss">
+.collapse-card{
+  border-radius: 8px;
+  .card-top{
+    height: 32px;
+    line-height: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px 0 20px;
+    margin-bottom: 2px;
+    border-radius: 0;
+    background: url("~/assets/theme-img/map-module-title.png") no-repeat;
+    background-size: 100% 100%;
+    .card-title,
+    .ep-icon{
+      color:var(--module-title-text-color);
+    }
+
+
+  }
+  .card-bottom{
+    padding: 12px;
+    background: url("~/assets/theme-img/map-module-bg.png") no-repeat;
+    background-size: 100% 100%;
+    .ep-icon{
+      color: var(--ep-color-primary);
+      &:hover{
+        color: var(--ep-color-primary-dark-2);
+      }
+    }
+  }
+}
+</style>

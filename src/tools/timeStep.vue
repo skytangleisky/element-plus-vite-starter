@@ -2,7 +2,7 @@
   <div class="timestep-container">
     <Carousel :percent="100/13" :keep-number="6" v-model:currentIndex="currentIndex" style="width: 100%" @change="change">
       <template #default="{data,currentIndex}">
-        <div :class="`item w-full h-full flex items-center relative justify-center font-size-20px flex flex-col ${data.index==currentIndex?'currentItem':''}`">
+        <div :class="`item w-full h-full flex items-center relative justify-center flex-col ${data.index==currentIndex?'currentItem':''}`">
           <div v-if="data.index == currentIndex" class="day absolute top-2px font-size-12px line-height-12px">{{ getDay(data) }}D</div>
           <!-- <div class="day absolute top-0px font-size-12px line-height-12px">{{ data.index }}</div> -->
           {{ format(data) }}
@@ -100,11 +100,11 @@ onBeforeUnmount(()=>{
 }
 .my-carousel{
   .item{
-    border-radius: 10px;
+    border-radius: 4px;
     height: 50px;
     &.currentItem{
-      background: #adc6ee;
-      border:1px solid black;
+      background:var(--ep-color-primary-light-5);
+      border:1px solid var(--ep-border-color);
     }
   }
   .ep-input__wrapper{
@@ -145,15 +145,14 @@ onBeforeUnmount(()=>{
   width: 80%;
   height: 38px;
   .btn{
-    border:1px solid black;
     position: absolute;
     right:0;
     transform: translateX(calc(100% + 10px));
     flex-shrink: 0;
     border-radius: 50%;
-    background:#ffffff80;
-    width: 30px;
-    height: 30px;
+    background:var(--bg-color-overlay-opacity-8);
+    width: 32px;
+    height: 32px;
     &:hover{
       opacity: 0.8;;
     }

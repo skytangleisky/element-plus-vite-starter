@@ -1,8 +1,9 @@
 <template>
   <div style="width: 100%; height: 100%; display: flex; flex-direction: column">
     <div style="display: flex; flex-direction: row; justify-content: space-between;">
-      <div style="font-size: 20px; color: rgb(78, 129, 184)">风廓线</div>
-      <div style="color: grey">{{ currentTime }}</div>
+<!--      <div style="font-size: 20px; color: rgb(78, 129, 184)">风廓线</div>-->
+      <div></div>
+      <div style="color: grey ;margin-top: 4px">{{ currentTime }}</div>
     </div>
     <div ref="fkxContainer" class="w-full flex-1 h-full"></div>
   </div>
