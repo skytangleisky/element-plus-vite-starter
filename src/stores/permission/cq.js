@@ -54,7 +54,7 @@ export default {
             },
             {
               name: '182392d2-6928-4add-b006-784e9fde0213',
-              checked:false,
+              checked:true,
               meta:{
                 label: '重庆组网界面-数据融合-等值线填充',
               }

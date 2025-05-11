@@ -1041,15 +1041,15 @@ const resize = (entry) => {
   map && map.resize();
 };
 var marker:Marker;
-import {databaseRaw,getPPIData} from '~/api/重庆'
+import {databaseRaw,getPPIData,databaseRaw2} from '~/api/重庆'
 import interpolate from "~/tools/idw.js";
 let res:any
 async function work(){
   res = await exec({
     // database: "host=127.0.0.1&port=3306&user=root&password=tanglei&database=weatherservice",
-    database: databaseRaw,
+    database: databaseRaw2,
     query: {
-      sqls: ["select * from `device` where hide != 'true' or hide is NULL"],
+      sqls: ["select * from `device` where hide != 'true' or hide is NULL and device_name is not NULL"],
     },
   })
   updateData(setting.风雷达组网地图相关.altitudeHeight)
@@ -1075,12 +1075,17 @@ async function updateData(altitude:number){
       }
     })
   })
+  /*真实数据*/
   let data: Array<any> = []
   res.data[0].map((item:any)=>{
     let convert = wgs84togcj02(sixty2Float(item.lng),sixty2Float(item.lat))
-    console.log(item)
+    //模拟开始
+    item.wind = {}
+    item.wind.WindSpeed = 5*Math.random()
+    item.wind.WindDirection=360*Math.random()
+    item.wind.ZWind=(Math.random()-0.5)*4
+    //模拟结束
     if(item.wind&&item.wind.WindSpeed!=null&&item.wind.WindSpeed!=999){
-      console.log(item);
       data.push({
         lng:convert[0],
         lat:convert[1],
@@ -1112,7 +1117,6 @@ async function updateData(altitude:number){
     // {lng:convert5[0],lat:convert5[1],speed:4.706,orientation:200.173},
     // {lng:convert6[0],lat:convert6[1],speed:5,orientation:0},
   ];*/
-  console.log(data)
   discreteContour(map,data,{isobands:setting.风雷达组网地图相关.等值带,isolines:setting.风雷达组网地图相关.等值线,gridValue:setting.风雷达组网地图相关.格点,discrete:false})
   /*let source = {
     type: "geojson",
@@ -1305,7 +1309,7 @@ async function updateData(altitude:number){
           垂直气流: "",
           时间:NaN,
           time: moment().format("YYYY-MM-DD HH:mm:ss"),
-          name: Item.device_short_name,
+          name: Item.device_name,
           is_online: true,
           external_temperature: 25,
           external_humidity: 0.6,
@@ -2260,7 +2264,6 @@ watch(
   box-sizing: border-box;
   bottom:10px;
   width:90%;
-  
 }
 </style>
 <style scoped lang="scss">
@@ -2416,5 +2419,8 @@ watch(
 }
 .map{
   background-color: #F4FBFF;
+}
+.dark .map{
+  background-color: #2b2b2b;
 }
 </style>

@@ -170,7 +170,7 @@
           />
         </div>
         <div class="subitem" v-if="hasPermission(['5dd862f4-112f-46cf-a843-11c3f5aba1cf'])">
-          <span>风场</span>
+          <span>水平风场</span>
           <el-switch
             v-model="setting.风雷达组网地图相关.风场"
             inline-prompt

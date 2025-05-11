@@ -4,10 +4,21 @@
       <input
         @mousedown.stop
         name="过滤条件"
-        class="operation_filter flex-1"
+        class="operation_filter flex-1 m-r-10px"
         placeholder="请输入过滤条件"
         v-model="options.value"
       />
+      <el-cascader
+        v-model="selected"
+        collapse-tags
+        :props="cascaderProps"
+        v-model:options="cascaderOptions"
+        :max-collapse-tags="0"
+        clearable
+        size="small"
+        class="m-r-10px"
+      >
+      </el-cascader>
       <el-icon
         class="dropdown"
         style="
@@ -65,7 +76,7 @@
               >
                 <td>{{ k + 1 }}</td>
                 <td>{{ v.no }}</td>
-                <td>{{ v.device_short_name }}</td>
+                <td>{{ v.device_name }}</td>
                 <td>{{ v.altitude }}</td>
                 <td>{{ (setting.风雷达组网地图相关.altitudeHeight-v.altitude).toFixed(1) }}</td>
                 <td>{{ v.time }}</td>
@@ -95,13 +106,207 @@
   </div>
 </template>
 <script lang="ts" setup>
+const cascaderProps = { multiple: true, value: 'value', label: 'label', children: 'children' }
+const cascaderOptions = reactive([
+  {
+    value: 140000,
+    label: '山西省',
+    children: [
+      // {
+      //   value: 2,
+      //   label: '太原市',
+      //   children: [
+      //     { value: 3, label: '阳曲县' },
+      //     { value: 4, label: '娄烦县' },
+      //     { value: 5, label: '古交市' },
+      //     { value: 5, label: '万柏林区' },
+      //     { value: 5, label: '尖草坪区' },
+      //     { value: 5, label: '杏花岭区' },
+      //     { value: 5, label: '迎泽区' },
+      //     { value: 5, label: '清徐县' },
+      //     { value: 5, label: '晋源区' },
+      //     { value: 5, label: '小店区' },
+      //   ],
+      // },
+      // {
+      //   value: 6,
+      //   label: '大同市',
+      //   children: [
+      //     { value: 7, label: '平城区' },
+      //     { value: 8, label: '左云县' },
+      //     { value: 9, label: '新荣区' },
+      //     { value: 9, label: '阳高县' },
+      //     { value: 9, label: '天镇县' },
+      //     { value: 9, label: '云冈区' },
+      //     { value: 9, label: '云州区' },
+      //     { value: 9, label: '浑源县' },
+      //     { value: 9, label: '广灵县' },
+      //     { value: 9, label: '灵丘县' },
+      //   ],
+      // },
+      // {
+      //   value: 10,
+      //   label: '朔州市',
+      //   children: [
+      //     { value: 11, label: '右玉县' },
+      //     { value: 12, label: '平鲁区' },
+      //     { value: 13, label: '朔城区' },
+      //     { value: 13, label: '山阴县' },
+      //     { value: 13, label: '怀仁市' },
+      //     { value: 13, label: '应县' },
+      //   ],
+      // },
+      // {
+      //   value: 10,
+      //   label: '忻州市',
+      //   children: [
+      //     { value: 11, label: '偏关县' },
+      //     { value: 12, label: '河曲县' },
+      //     { value: 13, label: '保德县' },
+      //     { value: 13, label: '神池县' },
+      //     { value: 13, label: '五寨县' },
+      //     { value: 13, label: '岢岚县' },
+      //     { value: 13, label: '宁武县' },
+      //     { value: 13, label: '静乐县' },
+      //     { value: 13, label: '原平市' },
+      //     { value: 13, label: '忻府区' },
+      //     { value: 13, label: '定襄县' },
+      //     { value: 13, label: '代县' },
+      //     { value: 13, label: '五台县' },
+      //     { value: 13, label: '繁峙县' },
+      //   ],
+      // },
+      // {
+      //   value: 10,
+      //   label: '吕梁市',
+      //   children: [
+      //     { value: 11, label: '兴县' },
+      //     { value: 12, label: '岚县' },
+      //     { value: 13, label: '临县' },
+      //     { value: 13, label: '方山县' },
+      //     { value: 13, label: '柳林县' },
+      //     { value: 13, label: '离石区' },
+      //     { value: 13, label: '交城县' },
+      //     { value: 13, label: '中阳县' },
+      //     { value: 13, label: '石楼县' },
+      //     { value: 13, label: '交口县' },
+      //     { value: 13, label: '孝义市' },
+      //     { value: 13, label: '汾阳市' },
+      //     { value: 13, label: '文水县' },
+      //   ],
+      // },
+      // {
+      //   value: 10,
+      //   label: '阳泉市',
+      //   children: [
+      //     { value: 11, label: '盂县' },
+      //     { value: 12, label: '郊区' },
+      //     { value: 13, label: '平定县' },
+      //     { value: 13, label: '矿区' },
+      //     { value: 13, label: '城区' },
+      //   ],
+      // },
+      // {
+      //   value: 10,
+      //   label: '晋中市',
+      //   children: [
+      //     { value: 11, label: '灵石县' },
+      //     { value: 12, label: '介休市' },
+      //     { value: 13, label: '平遥县' },
+      //     { value: 13, label: '祁县' },
+      //     { value: 13, label: '太谷区' },
+      //     { value: 13, label: '榆次区' },
+      //     { value: 13, label: '寿阳县' },
+      //     { value: 13, label: '榆社县' },
+      //     { value: 13, label: '左权县' },
+      //     { value: 13, label: '和顺县' },
+      //     { value: 13, label: '昔阳县' },
+      //   ],
+      // },
+      // {
+      //   value: 10,
+      //   label: '临汾市',
+      //   children: [
+      //     { value: 11, label: '永和县' },
+      //     { value: 12, label: '大宁县' },
+      //     { value: 13, label: '吉县' },
+      //     { value: 13, label: '乡宁县' },
+      //     { value: 13, label: '襄汾县' },
+      //     { value: 13, label: '侯马市' },
+      //     { value: 13, label: '曲沃县' },
+      //     { value: 13, label: '冀城县' },
+      //     { value: 13, label: '浮山县' },
+      //     { value: 13, label: '安泽县' },
+      //     { value: 13, label: '古县' },
+      //     { value: 13, label: '霍州市' },
+      //     { value: 13, label: '汾西县' },
+      //     { value: 13, label: '隰县' },
+      //     { value: 13, label: '蒲县' },
+      //     { value: 13, label: '尧都县' },
+      //     { value: 13, label: '洪洞县' },
+      //   ],
+      // },
+      // {
+      //   value: 10,
+      //   label: '长治市',
+      //   children: [
+      //     { value: 11, label: '沁源县' },
+      //     { value: 12, label: '屯留区' },
+      //     { value: 13, label: '长子县' },
+      //     { value: 13, label: '上党区' },
+      //     { value: 13, label: '壶关县' },
+      //     { value: 13, label: '平顺县' },
+      //     { value: 13, label: '黎城县' },
+      //     { value: 13, label: '武乡县' },
+      //     { value: 13, label: '沁县' },
+      //     { value: 13, label: '襄垣县' },
+      //     { value: 13, label: '潞城区' },
+      //     { value: 13, label: '潞州区' },
+      //   ],
+      // },
+      // {
+      //   value: 10,
+      //   label: '运城市',
+      //   children: [
+      //     { value: 11, label: '新绛县' },
+      //     { value: 12, label: '稷山县' },
+      //     { value: 13, label: '河津市' },
+      //     { value: 13, label: '万荣县' },
+      //     { value: 13, label: '临猗县' },
+      //     { value: 13, label: '永济市' },
+      //     { value: 13, label: '芮城县' },
+      //     { value: 13, label: '平陆县' },
+      //     { value: 13, label: '夏县' },
+      //     { value: 13, label: '垣曲县' },
+      //     { value: 13, label: '绛县' },
+      //     { value: 13, label: '闻喜县' },
+      //     { value: 13, label: '盐湖区' },
+      //   ],
+      // },
+      // {
+      //   value: 10,
+      //   label: '晋城市',
+      //   children: [
+      //     { value: 11, label: '沁水县' },
+      //     { value: 12, label: '阳城县' },
+      //     { value: 13, label: '泽州县' },
+      //     { value: 13, label: '临川县' },
+      //     { value: 13, label: '高平县' },
+      //     { value: 13, label: '城区' },
+      //   ],
+      // },
+    ],
+  }
+])
   import { useSettingStore } from "~/stores/setting";
   const setting = useSettingStore()
-import { reactive, onMounted, watch } from "vue";
+import { reactive, ref, onMounted, watch } from "vue";
+const selected = ref([])
 import { useStationStore } from "~/stores/station";
 import { eventbus } from "~/eventbus";
 const station = useStationStore();
 import { useBus } from "~/myComponents/bus";
+import {通过code获取子级,通过code获取雷达} from "~/api/重庆";
 const bus = useBus();
 const menus = reactive([
   { code: 291, name: "白河堡作业点", status: "离线", equipment: "火箭", id: "110229041" },
@@ -111,11 +316,53 @@ const menus = reactive([
   { code: 276, name: "276", status: "离线", equipment: "火箭", id: "110229045" },
   { code: 277, name: "277", status: "离线", equipment: "火箭", id: "110229046" },
 ]);
-onMounted(() => {
+onMounted(async() => {
   $(".menuUl").on("focusout", () => {
     $(".menuUl").css({ display: "none" });
   });
+  通过code获取子级(140000).then((res)=>{
+    res.data.results.forEach(async(city:any)=>{
+      const item = {
+        value: Number(city.adcode),
+        label: city.name,
+        children:reactive([]),
+      }
+      cascaderOptions[0].children.push(item as never)
+      通过code获取子级(city.adcode).then(res=>{
+        res.data.results.forEach(async(county:any)=>{
+          const subItem = {
+            value: Number(county.adcode),
+            label: county.name,
+            children:reactive([]),
+          }
+          item.children.push(subItem as never)
+          通过code获取雷达(county.adcode).then(res=>{
+            res.data.results.forEach((station:any)=>{
+              const stationItem = {
+                value: Number(station.no),
+                label: station.device_name,
+              }
+              subItem.children.push(stationItem as never)
+              selected.value = getAllLeafPaths(cascaderOptions[0].children, [140000]) as never[]
+            })
+          })
+        })
+      })
+    })
+  })
 });
+const getAllLeafPaths = (nodes:any,parentPath:any[]=[]) =>{
+  let paths:any[] = [];
+  nodes.forEach((node:any)=>{
+    const currentPath = [...parentPath, node.value]
+    if(node.children&&node.children.length>0){
+      paths.push(...getAllLeafPaths(node.children, currentPath))
+    }else{
+      paths.push(currentPath)
+    }
+  })
+  return paths;
+}
 const scrolling = () => {
   $(".menuUl").trigger("blur");
 };
@@ -124,10 +371,20 @@ const options = reactive({
   value: "",
 });
 watch(
-  [() => bus.风雷达组网地图相关雷达站点信息, () => options.value],
+  [() => bus.风雷达组网地图相关雷达站点信息, () => options.value, selected],
   ([result, value]) => {
-    options.list = result.filter(
-      (item) => (item.device_name.indexOf(value) > -1 || item.no.indexOf(value) > -1)&& item.hide !== "true"
+    let tmp = result.filter((item:any)=>{
+      for(let i=0;i<selected.value.length;i++){
+        if(item.no == selected.value[i][3]){
+          return true
+        }
+      }
+      return false
+    })
+    options.list = tmp.filter(
+      (item) => {
+        return item.device_name.indexOf(value) > -1 || item.no.indexOf(value) > -1
+      }
     );
   },
   {
@@ -273,7 +530,7 @@ const toggleCollapse = () => {
 }
 .dragDialog {
 
-  width: 320px;
+  width: 420px;
   display: flex;
   flex-direction: column;
   padding: 12px;

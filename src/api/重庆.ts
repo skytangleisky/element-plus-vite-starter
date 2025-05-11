@@ -5,6 +5,9 @@ import moment from 'moment';
 export const databaseRaw = 'host=192.168.0.240&port=3306&user=root&password=mysql&database=weatherservice';
 // export const databaseRaw = 'host=127.0.0.1&port=3306&user=admin&password=EkWM76Z8IJbfviCr&database=weatherservice';
 
+
+export const databaseRaw2 = 'host=192.168.0.240&port=3306&user=root&password=mysql&database=shanxi_weatherservice';
+
 export function getDataList(query:{radar_id:string,path:string,type:string}){
   let url = '/python/api/weather/ppi/file/path';
   if(query.type=='DBS'){
@@ -245,6 +248,53 @@ export function getDisk(){
     },
     data:{
       path:'D:/chongqing/A6418/'
+    }
+  })
+}
+
+export function 通过code获取子级(code:number){
+  return request({
+    url: 'backend/db/map_border_info?'+databaseRaw2,
+    method: 'post',
+    data:{
+      select:['adcode','name'],
+      where:[
+        {
+          relation:'and',
+          field:'parent_adcode',
+          relationship:'=',
+          condition:code
+        }
+      ],
+      order_by:[],
+      limit:0,
+      offset:0
+    }
+  })
+}
+export function 通过code获取雷达(code:string = ''){
+  return request({
+    url: 'backend/db/device?'+databaseRaw2,
+    method: 'post',
+    data:{
+      select:['adcode','device_name','no'],
+      where:[
+        {
+          relation:'and',
+          field:'adcode',
+          relationship:'=',
+          condition:code
+        },
+        {
+          relation:'and',
+          field:'device_name',
+          relationship:'is not',
+          condition:null
+        }
+      ],
+      order_by:[],
+      limit:0,
+      offset:0
     }
   })
 }
