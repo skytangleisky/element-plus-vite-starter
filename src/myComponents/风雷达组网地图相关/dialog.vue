@@ -61,8 +61,8 @@
               <th>编号</th>
               <th>名称</th>
               <th>海高</th>
-              <th>相对高</th>
-              <th>时间</th>
+              <!-- <th>相对高</th> -->
+              <!-- <th>时间</th> -->
               <th>状态</th>
             </tr>
           </thead>
@@ -78,8 +78,8 @@
                 <td>{{ v.no }}</td>
                 <td>{{ v.device_name }}</td>
                 <td>{{ v.altitude }}</td>
-                <td>{{ (setting.风雷达组网地图相关.altitudeHeight-v.altitude).toFixed(1) }}</td>
-                <td>{{ v.time }}</td>
+                <!-- <td>{{ (setting.风雷达组网地图相关.altitudeHeight-v.altitude).toFixed(1) }}</td> -->
+                <!-- <td>{{ v.time }}</td> -->
                 <td :class="v.status==0 ? '未知' : v.status == 1 ? 'color-#50aa23' : v.status == 2 ? 'color-#f80' : v.status == 3 ? 'color-#f00' : 'color-inherit'">
                   {{ v.status==0 ? '未知' : v.status==1 ? '正常' : v.status==2 ? '延迟' : v.status==3 ? '缺失' : v.status }}
                 </td>
@@ -323,7 +323,7 @@ onMounted(async() => {
   通过code获取子级(140000).then((res)=>{
     res.data.results.forEach(async(city:any)=>{
       const item = {
-        value: Number(city.adcode),
+        value: city.adcode,
         label: city.name,
         children:reactive([]),
       }
@@ -331,7 +331,7 @@ onMounted(async() => {
       通过code获取子级(city.adcode).then(res=>{
         res.data.results.forEach(async(county:any)=>{
           const subItem = {
-            value: Number(county.adcode),
+            value: county.adcode,
             label: county.name,
             children:reactive([]),
           }
@@ -339,7 +339,7 @@ onMounted(async() => {
           通过code获取雷达(county.adcode).then(res=>{
             res.data.results.forEach((station:any)=>{
               const stationItem = {
-                value: Number(station.no),
+                value: station.no,
                 label: station.device_name,
               }
               subItem.children.push(stationItem as never)

@@ -1080,10 +1080,10 @@ async function updateData(altitude:number){
   res.data[0].map((item:any)=>{
     let convert = wgs84togcj02(sixty2Float(item.lng),sixty2Float(item.lat))
     //模拟开始
-    item.wind = {}
-    item.wind.WindSpeed = 5*Math.random()
-    item.wind.WindDirection=360*Math.random()
-    item.wind.ZWind=(Math.random()-0.5)*4
+    // item.wind = {}
+    // item.wind.WindSpeed = 5*Math.random()
+    // item.wind.WindDirection=360*Math.random()
+    // item.wind.ZWind=(Math.random()-0.5)*4
     //模拟结束
     if(item.wind&&item.wind.WindSpeed!=null&&item.wind.WindSpeed!=999){
       data.push({
