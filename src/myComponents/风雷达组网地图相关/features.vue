@@ -6,6 +6,8 @@
         box-sizing: border-box;
         font-size: 16px;
         margin-bottom: 10px;
+        text-align: left;
+        line-height: 16px;
       "
     >
       &emsp;{{ title }}

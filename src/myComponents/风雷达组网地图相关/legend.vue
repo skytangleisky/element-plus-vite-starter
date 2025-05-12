@@ -1,5 +1,5 @@
 <template>
-  <div @click="click" class="legendContainer absolute bg-light">
+  <div @click="click" class="legendContainer">
     <div v-show="setting.legend" @click.stop ref="legend">
       <color title="风速(m/s)" demo="风速"></color>
       <hr />
@@ -28,16 +28,16 @@ const click = () => {
 //   cursor: pointer;
 // }
 .legendContainer {
+  width: 48px;
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
   color: black;
   background:var(--bg-color-overlay-opacity-8);
-  position: absolute;
-  bottom: 16px !important;
-  left: 10px;
-  padding: 4px 10px;
+
   border-radius: 4px;
   cursor: pointer;
   user-select: none;
-  box-shadow: 0px 0px 6px 1px #00000044;
   & > div {
     left: 0px;
     padding: 8px;

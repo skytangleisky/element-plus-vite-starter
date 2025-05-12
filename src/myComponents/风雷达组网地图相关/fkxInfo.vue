@@ -175,10 +175,10 @@ onBeforeUnmount(()=>{
     background-size: 100% 100%;
     margin-bottom: 6px;
     color: var(--module-title-text-color);
-    padding: 0 40px 0 48px;
+    padding: 0 24px 0 36px;
 
     .top-left {
-      font-size: 16px;
+      font-size: 14px;
     }
 
     .top-right {

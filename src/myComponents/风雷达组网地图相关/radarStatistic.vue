@@ -518,10 +518,7 @@ onBeforeUnmount(() => {
   background:#ccc;
 }
 .radarStatistic {
-  position: absolute;
-  top:20px;
-  left: 20px;
-  overflow-y: auto;
+
   .item {
 
    &:not(:last-child) {

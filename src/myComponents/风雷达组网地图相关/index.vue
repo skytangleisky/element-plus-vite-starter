@@ -51,13 +51,28 @@
       </div>
       <div ref="popup_closer" class="ol-popup-closer"></div>
     </div>
-    <radar-statistic></radar-statistic>
-    <Dialog class="absolute" style="left: 230px; top: 20px"></Dialog>
-    <Legend class="legend" style="z-index: 1;"></Legend>
+
+    <div class="page-left">
+      <!--    地图图层设置-->
+      <radar-statistic></radar-statistic>
+    </div>
+    <div class="page-right">
+      <fkx-info></fkx-info>
+    </div>
+    <div class="page-center-top">
+      <Dialog></Dialog>
+    </div>
+    <div class="page-center-bottom">
+      <Legend class="legend"></Legend>
+      <TimeStep @change="TimeStepChange"></TimeStep>
+    </div>
+
+
+
     <div
       class="right-drawer"
     >
-      <fkx-info></fkx-info>
+
 <!--      <div style="display:flex;flex-direction: column;overflow: auto; scroll-snap-type: none;height: 100%;">-->
 <!--        <chart-info></chart-info>-->
 <!--        <FKX></FKX>-->
@@ -94,7 +109,7 @@
 <!--        </svg>-->
 <!--      </el-icon>-->
     </div>
-    <TimeStep @change="TimeStepChange"></TimeStep>
+
     <time-line
       v-if="hasPermission(['e44f37e1-f642-4dbf-83ca-052313b217f5'])"
       :data="data"
@@ -111,6 +126,7 @@
       class="absolute left-0 bottom-30px"
       v-model:args="graphArgs"
     ></graph> -->
+<!--  色标  -->
     <chromatography
       ref="chromatographyRef"
       :arr="chromatographyOption.arr"
@@ -2259,13 +2275,7 @@ watch(
   }
 );
 </script>
-<style lang="scss">
-.main-container .timestep-container{
-  box-sizing: border-box;
-  bottom:10px;
-  width:90%;
-}
-</style>
+
 <style scoped lang="scss">
 .stationMenu {
   display: none;
@@ -2410,17 +2420,56 @@ watch(
 .mapboxgl-canvas:focus-visible {
   outline: none;
 }
-.legend{
-  bottom:10px;
-}
-.main-container:has(.timeline) .legend{
-  bottom:40px;
-
-}
+//.legend{
+//  bottom:10px;
+//}
+//.main-container:has(.timeline) .legend{
+//  bottom:40px;
+//
+//}
 .map{
   background-color: #F4FBFF;
 }
 .dark .map{
   background-color: #2b2b2b;
+}
+$page-grid:20px;
+$page-left-width: 250px;
+$page-right-width: 350px;
+$page-center-width:calc(100% - $page-left-width - $page-right-width - 4*$page-grid);
+$page-left-right-height:calc(100% - 2*$page-grid);
+.page-left{
+  position: absolute;
+  top: $page-grid;
+  left: $page-grid;
+  width: $page-left-width;
+  max-height: $page-left-right-height;
+  overflow-y: auto;
+  //background-color: #ff00fa;
+}
+.page-right{
+  position: absolute;
+  top: $page-grid;
+  right: $page-grid;
+  width: $page-right-width;
+  max-height: $page-left-right-height;
+  overflow-y: auto;
+  //background-color: blue;
+}
+.page-center-top{
+  position: absolute;
+  top: $page-grid;
+  left:calc($page-left-width + 2*$page-grid) ;
+  width: $page-center-width;
+  //background-color: red;
+}
+.page-center-bottom{
+  position: absolute;
+  bottom: $page-grid;
+  left:calc($page-left-width + 2*$page-grid) ;
+  width: $page-center-width;
+  display: flex;
+  align-items: center;
+  //background-color: pink;
 }
 </style>
