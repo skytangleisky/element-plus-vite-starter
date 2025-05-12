@@ -1,7 +1,7 @@
 <template>
   <div class="fkx-info">
     <div class="fkx-top">
-      <div class="top-left"><span>风廓线</span>- <span @click="deviceClick">{{ deviceInfo.device_name }}</span> <span>({{ deviceInfo.radar_id }})</span>
+      <div class="top-left"><span>风廓线</span> <span v-show="deviceInfo.device_name" @click="deviceClick">-{{ deviceInfo.device_name }} <span>({{ deviceInfo.radar_id }})</span></span>
       </div>
       <div class="top-right" @click="showFkxHandle">
         <el-icon v-if="isShowBottom">
@@ -67,7 +67,7 @@ const setting = useSettingStore();
 const router = useRouter()
 const station = useStationStore();
 
-let isShowBottom = ref(true)
+let isShowBottom = ref(false)
 
 const showFkxHandle = () => {
   isShowBottom.value = !isShowBottom.value;

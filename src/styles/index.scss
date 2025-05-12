@@ -14,3 +14,34 @@ code {
   background-color: var(--ep-color-primary-light-9);
   color: var(--ep-color-primary);
 }
+
+// 地图主界面小模块
+.map-module-box {
+  width: 100%;
+  &:not(:last-child) {
+    margin-bottom: 12px;
+  }
+  .map-module-top {
+    height: 32px;
+    line-height: 32px;
+    display: flex;
+    justify-content: space-between;
+    color: var(--module-title-text-color);
+
+    text-shadow: 0 0 8rem var(--ep-color-primary);
+    padding: 0 24px 0 32px;
+    margin-bottom: 2px;
+    border-radius: 0;
+    background: url("~/assets/theme-img/map-module-title.png") no-repeat;
+    background-size: 100% 100%;
+    .map-module-top-icon{
+      display: flex;
+      align-items: center;
+    }
+  }
+  .map-module-bottom {
+    padding: 12px;
+    background: url("~/assets/theme-img/map-module-bg.png") no-repeat;
+    background-size: 100% 100%;
+  }
+}

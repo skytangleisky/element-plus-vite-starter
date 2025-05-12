@@ -53,11 +53,48 @@
     </div>
 
     <div class="page-left">
-      <!--    地图图层设置-->
-      <radar-statistic></radar-statistic>
+      <baseLayer></baseLayer>
     </div>
     <div class="page-right">
       <fkx-info></fkx-info>
+      <div style="display: none">
+        <!--      <div style="display:flex;flex-direction: column;overflow: auto; scroll-snap-type: none;height: 100%;">-->
+        <!--        <chart-info></chart-info>-->
+        <!--        <FKX></FKX>-->
+        <!--        <chart-fkx v-if="hasPermission(['2353f2f5-b27b-473c-b281-4aa76858ff51'])"></chart-fkx>-->
+        <!--        <chart-dom v-if="hasPermission(['aa0f5674-ca38-4987-9964-f232024f0992'])"></chart-dom>-->
+        <!--        <chartDirection v-if="hasPermission(['ecd5d757-94eb-4b5e-9275-0ffb25a7cbc9'])"></chartDirection>-->
+        <!--        <chartSpeed v-if="hasPermission(['d16bc38f-4b41-4294-b8e6-6230f7633120'])"></chartSpeed>-->
+        <!--        <chartSNR v-if="hasPermission(['fc040225-820d-42f0-8e1a-239c9a76058a'])"></chartSNR>-->
+        <!--        <chart-th v-if="hasPermission(['31aba6cc-6da7-432a-87a3-576e4d5f59f2'])"></chart-th>-->
+        <!--      </div>-->
+        <!--      <el-icon-->
+        <!--        class="left&#45;&#45;29px z-999 bg-#eee dark:bg-#304156 dark:color-#888"-->
+        <!--        style="-->
+        <!--          font-size: 28px;-->
+        <!--          position: absolute;-->
+        <!--          border-bottom-left-radius: 50%;-->
+        <!--          border-left: 1px solid grey;-->
+        <!--          border-bottom: 1px solid grey;-->
+        <!--        "-->
+        <!--        @click="disappear"-->
+        <!--      >-->
+        <!--        <svg-->
+        <!--          t="1695093760888"-->
+        <!--          class="icon"-->
+        <!--          viewBox="0 0 1024 1024"-->
+        <!--          version="1.1"-->
+        <!--          xmlns="http://www.w3.org/2000/svg"-->
+        <!--          p-id="5105"-->
+        <!--        >-->
+        <!--          <path-->
+        <!--            d="M557.397333 167.204571l293.059048 293.059048L902.192762 512l-51.712 51.712-293.059048 293.083429-51.736381-51.712L762.148571 548.571429H121.904762v-73.142858h640.243809L505.660952 218.940952l51.736381-51.736381z"-->
+        <!--            p-id="5106"-->
+        <!--          ></path>-->
+        <!--        </svg>-->
+        <!--      </el-icon>-->
+      </div>
+
     </div>
     <div class="page-center-top">
       <Dialog></Dialog>
@@ -65,49 +102,6 @@
     <div class="page-center-bottom">
       <Legend class="legend"></Legend>
       <TimeStep @change="TimeStepChange"></TimeStep>
-    </div>
-
-
-
-    <div
-      class="right-drawer"
-    >
-
-<!--      <div style="display:flex;flex-direction: column;overflow: auto; scroll-snap-type: none;height: 100%;">-->
-<!--        <chart-info></chart-info>-->
-<!--        <FKX></FKX>-->
-<!--        <chart-fkx v-if="hasPermission(['2353f2f5-b27b-473c-b281-4aa76858ff51'])"></chart-fkx>-->
-<!--        <chart-dom v-if="hasPermission(['aa0f5674-ca38-4987-9964-f232024f0992'])"></chart-dom>-->
-<!--        <chartDirection v-if="hasPermission(['ecd5d757-94eb-4b5e-9275-0ffb25a7cbc9'])"></chartDirection>-->
-<!--        <chartSpeed v-if="hasPermission(['d16bc38f-4b41-4294-b8e6-6230f7633120'])"></chartSpeed>-->
-<!--        <chartSNR v-if="hasPermission(['fc040225-820d-42f0-8e1a-239c9a76058a'])"></chartSNR>-->
-<!--        <chart-th v-if="hasPermission(['31aba6cc-6da7-432a-87a3-576e4d5f59f2'])"></chart-th>-->
-<!--      </div>-->
-<!--      <el-icon-->
-<!--        class="left&#45;&#45;29px z-999 bg-#eee dark:bg-#304156 dark:color-#888"-->
-<!--        style="-->
-<!--          font-size: 28px;-->
-<!--          position: absolute;-->
-<!--          border-bottom-left-radius: 50%;-->
-<!--          border-left: 1px solid grey;-->
-<!--          border-bottom: 1px solid grey;-->
-<!--        "-->
-<!--        @click="disappear"-->
-<!--      >-->
-<!--        <svg-->
-<!--          t="1695093760888"-->
-<!--          class="icon"-->
-<!--          viewBox="0 0 1024 1024"-->
-<!--          version="1.1"-->
-<!--          xmlns="http://www.w3.org/2000/svg"-->
-<!--          p-id="5105"-->
-<!--        >-->
-<!--          <path-->
-<!--            d="M557.397333 167.204571l293.059048 293.059048L902.192762 512l-51.712 51.712-293.059048 293.083429-51.736381-51.712L762.148571 548.571429H121.904762v-73.142858h640.243809L505.660952 218.940952l51.736381-51.736381z"-->
-<!--            p-id="5106"-->
-<!--          ></path>-->
-<!--        </svg>-->
-<!--      </el-icon>-->
     </div>
 
     <time-line
@@ -294,7 +288,7 @@ import chartSpeed from "~/myComponents/echarts/重庆_Speed.vue";
 import chartDirection from "~/myComponents/echarts/重庆_Direction.vue";
 import { useRoute } from "vue-router";
 const route = useRoute();
-import radarStatistic from "./radarStatistic.vue";
+import baseLayer from "./baseLayer.vue"
 import Legend from "./legend.vue";
 import style from "./streets-v11.js";
 import moment from "moment";
@@ -2434,7 +2428,7 @@ watch(
   background-color: #2b2b2b;
 }
 $page-grid:20px;
-$page-left-width: 250px;
+$page-left-width: 300px;
 $page-right-width: 350px;
 $page-center-width:calc(100% - $page-left-width - $page-right-width - 4*$page-grid);
 $page-left-right-height:calc(100% - 2*$page-grid);

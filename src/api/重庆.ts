@@ -298,6 +298,7 @@ export function 通过code获取雷达(code:string = ''){
     }
   })
 }
+
 export function 通过雷达ID获取传感器数据(radar_id:string){
   return request({
     url: 'backend/db/sensor?'+databaseRaw2,
@@ -318,6 +319,29 @@ export function 通过雷达ID获取传感器数据(radar_id:string){
     }
   })
 }
-通过雷达ID获取传感器数据('A6418').then(res=>{
-  console.log(res.data)
-})
+// 通过雷达ID获取传感器数据('A6418').then(res=>{
+//   console.log(res.data)
+// })
+
+/**
+ * @author yhl 2025-05-12 17:41:56
+ * @description 获取雷达状态统计
+ * @param adcode-行政区划
+ * @param grade-级别 1：省 2：市 3：县
+ * @param is_manufacturer-厂商id  0/null 统计所有
+ */
+
+export function queryRadarStatus(params:{adcode:string,grade:number,is_manufacturer:number}){
+  return request({
+    url:'/shanxi/api/device/statistics',
+    method: 'post',
+    data:{
+      adcode:params.adcode || '140100',
+      grade:params.grade ,
+      is_manufacturer:params.is_manufacturer ,
+    },
+    headers:{
+      'content-type':'application/json'
+    },
+  })
+}
