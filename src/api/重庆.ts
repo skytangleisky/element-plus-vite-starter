@@ -298,3 +298,26 @@ export function 通过code获取雷达(code:string = ''){
     }
   })
 }
+export function 通过雷达ID获取传感器数据(radar_id:string){
+  return request({
+    url: 'backend/db/sensor?'+databaseRaw2,
+    method: 'post',
+    data:{
+      select:['*'],
+      where:[
+        {
+          relation:'and',
+          field:'Device',
+          relationship:'=',
+          condition:radar_id
+        }
+      ],
+      order_by:[],
+      limit:0,
+      offset:0
+    }
+  })
+}
+通过雷达ID获取传感器数据('A6418').then(res=>{
+  console.log(res.data)
+})

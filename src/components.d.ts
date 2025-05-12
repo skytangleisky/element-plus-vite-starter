@@ -11,6 +11,7 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     BaseHeader: typeof import('./components/layouts/BaseHeader.vue')['default']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
+    ElBadge: typeof import('element-plus/es')['ElBadge']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCascader: typeof import('element-plus/es')['ElCascader']
     ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
@@ -28,6 +29,7 @@ declare module '@vue/runtime-core' {
     ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
     ElOption: typeof import('element-plus/es')['ElOption']
     ElPagination: typeof import('element-plus/es')['ElPagination']
+    ElProgress: typeof import('element-plus/es')['ElProgress']
     ElScrollbar: typeof import('element-plus/es')['ElScrollbar']
     ElSelect: typeof import('element-plus/es')['ElSelect']
     ElSlider: typeof import('element-plus/es')['ElSlider']
