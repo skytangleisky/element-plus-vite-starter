@@ -1,5 +1,6 @@
 <template>
   <div class="main-container" style="width: 100%; height: 100%; overflow: hidden; position: absolute">
+    <div class="center"></div>
     <div
       v-resize="resize"
       ref="mapRef"
@@ -1054,14 +1055,11 @@ var marker:Marker;
 import {databaseRaw,getPPIData,databaseRaw2} from '~/api/重庆'
 import interpolate from "~/tools/idw.js";
 let res:any
-async function work(){
-  res = await exec({
-    // database: "host=127.0.0.1&port=3306&user=root&password=tanglei&database=weatherservice",
-    database: databaseRaw2,
-    query: {
-      sqls: ["select * from `device` where hide != 'true' or hide is NULL and device_name is not NULL"],
-    },
-  })
+const 雷达数据 = (data:any) => {
+  res = data
+  updateData(setting.风雷达组网地图相关.altitudeHeight)
+}
+function work(){
   updateData(setting.风雷达组网地图相关.altitudeHeight)
 }
 function TimeStepChange(timeString:string){
@@ -1638,9 +1636,9 @@ async function updateData(altitude:number){
           return item;
         });
       }
-      (map.getSource("point") as any).setData(points.data);
     }
   })
+  map.getSource("point")?.setData(points.data);
 
   // getMicapsData(plotUrl).then((result:any)=>{
   //   const beginLng = result.beginLng
@@ -1721,7 +1719,9 @@ function fetch最近风廓线数据(){
     }
     bus.avgWindData_重庆 = result
     eventbus.emit('处理实时风廓线数据',{radar_id:station.active,风廓线数据:res.data.data.file.file_data})
-  }))
+  })).catch((err)=>{
+    eventbus.emit('清除风廓线数据')
+  })
 }
 onMounted(() => {
   stationMenu = stationMenuRef.value as HTMLDivElement;
@@ -1769,6 +1769,7 @@ onMounted(() => {
   map.on("mousedown", mousedownFunc);
   map.on("click", "stationLayer", clickFunc);
   eventbus.on("风雷达组网-将站点移动到屏幕中心", flyTo);
+  eventbus.on("风雷达组网-设备数据", 雷达数据)
   const closer = popup_closer.value;
   closer.onclick = function () {
     selected = null;
@@ -1780,6 +1781,7 @@ onMounted(() => {
 });
 onBeforeUnmount(() => {
   eventbus.off("将站点移动到屏幕中心", flyTo);
+  eventbus.off("风雷达组网-设备数据", 雷达数据)
   clearInterval(mock);
   map.off("zoom", zoomFunc);
   map.off("move", moveFunc);

@@ -14,11 +14,15 @@
         :props="cascaderProps"
         v-model:options="cascaderOptions"
         :max-collapse-tags="0"
-        clearable
+        :clearable="false"
         size="small"
         class="m-r-10px"
+        style="min-width:180px"
       >
       </el-cascader>
+      <el-select v-model="manufacturer" style="width:60px" size="small">
+        <el-option v-for="item in manfacturerOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+      </el-select>
       <el-icon
         class="dropdown"
         style="
@@ -106,10 +110,10 @@
   </div>
 </template>
 <script lang="ts" setup>
-const cascaderProps = { multiple: true, value: 'value', label: 'label', children: 'children' }
+const cascaderProps = { /*multiple: true,*/ checkStrictly:true, value: 'value', label: 'label', children: 'children' }
 const cascaderOptions = reactive([
   {
-    value: 140000,
+    value: '140000',
     label: '山西省',
     children: [
       // {
@@ -301,12 +305,20 @@ const cascaderOptions = reactive([
   import { useSettingStore } from "~/stores/setting";
   const setting = useSettingStore()
 import { reactive, ref, onMounted, watch } from "vue";
-const selected = ref([])
+const manufacturer = ref(0)
+const manfacturerOptions = reactive([
+  { value: 0, label: "全部" },
+  { value: 1, label: "华航" },
+  { value: 2, label: "西物" },
+  { value: 3, label: "镭测" },
+])
+const selected = ref(['140000'])
 import { useStationStore } from "~/stores/station";
 import { eventbus } from "~/eventbus";
 const station = useStationStore();
 import { useBus } from "~/myComponents/bus";
-import {通过code获取子级,通过code获取雷达} from "~/api/重庆";
+import {通过code获取子级,通过code获取雷达,databaseRaw2} from "~/api/重庆";
+import { exec } from "~/api/index.js";
 const bus = useBus();
 const menus = reactive([
   { code: 291, name: "白河堡作业点", status: "离线", equipment: "火箭", id: "110229041" },
@@ -328,7 +340,7 @@ onMounted(async() => {
         children:reactive([]),
       }
       cascaderOptions[0].children.push(item as never)
-      通过code获取子级(city.adcode).then(res=>{
+      /*通过code获取子级(city.adcode).then(res=>{
         res.data.results.forEach(async(county:any)=>{
           const subItem = {
             value: county.adcode,
@@ -336,18 +348,19 @@ onMounted(async() => {
             children:reactive([]),
           }
           item.children.push(subItem as never)
-          通过code获取雷达(county.adcode).then(res=>{
-            res.data.results.forEach((station:any)=>{
-              const stationItem = {
-                value: station.no,
-                label: station.device_name,
-              }
-              subItem.children.push(stationItem as never)
-              selected.value = getAllLeafPaths(cascaderOptions[0].children, [140000]) as never[]
-            })
-          })
+          //将雷达挂载到级连菜单下边
+          // 通过code获取雷达(county.adcode).then(res=>{
+          //   res.data.results.forEach((station:any)=>{
+          //     const stationItem = {
+          //       value: station.no,
+          //       label: station.device_name,
+          //     }
+          //     subItem.children.push(stationItem as never)
+          //     selected.value = getAllLeafPaths(cascaderOptions[0].children, [140000]) as never[]
+          //   })
+          // })
         })
-      })
+      })*/
     })
   })
 });
@@ -371,21 +384,32 @@ const options = reactive({
   value: "",
 });
 watch(
-  [() => bus.风雷达组网地图相关雷达站点信息, () => options.value, selected],
-  ([result, value]) => {
-    let tmp = result.filter((item:any)=>{
-      for(let i=0;i<selected.value.length;i++){
-        if(item.no == selected.value[i][3]){
-          return true
-        }
-      }
-      return false
+  [() => options.value,manufacturer, selected],
+  async([value]) => {
+    let manufacturerCondition = ""
+    if(manufacturer.value == 1){
+      manufacturerCondition = " and manufacturer like '%华航%'"
+    }else if(manufacturer.value == 2){
+      manufacturerCondition = " and manufacturer like '%西物%'"
+    }else if(manufacturer.value == 3){
+      manufacturerCondition = " and manufacturer like '%镭测%'"
+    }
+    let code = ''
+    if(selected.value.length == 1){
+      code = selected.value[selected.value.length-1].substring(0,2)
+    }else if(selected.value.length == 2){
+      code = selected.value[selected.value.length-1].substring(0,4)
+    }else if(selected.value.length == 3){
+      code = selected.value[selected.value.length-1].substring(0,6)
+    }
+    const result = await exec({
+      database: databaseRaw2,
+      query: {
+        sqls: ["select * from `device` where (hide != 'true' or hide is NULL) and (device_name is not NULL and adcode like '"+code+"%') and (device_name like '%"+value+"%' or no like '%"+value+"%')"+manufacturerCondition],
+      },
     })
-    options.list = tmp.filter(
-      (item) => {
-        return item.device_name.indexOf(value) > -1 || item.no.indexOf(value) > -1
-      }
-    );
+    options.list = result.data[0]
+    eventbus.emit("风雷达组网-设备数据", result);
   },
   {
     immediate: true,
@@ -487,6 +511,7 @@ const toggleCollapse = () => {
 }
 
 .operation_filter {
+  width:100px;
   display: block;
   padding: 0.1rem 0.2rem;
   font-size: 1rem;
