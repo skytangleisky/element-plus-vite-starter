@@ -32,8 +32,9 @@ import baseEcharts from "./baseEcharts.vue";
 // 导入图标
 import iconChart from "~/assets/layerIcon/icon-chart.png";
 import iconLayer from "~/assets/layerIcon/icon-layer.png";
-import {queryRadarStatus} from '~/api/重庆'
+import {queryRadarStatus,queryRadarFactStatus} from '~/api/重庆'
 
+let gradeCode = ref(1) //级别 1：省 2：市 3：县
 let activeIndex = ref(0);
 const dataList = [
   {
@@ -91,7 +92,7 @@ let basePie = reactive({
       label: {
         show: true, // 显示标签
         position: "outside", // 标签的位置，'inside'、'outside'、'left'、'right'、'top'、'bottom'
-        formatter: "{b}{c}", // 标签的格式化，{b}是名称，{c}是值，{d}%是百分比
+        formatter: "{b}{d}%", // 标签的格式化，{b}是名称，{c}是值，{d}%是百分比
         avoidLabelOverlap: true, // 防止标签重叠
         color: "auto",
       },
@@ -123,11 +124,21 @@ let baseBar = reactive({
       type: "shadow",
     },
   },
+  // 图例
+  legend: {
+    // 可以设置 left、right、top、bottom 来调整图例位置
+    top: "0",
+    left: "center",
+    textStyle: {
+      color: "auto",
+      fontSize: 12,
+    },
+  },
   grid: {
-    left: "3%",
+    left: "4%",
     right: "4%",
-    top: "10%",
-    bottom: "3%",
+    top: "16%",
+    bottom: "0%",
     containLabel: true,
   },
   xAxis: [
@@ -155,7 +166,7 @@ let baseBar = reactive({
       name: "在线",
       type: "bar",
       data: [],
-      barWidth: "35%",
+      barWidth: "15%",
       itemStyle: {
         borderRadius: [4, 4, 0, 0],
       },
@@ -170,7 +181,7 @@ let baseBar = reactive({
       name: "离线",
       type: "bar",
       data: [],
-      barWidth: "35%",
+      barWidth: "15%",
       itemStyle: {
         borderRadius: [4, 4, 0, 0],
       },
@@ -185,7 +196,7 @@ let baseBar = reactive({
       name: "告警",
       type: "bar",
       data: [],
-      barWidth: "35%",
+      barWidth: "15%",
       itemStyle: {
         borderRadius: [4, 4, 0, 0],
       },
@@ -200,16 +211,27 @@ let baseBar = reactive({
 });
 
 const getRadarStatus = () => {
-  queryRadarStatus({adcode: '140100', grade: 2, is_manufacturer: 0}).then((res) => {
-
-    console.log("queryRadarStatus", res.data)
-    if (res.code == 200) {
-      const data = res.data
+  // 雷达状态分布数据
+  queryRadarStatus('140100',gradeCode.value).then((res) => {
+    if (res.data.code == 200) {
+      const data = res.data.data
       data.forEach(item => {
-        basePie.series[0].data[item.status - 1].value = item.rate
+        basePie.series[0].data[item.status - 1].value = item.cnt
       })
     }
   })
+  // 各厂商雷达状态
+  queryRadarFactStatus('140100',  gradeCode.value).then((res) => {
+    if (res.data.code == 200) {
+      const data =res.data.data
+      baseBar.xAxis[0].data = data.manufacturers
+      baseBar.series[0].data = data.status_1
+      baseBar.series[1].data = data.status_2
+      baseBar.series[2].data = data.status_3
+    }
+  })
+
+
 }
 const initFun = () => {
   getRadarStatus()

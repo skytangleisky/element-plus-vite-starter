@@ -56,6 +56,7 @@
       <baseLayer></baseLayer>
     </div>
     <div class="page-right">
+      <radar-info></radar-info>
       <fkx-info></fkx-info>
       <div style="display: none">
         <!--      <div style="display:flex;flex-direction: column;overflow: auto; scroll-snap-type: none;height: 100%;">-->
@@ -147,6 +148,7 @@ import plotUrl from '/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pt
 import TimeStep from '~/tools/timeStep.vue';
 import FKX from './风廓线.vue';
 import fkxInfo from './fkxInfo.vue'
+import radarInfo from './radarInfo.vue'
 import uvUrl from "../mapbox/data/06040808.000?url";
 import CustomLayer from './CustomLayer.js'//绘制流线
 import discreteContour from "./discreteContour.ts";//绘制等值线
@@ -2454,7 +2456,7 @@ $page-left-right-height:calc(100% - 2*$page-grid);
   position: absolute;
   top: $page-grid;
   left:calc($page-left-width + 2*$page-grid) ;
-  width: $page-center-width;
+  max-width: $page-center-width;
   //background-color: red;
 }
 .page-center-bottom{

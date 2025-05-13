@@ -197,7 +197,7 @@ export default defineConfig({
         ws:true,
       },
       '/shanxi':{
-        target:'http://192.168.0.135:8002',
+        target:'http://192.168.0.128:8002',
         rewrite:path=>path.replace(/^\/shanxi/,''), // 设置重写的路径
         secure:false,
         changeOrigin:true,

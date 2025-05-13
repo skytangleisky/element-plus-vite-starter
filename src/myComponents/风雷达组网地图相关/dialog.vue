@@ -529,7 +529,6 @@ const toggleCollapse = () => {
   }
 }
 .dragDialog {
-
   width: 420px;
   display: flex;
   flex-direction: column;

@@ -182,25 +182,29 @@ onBeforeUnmount(()=>{
     }
 
     .top-right {
-      font-size: 20px;
+      //font-size: 20px;
       display: flex;
       align-items: center;
     }
   }
 
   .fkx-bottom {
-    //background-color: var(--bg-color-overlay-opacity-8);
-    background: url("~/assets/theme-img/map-module-bg.png") no-repeat;
-    background-size: 100% 100%;
+    //background: url("~/assets/theme-img/map-module-bg.png") no-repeat;
+    //background-size: 100% 100%;
+    background: var(--bg-color-overlay-opacity-8);
+    border:1px solid #B5D5E5;
     padding:20px 12px;
 
     .ep-form{
       .ep-select{
-        width: 120px;
+        width: 90px;
       }
       .ep-form-item--small,
       .ep-form--inline .ep-form-item{
         margin-bottom: 0;
+        &:last-child{
+          margin-right: 0;
+        }
       }
 
     }
