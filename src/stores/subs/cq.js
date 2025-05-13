@@ -5,7 +5,7 @@ export default {
   name:'5e1816a8-f4e1-a3dd-c0e5-ba131030e9e7',
   svg:'0b3ea739-0894-490c-9101-c5284f46010a',
   meta:{
-    label:'重庆测风雷达组网系统',
+    label:'山西测风雷达组网系统',
     roles:['admin','cq','device']
   },
   children:[

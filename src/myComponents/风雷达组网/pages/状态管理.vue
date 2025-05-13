@@ -5,7 +5,7 @@
     <ChangePassword v-if="editUserShow" v-model:show="editUserShow"></ChangePassword>
     <SensorView v-if="sensorViewShow" v-model:show="sensorViewShow" :device="device"></SensorView>
     <div ref="mapChart" style="position:absolute;width:100%;height:100%;"/>
-    <border-box-11 ref="dvBorder11" :color="['#8aaafb','transparent']" title="重庆测风雷达组网" :title-width="400" :animate="true" style="width:100%;height:100%;pointer-events: none;">
+    <border-box-11 ref="dvBorder11" :color="['#8aaafb','transparent']" title="山西测风雷达组网" :title-width="400" :animate="true" style="width:100%;height:100%;pointer-events: none;">
       <div v-show="menuIndex==2" class="absolute flex w-full h-full justify-around box-border p-20px p-t-60px">
         <div class="left">
           <border-box-7 :color="['#0154be', '#03f7fc']" style="height:calc(30% - 5px);box-sizing: border-box;backdrop-filter:blur(20px);">
@@ -137,7 +137,7 @@ onMounted(()=>{
 })
 async function work(){
   const dbsData = (await getDbsData({radar_id:'',dataTime:moment().format('YYYYMMDD')})).data.data
-  eventbus.on('重庆测风雷达组网-设备编辑',radarClick)
+  eventbus.on('山西测风雷达组网-设备编辑',radarClick)
   radars.value = (await exec({
     database: databaseRaw,
     query: {
@@ -606,7 +606,7 @@ async function work(){
 onBeforeUnmount(()=>{
   clearInterval(timer)
   echartsUtils.destroy()
-  eventbus.off('重庆测风雷达组网-设备编辑',radarClick)
+  eventbus.off('山西测风雷达组网-设备编辑',radarClick)
 })
 </script>
 <style lang="scss">

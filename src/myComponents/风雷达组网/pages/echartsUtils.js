@@ -1922,7 +1922,7 @@ export default {
         // });
       }
       if(param.seriesType=='scatter'){
-        eventbus.emit('重庆测风雷达组网-设备编辑',param.data)
+        eventbus.emit('山西测风雷达组网-设备编辑',param.data)
       }
     });
     let option = {

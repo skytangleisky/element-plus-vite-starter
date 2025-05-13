@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <Header class="z-1"></Header>
-    <border-box-11 ref="dvBorder11" :color="['#8aaafb','transparent']" title="重庆测风雷达组网" :title-width="400" :animate="true" style="width:100%;height:100%;">
+    <border-box-11 ref="dvBorder11" :color="['#8aaafb','transparent']" title="山西测风雷达组网" :title-width="400" :animate="true" style="width:100%;height:100%;">
     <div class="absolute flex w-full h-full justify-around box-border p-20px p-t-60px">
       <div class="left">
         <border-box-7 :color="['#0154be', '#03f7fc']" style="height:calc(50% - 5px);box-sizing: border-box;backdrop-filter:blur(8px);">

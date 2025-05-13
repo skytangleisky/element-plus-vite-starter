@@ -16,7 +16,7 @@
       />
       <!-- <div class="title">北京人影演示系统</div> -->
       <!-- <div class="title">珠海低空飞行监控系统</div> -->
-      <div class="title">重庆测风雷达组网系统</div>
+      <div class="title">山西测风雷达组网系统</div>
       <!-- <div class="title">山西测风雷达组网系统</div> -->
     </div>
     <div class="plane">
