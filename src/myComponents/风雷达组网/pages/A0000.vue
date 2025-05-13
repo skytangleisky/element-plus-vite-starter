@@ -1,32 +1,30 @@
 <template>
-  <div class="main-container">
+  <div class="main-container" v-if="modelValue">
     <div
       class="bg-#e1eeff dark:bg-black relative w-full h-full"
       style="border-radius: 10px; border: 1px solid black; box-sizing: border-box"
     >
-      <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
-        <el-tab-pane label="DBS" name="DBS"><contentDBS></contentDBS></el-tab-pane>
-        <el-tab-pane label="PPI" name="PPI"><contentPPI></contentPPI></el-tab-pane>
-        <el-tab-pane label="RHI" name="RHI"><contentRHI></contentRHI></el-tab-pane>
-      </el-tabs>
+      <contentDBS></contentDBS>
     </div>
+    <el-icon v-html="forkSvg" class="close-button" @click="modelValue = false"></el-icon>
   </div>
 </template>
 <script lang="ts" setup>
-import contentDBS from "../contentDBS.vue";
-import contentPPI from "../contentPPI.vue";
-import contentRHI from "../contentRHI.vue";
-import { ref } from "vue";
+const modelValue = defineModel<boolean>({
+  default: true,
+});
+import forkSvg from '~/assets/fork.svg?raw'
+// import contentDBS from "../contentDBS.vue";
+import contentDBS from "../contentPPI.vue";
 import type { TabsPaneContext } from "element-plus";
-const activeName = ref("DBS");
-
 const handleClick = (tab: TabsPaneContext, event: Event) => {
   console.log(tab, event);
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .main-container {
+  z-index:1;
   position: absolute;
   inset: 0;
   display: flex;
@@ -36,6 +34,16 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
   box-sizing: border-box;
   padding: 10px;
   height: 100%;
+  .close-button{
+    position: absolute;
+    top:30px;
+    right: 30px;
+    font-size:2em;
+    cursor:pointer;
+    &:active{
+      opacity:0.5;
+    }
+  }
   .demo-tabs {
     height: 100%;
     display: flex;

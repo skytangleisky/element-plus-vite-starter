@@ -25,7 +25,9 @@
 </template>
 <script lang="ts" setup>
 const props = withDefaults(defineProps<{radar_time:string}>(),{radar_time:''})
-let radar_id = location.href.substring(location.href.lastIndexOf('/')+1,location.href.length)
+import { useStationStore } from "~/stores/station";
+const station = useStationStore()
+let radar_id = station.active
 import { eventbus } from "~/eventbus";
 import chartFkx from "./fkxV.vue";
 import { ref, reactive, onMounted, watch } from "vue";

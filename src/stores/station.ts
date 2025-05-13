@@ -76,6 +76,7 @@ export const useStationStore = defineStore({
     人影界面被选中的设备:'',
     珠海界面被选中的设备:'',
     组网界面被选中的设备:'',
+    currentStation:{}
   }),
   actions: {
     查询雷达列表接口(query:any){

@@ -1,5 +1,6 @@
 <template>
   <div class="main-container" style="width: 100%; height: 100%; overflow: hidden; position: absolute">
+    <div class="center"></div>
     <div
       v-resize="resize"
       ref="mapRef"
@@ -140,12 +141,14 @@
         <li @click="单站数据">单站数据</li>
       </ul>
     </div>
+    <A0000 v-model="showHistory"></A0000>
   </div>
 </template>
 <script setup lang="ts">
 import { getMicapsData } from '../mapbox/data/plot/micaps.ts';
 import plotUrl from '/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pth15.00_Spd6.00_Res030_StartIdx002_VADStart002_VADStop190_VADWind_Sec_20250113 000000.000?url'
 import TimeStep from '~/tools/timeStep.vue';
+import A0000 from '../风雷达组网/pages/A0000.vue';
 import FKX from './风廓线.vue';
 import fkxInfo from './fkxInfo.vue'
 import radarInfo from './radarInfo.vue'
@@ -156,7 +159,8 @@ import { isDark } from "~/composables/dark.ts";
 import { useRouter } from "vue-router";
 const router = useRouter()
 const 单站数据 = ()=>{
-  router.replace('/cq/device/'+$(stationMenu).data().radar_id)
+  showHistory.value = true
+  // router.replace('/cq/device/'+$(stationMenu).data().radar_id)
 }
 import chromatography from "../激光测风尾涡/chromatography.vue";
 import * as turf from "@turf/turf";
@@ -172,6 +176,7 @@ const stationMenuRef = ref<HTMLDivElement>();
 let stationMenu: HTMLDivElement;
 import { destinationPoint } from "~/myComponents/map/js/core.js";
 import { watch, ref, onMounted, onBeforeUnmount, reactive,nextTick } from "vue";
+const showHistory = ref(false)
 import { useBus } from "~/myComponents/bus";
 import Dialog from "./dialog.vue";
 import { useSettingStore } from "~/stores/setting";
@@ -381,6 +386,7 @@ const clickFunc = (e) => {
         //     bus.radialWindData = res.data.data;
         //   });
         station.active = bus.风雷达组网地图相关雷达站点信息[i].no;
+        station.currentStation = bus.风雷达组网地图相关雷达站点信息[i];
         fetch最近风廓线数据()
         $(`#${station.active}`)[0].scrollIntoView({
           block: "nearest",
@@ -1056,14 +1062,11 @@ var marker:Marker;
 import {databaseRaw,getPPIData,databaseRaw2} from '~/api/重庆'
 import interpolate from "~/tools/idw.js";
 let res:any
-async function work(){
-  res = await exec({
-    // database: "host=127.0.0.1&port=3306&user=root&password=tanglei&database=weatherservice",
-    database: databaseRaw2,
-    query: {
-      sqls: ["select * from `device` where hide != 'true' or hide is NULL and device_name is not NULL"],
-    },
-  })
+const 雷达数据 = (data:any) => {
+  res = data
+  updateData(setting.风雷达组网地图相关.altitudeHeight)
+}
+function work(){
   updateData(setting.风雷达组网地图相关.altitudeHeight)
 }
 function TimeStepChange(timeString:string){
@@ -1640,9 +1643,9 @@ async function updateData(altitude:number){
           return item;
         });
       }
-      (map.getSource("point") as any).setData(points.data);
     }
   })
+  map.getSource("point")?.setData(points.data);
 
   // getMicapsData(plotUrl).then((result:any)=>{
   //   const beginLng = result.beginLng
@@ -1723,7 +1726,9 @@ function fetch最近风廓线数据(){
     }
     bus.avgWindData_重庆 = result
     eventbus.emit('处理实时风廓线数据',{radar_id:station.active,风廓线数据:res.data.data.file.file_data})
-  }))
+  })).catch((err)=>{
+    eventbus.emit('清除风廓线数据')
+  })
 }
 onMounted(() => {
   stationMenu = stationMenuRef.value as HTMLDivElement;
@@ -1771,6 +1776,7 @@ onMounted(() => {
   map.on("mousedown", mousedownFunc);
   map.on("click", "stationLayer", clickFunc);
   eventbus.on("风雷达组网-将站点移动到屏幕中心", flyTo);
+  eventbus.on("风雷达组网-设备数据", 雷达数据)
   const closer = popup_closer.value;
   closer.onclick = function () {
     selected = null;
@@ -1782,6 +1788,7 @@ onMounted(() => {
 });
 onBeforeUnmount(() => {
   eventbus.off("将站点移动到屏幕中心", flyTo);
+  eventbus.off("风雷达组网-设备数据", 雷达数据)
   clearInterval(mock);
   map.off("zoom", zoomFunc);
   map.off("move", moveFunc);

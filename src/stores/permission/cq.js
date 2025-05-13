@@ -1,7 +1,7 @@
 export default {
   name:'16d44138-0721-49cf-8f32-49c6894512bd',
   meta:{
-    label:'重庆测风雷达组网系统',
+    label:'山西测风雷达组网系统',
     roles:['admin','cq','device']
   },
   children:[

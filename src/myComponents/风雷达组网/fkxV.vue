@@ -9,7 +9,9 @@
 </template>
 <script lang="ts" setup>
 import * as echarts from 'echarts'
-let radar_id = location.href.substring(location.href.lastIndexOf('/')+1,location.href.length)
+import { useStationStore } from '~/stores/station';
+const station = useStationStore()
+let radar_id = station.active
 import { ref, onMounted, onBeforeUnmount, watch } from "vue";
 import DBS from "~/tools/fkxV.js";
 import { isDark } from "~/composables";

@@ -5,9 +5,10 @@ export default {
   name:'5e1816a8-f4e1-a3dd-c0e5-ba131030e9e7',
   svg:'0b3ea739-0894-490c-9101-c5284f46010a',
   meta:{
-    label:'重庆测风雷达组网系统',
+    label:'山西测风雷达组网系统',
     roles:['admin','cq','device']
   },
+
   children:[
     {
       path:'synthesis',
@@ -20,60 +21,52 @@ export default {
       }
     },
     {
-      path:'device',
+      path:'deviceManage',
       name:'8f316b61-96ed-e4ad-6f96-3899833db3b8',
       hide:false,
-      svg:'026f2a18-66d5-4473-b912-f0b47294ea48',
+      svg:'2e27a8c4-17b8-4fe3-bfd5-afdc95a38741',
       meta:{
-        label:'历史数据'
+        label:'设备管理'
       },
       children:[
         {
-          path: 'A6418',
+          path: 'device',
           name: 'da20fee1-5ad7-51e1-2789-5e0933011f11',
-          component: '/src/myComponents/风雷达组网/pages/A6418.vue',
+          component: '/src/myComponents/设备管理/radar.vue',
           meta:{
-            label: '渝北激光测风雷达',
+            label: '雷达管理',
           }
         },
         {
-          path: 'A6419',
+          path: 'sensor',
           name: 'da20fee1-5ad7-51e1-2788-5e0933011a11',
-          component: '/src/myComponents/风雷达组网/pages/A6419.vue',
+          component: '/src/myComponents/设备管理/sensor.vue',
           meta:{
-            label: '北碚激光测风雷达',
+            label: 'Sensor数据',
           }
         },
         {
-          path: 'A6420',
+          path: 'deviceStatus',
           name: 'da20fee1-5ad7-51e1-2787-5e0933011a11',
-          component: '/src/myComponents/风雷达组网/pages/A6420.vue',
+          component: '/src/myComponents/设备管理/deviceStatus.vue',
           meta:{
-            label: '巴南激光测风雷达',
+            label: '设备数据状态',
           }
         },
         {
-          path: 'A6421',
+          path: 'datafile',
           name: 'da20fee1-5ad7-5111-2787-5e0933011a11',
-          component: '/src/myComponents/风雷达组网/pages/A6421.vue',
+          component: '/src/myComponents/设备管理/datafile.vue',
           meta:{
-            label: '綦江激光测风雷达',
+            label: '数据文件',
           }
         },
         {
-          path: 'A6422',
+          path: 'deviceType',
           name: 'da20fee1-5ad7-5121-2787-5e0933011a11',
-          component: '/src/myComponents/风雷达组网/pages/A6422.vue',
+          component: '/src/myComponents/设备管理/deviceType.vue',
           meta:{
-            label: '万州激光测风雷达',
-          }
-        },
-        {
-          path: 'A6423',
-          name: 'da20fee1-5ad7-5131-2787-5e0933011a11',
-          component: '/src/myComponents/风雷达组网/pages/A6423.vue',
-          meta:{
-            label: '城口激光测风雷达',
+            label: '设备类型',
           }
         },
       ]

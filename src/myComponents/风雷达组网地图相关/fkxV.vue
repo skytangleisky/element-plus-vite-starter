@@ -15,6 +15,9 @@ import { isDark } from "~/composables";
 import { useBus } from "~/myComponents/bus";
 const fkxContainer = ref(null);
 import { eventbus } from "~/eventbus";
+const 清除风廓线数据 = () => {
+  dbs && dbs.clear();
+}
 watch(isDark, (isDark) => {
   if (dbs) {
     dbs.destroy();
@@ -25,6 +28,7 @@ let dbs: DBS;
 onMounted(() => {
   setDBS(isDark.value);
   eventbus.on("重庆地图界面-处理风廓线数据", 处理风廓线数据);
+  eventbus.on("清除风廓线数据", 清除风廓线数据);
 });
 const currentTime = ref("");
 let timer: number;
@@ -148,6 +152,7 @@ const setDBS = (isDark: boolean) => {
 };
 onBeforeUnmount(() => {
   eventbus.off("重庆地图界面-处理风廓线数据", 处理风廓线数据);
+  eventbus.off("清除风廓线数据",清除风廓线数据)
   clearInterval(timer);
   dbs.destroy();
 });
