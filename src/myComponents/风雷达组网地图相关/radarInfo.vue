@@ -49,7 +49,8 @@
               <div class="item-value">{{ format(sensorData.MCOuterAirPressure) }}<span class="item-unit">hPa</span></div>
             </div>
             <div class="item-box">
-              <div class="item-label">主控板测量的外内压差，正值表示外部压力大</div>
+<!--              正值表示外部压力大-->
+              <div class="item-label">主控板测量的外内压差</div>
               <div class="item-value">{{ format(sensorData.MCOuterRelPressure) }}<span class="item-unit">hPa</span></div>
             </div>
             <div class="item-box">
@@ -294,7 +295,7 @@ import {useSettingStore} from "~/stores/setting";
 const station = useStationStore();
 const setting = useSettingStore();
 // 折叠面板展示的数据
-let collapseActNames = ref(['1'])
+let collapseActNames = ref([])
 // 控制整个模块折叠显示效果
 let showTags = ref(false)
 let sensorData = reactive({})
@@ -306,7 +307,6 @@ const deviceInfo = reactive({
   data_time: '',
 });
 
-station.active?showTags.value = true:''
 
 watch([() => bus.avgWindData_重庆, () => station.active], ([avgWindData, active]) => {
   if (avgWindData.data) {
@@ -336,7 +336,7 @@ watch([() => bus.avgWindData_重庆, () => station.active], ([avgWindData, activ
 const getSensorData = (radarId: string) => {
   querySensorData(radarId).then(res => {
     sensorData = res.data.results[0]
-    console.log("getSensorData", sensorData)
+    // collapseActNames.value=["1"]
   })
 }
 
@@ -394,6 +394,7 @@ function format(val: any) {
         background-color: var(--ep-color-primary-light-9);
         padding:0 16px;
         border-color: var(--border-color);
+        padding-top: 8px;
       }
     }
     .item-box{
@@ -405,6 +406,8 @@ function format(val: any) {
       .item-value{
         display: flex;
         color: var(--module-title-text-color);
+        word-wrap: anywhere;
+        max-width: 50%;
       }
     }
   }

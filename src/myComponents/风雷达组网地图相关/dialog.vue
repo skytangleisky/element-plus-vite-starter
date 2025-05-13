@@ -1,11 +1,12 @@
 <template>
   <div class="!collapse dragDialog" >
     <div class="dragDialog-top">
-      <input
+      <el-input
         @mousedown.stop
         name="过滤条件"
-        class="operation_filter flex-1 m-r-10px"
+        class="operation_filter"
         placeholder="请输入过滤条件"
+        size="small"
         v-model="options.value"
       />
       <el-cascader
@@ -511,35 +512,8 @@ const toggleCollapse = () => {
 }
 
 .operation_filter {
-  width:100px;
-  display: block;
-  padding: 0.1rem 0.2rem;
-  font-size: 1rem;
-  line-height: 1.5rem;
-  color: grey;
-  background-color: #eee;
-  background-clip: padding-box;
-  border: 0 solid #c1ccd3;
-  appearance: none;
-  border-radius: 0.3rem;
-  &:focus {
-    color: #000;
-    background-color: #ddd;
-    border-color: #4d90fe;
-    outline: 0;
-  }
-
-  &::-webkit-input-placeholder {
-    color: grey;
-  }
-  // &:focus{
-  //   border-radius:10px 0 0 0;
-  //   border: #17A1FF solid 2px;
-  //   transition: border 2s;
-  //   border-right:none;
-  //   border-bottom:none;
-  //   padding-bottom:2px;
-  // }
+  width:120px;
+  margin-right: 8px;
 }
 .dark .operation_filter {
   &::-webkit-input-placeholder {

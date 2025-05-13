@@ -2282,11 +2282,11 @@ watch(
 <style scoped lang="scss">
 .stationMenu {
   display: none;
-  background: #ffffff88;
-  border-radius: 10px;
+  background: var(--bg-color-overlay-opacity-8);
+  border-radius: 4px;
   border-top-left-radius: 4px;
-  border: 1px solid var(--ep-border-color);
-  opacity: 1 !important;
+  border: 1px solid var(--border-color);
+
   ul {
     cursor: default;
     display: flex;
@@ -2298,13 +2298,13 @@ watch(
     margin-bottom: 0;
     li {
       cursor: pointer;
-      border-radius: 4px;
+      border-radius: 2px;
       position: relative;
       font-size: 16px;
       list-style: none;
       padding: 2px;
       &:hover {
-        background: rgba(62, 110, 197, 1);
+        color:var(--ep-color-primary);
       }
       &:active {
         background: inherit;
