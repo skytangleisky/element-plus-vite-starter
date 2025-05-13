@@ -8,6 +8,7 @@ export default {
     label:'山西测风雷达组网系统',
     roles:['admin','cq','device']
   },
+
   children:[
     {
       path:'synthesis',
@@ -18,6 +19,57 @@ export default {
       meta:{
         label:'组网观测'
       }
+    },
+    {
+      path:'deviceManage',
+      name:'8f316b61-96ed-e4ad-6f96-3899833db3b8',
+      hide:false,
+      svg:'2e27a8c4-17b8-4fe3-bfd5-afdc95a38741',
+      meta:{
+        label:'设备管理'
+      },
+      children:[
+        {
+          path: 'device',
+          name: 'da20fee1-5ad7-51e1-2789-5e0933011f11',
+          component: '/src/myComponents/设备管理/radar.vue',
+          meta:{
+            label: '雷达管理',
+          }
+        },
+        {
+          path: 'sensor',
+          name: 'da20fee1-5ad7-51e1-2788-5e0933011a11',
+          component: '/src/myComponents/设备管理/sensor.vue',
+          meta:{
+            label: 'Sensor数据',
+          }
+        },
+        {
+          path: 'deviceStatus',
+          name: 'da20fee1-5ad7-51e1-2787-5e0933011a11',
+          component: '/src/myComponents/设备管理/deviceStatus.vue',
+          meta:{
+            label: '设备数据状态',
+          }
+        },
+        {
+          path: 'datafile',
+          name: 'da20fee1-5ad7-5111-2787-5e0933011a11',
+          component: '/src/myComponents/设备管理/datafile.vue',
+          meta:{
+            label: '数据文件',
+          }
+        },
+        {
+          path: 'deviceType',
+          name: 'da20fee1-5ad7-5121-2787-5e0933011a11',
+          component: '/src/myComponents/设备管理/deviceType.vue',
+          meta:{
+            label: '设备类型',
+          }
+        },
+      ]
     },
     {
       path: 'system',
