@@ -25,7 +25,7 @@
 // :default-expanded-keys="['2024','2024/202411','2024/202411/20241104']"
 // :current-node-key="'2024/202411/20241104/185140'"
 const props = withDefaults(defineProps<{type:string;radar_time:string}>(),{type:'DBS',radar_time:''})
-import {ref,onMounted} from 'vue'
+import {ref,onMounted,watch} from 'vue'
 import { getDataList } from "~/api/重庆";
 const loading = ref(false);
 interface Tree {
@@ -51,14 +51,16 @@ const handleNodeClick = (data: Tree) => {
     emits('update:radar_time',data.id)
   }
 };
-let radar_id = location.href.substring(location.href.lastIndexOf('/')+1,location.href.length)
+import { useStationStore } from '~/stores/station';
+const station = useStationStore()
+let radar_id = station.active
 import type Node from 'element-plus/es/components/tree/src/model/node'
 import moment from 'moment';
 const loadNode = (node: Node, resolve: (data: Tree[]) => void) => {
   if (node.level === 0) {
     // loading.value = true
     return getDataList({
-      radar_id,
+      radar_id:radar_id,
       path:'',
       type:props.type,
     }).then((res:any) => {
@@ -74,7 +76,7 @@ const loadNode = (node: Node, resolve: (data: Tree[]) => void) => {
   }else{
     let path = node.data.id.replaceAll(/\/$/g,'')
     return getDataList({
-      radar_id,
+      radar_id:radar_id,
       path,
       type:props.type,
     }).then((res:any) => {

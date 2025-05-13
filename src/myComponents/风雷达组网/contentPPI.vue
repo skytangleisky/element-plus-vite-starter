@@ -1,13 +1,14 @@
 <template>
   <div class="h-full flex flex-col">
     <div class="w-full box-border relative flex" style="height: 100%">
-      <div class="p-10px h-full box-border">
+      <div class="p-10px h-full box-border flex flex-col">
+        <div class="title">{{ station.currentStation.device_name }}({{ station.active }})</div>
         <el-tabs type="border-card" class="myTabs dark:bg-#252948" v-model="tabsData" style="border-radius:10px;overflow: hidden;">
           <el-tab-pane label="DBS" name="DBS">
-            <DataList v-model:radar_time="radar_time_DBS" type="DBS" @handleNodeClick="handleNodeClick_DBS"/>
+            <DataList v-model:radar_time="radar_time_DBS" type="DBS" @handleNodeClick="handleNodeClick_DBS"></DataList>
           </el-tab-pane>
           <el-tab-pane label="PPI" name="PPI">
-            <DataList v-model:radar_time="radar_time" type="PPI" @handleNodeClick="handleNodeClick_PPI"/>
+            <DataList v-model:radar_time="radar_time" type="PPI" @handleNodeClick="handleNodeClick_PPI"></DataList>
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -19,7 +20,7 @@
         >
           <radar
             :radar_time="radar_time"
-            :device="radar_id"
+            :device="station.active"
             type="ppi"
             :PPIval="value1"
             :isDark="isDark"
@@ -53,7 +54,9 @@ import { ref, reactive } from "vue";
 import DataList from "./dataList.vue";
 import FKX from './风廓线.vue'
 import { isDark } from "~/composables";
-let radar_id = location.href.substring(location.href.lastIndexOf('/')+1,location.href.length)
+import { useStationStore } from "~/stores/station";
+const station = useStationStore()
+// let radar_id = location.href.substring(location.href.lastIndexOf('/')+1,location.href.length)
 const radar_time = ref('')
 const radar_time_DBS = ref('')
 const tabsData = ref<'DBS'|'PPI'>('DBS')
@@ -72,17 +75,25 @@ function handleNodeClick_DBS(arg:string){
 }
 
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
+.title{
+  position: relative;
+  padding:10px;
+  border-radius:10px;
+  background:white;
+  border:1px solid var(--ep-border-color);
+  margin-bottom:10px;
+}
 .myTabs{
   display: flex;
   flex-direction: column;
-  height: 100%;
-  .ep-tabs__content{
+  flex:1;
+  ::v-deep(.ep-tabs__content){
     width: 240px;
     padding:0;
     flex:1;
     box-sizing: border-box;
-    .ep-tab-pane{
+    ::v-deep(.ep-tab-pane){
       height: 100%;
     }
   }

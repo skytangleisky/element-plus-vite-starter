@@ -140,12 +140,14 @@
         <li @click="单站数据">单站数据</li>
       </ul>
     </div>
+    <A0000 v-model="showHistory"></A0000>
   </div>
 </template>
 <script setup lang="ts">
 import { getMicapsData } from '../mapbox/data/plot/micaps.ts';
 import plotUrl from '/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pth15.00_Spd6.00_Res030_StartIdx002_VADStart002_VADStop190_VADWind_Sec_20250113 000000.000?url'
 import TimeStep from '~/tools/timeStep.vue';
+import A0000 from '../风雷达组网/pages/A0000.vue';
 import FKX from './风廓线.vue';
 import fkxInfo from './fkxInfo.vue'
 import uvUrl from "../mapbox/data/06040808.000?url";
@@ -155,7 +157,8 @@ import { isDark } from "~/composables/dark.ts";
 import { useRouter } from "vue-router";
 const router = useRouter()
 const 单站数据 = ()=>{
-  router.replace('/cq/device/'+$(stationMenu).data().radar_id)
+  showHistory.value = true
+  // router.replace('/cq/device/'+$(stationMenu).data().radar_id)
 }
 import chromatography from "../激光测风尾涡/chromatography.vue";
 import * as turf from "@turf/turf";
@@ -171,6 +174,7 @@ const stationMenuRef = ref<HTMLDivElement>();
 let stationMenu: HTMLDivElement;
 import { destinationPoint } from "~/myComponents/map/js/core.js";
 import { watch, ref, onMounted, onBeforeUnmount, reactive,nextTick } from "vue";
+const showHistory = ref(false)
 import { useBus } from "~/myComponents/bus";
 import Dialog from "./dialog.vue";
 import { useSettingStore } from "~/stores/setting";
@@ -380,6 +384,7 @@ const clickFunc = (e) => {
         //     bus.radialWindData = res.data.data;
         //   });
         station.active = bus.风雷达组网地图相关雷达站点信息[i].no;
+        station.currentStation = bus.风雷达组网地图相关雷达站点信息[i];
         fetch最近风廓线数据()
         $(`#${station.active}`)[0].scrollIntoView({
           block: "nearest",
