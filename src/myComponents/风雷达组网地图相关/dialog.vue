@@ -85,7 +85,7 @@
                 <td>{{ v.altitude }}</td>
                 <!-- <td>{{ (setting.风雷达组网地图相关.altitudeHeight-v.altitude).toFixed(1) }}</td> -->
                 <!-- <td>{{ v.time }}</td> -->
-                <td :class="v.status==0 ? '未知' : v.status == 1 ? 'color-#50aa23' : v.status == 2 ? 'color-#f80' : v.status == 3 ? 'color-#f00' : 'color-inherit'">
+                <td :class="v.status==0 ? '未知' : v.status == 1 ? 'color-#3AC8A5' : v.status == 2 ? 'color-#e8cb1a' : v.status == 3 ? 'color-#F56c6c' : 'color-inherit'">
                   {{ v.status==0 ? '未知' : v.status==1 ? '正常' : v.status==2 ? '延迟' : v.status==3 ? '缺失' : v.status }}
                 </td>
               </tr>

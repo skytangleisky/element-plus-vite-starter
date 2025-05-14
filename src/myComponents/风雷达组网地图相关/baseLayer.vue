@@ -32,7 +32,7 @@ import baseEcharts from "./baseEcharts.vue";
 // 导入图标
 import iconChart from "~/assets/layerIcon/icon-chart.png";
 import iconLayer from "~/assets/layerIcon/icon-layer.png";
-import {queryRadarStatus,queryRadarFactStatus} from '~/api/重庆'
+import {queryRadarStatus, queryRadarFactStatus} from '~/api/重庆'
 
 let gradeCode = ref(1) //级别 1：省 2：市 3：县
 let activeIndex = ref(0);
@@ -98,15 +98,17 @@ let basePie = reactive({
       },
       //数据项
       data: [
-        {value: 0, name: "在线"},
-        {value: 0, name: "离线"},
-        {value: 0, name: "告警"},
+        {value: 0, name: "未知"},
+        {value: 0, name: "正常"},
+        {value: 0, name: "延迟"},
+        {value: 0, name: "缺失"},
       ],
       // 全局调色盘。
       color: [
-        "#3AC8A5",
         "#b1b1b1",
+        "#3AC8A5",
         "#e8cb1a",
+        "#F56c6c",
         "#975CE4",
         "#55B8F7",
         "#FF8E59",
@@ -163,7 +165,21 @@ let baseBar = reactive({
   ],
   series: [
     {
-      name: "在线",
+      name: "未知",
+      type: "bar",
+      data: [],
+      barWidth: "15%",
+      itemStyle: {
+        borderRadius: [4, 4, 0, 0],
+      },
+      label: {
+        show: true,
+        color: "auto",
+        position: "top",
+      },
+      color: "#b1b1b1",
+    }, {
+      name: "正常",
       type: "bar",
       data: [],
       barWidth: "15%",
@@ -178,22 +194,7 @@ let baseBar = reactive({
       color: "#3AC8A5",
     },
     {
-      name: "离线",
-      type: "bar",
-      data: [],
-      barWidth: "15%",
-      itemStyle: {
-        borderRadius: [4, 4, 0, 0],
-      },
-      label: {
-        show: true,
-        color: "auto",
-        position: "top",
-      },
-      color: "#b1b1b1",
-    },
-    {
-      name: "告警",
+      name: "延迟",
       type: "bar",
       data: [],
       barWidth: "15%",
@@ -207,27 +208,43 @@ let baseBar = reactive({
       },
       color: "#e8cb1a",
     },
+    {
+      name: "缺失",
+      type: "bar",
+      data: [],
+      barWidth: "15%",
+      itemStyle: {
+        borderRadius: [4, 4, 0, 0],
+      },
+      label: {
+        show: true,
+        color: "auto",
+        position: "top",
+      },
+      color: "#F56c6c",
+    },
   ],
 });
 
 const getRadarStatus = () => {
   // 雷达状态分布数据
-  queryRadarStatus('140100',gradeCode.value).then((res) => {
+  queryRadarStatus('140100', gradeCode.value).then((res) => {
     if (res.data.code == 200) {
       const data = res.data.data
       data.forEach(item => {
-        basePie.series[0].data[item.status - 1].value = item.cnt
+        basePie.series[0].data[item.status].value = item.cnt
       })
     }
   })
   // 各厂商雷达状态
-  queryRadarFactStatus('140100',  gradeCode.value).then((res) => {
+  queryRadarFactStatus('140100', gradeCode.value).then((res) => {
     if (res.data.code == 200) {
-      const data =res.data.data
+      const data = res.data.data
       baseBar.xAxis[0].data = data.manufacturers
-      baseBar.series[0].data = data.status_1
-      baseBar.series[1].data = data.status_2
-      baseBar.series[2].data = data.status_3
+      baseBar.series[0].data = data.status_0
+      baseBar.series[1].data = data.status_1
+      baseBar.series[2].data = data.status_2
+      baseBar.series[3].data = data.status_3
     }
   })
 
