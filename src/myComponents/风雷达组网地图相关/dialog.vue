@@ -1,5 +1,5 @@
 <template>
-  <div class="!collapse dragDialog">
+  <div class="!collapse dragDialog collapse">
     <div class="dragDialog-top">
       <el-input
         @mousedown.stop
@@ -17,6 +17,7 @@
         :max-collapse-tags="0"
         :clearable="false"
         size="small"
+        placeholder="请选择区县"
         class="m-r-10px"
         style="min-width:180px"
       >
@@ -400,15 +401,17 @@ const toggleCollapse = () => {
   display: flex;
   flex-direction: column;
   padding: 12px;
-  background: url("~/assets/theme-img/map-module-bg.png") no-repeat;
-  background-size: 100% 100%;
+  //background: url("~/assets/theme-img/map-module-bg.png") no-repeat;
+  //background-size: 100% 100%;
+  background: var(--bg-color-overlay-opacity-8);
+  border:1px solid #B5D5E5;
   .contain-table{
     overflow: auto;
     box-sizing: border-box;
     position: relative;
     margin-top: 8px;
     scroll-padding-top: 1rem;
-    max-height: 230px;
+    max-height: 125px;
   }
   table {
     border-collapse: collapse;

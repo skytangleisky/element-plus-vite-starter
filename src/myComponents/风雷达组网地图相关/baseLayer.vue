@@ -6,7 +6,7 @@
           v-for="(x, xi) in dataList"
           class="btn map-btn"
           :class="{ active: activeIndex == xi }"
-          @click="activeIndex = xi"
+          @click="changeTab(xi)"
       >
         <img :src="x.icon" alt=""/>
         <div class="btn-title">{{ x.title }}</div>
@@ -26,13 +26,15 @@
 </template>
 
 <script setup lang="ts">
-import {ref, reactive, onMounted} from 'vue';
+import {ref, reactive, watch} from 'vue';
 import radarStatistic from "./radarStatistic.vue";
 import baseEcharts from "./baseEcharts.vue";
 // 导入图标
 import iconChart from "~/assets/layerIcon/icon-chart.png";
 import iconLayer from "~/assets/layerIcon/icon-layer.png";
 import {queryRadarStatus, queryRadarFactStatus} from '~/api/重庆'
+import {useSettingStore} from "~/stores/setting"
+let settingStore = useSettingStore();
 
 let gradeCode = ref(1) //级别 1：省 2：市 3：县
 let activeIndex = ref(0);
@@ -105,7 +107,7 @@ let basePie = reactive({
       ],
       // 全局调色盘。
       color: [
-        "#b1b1b1",
+        "#909399",
         "#3AC8A5",
         "#e8cb1a",
         "#F56c6c",
@@ -177,7 +179,7 @@ let baseBar = reactive({
         color: "auto",
         position: "top",
       },
-      color: "#b1b1b1",
+      color: "#909399",
     }, {
       name: "正常",
       type: "bar",
@@ -254,7 +256,23 @@ const initFun = () => {
   getRadarStatus()
 }
 initFun()
+/**
+ * @author yhl 2025-05-14 17:33:04
+ * @description 切换模块
+ * @param index-序号
+ */
+const changeTab = (index: number) => {
+  activeIndex.value = index
 
+}
+
+watch(activeIndex, (newVal, oldVal) => {
+  if(newVal == 1){
+    settingStore.风雷达组网.监控.isFoldSingle = true
+  }else{
+    settingStore.风雷达组网.监控.isFoldSingle = false
+  }
+},{immediate:true})
 </script>
 
 <style scoped lang="scss">

@@ -15,6 +15,26 @@ code {
   color: var(--ep-color-primary);
 }
 
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+/* 滑块样式 */
+::-webkit-scrollbar-thumb {
+  background-color: #B5D5E5;
+  border-radius: 10px;
+}
+/* 滚动条轨道样式 */
+::-webkit-scrollbar-track {
+  background-color:rgba(202, 237, 255, 0.6);
+  border-radius:10px;
+}
+// 解决xy轴同时出现滚动条右下角有一个小白快
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 // 地图主界面小模块
 .map-module-box {
   width: 100%;

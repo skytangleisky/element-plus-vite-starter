@@ -354,9 +354,9 @@ export default {
 					'line-cap':'round'
 				},
 				'paint': {
-					'line-color': isDark.value?'#fff':'#000',
+					'line-color': isDark.value?'#fff':'#A2BECC',
 					'line-width': 1,
-					'line-opacity':0.2
+					'line-opacity':0.4
 				}
 			},
 			{
@@ -369,8 +369,8 @@ export default {
 					'line-cap':'round'
 				},
 				'paint': {
-					'line-color': isDark.value?'#fff':'#000',
-					'line-width': 2
+					'line-color': isDark.value?'#fff':'#A2BECC',
+					'line-width': 2,
 				}
 			},
 	],

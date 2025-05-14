@@ -251,6 +251,7 @@ export const useSettingStore = defineStore({
     },
     风雷达组网:{
       监控:{
+        isFoldSingle:true,//是否折叠单站产品数据
         "zoom": 8.882777980661407,
         "center": [
           117.04212403858509,

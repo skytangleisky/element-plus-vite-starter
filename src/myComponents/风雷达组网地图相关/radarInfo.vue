@@ -1,7 +1,9 @@
 <template>
   <div class="radarInfo map-module-box">
     <div class="map-module-top">
-      <span>雷达基础信息</span>
+      <span>雷达基础信息 <span v-show="deviceInfo.device_name"  >
+          - {{ deviceInfo.device_name }}
+        </span></span>
       <span @click="showTags = !showTags" class="map-module-top-icon">
                 <el-icon v-show="showTags"><ArrowUpBold/></el-icon>
                 <el-icon v-show="!showTags"><ArrowDownBold/></el-icon>
@@ -10,9 +12,7 @@
     <div class="map-module-bottom" v-show="showTags">
       <el-empty description="暂无数据" v-if="!deviceInfo.radar_id" :image-size="64"/>
       <div class="content" v-else>
-        <div class="device-info">
-          {{ deviceInfo.device_name }} ({{ deviceInfo.radar_id }})
-        </div>
+
 
         <el-collapse v-model="collapseActNames" accordion @change="collapseChange">
           <el-collapse-item title="主控板传感器数据" name="1">
@@ -297,7 +297,8 @@ const setting = useSettingStore();
 // 折叠面板展示的数据
 let collapseActNames = ref([])
 // 控制整个模块折叠显示效果
-let showTags = ref(false)
+let showTags = ref(true)
+showTags.value = !setting.风雷达组网.监控.isFoldSingle
 let sensorData = reactive({})
 const bus = useBus();
 // 雷达信息
@@ -307,7 +308,9 @@ const deviceInfo = reactive({
   data_time: '',
 });
 
-
+watch(()=>setting.风雷达组网.监控.isFoldSingle,newVal=>{
+  showTags.value =!newVal
+})
 watch([() => bus.avgWindData_重庆, () => station.active], ([avgWindData, active]) => {
   if (avgWindData.data) {
 
@@ -371,6 +374,8 @@ function format(val: any) {
   .map-module-bottom{
     background: var(--bg-color-overlay-opacity-8);
     border:1px solid #B5D5E5;
+    max-height:256px;
+    overflow-y: auto;
   }
   .content {
     .device-info {
@@ -392,9 +397,12 @@ function format(val: any) {
 
       :deep(.ep-collapse-item__wrap) {
         background-color: var(--ep-color-primary-light-9);
-        padding:0 16px;
+        padding:8px 16px;
         border-color: var(--border-color);
-        padding-top: 8px;
+
+      }
+      :deep(.ep-collapse-item__content){
+        padding-bottom:0;
       }
     }
     .item-box{

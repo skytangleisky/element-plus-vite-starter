@@ -1,7 +1,7 @@
 <template>
   <div class="fkx-info">
     <div class="fkx-top">
-      <div class="top-left"><span>风廓线</span> <span v-show="deviceInfo.device_name" @click="deviceClick">-{{ deviceInfo.device_name }} <span>({{ deviceInfo.radar_id }})</span></span>
+      <div class="top-left"><span>风廓线</span><span v-show="deviceInfo.device_name">-{{ deviceInfo.device_name }}</span>
       </div>
       <div class="top-right" @click="showFkxHandle">
         <el-icon v-if="isShowBottom">
@@ -67,8 +67,7 @@ const setting = useSettingStore();
 const router = useRouter()
 const station = useStationStore();
 
-let isShowBottom = ref(false)
-
+let isShowBottom = ref(true)
 const showFkxHandle = () => {
   isShowBottom.value = !isShowBottom.value;
   setting.disappear = isShowBottom.value;
@@ -90,6 +89,9 @@ const deviceClick = () => {
   // );
   router.replace('/cq/device/' + deviceInfo.radar_id)
 };
+watch(()=>setting.风雷达组网.监控.isFoldSingle,newVal=>{
+  isShowBottom.value =!newVal
+})
 watch([() => bus.avgWindData_重庆, () => station.active], ([avgWindData, active]) => {
   if (avgWindData.data) {
     avgWindData.data.map((radial: any, k: number) => {
@@ -168,7 +170,7 @@ onBeforeUnmount(()=>{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--bg-color-overlay-opacity-8);
+    //background-color: var(--bg-color-overlay-opacity-8);
     height: 40px;
     line-height: 40px;
     background: url("~/assets/theme-img/map-module-title.png") no-repeat;

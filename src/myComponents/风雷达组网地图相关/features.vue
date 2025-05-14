@@ -1,17 +1,6 @@
 <template>
   <div class="color">
-    <div
-      style="
-        border-left: 3px solid #128aed;
-        box-sizing: border-box;
-        font-size: 16px;
-        margin-bottom: 10px;
-        text-align: left;
-        line-height: 16px;
-      "
-    >
-      &emsp;{{ title }}
-    </div>
+    <div class="module-title" >{{ title }}</div>
     <div class="w-full h-full flex justify-center">
       <div style="position: relative; width: 100%; height: 80px; overflow: hidden">
         <img src="/feathers/12.svg" class="imgClass" />

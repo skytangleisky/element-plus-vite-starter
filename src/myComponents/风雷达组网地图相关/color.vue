@@ -1,22 +1,11 @@
 <template>
   <div class="color">
-    <div
-      style="
-        border-left: 3px solid #128aed;
-        box-sizing: border-box;
-        font-size: 16px;
-        margin-bottom: 10px;
-        text-align: left;
-        line-height: 16px;
-      "
-    >
-      &emsp;{{ title }}
-    </div>
+    <div class="module-title" >{{ title }}</div>
     <div class="colors">
       <div
         v-for="(v, key) in colors"
         :key="key"
-        :style="'background:' + v + ';width:18px;height:18px;margin:.5px;'"
+        :style="'background:' + v + ';width:24px;height:24px;margin:.5px;'"
       ></div>
     </div>
     <div class="values">
@@ -25,12 +14,12 @@
         :key="key"
         style="
           font-weight: 700;
-          width: 19px;
-          height: 18px;
+          width: 25px;
+          height: 25px;
+          line-height: 25px;
           text-align: center;
           vertical-align: top;
-          line-height: 18px;
-          font-size: 10px;
+          font-size: 12px;
         "
       >
         {{ v }}

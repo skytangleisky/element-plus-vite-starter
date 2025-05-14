@@ -549,7 +549,7 @@ export const getCoord = (i:number, j:number, v:number,fill:string) => ({
   y1: (j * (32 + 20)) / 188,
   x2: (i * (16 + 20)) / 340 + 16 / 340,
   y2: (j * (32 + 20)) / 188 + 32 / 188,
-  style: `fill:${getColor(v)};stroke:black;stroke-width:0.1px`,
+  style: `fill:${getColor(v)};stroke:black;stroke-width:0.1px;`,
   // style: `fill:${fill};`,
 });
 export const addFeatherImages = async( map:any, fill:string ) => {
