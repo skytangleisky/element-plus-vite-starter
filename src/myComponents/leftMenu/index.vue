@@ -43,7 +43,7 @@
 </template>
 <script lang="ts" setup>
 import { checkPermission } from "~/tools";
-import { isDark } from "~/composables";
+import { isDark } from "~/theme"
 import { ref, onMounted, watch, nextTick, computed } from "vue";
 import { useIconStore } from "~/stores/icon";
 const icon = useIconStore();

@@ -21,15 +21,15 @@ import { ref, onMounted, onBeforeUnmount, watch } from "vue";
 import { useStationStore } from "~/stores/station";
 const station = useStationStore();
 import DBS, { Fdata } from "~/tools/fkx.js";
-import { isDark } from "~/composables";
+import { useTheme,isDark } from "~/theme"
 import { useBus } from "~/myComponents/bus";
 const bus = useBus();
 const fkxContainer = ref(null);
-watch(isDark, (isDark) => {
+watch(isDark, () => {
   if (dbs) {
     dbs.destroy();
   }
-  setDBS(isDark);
+  setDBS(isDark.value);
   process(tmpAvgWindData)
 });
 let dbs: DBS;

@@ -23,13 +23,13 @@ import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
 import { useStationStore } from "~/stores/station";
 const station = useStationStore();
-import { isDark } from "~/composables";
+import { isDark } from "~/theme"
 import { useBus } from "~/myComponents/bus";
 const bus = useBus();
 
 var thContainer = ref(null);
-watch(isDark, (isDark) => {
-  setChart(isDark);
+watch(isDark, () => {
+  setChart(isDark.value);
 });
 onMounted(() => {
   setChart(isDark.value);

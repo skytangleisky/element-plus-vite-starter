@@ -1,5 +1,5 @@
 // import url from "./satellite.json?url"
-import { isDark } from "~/composables/dark.ts";
+import { isDark } from "~/theme"
 import data from "./satellite.js"
 let url = URL.createObjectURL(new File([JSON.stringify(data)],"satellite.json",{type:"application/json"}))
 import { useSettingStore } from '~/stores/setting';

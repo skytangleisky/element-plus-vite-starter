@@ -23,14 +23,18 @@ import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
 import { useStationStore } from "~/stores/station";
 const station = useStationStore();
-import { isDark } from "~/composables";
+import { useTheme,isDark } from "~/theme"
+const theme = useTheme()
+const toggleDark = () => {
+  isDark ? theme.value = 'light' : theme.value = 'dark'
+}
 import { useBus } from "~/myComponents/bus";
 import moment from "moment";
 const bus = useBus();
 
 var thContainer = ref(null);
-watch(isDark, (isDark) => {
-  setChart(isDark);
+watch(isDark, () => {
+  setChart(isDark.value);
 });
 onMounted(() => {
   setChart(isDark.value);

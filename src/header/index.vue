@@ -82,8 +82,11 @@ import { useUserStore } from "~/stores/user";
 const user = useUserStore();
 import { useDataStore } from "~/stores/data";
 const data = useDataStore();
-import { toggleDark, isDark } from "~/composables";
-import { usePreferredColorScheme } from '@vueuse/core'
+import { useTheme,isDark } from "~/theme";
+const theme = useTheme();
+const toggleDark = () => {
+  isDark.value ? theme.value = "light" : theme.value = "dark";
+};
 const click = () => {
   setting.$resetFields("无人机.监控.loadmap");
 };
@@ -101,12 +104,6 @@ const Reset = () => {
   });
   sessionStorage.clear();
   localStorage.clear();
-  const preferredScheme = usePreferredColorScheme();
-  if(preferredScheme.value == 'dark'){
-    isDark.value=true
-  }else{
-    isDark.value=false
-  }
   exclude.push("contain"); //重置，对应组件和其子组件应该需要被重新渲染，因为重置pinia的数据后会导致页面可能显示异常，涉及到的组件需要重新渲染
   router.replace({ ...router.currentRoute.value, force: true });
 };

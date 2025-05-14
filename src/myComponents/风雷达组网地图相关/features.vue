@@ -25,10 +25,10 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { isDark } from "~/composables/dark";
+import { isDark } from "~/theme"
 import { ref, onMounted, onBeforeUnmount, watch } from "vue";
-watch(isDark, (isDark) => {
-  draw(canvas, isDark);
+watch(isDark, () => {
+  draw(canvas, isDark.value);
 });
 defineProps({
   title: {

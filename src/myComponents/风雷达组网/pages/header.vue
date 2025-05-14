@@ -93,8 +93,8 @@ import { useDataStore } from "~/stores/data";
 const data = useDataStore();
 import { useExclude } from "~/myComponents/bus";
 const exclude = useExclude();
-import { toggleDark, isDark } from "~/composables";
-import { usePreferredColorScheme } from '@vueuse/core'
+import { useTheme } from "~/theme"
+const theme = useTheme()
 
 const props = withDefaults(defineProps<{menuIndex:number}>(),{menuIndex:0})
 function menuClick(index:number){
@@ -132,12 +132,6 @@ const Reset = () => {
   });
   sessionStorage.clear();
   localStorage.clear();
-  const preferredScheme = usePreferredColorScheme();
-  if(preferredScheme.value == 'dark'){
-    isDark.value=true
-  }else{
-    isDark.value=false
-  }
   exclude.push("contain"); //重置，对应组件和其子组件应该需要被重新渲染，因为重置pinia的数据后会导致页面可能显示异常，涉及到的组件需要重新渲染
   router.replace({ ...router.currentRoute.value, force: true });
 };

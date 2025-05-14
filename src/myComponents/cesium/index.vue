@@ -5,8 +5,8 @@
   import { onMounted,ref,reactive, onBeforeUnmount,watch,toRefs } from 'vue';
   import { FPSTool } from '../zrender/tool';
   import { useCesiumStore } from '~/stores/cesium';
-  import { isDark } from '~/composables';
   import { getFeather } from '~/tools';
+  import { isDark } from "~/theme"
   const cesiumStore = useCesiumStore();
   const fpsTool = new FPSTool();
   const fps = ref('0.00');

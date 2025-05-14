@@ -11,18 +11,18 @@
 <script lang="ts" setup>
 import { ref, onMounted, onBeforeUnmount, watch } from "vue";
 import DBS from "./fkxV.js";
-import { isDark } from "~/composables";
+import { isDark } from "~/theme"
 import { useBus } from "~/myComponents/bus";
 const fkxContainer = ref(null);
 import { eventbus } from "~/eventbus";
 const 清除风廓线数据 = () => {
   dbs && dbs.clear();
 }
-watch(isDark, (isDark) => {
+watch(isDark, () => {
   if (dbs) {
     dbs.destroy();
   }
-  setDBS(isDark);
+  setDBS(isDark.value);
 });
 let dbs: DBS;
 onMounted(() => {

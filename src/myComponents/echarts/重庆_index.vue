@@ -48,7 +48,7 @@ const setting = useSettingStore();
 import { useStationStore } from "~/stores/station";
 const station = useStationStore();
 import { Fdata } from "~/tools/fkx";
-import { isDark } from "~/composables";
+import { isDark } from "~/theme"
 import { useBus } from "~/myComponents/bus";
 import moment from "moment";
 const bus = useBus();
@@ -58,9 +58,9 @@ const options = ref([{
   value:0,label:'第1层'
 }]);
 onMounted(() => {
-  setEcharts(isDark.value);
+  setEcharts(isDark);
 });
-watch(isDark, (isDark) => {
+watch(isDark, () => {
   setEcharts(isDark);
 });
 var myChart;

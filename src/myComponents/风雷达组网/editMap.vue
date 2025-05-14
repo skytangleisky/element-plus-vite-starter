@@ -44,7 +44,7 @@
 </template>
 <script setup lang="ts">
 import moment from "moment";
-import { isDark } from "~/composables/dark.js";
+import { isDark } from "~/theme"
 import { checkPermission } from "~/tools/index.ts";
 import CustomLayer from "./webglLayer/CustomLayer.js";
 import graph from "~/tools/graph.vue";
@@ -107,7 +107,7 @@ import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.scss";
 import { 获取净空区, saveData, deleteData } from "~/api/enclosure.js";
 import { addFeatherImages, getFeather } from "~/tools";
 const bus = useBus();
-import theme from "./drawTheme/inactive.js";
+import drawTheme from "./drawTheme/inactive.js";
 let timer = 0;
 let graphTimer = 0;
 const props = withDefaults(
@@ -1938,7 +1938,7 @@ onMounted(() => {
       combine_features: false,
       uncombine_features: false,
     },
-    styles: theme,
+    styles: drawTheme,
   });
   map.addControl(Draw, "top-right");
   //添加空域

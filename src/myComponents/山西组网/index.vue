@@ -143,7 +143,7 @@ import 城市图标 from '~/assets/city.svg?url'
 import {BorderBox11} from '~/../packages/dataV/src/components/BorderBox11';
 import {BorderBox8} from '~/../packages/dataV/src/components/BorderBox8';
 import {Decoration12} from '~/../packages/dataV/src/components/Decoration12';
-import { isDark } from "~/composables/dark.ts";
+import { isDark } from "~/theme"
 import { useRouter } from "vue-router";
 const router = useRouter()
 const 单站数据 = ()=>{
@@ -1659,8 +1659,8 @@ onBeforeUnmount(() => {
   map.off('mousedown',mousedownFunc)
   map.remove();
 });
-watch(isDark,isDark=>{
-  if(isDark){
+watch(isDark,()=>{
+  if(isDark.value){
     map.setPaintProperty('等距环','line-color','white')
     map.setPaintProperty('等距环的单位','text-color','white')
     map.setPaintProperty('textLayer','text-color','white')

@@ -4,7 +4,7 @@
 </template>
 <script lang="ts" setup>
 import {layer,windParticles} from "./windRaster";
-import { isDark } from "~/composables/dark.js";
+import { isDark } from "~/theme"
 import { onMounted, ref, onBeforeUnmount, watch, toRefs,reactive } from "vue";
 import ControlPane from '../controlPane/index.vue'
 import uvUrl from "./data/06040808.000?url";

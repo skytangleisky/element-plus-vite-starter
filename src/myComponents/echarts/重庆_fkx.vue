@@ -24,15 +24,15 @@ import { ref, onMounted, onBeforeUnmount, watch } from "vue";
 import { useStationStore } from "~/stores/station";
 const station = useStationStore();
 import DBS from "~/tools/重庆_fkx.js";
-import { isDark } from "~/composables";
 import { useBus } from "~/myComponents/bus";
 const bus = useBus();
 const fkxContainer = ref(null);
-watch(isDark, (isDark) => {
+import { isDark } from "~/theme"
+watch(isDark, () => {
   if (dbs) {
     dbs.destroy();
   }
-  setDBS(isDark);
+  setDBS(isDark.value);
   let avgWindData = bus.avgWindData_重庆
   process(avgWindData)
 });

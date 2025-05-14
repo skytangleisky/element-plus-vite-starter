@@ -51,9 +51,7 @@ import { useStationStore } from "./stores/station";
 const station = useStationStore();
 import { useDataStore } from "./stores/data";
 const data = useDataStore();
-import { usePreferredColorScheme } from '@vueuse/core'
-import { isDark } from "./composables";
-import { useRouter } from "vue-router";
+import { useRouter } from "vue-router"
 const router = useRouter()
 const Reset = () => {
   setting.$resetFields();
@@ -65,13 +63,7 @@ const Reset = () => {
     throw e;
   });
   sessionStorage.clear();
-  localStorage.clear();
-  const preferredScheme = usePreferredColorScheme();
-  if(preferredScheme.value == 'dark'){
-    isDark.value=true
-  }else{
-    isDark.value=false
-  }
+  localStorage.clear()
   exclude.push("contain"); //重置，对应组件和其子组件应该需要被重新渲染，因为重置pinia的数据后会导致页面可能显示异常，涉及到的组件需要重新渲染
   router.replace({ ...router.currentRoute.value, force: true });
   // setTimeout(()=>{
