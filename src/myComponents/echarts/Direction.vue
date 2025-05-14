@@ -28,7 +28,7 @@ const theme = useTheme()
 
 var thContainer = ref(null);
 watch(isDark, () => {
-  setChart(isDark.value;
+  setChart(isDark.value);
 });
 onMounted(() => {
   setChart(isDark.value);
