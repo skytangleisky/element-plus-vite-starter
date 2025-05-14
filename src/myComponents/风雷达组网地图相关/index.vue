@@ -155,7 +155,7 @@ import radarInfo from './radarInfo.vue'
 import uvUrl from "../mapbox/data/06040808.000?url";
 import CustomLayer from './CustomLayer.js'//绘制流线
 import discreteContour from "./discreteContour.ts";//绘制等值线
-import { isDark } from "~/composables/dark.ts";
+import { isDark } from "~/theme"
 import { useRouter } from "vue-router";
 const router = useRouter()
 const 单站数据 = ()=>{
@@ -338,7 +338,7 @@ const points = {
   type: "geojson",
   data: {
     type: "FeatureCollection",
-    features: [],
+    features: new Array<any>(),
   },
 };
 const 风场数据 = {
@@ -1251,7 +1251,7 @@ async function updateData(altitude:number){
       })
     }
   }
-  (map.getSource('风场数据') as any).setData(风场数据.data)
+  (map.getSource('风场数据') as any)?.setData(风场数据.data)
 
   const uMin = Math.min(...us);
   let uMax = Math.max(...us);
@@ -1324,7 +1324,7 @@ async function updateData(altitude:number){
           垂直气流: "",
           时间:NaN,
           time: moment().format("YYYY-MM-DD HH:mm:ss"),
-          name: Item.device_name,
+          name: Item.device_name.replace('国家基本气象站','').replace('国家气象观测站','').replace('国家基准气候站',''),
           is_online: true,
           external_temperature: 25,
           external_humidity: 0.6,
@@ -1800,9 +1800,9 @@ onBeforeUnmount(() => {
   map.remove();
   mapboxgl.clearStorage();
 });
-watch(isDark,isDark=>{
-  addFeatherImages(map,isDark?'#fff':'#000');
-  if(isDark){
+watch(isDark,()=>{
+  addFeatherImages(map,isDark.value?'#fff':'#000');
+  if(isDark.value){
     map.setPaintProperty('等距环','line-color','white')
     map.setPaintProperty('等距环的单位','text-color','white')
     map.setPaintProperty('textLayer','text-color','white')
@@ -2463,7 +2463,7 @@ $page-left-right-height:calc(100% - 2*$page-grid);
   position: absolute;
   top: $page-grid;
   left:calc($page-left-width + 2*$page-grid) ;
-  max-width: $page-center-width;
+  // width: $page-center-width;
   //background-color: red;
 }
 .page-center-bottom{

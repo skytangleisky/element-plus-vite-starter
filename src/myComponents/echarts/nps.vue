@@ -24,13 +24,13 @@ import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
 import { useStationStore } from "~/stores/station";
 const station = useStationStore();
-import { isDark } from "~/composables";
+import { isDark } from "~/theme"
 import { eventbus } from "~/eventbus";
 import moment from "moment";
 
 var thContainer = ref(null);
-watch(isDark, (isDark) => {
-  setChart(isDark);
+watch(isDark, () => {
+  setChart(isDark.value);
 });
 let aid:number;
 let loop = ()=>{

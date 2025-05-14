@@ -57,7 +57,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { isDark } from "~/composables";
+import { isDark } from "~/theme"
 import radar from "./雷达.vue";
 import { ref, reactive, onMounted, nextTick } from "vue";
 import moment from "moment";

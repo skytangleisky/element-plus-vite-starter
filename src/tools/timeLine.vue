@@ -69,7 +69,7 @@ import rightSvg from "~/assets/right.svg?raw";
 import moment from "moment";
 import graph from "./graph.vue";
 import { onMounted, onBeforeUnmount, ref, reactive, watch } from "vue";
-import { isDark } from "~/composables";
+import { isDark } from "~/theme"
 const emit = defineEmits(["update:now", "update:status", "update:level", "toLeft","toMiddle","toRight"]);
 const props = withDefaults(
   defineProps<{
@@ -113,8 +113,8 @@ let options = reactive({
   devicePixelRatio,
   color: isDark.value ? "white" : "black",
 });
-watch(isDark, (v) => {
-  if (v) {
+watch(isDark, () => {
+  if (isDark.value) {
     options.color = "white";
   } else {
     options.color = "black";

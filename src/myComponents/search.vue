@@ -126,7 +126,11 @@
 <script setup>
 import penItem from "./penItem.vue";
 import { reactive, ref, watch, computed, onMounted } from "vue";
-import { toggleDark } from "~/composables";
+import { useTheme,isDark } from "~/theme"
+const theme = useTheme()
+const toggleDark = () => {
+  isDark.value ? theme.value = 'light' : theme.value = 'dark'
+}
 import {
   Select,
   Setting,

@@ -1,5 +1,5 @@
 <template>
-  <div class="!collapse dragDialog" >
+  <div class="!collapse dragDialog">
     <div class="dragDialog-top">
       <el-input
         @mousedown.stop
@@ -13,7 +13,7 @@
         v-model="selected"
         collapse-tags
         :props="cascaderProps"
-        v-model:options="cascaderOptions"
+        :options="cascaderOptions"
         :max-collapse-tags="0"
         :clearable="false"
         size="small"
@@ -112,197 +112,7 @@
 </template>
 <script lang="ts" setup>
 const cascaderProps = { /*multiple: true,*/ checkStrictly:true, value: 'value', label: 'label', children: 'children' }
-const cascaderOptions = reactive([
-  {
-    value: '140000',
-    label: '山西省',
-    children: [
-      // {
-      //   value: 2,
-      //   label: '太原市',
-      //   children: [
-      //     { value: 3, label: '阳曲县' },
-      //     { value: 4, label: '娄烦县' },
-      //     { value: 5, label: '古交市' },
-      //     { value: 5, label: '万柏林区' },
-      //     { value: 5, label: '尖草坪区' },
-      //     { value: 5, label: '杏花岭区' },
-      //     { value: 5, label: '迎泽区' },
-      //     { value: 5, label: '清徐县' },
-      //     { value: 5, label: '晋源区' },
-      //     { value: 5, label: '小店区' },
-      //   ],
-      // },
-      // {
-      //   value: 6,
-      //   label: '大同市',
-      //   children: [
-      //     { value: 7, label: '平城区' },
-      //     { value: 8, label: '左云县' },
-      //     { value: 9, label: '新荣区' },
-      //     { value: 9, label: '阳高县' },
-      //     { value: 9, label: '天镇县' },
-      //     { value: 9, label: '云冈区' },
-      //     { value: 9, label: '云州区' },
-      //     { value: 9, label: '浑源县' },
-      //     { value: 9, label: '广灵县' },
-      //     { value: 9, label: '灵丘县' },
-      //   ],
-      // },
-      // {
-      //   value: 10,
-      //   label: '朔州市',
-      //   children: [
-      //     { value: 11, label: '右玉县' },
-      //     { value: 12, label: '平鲁区' },
-      //     { value: 13, label: '朔城区' },
-      //     { value: 13, label: '山阴县' },
-      //     { value: 13, label: '怀仁市' },
-      //     { value: 13, label: '应县' },
-      //   ],
-      // },
-      // {
-      //   value: 10,
-      //   label: '忻州市',
-      //   children: [
-      //     { value: 11, label: '偏关县' },
-      //     { value: 12, label: '河曲县' },
-      //     { value: 13, label: '保德县' },
-      //     { value: 13, label: '神池县' },
-      //     { value: 13, label: '五寨县' },
-      //     { value: 13, label: '岢岚县' },
-      //     { value: 13, label: '宁武县' },
-      //     { value: 13, label: '静乐县' },
-      //     { value: 13, label: '原平市' },
-      //     { value: 13, label: '忻府区' },
-      //     { value: 13, label: '定襄县' },
-      //     { value: 13, label: '代县' },
-      //     { value: 13, label: '五台县' },
-      //     { value: 13, label: '繁峙县' },
-      //   ],
-      // },
-      // {
-      //   value: 10,
-      //   label: '吕梁市',
-      //   children: [
-      //     { value: 11, label: '兴县' },
-      //     { value: 12, label: '岚县' },
-      //     { value: 13, label: '临县' },
-      //     { value: 13, label: '方山县' },
-      //     { value: 13, label: '柳林县' },
-      //     { value: 13, label: '离石区' },
-      //     { value: 13, label: '交城县' },
-      //     { value: 13, label: '中阳县' },
-      //     { value: 13, label: '石楼县' },
-      //     { value: 13, label: '交口县' },
-      //     { value: 13, label: '孝义市' },
-      //     { value: 13, label: '汾阳市' },
-      //     { value: 13, label: '文水县' },
-      //   ],
-      // },
-      // {
-      //   value: 10,
-      //   label: '阳泉市',
-      //   children: [
-      //     { value: 11, label: '盂县' },
-      //     { value: 12, label: '郊区' },
-      //     { value: 13, label: '平定县' },
-      //     { value: 13, label: '矿区' },
-      //     { value: 13, label: '城区' },
-      //   ],
-      // },
-      // {
-      //   value: 10,
-      //   label: '晋中市',
-      //   children: [
-      //     { value: 11, label: '灵石县' },
-      //     { value: 12, label: '介休市' },
-      //     { value: 13, label: '平遥县' },
-      //     { value: 13, label: '祁县' },
-      //     { value: 13, label: '太谷区' },
-      //     { value: 13, label: '榆次区' },
-      //     { value: 13, label: '寿阳县' },
-      //     { value: 13, label: '榆社县' },
-      //     { value: 13, label: '左权县' },
-      //     { value: 13, label: '和顺县' },
-      //     { value: 13, label: '昔阳县' },
-      //   ],
-      // },
-      // {
-      //   value: 10,
-      //   label: '临汾市',
-      //   children: [
-      //     { value: 11, label: '永和县' },
-      //     { value: 12, label: '大宁县' },
-      //     { value: 13, label: '吉县' },
-      //     { value: 13, label: '乡宁县' },
-      //     { value: 13, label: '襄汾县' },
-      //     { value: 13, label: '侯马市' },
-      //     { value: 13, label: '曲沃县' },
-      //     { value: 13, label: '冀城县' },
-      //     { value: 13, label: '浮山县' },
-      //     { value: 13, label: '安泽县' },
-      //     { value: 13, label: '古县' },
-      //     { value: 13, label: '霍州市' },
-      //     { value: 13, label: '汾西县' },
-      //     { value: 13, label: '隰县' },
-      //     { value: 13, label: '蒲县' },
-      //     { value: 13, label: '尧都县' },
-      //     { value: 13, label: '洪洞县' },
-      //   ],
-      // },
-      // {
-      //   value: 10,
-      //   label: '长治市',
-      //   children: [
-      //     { value: 11, label: '沁源县' },
-      //     { value: 12, label: '屯留区' },
-      //     { value: 13, label: '长子县' },
-      //     { value: 13, label: '上党区' },
-      //     { value: 13, label: '壶关县' },
-      //     { value: 13, label: '平顺县' },
-      //     { value: 13, label: '黎城县' },
-      //     { value: 13, label: '武乡县' },
-      //     { value: 13, label: '沁县' },
-      //     { value: 13, label: '襄垣县' },
-      //     { value: 13, label: '潞城区' },
-      //     { value: 13, label: '潞州区' },
-      //   ],
-      // },
-      // {
-      //   value: 10,
-      //   label: '运城市',
-      //   children: [
-      //     { value: 11, label: '新绛县' },
-      //     { value: 12, label: '稷山县' },
-      //     { value: 13, label: '河津市' },
-      //     { value: 13, label: '万荣县' },
-      //     { value: 13, label: '临猗县' },
-      //     { value: 13, label: '永济市' },
-      //     { value: 13, label: '芮城县' },
-      //     { value: 13, label: '平陆县' },
-      //     { value: 13, label: '夏县' },
-      //     { value: 13, label: '垣曲县' },
-      //     { value: 13, label: '绛县' },
-      //     { value: 13, label: '闻喜县' },
-      //     { value: 13, label: '盐湖区' },
-      //   ],
-      // },
-      // {
-      //   value: 10,
-      //   label: '晋城市',
-      //   children: [
-      //     { value: 11, label: '沁水县' },
-      //     { value: 12, label: '阳城县' },
-      //     { value: 13, label: '泽州县' },
-      //     { value: 13, label: '临川县' },
-      //     { value: 13, label: '高平县' },
-      //     { value: 13, label: '城区' },
-      //   ],
-      // },
-    ],
-  }
-])
+const cascaderOptions = reactive([])
   import { useSettingStore } from "~/stores/setting";
   const setting = useSettingStore()
 import { reactive, ref, onMounted, watch } from "vue";
@@ -333,6 +143,64 @@ onMounted(async() => {
   $(".menuUl").on("focusout", () => {
     $(".menuUl").css({ display: "none" });
   });
+
+  let manufacturerCondition = ""
+  if(manufacturer.value == 1){
+    manufacturerCondition = "and manufacturer like '%华航%'"
+  }else if(manufacturer.value == 2){
+    manufacturerCondition = "and manufacturer like '%西物%'"
+  }else if(manufacturer.value == 3){
+    manufacturerCondition = "and manufacturer like '%镭测%'"
+  }
+  exec({
+    database: databaseRaw2,
+    query: {
+      sqls: [
+        `select distinct a.parent_adcode as adcode, b.name
+from map_border_info a, map_border_info b
+where a.adcode in (
+  select distinct adcode from device where (hide!= 'true' or hide is NULL) and (device_name is not NULL) and (device_name like '%${options.value}%' or no like '%${options.value}%') ${manufacturerCondition}
+)
+and a.level = 'district'
+and a.parent_adcode = b.adcode
+order by a.parent_adcode`
+      ],
+    },
+  }).then(res=>{
+    res.data[0].forEach((city:any,index:number)=>{
+      const item = {
+        value: city.adcode,
+        label: city.name,
+        children:reactive([]),
+      }
+      cascaderOptions.push(item as never)
+      console.log(item)
+      if(index==0){
+        exec({
+          database: databaseRaw2,
+          query: {
+            sqls: [
+`select distinct a.adcode, b.name as parent_name
+from map_border_info a, map_border_info b
+where a.adcode in (
+  select distinct adcode from device where (hide!= 'true' or hide is NULL) and (device_name is not NULL) and (device_name like '%${options.value}%' or no like '%${options.value}%') ${manufacturerCondition}
+)
+and a.level = 'district'
+and a.parent_adcode = b.adcode
+order by a.parent_adcode`
+            ]
+          }
+        }).then(res=>{
+          res.data[0].forEach((region:any)=>{
+            console.log(region)
+          })
+        })
+      }
+    })
+  })
+
+
+  return;
   通过code获取子级(140000).then((res)=>{
     res.data.results.forEach(async(city:any)=>{
       const item = {
@@ -340,7 +208,7 @@ onMounted(async() => {
         label: city.name,
         children:reactive([]),
       }
-      cascaderOptions[0].children.push(item as never)
+      cascaderOptions.push(item as never)
       /*通过code获取子级(city.adcode).then(res=>{
         res.data.results.forEach(async(county:any)=>{
           const subItem = {

@@ -14,16 +14,16 @@ const station = useStationStore()
 let radar_id = station.active
 import { ref, onMounted, onBeforeUnmount, watch } from "vue";
 import DBS from "~/tools/fkxV.js";
-import { isDark } from "~/composables";
+import { isDark } from "~/theme"
 import { useBus } from "~/myComponents/bus";
 const bus = useBus();
 const fkxContainer = ref(null);
 import { eventbus } from "~/eventbus";
-watch(isDark, (isDark) => {
+watch(isDark, () => {
   if (dbs) {
     dbs.destroy();
   }
-  setDBS(isDark);
+  setDBS(isDark.value);
 });
 let dbs: DBS;
 onMounted(() => {

@@ -227,7 +227,7 @@ const props = withDefaults(
   }
 );
 import style from "./editMap.js";
-import { isDark } from '~/composables/dark.js';
+import { isDark } from "~/theme"
 // style.layers.map((v: any) => {
 //   if (v.id == "simple-tiles") {
 //     v.layout.visibility = props.loadmap ? "visible" : "none";

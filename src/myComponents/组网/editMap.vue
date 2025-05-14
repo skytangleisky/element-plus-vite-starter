@@ -117,7 +117,7 @@ import { addFeatherImages, getFeather } from "~/tools";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
 const bus = useBus();
-import theme from "./drawTheme/inactive.js";
+import drawTheme from "./drawTheme/inactive.js";
 let timer = 0;
 const props = withDefaults(
   defineProps<{
@@ -222,7 +222,7 @@ watch([() => props.zoom, () => props.center], ([zoom, center]) => {
   //无法通过监听变量的变化实时设置地图的视角
 });
 import { useStationStore } from "~/stores/station";
-import { isDark } from "~/composables/dark.js";
+import { isDark } from "~/theme"
 let enclosureList = new Array<any>();
 const station = useStationStore();
 const mapRef = ref(null);
@@ -1064,7 +1064,7 @@ onMounted(() => {
       combine_features: false,
       uncombine_features: false,
     },
-    styles: theme,
+    styles: drawTheme,
   });
   map.addControl(Draw, "top-right");
   //添加空域

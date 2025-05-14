@@ -680,7 +680,7 @@ export const useSettingStore = defineStore({
       {
         path:'cq_synthesis',
         name:'b7ef7b88-5e6a-0c62-12aa-a0a18980cd11',
-        component:'/src/myComponents/风雷达组网地图相关/index演示.vue',
+        component:'/src/myComponents/风雷达组网地图相关/index.vue',
         hide:true,
         svg:'0ca86c9c-7cf8-4ffa-8b38-82bf6771c25f',
         meta:{

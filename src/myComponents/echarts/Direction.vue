@@ -23,11 +23,12 @@ import { useStationStore } from "~/stores/station";
 const station = useStationStore();
 import { useBus } from "~/myComponents/bus";
 const bus = useBus();
-import { isDark } from "~/composables";
+import { useTheme,isDark } from "~/theme"
+const theme = useTheme()
 
 var thContainer = ref(null);
-watch(isDark, (isDark) => {
-  setChart(isDark);
+watch(isDark, () => {
+  setChart(isDark.value;
 });
 onMounted(() => {
   setChart(isDark.value);

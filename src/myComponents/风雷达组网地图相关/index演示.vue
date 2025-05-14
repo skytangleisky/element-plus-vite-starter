@@ -142,7 +142,7 @@ import FKX from './风廓线.vue';
 import uvUrl from "../mapbox/data/06040808.000?url";
 import CustomLayer from './CustomLayer.js'//绘制流线
 import discreteContour from "./discreteContour.ts";//绘制等值线
-import { isDark } from "~/composables/dark.ts";
+import { isDark } from "~/theme"
 import { useRouter } from "vue-router";
 const router = useRouter()
 const 单站数据 = ()=>{
@@ -1693,9 +1693,9 @@ onBeforeUnmount(() => {
   map.remove();
   mapboxgl.clearStorage();
 });
-watch(isDark,isDark=>{
-  addFeatherImages(map,isDark?'#fff':'#000');
-  if(isDark){
+watch(isDark,()=>{
+  addFeatherImages(map,isDark.value?'#fff':'#000');
+  if(isDark.value){
     map.setPaintProperty('等距环','line-color','white')
     map.setPaintProperty('等距环的单位','text-color','white')
     map.setPaintProperty('textLayer','text-color','white')

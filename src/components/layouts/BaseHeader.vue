@@ -1,5 +1,9 @@
 <script lang="ts" setup>
-import { toggleDark } from "~/composables";
+import { useTheme, isDark } from "~/theme"
+const theme = useTheme()
+function toggleDark() {
+  isDark ? theme.value = 'light' : theme.value = 'dark'
+}
 </script>
 
 <template>
@@ -24,7 +28,7 @@ import { toggleDark } from "~/composables";
         class="border-none w-full bg-transparent cursor-pointer"
         style="height: var(--ep-menu-item-height)"
       >
-        <i inline-flex i="dark:ep-moon ep-sunny" />
+        <i inline-flex i="dark:ep-moon ep-sunny"></i>
       </button>
     </el-menu-item>
   </el-menu>

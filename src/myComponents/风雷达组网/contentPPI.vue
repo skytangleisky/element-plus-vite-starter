@@ -53,7 +53,7 @@ import radar from "./雷达.vue";
 import { ref, reactive } from "vue";
 import DataList from "./dataList.vue";
 import FKX from './风廓线.vue'
-import { isDark } from "~/composables";
+import { isDark } from "~/theme"
 import { useStationStore } from "~/stores/station";
 const station = useStationStore()
 // let radar_id = location.href.substring(location.href.lastIndexOf('/')+1,location.href.length)

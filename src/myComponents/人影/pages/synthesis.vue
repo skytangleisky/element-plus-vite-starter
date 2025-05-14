@@ -135,7 +135,12 @@ const list = reactive([
   {label:'devtools',type:'folder',opened:true,children:[
     {label:'重置',type:'button',click(){setting.$resetFields('人影.监控.loadmap')}},
     {label:'菜单',value:toRefs(setting).menus,type:'checkbox'},
-    {label:'暗黑主题',value:isDark,type:'checkbox'},
+    {label:'暗黑主题',value:computed({
+      get:()=>isDark.value,
+      set(v){
+        theme.value = v?'dark':'light'
+      }
+    }),type:'checkbox'},
     {label:'色相',value:toRefs(setting).hueRotate,type:'range',min:0,max:360,step:1,arr:Array.from({length:361},(_,i:number)=>i)},
     {label:'xxx',value:setting.人影.监控.loadmap,type:'checkbox'},
     {label:'瓦片地图1',value:toRef(setting.人影.监控,'loadmap'),type:'checkbox'},
@@ -371,7 +376,8 @@ const selectorColor = computed({
 })
 const tweakPaneRef = ref<HTMLElement>();
 import { checkPermission } from "~/tools";
-import { isDark } from "~/composables";
+import { useTheme,isDark } from "~/theme"
+const theme = useTheme()
 const confirm = (data: prevRequestDataType) => {
   eventbus.emit("人影-地面作业申请-网络上报", data);
 };
