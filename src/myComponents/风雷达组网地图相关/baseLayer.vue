@@ -36,8 +36,8 @@ import {queryRadarStatus, queryRadarFactStatus} from '~/api/重庆'
 import {useSettingStore} from "~/stores/setting"
 let settingStore = useSettingStore();
 
-let gradeCode = ref(1) //级别 1：省 2：市 3：县
 let activeIndex = ref(0);
+let adcode = ref("140100")
 const dataList = [
   {
     icon: iconChart,
@@ -230,7 +230,7 @@ let baseBar = reactive({
 
 const getRadarStatus = () => {
   // 雷达状态分布数据
-  queryRadarStatus('140100', gradeCode.value).then((res) => {
+  queryRadarStatus(adcode.value).then((res) => {
     if (res.data.code == 200) {
       const data = res.data.data
       data.forEach(item => {
@@ -239,7 +239,7 @@ const getRadarStatus = () => {
     }
   })
   // 各厂商雷达状态
-  queryRadarFactStatus('140100', gradeCode.value).then((res) => {
+  queryRadarFactStatus(adcode.value).then((res) => {
     if (res.data.code == 200) {
       const data = res.data.data
       baseBar.xAxis[0].data = data.manufacturers
@@ -249,8 +249,6 @@ const getRadarStatus = () => {
       baseBar.series[3].data = data.status_3
     }
   })
-
-
 }
 const initFun = () => {
   getRadarStatus()
@@ -265,7 +263,10 @@ const changeTab = (index: number) => {
   activeIndex.value = index
 
 }
-
+watch(()=>settingStore.风雷达组网地图相关.地区,newVal=>{
+  adcode.value=newVal.adcodes[newVal.adcodes.length-1]
+  getRadarStatus()
+})
 watch(activeIndex, (newVal, oldVal) => {
   if(newVal == 1){
     settingStore.风雷达组网.监控.isFoldSingle = true

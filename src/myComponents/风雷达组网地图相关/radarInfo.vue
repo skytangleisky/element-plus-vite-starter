@@ -11,9 +11,8 @@
     </div>
     <div class="map-module-bottom" v-show="showTags">
       <el-empty description="暂无数据" v-if="!deviceInfo.radar_id" :image-size="64"/>
-      <div class="content" v-else>
-
-
+      <el-scrollbar height="234px" v-else>
+      <div class="content" >
         <el-collapse v-model="collapseActNames" accordion @change="collapseChange">
           <el-collapse-item title="主控板传感器数据" name="1">
             <div class="item-box">
@@ -278,7 +277,7 @@
 
         </el-collapse>
       </div>
-
+      </el-scrollbar>
     </div>
   </div>
 </template>
@@ -374,8 +373,8 @@ function format(val: any) {
   .map-module-bottom{
     background: var(--bg-color-overlay-opacity-8);
     border:1px solid #B5D5E5;
-    max-height:256px;
-    overflow-y: auto;
+    //max-height:256px;
+    //overflow-y: auto;
   }
   .content {
     .device-info {
@@ -409,7 +408,7 @@ function format(val: any) {
       display: flex;
       .item-label{
         margin-right: 8px;
-        color: #798E99;
+        color:var(--module-title-text-color-secondary);
       }
       .item-value{
         display: flex;
