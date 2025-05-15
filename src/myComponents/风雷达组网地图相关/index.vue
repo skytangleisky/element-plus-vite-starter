@@ -149,7 +149,12 @@
   </div>
 </template>
 <script setup lang="ts">
-import {getMicapsData} from '../mapbox/data/plot/micaps.ts';
+import aimSvg from '~/assets/aim.svg?url'
+import 镭测SVG from '~/assets/镭测.svg?url'
+import 华航SVG from '~/assets/华航.svg?url'
+import 西物SVG from '~/assets/西物.svg?url'
+import 未知SVG from '~/assets/unknown.svg?url'
+import {getMicapsData} from '../mapbox/data/plot/micaps.ts'
 import plotUrl
   from '/CDL_S4000_Lidar10BQC07110410_PPI_FrmAzm0.00_ToAzm359.00_Pth15.00_Spd6.00_Res030_StartIdx002_VADStart002_VADStop190_VADWind_Sec_20250113 000000.000?url'
 import TimeStep from '~/tools/timeStep.vue';
@@ -182,6 +187,7 @@ import {
   hasPermission,
   sixty2Float,
   addFeatherImages,
+  loadImage2Map,
   addArrowImages,
   getFeather,
   View,
@@ -323,15 +329,17 @@ import Legend from "./legend.vue";
 import style from "./streets-v11.js";
 import moment from "moment";
 import {wgs84togcj02} from "../map/workers/mapUtil.js";
-
-let prevDate;
+watch(()=>setting.风雷达组网地图相关.particles,(particles)=>{
+  customLayer.setParticles(particles)
+})
+let prevDate:any;
 watch(
     () => setting.now,
-    (newVal) => {
+    (newVal:any) => {
       if (newVal == undefined) {
         newVal = Date.now();
       }
-      let strDate = new Date(newVal).Format("yyyyMMdd");
+      let strDate = moment(newVal).format('YYYYMMDD');
       if (strDate !== prevDate) {
         console.log(strDate);
         station
@@ -410,6 +418,14 @@ const clickFunc = (e) => {
         //   });
         station.active = bus.风雷达组网地图相关雷达站点信息[i].no;
         station.currentStation = bus.风雷达组网地图相关雷达站点信息[i];
+        points.data.features.forEach(item=>{
+          if (item.properties.radar_id == station.active) {
+            item.properties.activedOpacity = 1.0
+          }else{
+            item.properties.activedOpacity = 0.0
+          }
+        })
+        map.getSource("point").setData(points.data)
         fetch最近风廓线数据()
         $(`#${station.active}`)[0].scrollIntoView({
           block: "nearest",
@@ -600,6 +616,77 @@ let customLayer: any;
 const loadFunc = async () => {
   await addFeatherImages(map, isDark.value ? '#fff' : '#000');
   await addArrowImages(map, isDark.value ? "#fff" : "#000");
+  await loadImage2Map(map,aimSvg,20,20,{
+    aim:{
+      style: 'stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
+    }
+  })
+
+  await loadImage2Map(map,未知SVG,12,12,{
+    未知SVG:{
+      style: 'fill:#f00;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
+    }
+  })
+  await loadImage2Map(map,镭测SVG,14,14,{
+    镭测SVG_缺失:{
+      style: 'fill:#F56C6C;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
+    }
+  })
+  await loadImage2Map(map,镭测SVG,14,14,{
+    镭测SVG_延迟:{
+      style: 'fill:#E8CB1A;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
+    }
+  })
+  await loadImage2Map(map,镭测SVG,14,14,{
+    镭测SVG_正常:{
+      style: 'fill:#3AC8A5;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
+    }
+  })
+  await loadImage2Map(map,镭测SVG,14,14,{
+    镭测SVG_未知:{
+      style: 'fill:#909399;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
+    }
+  })
+  await loadImage2Map(map,华航SVG,10,10,{
+    华航SVG_缺失:{
+      style: 'fill:#F56C6C;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
+    }
+  })
+  await loadImage2Map(map,华航SVG,10,10,{
+    华航SVG_延迟:{
+      style: 'fill:#E8CB1A;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
+    }
+  })
+  await loadImage2Map(map,华航SVG,10,10,{
+    华航SVG_正常:{
+      style: 'fill:#3AC8A5;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
+    }
+  })
+  await loadImage2Map(map,华航SVG,10,10,{
+    华航SVG_未知:{
+      style: 'fill:#909399;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
+    }
+  })
+  await loadImage2Map(map,西物SVG,10,10,{
+    西物SVG_缺失:{
+      style: 'fill:#F56C6C;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
+    }
+  })
+  await loadImage2Map(map,西物SVG,10,10,{
+    西物SVG_延迟:{
+      style: 'fill:#E8CB1A;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
+    }
+  })
+  await loadImage2Map(map,西物SVG,10,10,{
+    西物SVG_正常:{
+      style: 'fill:#3AC8A5;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
+    }
+  })
+  await loadImage2Map(map,西物SVG,10,10,{
+    西物SVG_未知:{
+      style: 'fill:#909399;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
+    }
+  })
   map.addSource("radar", {
     type: "geojson",
     data: {
@@ -702,42 +789,30 @@ const loadFunc = async () => {
   map.addLayer({
     id: "stationLayer",
     source: "point",
-    type: "circle",
+    type: "symbol",
     paint: {
-      // "circle-radius": [
-      //   "interpolate",
-      //   ["exponential", 1.5],
-      //   ["zoom"],
-      //   15,
-      //   4.5,
-      //   16,
-      //   8,
-      //   18,
-      //   20,
-      //   22,
-      //   200,
-      // ],
-      "circle-radius": 4,
-      "circle-color": ["get", "color"],
-      // "circle-stroke-width": [
-      //   "interpolate",
-      //   ["linear"],
-      //   ["zoom"],
-      //   15,
-      //   0.8,
-      //   16,
-      //   1.2,
-      //   18,
-      //   2,
-      // ],
-      "circle-stroke-width": 1,
-      "circle-stroke-color": isDark.value ? 'white' : 'transparent',
-      "circle-pitch-alignment": "map",
     },
     filter: ["==", ["get", "type"], "站点"],
     layout: {
+      "icon-image": ['get','状态图标'],
+      "icon-allow-overlap":true,
       visibility: setting.station ? "visible" : "none",
     },
+  });
+  map.addLayer({
+    id: "actived",
+    type: "symbol",
+    source: 'point',
+    filter: ["==", ["get", "type"], "站点"],
+    layout: {
+      "icon-image": 'aim',
+      "icon-anchor": "bottom",
+      "icon-allow-overlap":true,
+      "icon-offset":[0,3],
+    },
+    paint: {
+      "icon-opacity": ['get','activedOpacity'],
+    }
   });
   map.addLayer({
     id: "textLayer",
@@ -1063,6 +1138,21 @@ const loadFunc = async () => {
 };
 const flyTo = (item) => {
   try {
+    for (let i = 0; i < bus.风雷达组网地图相关雷达站点信息.length; i++) {
+      if (bus.风雷达组网地图相关雷达站点信息[i].no == item.no) {
+        station.active = bus.风雷达组网地图相关雷达站点信息[i].no;
+        points.data.features.forEach(item=>{
+          if (item.properties.radar_id == station.active) {
+            item.properties.activedOpacity = 1.0
+          }else{
+            item.properties.activedOpacity = 0.0
+          }
+        })
+        map.getSource("point").setData(points.data)
+        station.currentStation = bus.风雷达组网地图相关雷达站点信息[i];
+        fetch最近风廓线数据()
+      }
+    }
     map.flyTo({
       center: [item.longitude, item.latitude], // 新的中心点 [经度, 纬度]
       zoom: item.zoom || 10, // 目标缩放级别
@@ -1105,7 +1195,6 @@ function TimeStepChange(timeString: string) {
 async function updateData(altitude: number) {
   //20240729054058
   await getFkxData({dataTime: setting.风雷达组网地图相关.currentTime, altitude}).then(result => {
-    console.log(result)
     res.data[0].map((device: any, k: number) => {
       for (let key in result.data.data) {
         if (device.no === result.data.data[key].radar_id) {
@@ -1324,7 +1413,7 @@ async function updateData(altitude: number) {
   }
   // mapboxgl.clearStorage();
   removeLayerAndSource(map, 'null-island')
-  customLayer = new CustomLayer(json, cvs.toDataURL(), setting.风雷达组网地图相关.流线)
+  customLayer = new CustomLayer(json, cvs.toDataURL(), setting.风雷达组网地图相关.流线,setting.风雷达组网地图相关.particles)
   map.addLayer(customLayer as any)
 
   bus.风雷达组网地图相关雷达站点信息 = res.data[0].map((item: any) => {
@@ -1344,6 +1433,16 @@ async function updateData(altitude: number) {
         fetch最近风廓线数据()
       }
       let position = [Item.longitude, Item.latitude]
+      const getStatusImage=(status:number)=>{
+        if(Item.manufacturer.includes('华航')){
+          return status == 1 ? '华航SVG_正常' : status == 2? '华航SVG_延迟' : status == 3? '华航SVG_缺失' : '华航SVG_未知'
+        }else if(Item.manufacturer.includes('镭测')){
+          return status == 1 ? '镭测SVG_正常' : status == 2? '镭测SVG_延迟' : status == 3? '镭测SVG_缺失' : '镭测SVG_未知'
+        }else if(Item.manufacturer.includes('西物')){
+          return status == 1 ? '西物SVG_正常' : status == 2? '西物SVG_延迟' : status == 3? '西物SVG_缺失' : '西物SVG_未知'
+        }
+        return '未知SVG'
+      }
       //初始状态
       points.data.features.push({
         type: "Feature",
@@ -1364,7 +1463,8 @@ async function updateData(altitude: number) {
           external_temperature: 25,
           external_humidity: 0.6,
           image: "feather" + getFeather(0),
-          color: Item.status == 1 ? '#3AC8A5' : Item.status == 2 ? '#e8cb1a' : Item.status == 3 ? '#F56c6c' : (isDark.value ? '#fff' : '#909399'),
+          状态图标:getStatusImage(Item.status),
+          activedOpacity:Item.no==station.active?1.0:0.0,
         },
         geometry: {
           type: "Point",

@@ -142,7 +142,6 @@
           <el-switch
             v-model="setting.风雷达组网地图相关.垂直气流"
             inline-prompt
-            
             size="small"
           />
         </div>
@@ -152,7 +151,6 @@
           <el-switch
             v-model="setting.风雷达组网地图相关.时间"
             inline-prompt
-            
             size="small"
           />
         </div> -->
@@ -160,39 +158,11 @@
     </div>
     <div class="item">
       <collapse-card title="数据融合" v-model:show="showDataFusion" :show-collapse="true">
-        <div class="subitem" v-if="hasPermission(['5dd862f4-112f-46cf-a843-98c3f5aba1cf'])">
-          <span>格点</span>
-          <el-switch
-            v-model="setting.风雷达组网地图相关.格点"
-            inline-prompt
-            
-            size="small"
-          />
-        </div>
         <div class="subitem" v-if="hasPermission(['5dd862f4-112f-46cf-a843-11c3f5aba1cf'])">
           <span>水平风场</span>
           <el-switch
             v-model="setting.风雷达组网地图相关.风场"
             inline-prompt
-            
-            size="small"
-          />
-        </div>
-        <div class="subitem" v-if="hasPermission(['df127f84-1983-42c1-b718-a0d04fc92720'])">
-          <span>垂直气流等值线</span>
-          <el-switch
-            v-model="setting.风雷达组网地图相关.等值线"
-            inline-prompt
-            
-            size="small"
-          />
-        </div>
-        <div class="subitem" v-if="hasPermission(['182392d2-6928-4add-b006-784e9fde0213'])">
-          <span>垂直气流等值线填色</span>
-          <el-switch
-            v-model="setting.风雷达组网地图相关.等值带"
-            inline-prompt
-            
             size="small"
           />
         </div>
@@ -201,7 +171,41 @@
           <el-switch
             v-model="setting.风雷达组网地图相关.流线"
             inline-prompt
-            
+            size="small"
+          />
+        </div>
+        <div class="subitem">
+          <span class="whitespace-nowrap">流线密度</span>
+          <el-slider
+            class="m-l-10px m-r-10px"
+            :min="1"
+            :max="100"
+            :step="1"
+            :show-tooltip="false"
+            v-model="setting.风雷达组网地图相关.particles"
+          />
+        </div>
+        <div class="subitem" v-if="hasPermission(['df127f84-1983-42c1-b718-a0d04fc92720'])">
+          <span>垂直气流等值线</span>
+          <el-switch
+            v-model="setting.风雷达组网地图相关.等值线"
+            inline-prompt
+            size="small"
+          />
+        </div>
+        <div class="subitem" v-if="hasPermission(['182392d2-6928-4add-b006-784e9fde0213'])">
+          <span>垂直气流等值线填色</span>
+          <el-switch
+            v-model="setting.风雷达组网地图相关.等值带"
+            inline-prompt
+            size="small"
+          />
+        </div>
+        <div class="subitem" v-if="hasPermission(['5dd862f4-112f-46cf-a843-98c3f5aba1cf'])">
+          <span>格点</span>
+          <el-switch
+            v-model="setting.风雷达组网地图相关.格点"
+            inline-prompt
             size="small"
           />
         </div>

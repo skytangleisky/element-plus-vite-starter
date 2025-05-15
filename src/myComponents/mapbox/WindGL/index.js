@@ -53,7 +53,7 @@ export default class WindGL{
 		const gl = this.gl;
 
 		// we create a square texture where each pixel will hold a particle position encoded as RGBA
-		const particleRes = this.particleStateResolution = Math.ceil(Math.sqrt(numParticles));
+		const particleRes = this.particleStateResolution = numParticles;
 		this._numParticles = particleRes * particleRes;
 
 		const particleState = new Uint8Array(this._numParticles * 4);

@@ -1,20 +1,24 @@
 import WindGL from '../mapbox/WindGL/index';
 import {mat4} from 'gl-matrix';
 export default class CustomLayer {
-  constructor(json,png,show) {
+  constructor(json,png,show,particles) {
     this.id = 'null-island';
     this.type = 'custom';
     this.renderingMode = '3d';
     this.json = json
     this.png = png
     this.show = show
+    this.particles = particles
     this.resize = this.resize.bind(this)
+  }
+  setParticles(numParticles){
+    this.wind.numParticles = numParticles
   }
   onAdd(map, gl) {
     this.map = map
     this.projectionName = this.map.getProjection().name
     this.wind = new WindGL(gl,{boundaries:this.json.boundaries})
-    this.wind.numParticles = 100*100
+    this.wind.numParticles = this.particles||100
     let windData = this.json
     const windImage = new Image();
     windImage.width = windData.width

@@ -48,6 +48,7 @@ export const useSettingStore = defineStore({
       ],
     },
     风雷达组网地图相关:{
+      particles:100,
       manufacturer:'',//厂商
       地区:{address:new Array<string>(),adcodes:new Array<string>()},//地区
       currentTime:moment().format('YYYYMMDDHHmmss'),//时间轴的当前时间
