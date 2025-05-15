@@ -57,11 +57,12 @@
     </div>
     <div class="page-right">
       <currentStatusInfo></currentStatusInfo>
+      <baseModule title="图例">
+        <legend-right></legend-right>
+      </baseModule>
         <radar-info></radar-info>
         <fkx-info></fkx-info>
-        <baseModule title="图例">
-          <legend-right></legend-right>
-        </baseModule>
+
 
       <div style="display: none">
         <!--      <div style="display:flex;flex-direction: column;overflow: auto; scroll-snap-type: none;height: 100%;">-->

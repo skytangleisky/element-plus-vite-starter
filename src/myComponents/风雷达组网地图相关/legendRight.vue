@@ -2,15 +2,34 @@
   <div class="legend-right">
     <div class="module-box">
       <div class="module-title">站点状态</div>
-      <div class="module-content">
+      <div class="module-content site-status">
         <div
-            class="status-item"
+            class="item-box"
             v-for="item in statusData"
             :key="item.value"
         >
           <div>{{ item.label }}</div>
           <div
-              class="site-status"
+              class="item-status"
+              :class="`status-${item.value}`"
+          >
+            <div class="point"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="divider-line"></div>
+    <div class="module-box">
+      <div class="module-title">厂商</div>
+      <div class="module-content manufacturer-box">
+        <div
+            class="item-box"
+            v-for="item in manufacturerData"
+            :key="item.value"
+        >
+          <div>{{ item.label }}</div>
+          <div
+              class="item-status"
               :class="`status-${item.value}`"
           >
             <div class="point"></div>
@@ -43,7 +62,18 @@ const statusData = [
     value: 3,
     label: "缺失"
   },
-
+]
+const manufacturerData = [
+  {
+    value: 0,
+    label: "华航"
+  }, {
+    value: 1,
+    label: "西物"
+  }, {
+    value: 2,
+    label: "雷测"
+  },
 ]
 </script>
 
@@ -59,20 +89,22 @@ const statusData = [
 </style>
 <style scoped lang="scss">
 .module-box {
-  .module-content{
+  .module-content {
     display: flex;
-    justify-content: space-between;
+    justify-content:space-around;
   }
-  .status-item {
-    display: flex;
-    align-items: center;
-    color: var(--el-text-color-primary);
 
-    &:not(:last-child) {
-      margin-right: 16px;
+  .site-status {
+
+    .point {
+      height: 14px;
+      width: 14px;
+      border-radius: 14px;
+      background-color: var(--ep-color-info);
+      border: 0.01rem solid #fff;
     }
 
-    .site-status {
+    .item-status {
       margin-left: 8px;
       height: 24px;
       width: 24px;
@@ -81,14 +113,6 @@ const statusData = [
       display: flex;
       justify-content: center;
       align-items: center;
-
-      .point {
-        height: 14px;
-        width: 14px;
-        border-radius: 14px;
-        background-color: var(--ep-color-info);
-        border: 0.01rem solid #fff;
-      }
     }
 
     .status-1 {
@@ -113,6 +137,50 @@ const statusData = [
       .point {
         background-color: var(--ep-color-danger);
       }
+    }
+  }
+
+  .item-box {
+    display: flex;
+    align-items: center;
+    color: var(--el-text-color-primary);
+
+    &:not(:last-child) {
+      margin-right: 16px;
+    }
+
+
+  }
+
+  .manufacturer-box {
+    .item-status {
+      margin-left: 8px;
+      width: 12px;
+      height: 12px;
+      border:1px solid var(--border-color);
+      background-color:var(--border-color);
+    }
+
+    .status-0 {
+
+      border-radius:50%;
+
+    }
+
+    .status-1 {
+      width: 0;
+      height: 0;
+      border-top:none;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-bottom: 12px solid var(--border-color);
+      background-color:transparent;
+    }
+
+    .status-2 {
+      width: 10px;
+      height: 10px;
+      transform: rotate(45deg);
     }
   }
 }
