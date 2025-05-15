@@ -330,7 +330,7 @@ export function querySensorData(radar_id:string){
 
 export function queryRadarStatus(adcode:string,grade:number){
   return request({
-    url:'/shanxi/api/device/statistics/status',
+    url:'/python/api/device/statistics/status',
     method: 'post',
     data:{
       adcode,
@@ -351,7 +351,7 @@ export function queryRadarStatus(adcode:string,grade:number){
 
 export function queryRadarFactStatus(adcode:string,grade:number){
   return request({
-    url:'/shanxi/api/device/statistics/manufacturer_status',
+    url:'/python/api/device/statistics/manufacturer_status',
     method: 'post',
     data:{
       adcode ,

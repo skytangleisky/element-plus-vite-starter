@@ -8,6 +8,11 @@ const service = axios.create({
   // withCredentials: true, // send cookies when cross-domain requests
   // timeout: 5000 // request timeout
 })
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
 
 // request interceptor
 service.interceptors.request.use(
@@ -20,6 +25,7 @@ service.interceptors.request.use(
     //   // please modify it according to the actual situation
     //   config.headers['X-Token'] = getToken()
     // }
+    config.headers['X-CSRFToken'] = getCookie('csrftoken');
     return config
   },
   error => {

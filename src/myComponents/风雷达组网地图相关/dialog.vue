@@ -1,6 +1,24 @@
 <template>
   <div class="!collapse dragDialog collapse">
     <div class="dragDialog-top">
+      <el-cascader
+        v-model="selected"
+        collapse-tags
+        :props="cascaderProps"
+        :options="cascaderOptions"
+        :max-collapse-tags="0"
+        :clearable="true"
+        size="small"
+        class="m-r-5px"
+        style="width:140px"
+      >
+      </el-cascader>
+      <el-select v-model="manufacturer" style="width:60px" size="small" class="m-r-5px">
+        <el-option v-for="item in manfacturerOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+      </el-select>
+      <el-select v-model="radar_status" style="width:60px" size="small" class="m-r-5px">
+        <el-option v-for="item in radar_statusOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+      </el-select>
       <el-input
         @mousedown.stop
         name="过滤条件"
@@ -9,22 +27,6 @@
         size="small"
         v-model="options.value"
       />
-      <el-cascader
-        v-model="selected"
-        collapse-tags
-        :props="cascaderProps"
-        :options="cascaderOptions"
-        :max-collapse-tags="0"
-        :clearable="false"
-        size="small"
-        placeholder="请选择区县"
-        class="m-r-10px"
-        style="min-width:180px"
-      >
-      </el-cascader>
-      <el-select v-model="manufacturer" style="width:60px" size="small">
-        <el-option v-for="item in manfacturerOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
-      </el-select>
       <el-icon
         class="dropdown"
         style="
@@ -112,10 +114,24 @@
   </div>
 </template>
 <script lang="ts" setup>
+function getLabelsByValue(values:string[], options:any) {
+  const labels = new Array<any>();
+  let currentOptions = options;
+
+  values.forEach(value => {
+    const option = currentOptions.find((opt:any) => opt.value === value);
+    if (option) {
+      labels.push(option.label);
+      currentOptions = option.children || [];
+    }
+  });
+
+  return labels;
+}
 const cascaderProps = { /*multiple: true,*/ checkStrictly:true, value: 'value', label: 'label', children: 'children' }
 const cascaderOptions = reactive([])
-  import { useSettingStore } from "~/stores/setting";
-  const setting = useSettingStore()
+import { useSettingStore } from "~/stores/setting";
+const setting = useSettingStore()
 import { reactive, ref, onMounted, watch } from "vue";
 const manufacturer = ref(0)
 const manfacturerOptions = reactive([
@@ -123,6 +139,14 @@ const manfacturerOptions = reactive([
   { value: 1, label: "华航" },
   { value: 2, label: "西物" },
   { value: 3, label: "镭测" },
+])
+const radar_status = ref(-1)
+const radar_statusOptions = reactive([
+  { value: -1, label: "全部" },
+  { value: 0, label: "未知" },
+  { value: 1, label: "正常" },
+  { value: 2, label: "延迟" },
+  { value: 3, label: "缺失" },
 ])
 const selected = ref(['140000'])
 import { useStationStore } from "~/stores/station";
@@ -144,93 +168,51 @@ onMounted(async() => {
   $(".menuUl").on("focusout", () => {
     $(".menuUl").css({ display: "none" });
   });
-
-  let manufacturerCondition = ""
-  if(manufacturer.value == 1){
-    manufacturerCondition = "and manufacturer like '%华航%'"
-  }else if(manufacturer.value == 2){
-    manufacturerCondition = "and manufacturer like '%西物%'"
-  }else if(manufacturer.value == 3){
-    manufacturerCondition = "and manufacturer like '%镭测%'"
-  }
   exec({
     database: databaseRaw2,
     query: {
       sqls: [
         `select distinct a.parent_adcode as adcode, b.name
-from map_border_info a, map_border_info b
-where a.adcode in (
-  select distinct adcode from device where (hide!= 'true' or hide is NULL) and (device_name is not NULL) and (device_name like '%${options.value}%' or no like '%${options.value}%') ${manufacturerCondition}
-)
-and a.level = 'district'
-and a.parent_adcode = b.adcode
-order by a.parent_adcode`
+        from map_border_info a, map_border_info b
+        where a.adcode in (
+          select distinct adcode from device where (hide!= 'true' or hide is NULL) and (device_name is not NULL) and (device_name like '%${options.value}%' or no like '%${options.value}%')
+        )
+        and a.level = 'district'
+        and a.parent_adcode = b.adcode
+        order by a.parent_adcode`
       ],
     },
   }).then(res=>{
-    res.data[0].forEach((city:any,index:number)=>{
+    res.data[0].forEach((city:any)=>{
       const item = {
         value: city.adcode,
         label: city.name,
         children:reactive([]),
       }
       cascaderOptions.push(item as never)
-      console.log(item)
-      if(index==0){
-        exec({
-          database: databaseRaw2,
-          query: {
-            sqls: [
-`select distinct a.adcode, b.name as parent_name
-from map_border_info a, map_border_info b
-where a.adcode in (
-  select distinct adcode from device where (hide!= 'true' or hide is NULL) and (device_name is not NULL) and (device_name like '%${options.value}%' or no like '%${options.value}%') ${manufacturerCondition}
-)
-and a.level = 'district'
-and a.parent_adcode = b.adcode
-order by a.parent_adcode`
-            ]
-          }
-        }).then(res=>{
-          res.data[0].forEach((region:any)=>{
-            console.log(region)
-          })
-        })
-      }
-    })
-  })
-
-
-  return;
-  通过code获取子级(140000).then((res)=>{
-    res.data.results.forEach(async(city:any)=>{
-      const item = {
-        value: city.adcode,
-        label: city.name,
-        children:reactive([]),
-      }
-      cascaderOptions.push(item as never)
-      /*通过code获取子级(city.adcode).then(res=>{
-        res.data.results.forEach(async(county:any)=>{
+      exec({
+        database: databaseRaw2,
+        query: {
+          sqls: [
+            `select distinct a.adcode, b.name
+            from device a, map_border_info b
+            where a.adcode = b.adcode
+            and b.level = 'district'
+            and (a.hide!= 'true' or a.hide is NULL) and (a.device_name is not NULL) and (a.device_name like '%${options.value}%' or a.no like '%${options.value}%')
+            and b.parent_adcode = '${city.adcode}'
+            order by a.adcode`
+          ]
+        }
+      }).then(res=>{
+        res.data[0].forEach((region:any)=>{
           const subItem = {
-            value: county.adcode,
-            label: county.name,
+            value: region.adcode,
+            label: region.name,
             children:reactive([]),
           }
           item.children.push(subItem as never)
-          //将雷达挂载到级连菜单下边
-          // 通过code获取雷达(county.adcode).then(res=>{
-          //   res.data.results.forEach((station:any)=>{
-          //     const stationItem = {
-          //       value: station.no,
-          //       label: station.device_name,
-          //     }
-          //     subItem.children.push(stationItem as never)
-          //     selected.value = getAllLeafPaths(cascaderOptions[0].children, [140000]) as never[]
-          //   })
-          // })
         })
-      })*/
+      })
     })
   })
 });
@@ -254,32 +236,48 @@ const options = reactive({
   value: "",
 });
 watch(
-  [() => options.value,manufacturer, selected],
+  [() => options.value,manufacturer, selected,radar_status],
   async([value]) => {
     let manufacturerCondition = ""
+    setting.风雷达组网地图相关.manufacturer = '全部'
     if(manufacturer.value == 1){
+      setting.风雷达组网地图相关.manufacturer = '华航'
       manufacturerCondition = " and manufacturer like '%华航%'"
     }else if(manufacturer.value == 2){
+    setting.风雷达组网地图相关.manufacturer = '西物'
       manufacturerCondition = " and manufacturer like '%西物%'"
     }else if(manufacturer.value == 3){
+      setting.风雷达组网地图相关.manufacturer = '镭测'
       manufacturerCondition = " and manufacturer like '%镭测%'"
     }
     let code = ''
-    if(selected.value.length == 1){
-      code = selected.value[selected.value.length-1].substring(0,2)
-    }else if(selected.value.length == 2){
+    if(selected.value == undefined||JSON.stringify(selected.value)==JSON.stringify(['140000'])){
+      code = '14'
+    }else if(selected.value.length == 1){
       code = selected.value[selected.value.length-1].substring(0,4)
-    }else if(selected.value.length == 3){
+    }else if(selected.value.length == 2){
       code = selected.value[selected.value.length-1].substring(0,6)
+    }
+    let status = ''
+    if(radar_status.value==-1){
+      status = ''
+    }else{
+      status = ` and status = ${radar_status.value}`
     }
     const result = await exec({
       database: databaseRaw2,
       query: {
-        sqls: ["select * from `device` where (hide != 'true' or hide is NULL) and (device_name is not NULL and adcode like '"+code+"%') and (device_name like '%"+value+"%' or no like '%"+value+"%')"+manufacturerCondition],
+        sqls: ["select * from `device` where (hide != 'true' or hide is NULL) and (device_name is not NULL and adcode like '"+code+"%') and (device_name like '%"+value+"%' or no like '%"+value+"%')"+manufacturerCondition + status] ,
       },
     })
     options.list = result.data[0]
     eventbus.emit("风雷达组网-设备数据", result);
+    if(selected.value==undefined||JSON.stringify(selected.value)==JSON.stringify(['140000'])){
+      setting.风雷达组网地图相关.地区 = {address:['山西省'],adcodes:['140000']}
+    }else{
+      let address = getLabelsByValue(selected.value, cascaderOptions)
+      setting.风雷达组网地图相关.地区 = {address,adcodes:selected.value}
+    }
   },
   {
     immediate: true,

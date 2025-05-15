@@ -183,7 +183,7 @@ export default defineConfig({
         ws:true,
       },
       '/python':{
-        target:'http://tanglei.top:8000',
+        target:'http://192.168.0.135:8002',
         rewrite:path=>path.replace(/^\/python/,''), // 设置重写的路径
         secure:false,
         changeOrigin:true,
@@ -192,13 +192,6 @@ export default defineConfig({
       '/tianditu':{
         target:'http://t0.tianditu.com',
         rewrite:path=>path.replace(/^\/tianditu/,''), // 设置重写的路径
-        secure:false,
-        changeOrigin:true,
-        ws:true,
-      },
-      '/shanxi':{
-        target:'http://192.168.0.128:8002',
-        rewrite:path=>path.replace(/^\/shanxi/,''), // 设置重写的路径
         secure:false,
         changeOrigin:true,
         ws:true,

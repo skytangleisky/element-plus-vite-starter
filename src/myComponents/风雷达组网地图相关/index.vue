@@ -2,19 +2,18 @@
   <div class="main-container" style="width: 100%; height: 100%; overflow: hidden; position: absolute">
     <div class="center"></div>
     <div
-        v-resize="resize"
-        ref="mapRef"
-        class="map"
-        style="
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        line-height: 1;
-        outline: none;
-      "
-    ></div>
+      v-resize="resize"
+      ref="mapRef"
+      class="map"
+      style="
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      line-height: 1;
+      outline: none;">
+    </div>
     <div ref="popup" class="ol-popup" style="display: none">
       <div
           style="
@@ -143,7 +142,7 @@
     ></chromatography>
     <div class="stationMenu" ref="stationMenuRef" @mousedown.stop>
       <ul>
-        <li @click="单站数据">单站数据</li>
+        <li @click="单站数据">单站历史数据</li>
       </ul>
     </div>
     <A0000 v-model="showHistory"></A0000>
@@ -209,7 +208,6 @@ import {eventbus} from "~/eventbus";
 const chromatographyOption = reactive<{ arr: Array<number> }>({
   arr: []
 })
-const targetTime = ref(moment().format('YYYYMMDDHHmmss'))
 switch (setting.风雷达组网地图相关.风场数据) {
   case '不显示':
     chromatographyOption.arr = []
@@ -370,7 +368,7 @@ const 风场数据 = {
   type: "geojson",
   data: {
     type: "FeatureCollection",
-    features: [],
+    features: new Array<any>(),
   },
 };
 const contextmenu = (e: any) => {
@@ -1025,7 +1023,7 @@ const loadFunc = async () => {
       // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
       "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
       "icon-image": ["get", "image"],
-      "icon-size": 1,
+      "icon-size": 0.5,
       "icon-rotate": ["get", "风向"],
       "icon-rotation-alignment": "map",
       "icon-allow-overlap": true,
@@ -1062,8 +1060,6 @@ const loadFunc = async () => {
   //   station.查询雷达离线列表接口({ user_id: route.query.user_id });
   // if (setting.风雷达组网地图相关.checks[3].select)
   //   station.查询近期新增雷达列表接口({ user_id: route.query.user_id });
-
-  work()
 };
 const flyTo = (item) => {
   try {
@@ -1090,8 +1086,10 @@ import {databaseRaw, getPPIData, databaseRaw2} from '~/api/重庆'
 import interpolate from "~/tools/idw.js";
 
 let res: any
+//得到雷达设备数据
 const 雷达数据 = (data: any) => {
   res = data
+  setting.风雷达组网地图相关.currentTime = moment(Math.floor(Date.now()/(1000*60*10))*1000*60*10).format('YYYYMMDDHHmmss')
   updateData(setting.风雷达组网地图相关.altitudeHeight)
 }
 
@@ -1100,13 +1098,14 @@ function work() {
 }
 
 function TimeStepChange(timeString: string) {
-  targetTime.value = moment(timeString, 'YYYY-MM-DD HH:mm:ss').format('YYYYMMDDHHmmss')
+  setting.风雷达组网地图相关.currentTime = moment(timeString, 'YYYY-MM-DD HH:mm:ss').format('YYYYMMDDHHmmss')
   work()
 }
 
 async function updateData(altitude: number) {
   //20240729054058
-  await getFkxData({dataTime: targetTime.value, altitude}).then(result => {
+  await getFkxData({dataTime: setting.风雷达组网地图相关.currentTime, altitude}).then(result => {
+    console.log(result)
     res.data[0].map((device: any, k: number) => {
       for (let key in result.data.data) {
         if (device.no === result.data.data[key].radar_id) {
@@ -1336,7 +1335,7 @@ async function updateData(altitude: number) {
   circleDataFeatures.features.length = 0
   pointDataFeatures.features.length = 0
   inversionPPIData.features.length = 0
-  polygons.length = 0
+  polygons.length = 0;
   res.data[0].map((Item: any) => {
     if (Item.hide !== 'true') {
       let radar_id = Item.no
@@ -1373,66 +1372,61 @@ async function updateData(altitude: number) {
         },
       });
       //绘制等距环
-      {
-        for (let i = 1; i <= 6; i++) {
-          let circle = calculateCirclePoints(position, i * 1000, 64, 'meters');
-          circleDataFeatures.features.push({
-            type: 'Feature',
+      for (let i = 1; i <= 6; i++) {
+        let circle = calculateCirclePoints(position, i * 1000, 64, 'meters');
+        circleDataFeatures.features.push({
+          type: 'Feature',
+          geometry: {
+            type: "Polygon",
+            coordinates: [circle],
+          },
+        });
+
+        if (i == 1 || i == 3 || i == 6) {
+          let pts: any = [];
+          const pt1 = turf.destination(
+              turf.point(position),
+              1000 * i,
+              0,
+              {units: "meters"}
+          );
+          const pt2 = turf.destination(
+              turf.point(position),
+              1000 * i,
+              90,
+              {units: "meters"}
+          );
+          const pt3 = turf.destination(
+              turf.point(position),
+              1000 * i,
+              180,
+              {units: "meters"}
+          );
+          const pt4 = turf.destination(
+              turf.point(position),
+              1000 * i,
+              270,
+              {units: "meters"}
+          );
+          pts.push(
+              pt1.geometry?.coordinates,
+              pt2.geometry?.coordinates,
+              pt3.geometry?.coordinates,
+              pt4.geometry?.coordinates
+          );
+          pointDataFeatures.features.push({
+            type: "Feature",
             geometry: {
-              type: "Polygon",
-              coordinates: [circle],
+              type: "MultiPoint",
+              coordinates: pts,
+            },
+            properties: {
+              units: i + "km",
             },
           });
-
-          if (i == 1 || i == 3 || i == 6) {
-            let pts: any = [];
-            const pt1 = turf.destination(
-                turf.point(position),
-                1000 * i,
-                0,
-                {units: "meters"}
-            );
-            const pt2 = turf.destination(
-                turf.point(position),
-                1000 * i,
-                90,
-                {units: "meters"}
-            );
-            const pt3 = turf.destination(
-                turf.point(position),
-                1000 * i,
-                180,
-                {units: "meters"}
-            );
-            const pt4 = turf.destination(
-                turf.point(position),
-                1000 * i,
-                270,
-                {units: "meters"}
-            );
-            pts.push(
-                pt1.geometry?.coordinates,
-                pt2.geometry?.coordinates,
-                pt3.geometry?.coordinates,
-                pt4.geometry?.coordinates
-            );
-            pointDataFeatures.features.push({
-              type: "Feature",
-              geometry: {
-                type: "MultiPoint",
-                coordinates: pts,
-              },
-              properties: {
-                units: i + "km",
-              },
-            });
-          }
         }
-        (map.getSource('等距环的单位Source') as any).setData(pointDataFeatures);
-        (map.getSource('等距环Source') as any).setData(circleDataFeatures);
       }
-
-      getPPIData({radar_id: Item.no, dataTime: targetTime.value}, 1).then(res => {
+      getPPIData({radar_id: Item.no, dataTime: setting.风雷达组网地图相关.currentTime}, 1).then(res => {
         // getPPIData({radar_id:Item.no,dataTime:'20240716105055'},1).then(res=>{
         if (res.data.code == 200) {
           //绘制PPI
@@ -1583,7 +1577,7 @@ async function updateData(altitude: number) {
           });
         }
       })
-      getPPIData({radar_id: Item.no, dataTime: targetTime.value}, 2).then(res => {
+      getPPIData({radar_id: Item.no, dataTime: setting.风雷达组网地图相关.currentTime}, 2).then(res => {
         // getPPIData({radar_id:Item.no,dataTime:'20240716105055'},2).then(res=>{
         if (res.data.code == 200) {
           /* PPI反演风场 */
@@ -1680,8 +1674,10 @@ async function updateData(altitude: number) {
         });
       }
     }
-  })
-  map.getSource("point")?.setData(points.data);
+  });
+  (map.getSource('等距环的单位Source') as any)?.setData(pointDataFeatures);
+  (map.getSource('等距环Source') as any)?.setData(circleDataFeatures);
+  (map.getSource("point") as any)?.setData(points.data);
 
   // getMicapsData(plotUrl).then((result:any)=>{
   //   const beginLng = result.beginLng
@@ -1729,7 +1725,7 @@ let pointDataFeatures: { type: string, features: Array<any> } = {
 };
 
 function fetch最近风廓线数据() {
-  getFkxRealData({radar_id: station.active, dateTime: targetTime.value, num: 6}).then((res => {
+  getFkxRealData({radar_id: station.active, dateTime: setting.风雷达组网地图相关.currentTime, num: 6}).then((res => {
     const v = new View(encoder.encode(res.data.data.file.file_data).buffer)
     let result: { [key: string]: any } = {HeaderInfo: {}, data: []}
     let firstLine = decoder.decode(v.getLine()).trim().replace(/,$/, '').split(',')

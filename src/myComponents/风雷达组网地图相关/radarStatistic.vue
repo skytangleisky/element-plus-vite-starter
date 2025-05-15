@@ -179,7 +179,7 @@
           />
         </div>
         <div class="subitem" v-if="hasPermission(['df127f84-1983-42c1-b718-a0d04fc92720'])">
-          <span>等值线</span>
+          <span>垂直气流等值线</span>
           <el-switch
             v-model="setting.风雷达组网地图相关.等值线"
             inline-prompt
@@ -188,7 +188,7 @@
           />
         </div>
         <div class="subitem" v-if="hasPermission(['182392d2-6928-4add-b006-784e9fde0213'])">
-          <span>等值线填色</span>
+          <span>垂直气流等值线填色</span>
           <el-switch
             v-model="setting.风雷达组网地图相关.等值带"
             inline-prompt

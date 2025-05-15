@@ -10,8 +10,7 @@
           </div>
           <!-- <div class="day absolute top-0px font-size-12px line-height-12px">{{ data.index }}</div> -->
           {{ format(data) }}
-          <div v-if="data.index == currentIndex"
-               class="absolute bottom--8px font-size-12px line-height-12px cursor-pointer">
+          <div v-if="data.index == currentIndex" class="absolute bottom--8px font-size-12px line-height-12px cursor-pointer">
             <el-date-picker
                 :modelValue="getDate(data)"
                 @update:modelValue="setDate($event,data)"
@@ -69,10 +68,10 @@ function setDate(value: string, data: any) {
   startTime.value = moment(moment(value, 'YYYY-MM-DD').valueOf() - days * 24 * 60 * 60 * 1000).format('YYYY-MM-DD')
 }
 
+const emit = defineEmits(['change'])
 watch(startTime, (newValue) => {
   emit('change', moment(moment(newValue, 'YYYY-MM-DD').valueOf() + currentIndex.value * increment).format('YYYY-MM-DD HH:mm:ss'))
 })
-const emit = defineEmits(['change'])
 
 function change(newVal: number, oldValue: number, changeType: string) {
   if (changeType == 'click') {

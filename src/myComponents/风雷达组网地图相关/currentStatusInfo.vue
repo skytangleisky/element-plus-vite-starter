@@ -1,18 +1,18 @@
 <template>
   <div class="currentStatusInfo">
-    <div class="time">2025-05-14 13:44:12</div>
+    <div class="time" v-html="moment(setting.风雷达组网地图相关.currentTime,'YYYYMMDDHHmmss').format('YYYY-MM-DD[&emsp;]HH:mm:ss')"></div>
     <div class="info">
       <div class="item-box">
         <el-icon>
           <Place/>
         </el-icon>
-        <span>区县：</span>
-        <span class="item-value">{{ statusInfo.locationName }}</span>
+        <span>区划：</span>
+        <span class="item-value">{{ setting.风雷达组网地图相关.地区.address.slice(-1)[0] }}</span>
       </div>
       <div class="item-box">
         <el-icon><OfficeBuilding /></el-icon>
         <span>厂商：</span>
-        <span class="item-value">{{ statusInfo.manufacturer }}</span>
+        <span class="item-value">{{ setting.风雷达组网地图相关.manufacturer }}</span>
       </div>
     </div>
 
@@ -20,13 +20,10 @@
 </template>
 
 <script setup lang="ts">
+import { useSettingStore } from "~/stores/setting";
+const setting = useSettingStore()
 import {Place,OfficeBuilding} from "@element-plus/icons-vue";
-import {reactive} from "vue";
-
-let statusInfo = reactive({
-  locationName: "太原市",
-  manufacturer:'全部'
-})
+import moment from "moment";
 </script>
 
 <style scoped lang="scss">
