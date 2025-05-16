@@ -65,12 +65,14 @@ precision mediump float;
 attribute float a_index;
 uniform sampler2D u_particles;
 uniform float u_particles_res;
+uniform float u_point_size;
 uniform int projection;
 varying vec2 uv_pos;
 uniform mat4 u_matrix;  // update by limz
 uniform vec4 u_boundaries;// boundaries
+attribute float point_size;
 void main() {
-    gl_PointSize = 1.0;
+    gl_PointSize = u_point_size;
     vec4 color = texture2D(u_particles, vec2(fract(a_index / u_particles_res),floor(a_index / u_particles_res) / u_particles_res));
     // decode current particle position from the pixel's RGBA value
     uv_pos = vec2(color.r / 255.0 + color.b, color.g / 255.0 + color.a);

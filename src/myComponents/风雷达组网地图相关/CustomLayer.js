@@ -9,15 +9,19 @@ export default class CustomLayer {
     this.png = png
     this.show = show
     this.particles = particles
+    this.pointSize = 1
     this.resize = this.resize.bind(this)
   }
   setParticles(numParticles){
     this.wind.numParticles = numParticles
   }
+  setPointSize(pointSize){
+    this.pointSize = pointSize
+  }
   onAdd(map, gl) {
     this.map = map
     this.projectionName = this.map.getProjection().name
-    this.wind = new WindGL(gl,{boundaries:this.json.boundaries})
+    this.wind = new WindGL(gl,{boundaries:this.json.boundaries,poinSize:this.pointSize})
     this.wind.numParticles = this.particles||100
     let windData = this.json
     const windImage = new Image();
@@ -35,6 +39,7 @@ export default class CustomLayer {
   render(gl, projectionMatrix, projection, globeToMercMatrix, transition, centerInMercator, pixelsPerMeterRatio) {
     if(this.show){
       if (this.wind.windData) {
+        this.wind.pointSize = this.pointSize
         if (projection && projection.name === 'globe') {
           if(this.projectionName!='globe'){
             this.resize()

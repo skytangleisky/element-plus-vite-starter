@@ -178,11 +178,22 @@
           <span class="whitespace-nowrap">流线密度</span>
           <el-slider
             class="m-l-10px m-r-10px"
-            :min="1"
+            :min="20"
             :max="100"
             :step="1"
             :show-tooltip="false"
             v-model="setting.风雷达组网地图相关.particles"
+          />
+        </div>
+        <div class="subitem">
+          <span class="whitespace-nowrap">流线大小</span>
+          <el-slider
+            class="m-l-10px m-r-10px"
+            :min="1"
+            :max="4"
+            :step="0.1"
+            :show-tooltip="false"
+            v-model="setting.风雷达组网地图相关.particlesSize"
           />
         </div>
         <div class="subitem" v-if="hasPermission(['df127f84-1983-42c1-b718-a0d04fc92720'])">

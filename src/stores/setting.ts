@@ -48,6 +48,7 @@ export const useSettingStore = defineStore({
       ],
     },
     风雷达组网地图相关:{
+      particlesSize:1,
       particles:100,
       manufacturer:'',//厂商
       地区:{address:new Array<string>(),adcodes:new Array<string>()},//地区
