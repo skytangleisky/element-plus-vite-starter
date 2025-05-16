@@ -61,7 +61,7 @@
         <legend-right></legend-right>
       </baseModule>
         <radar-info></radar-info>
-        <fkx-info></fkx-info>
+
 
 
       <div style="display: none">
@@ -107,7 +107,7 @@
       <Dialog></Dialog>
     </div>
     <div class="page-center-bottom">
-
+      <fkx-info></fkx-info>
       <TimeStep @change="TimeStepChange"></TimeStep>
     </div>
 
@@ -2620,8 +2620,8 @@ $page-left-right-height: calc(100% - 2 * $page-grid);
   position: absolute;
   top: $page-grid;
   left: calc($page-left-width + 2 * $page-grid);
-  // width: $page-center-width;
-  //background-color: red;
+   max-width: $page-center-width;
+
 }
 
 .page-center-bottom {
@@ -2629,9 +2629,7 @@ $page-left-right-height: calc(100% - 2 * $page-grid);
   bottom: $page-grid;
   left: calc($page-left-width + 2 * $page-grid);
   width: $page-center-width;
-  display: flex;
-  align-items: center;
-  //background-color: pink;
+
 }
 
 </style>

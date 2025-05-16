@@ -165,7 +165,6 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   width: 100%;
   height: 32px;
-  margin-left: 12px;
 
   .btn {
     margin-left: 8px;
