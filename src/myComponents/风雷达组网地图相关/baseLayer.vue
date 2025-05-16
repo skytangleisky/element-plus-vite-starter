@@ -60,7 +60,7 @@ let basePie = reactive({
     top: "0",
     left: "center",
     textStyle: {
-      color: "auto",
+      color: "inherit",
       fontSize: 12,
     },
   },
@@ -96,7 +96,7 @@ let basePie = reactive({
         position: "outside", // 标签的位置，'inside'、'outside'、'left'、'right'、'top'、'bottom'
         formatter: "{b}{d}%", // 标签的格式化，{b}是名称，{c}是值，{d}%是百分比
         avoidLabelOverlap: true, // 防止标签重叠
-        color: "auto",
+        color: "inherit",
       },
       //数据项
       data: [
@@ -134,7 +134,7 @@ let baseBar = reactive({
     top: "0",
     left: "center",
     textStyle: {
-      color: "auto",
+      color: "inherit",
       fontSize: 12,
     },
   },
@@ -149,7 +149,7 @@ let baseBar = reactive({
     {
       type: "category",
       data: [],
-      color: "auto",
+      color: "inherit",
       axisTick: {
         // alignWithLabel: true,
         show: false,
@@ -176,7 +176,7 @@ let baseBar = reactive({
       },
       label: {
         show: true,
-        color: "auto",
+        color: "inherit",
         position: "top",
       },
       color: "#909399",
@@ -190,7 +190,7 @@ let baseBar = reactive({
       },
       label: {
         show: true,
-        color: "auto",
+        color: "inherit",
         position: "top",
       },
       color: "#3AC8A5",
@@ -205,7 +205,7 @@ let baseBar = reactive({
       },
       label: {
         show: true,
-        color: "auto",
+        color: "inherit",
         position: "top",
       },
       color: "#e8cb1a",
@@ -220,7 +220,7 @@ let baseBar = reactive({
       },
       label: {
         show: true,
-        color: "auto",
+        color: "inherit",
         position: "top",
       },
       color: "#F56c6c",

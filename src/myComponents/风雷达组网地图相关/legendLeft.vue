@@ -9,7 +9,9 @@
             </span>
       </div>
       <div class="map-module-bottom" v-show="showBottom">
-        <color title="风速(m/s)" demo="风速"></color>
+        <color title="水平风速(m/s)" demo="风速"></color>
+        <color title="流线(m/s)" demo="流线"></color>
+        <color title="等值线(m/s)" demo="等值线"></color>
         <div class="divider-line"></div>
         <features title="要素填图"></features>
 

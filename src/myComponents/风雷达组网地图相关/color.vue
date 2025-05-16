@@ -2,28 +2,40 @@
   <div class="color">
     <div class="module-title" >{{ title }}</div>
     <div class="colors">
-      <div
-        v-for="(v, key) in colors"
-        :key="key"
-        :style="'background:' + v + ';width:24px;height:24px;margin:.5px;'"
-      ></div>
+      <template
+        v-if="type=='category'"
+      >
+        <div
+          v-for="(v, key) in colors"
+          :key="key"
+          :style="`background:${v};width: ${100/values.length}%;;height:20px;`"
+        ></div>
+      </template>
+      <div v-else style="width: 100%; height: 20px; background: linear-gradient(to right, #3288bd, #e6f598 50%, #d53e4f);"></div>
     </div>
     <div class="values">
-      <div
+      <template
         v-for="(v, key) in values"
         :key="key"
-        style="
-          font-weight: 700;
-          width: 25px;
-          height: 25px;
-          line-height: 25px;
-          text-align: center;
-          vertical-align: top;
-          font-size: 12px;
-        "
       >
-        {{ v }}
-      </div>
+        <div
+          v-if="type=='category'"
+          :style="`
+            font-weight: 700;
+            width: ${100/values.length}%;
+            height: 20px;
+            line-height: 25px;
+            text-align: center;
+            vertical-align: top;
+            font-size: 12px;
+          `"
+        >
+          {{ v }}
+        </div>
+        <div v-else>
+          {{ v }}
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -44,6 +56,7 @@ export default {
     return {
       options: {
         风速: {
+          type:'category',
           describe: "fkx|ppi风羽|ppi风矢",
           colors: [
             getColor(1),
@@ -61,6 +74,7 @@ export default {
           values: [0, 1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20],
         },
         径向风: {
+          type:'category',
           colors: [
             "#0000ff",
             "#0033ff",
@@ -98,6 +112,7 @@ export default {
           ],
         },
         谱宽: {
+          type:'category',
           colors: [
             "#0000ff",
             "#003fff",
@@ -113,6 +128,7 @@ export default {
           values: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
         },
         信噪比: {
+          type:'category',
           colors: [
             "#0000ff",
             "#003fff",
@@ -128,6 +144,7 @@ export default {
           values: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20],
         },
         频谱强度: {
+          type:'category',
           colors: [
             "#0000ff",
             "#001cff",
@@ -174,6 +191,39 @@ export default {
             20,
           ],
         },
+        流线: {
+          type:'category',
+          colors: [
+            '#3288bd',
+            '#66c2a5',
+            '#abdda4',
+            '#e6f598',
+            '#fee08b',
+            '#fdae61',
+            '#f46d43',
+            '#d53e4f',
+          ],
+          values: [
+            0.0*20,
+            0.1*20,
+            0.2*20,
+            0.3*20,
+            0.4*20,
+            0.5*20,
+            0.6*20,
+            1.0*20,
+          ],
+        },
+        等值线: {
+          colors: [
+            '#3288bd',
+            '#e6f598',
+            '#d53e4f',
+          ],
+          values: [
+            -3,0,3
+          ],
+        },
       },
     };
   },
@@ -184,6 +234,9 @@ export default {
     values() {
       return this.options[this.demo].values;
     },
+    type(){
+      return this.options[this.demo].type;
+    }
   },
 };
 </script>
@@ -201,7 +254,7 @@ export default {
   .values {
     display: inline-flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
   }
 }

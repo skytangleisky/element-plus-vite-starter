@@ -52,10 +52,10 @@
       <div ref="popup_closer" class="ol-popup-closer"></div>
     </div>
 
-    <div class="page-left">
+    <el-scrollbar class="page-left">
       <baseLayer></baseLayer>
-    </div>
-    <div class="page-right">
+    </el-scrollbar>
+    <el-scrollbar class="page-right">
       <currentStatusInfo></currentStatusInfo>
       <baseModule title="雷达图例">
         <legend-right></legend-right>
@@ -101,7 +101,7 @@
         <!--      </el-icon>-->
       </div>
 
-    </div>
+    </el-scrollbar>
     <div class="page-center-top">
       <Dialog></Dialog>
       <legend-left style="width:320px;"></legend-left>
@@ -199,7 +199,7 @@ import {
   removeLayerAndSource
 } from "~/tools";
 
-const decoder = new TextDecoder('gbk')
+const decoder = new TextDecoder('utf-8')
 const encoder = new TextEncoder()
 const stationMenuRef = ref<HTMLDivElement>();
 let stationMenu: HTMLDivElement;
@@ -654,42 +654,42 @@ const loadFunc = async () => {
       style: 'fill:#909399;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
     }
   })
-  await loadImage2Map(map, 华航SVG, 10, 10, {
+  await loadImage2Map(map, 华航SVG, 12, 12, {
     华航SVG_缺失: {
       style: 'fill:#F56C6C;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
     }
   })
-  await loadImage2Map(map, 华航SVG, 10, 10, {
+  await loadImage2Map(map, 华航SVG, 12, 12, {
     华航SVG_延迟: {
       style: 'fill:#E8CB1A;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
     }
   })
-  await loadImage2Map(map, 华航SVG, 10, 10, {
+  await loadImage2Map(map, 华航SVG, 12, 12, {
     华航SVG_正常: {
       style: 'fill:#3AC8A5;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
     }
   })
-  await loadImage2Map(map, 华航SVG, 10, 10, {
+  await loadImage2Map(map, 华航SVG, 12, 12, {
     华航SVG_未知: {
       style: 'fill:#909399;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
     }
   })
-  await loadImage2Map(map, 西物SVG, 10, 10, {
+  await loadImage2Map(map, 西物SVG, 13, 13, {
     西物SVG_缺失: {
       style: 'fill:#F56C6C;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
     }
   })
-  await loadImage2Map(map, 西物SVG, 10, 10, {
+  await loadImage2Map(map, 西物SVG, 13, 13, {
     西物SVG_延迟: {
       style: 'fill:#E8CB1A;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
     }
   })
-  await loadImage2Map(map, 西物SVG, 10, 10, {
+  await loadImage2Map(map, 西物SVG, 13, 13, {
     西物SVG_正常: {
       style: 'fill:#3AC8A5;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
     }
   })
-  await loadImage2Map(map, 西物SVG, 10, 10, {
+  await loadImage2Map(map, 西物SVG, 13, 13, {
     西物SVG_未知: {
       style: 'fill:#909399;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
     }
@@ -1069,7 +1069,7 @@ const loadFunc = async () => {
       // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
       "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
       "icon-image": ["get", "image"],
-      "icon-size": 0.6,
+      "icon-size": 0.7,
       "icon-rotate": ["get", "风向"],
       "icon-rotation-alignment": "map",
       "icon-allow-overlap": true,
@@ -1870,6 +1870,7 @@ function fetch最近风廓线数据() {
     eventbus.emit('处理实时风廓线数据', {radar_id: station.active, 风廓线数据: res.data.data.file.file_data})
   })).catch((err) => {
     eventbus.emit('清除风廓线数据')
+    bus.avgWindData_重庆 = {data:[{list:[]}]}
   })
 }
 
@@ -1879,10 +1880,10 @@ onMounted(() => {
     container: mapRef.value as any,
     // style: raster,
     style: style as any,
-    dragRotate: false,
-    touchRotate: false,
-    touchPitch: false,
-    dragPitch: false,
+    // dragRotate: false,
+    // touchRotate: false,
+    // touchPitch: false,
+    // dragPitch: false,
     projection: 'mercator', // globe
     // bounds: turf.bbox(boundaries),
     // localIdeographFontFamily: "Microsoft YoHei",
@@ -1891,10 +1892,10 @@ onMounted(() => {
     renderWorldCopies: true,
     maxZoom: 17,
     // minZoom: 1,
-    // maxBounds: [
-    //   [102.0, 27.5],
-    //   [114.0, 32.7],
-    // ],
+    maxBounds: [
+      [104.0, 32.5],
+      [121.0, 42.7],
+    ],
     // zoom: 18,
     // center: [148.9819, -35.3981],
     // pitch: 60,

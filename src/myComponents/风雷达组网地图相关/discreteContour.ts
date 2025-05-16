@@ -101,10 +101,10 @@ export default function(map:mapboxgl.Map,data:any,opts:{isobands:boolean,isoline
   let strokeColors = [];
   breaks=[]
   for(let i=0;i<=60;i++){
-    breaks.push(-2+i*0.1);
+    breaks.push(-3+i*0.1);
   }
   for (let i = 0; i < breaks.length; i++) {
-    let min = -2;
+    let min = -3;
     let max = 3;
     let index = Math.round((breaks[i]-min)/(max-min)*imgData.width)
     let r = imgData.data[4*index+0]

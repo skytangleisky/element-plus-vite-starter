@@ -46,14 +46,15 @@
               </el-form>
             </div>
             <div class="bottom-bottom">
-
               <chart-fkx></chart-fkx>
+              <fkx-curve></fkx-curve>
             </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import fkxCurve from "./fkx风速曲线.vue";
 import chartFkx from "./fkxV.vue";
 import {Close} from '@element-plus/icons-vue'
 import {ref, watch, reactive, onMounted, onBeforeUnmount} from 'vue'
@@ -227,6 +228,8 @@ onBeforeUnmount(() => {
     }
 
     .bottom-bottom {
+      display:flex;
+      justify-content: space-between;
       width: 100%;
       height:290px;
     }
