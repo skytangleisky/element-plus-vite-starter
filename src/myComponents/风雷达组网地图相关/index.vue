@@ -2,10 +2,10 @@
   <div class="main-container" style="width: 100%; height: 100%; overflow: hidden; position: absolute">
     <div class="center"></div>
     <div
-      v-resize="resize"
-      ref="mapRef"
-      class="map"
-      style="
+        v-resize="resize"
+        ref="mapRef"
+        class="map"
+        style="
       position: absolute;
       left: 0;
       top: 0;
@@ -57,11 +57,10 @@
     </div>
     <div class="page-right">
       <currentStatusInfo></currentStatusInfo>
-      <baseModule title="图例">
+      <baseModule title="雷达图例">
         <legend-right></legend-right>
       </baseModule>
-        <radar-info></radar-info>
-
+      <radar-info></radar-info>
 
 
       <div style="display: none">
@@ -105,6 +104,8 @@
     </div>
     <div class="page-center-top">
       <Dialog></Dialog>
+      <legend-left style="width:320px;"></legend-left>
+
     </div>
     <div class="page-center-bottom">
       <fkx-info></fkx-info>
@@ -165,6 +166,7 @@ import fkxInfo from './fkxInfo.vue'
 import radarInfo from './radarInfo.vue'
 import baseModule from './baseModule.vue'
 import legendRight from './legendRight.vue'
+import legendLeft from './legendLeft.vue'
 import currentStatusInfo from './currentStatusInfo.vue'
 import uvUrl from "../mapbox/data/06040808.000?url";
 import CustomLayer from './CustomLayer.js'//绘制流线
@@ -330,16 +332,17 @@ import Legend from "./legend.vue";
 import style from "./streets-v11.js";
 import moment from "moment";
 import {wgs84togcj02} from "../map/workers/mapUtil.js";
-watch(()=>setting.风雷达组网地图相关.particlesSize,()=>{
+
+watch(() => setting.风雷达组网地图相关.particlesSize, () => {
   customLayer.setPointSize(setting.风雷达组网地图相关.particlesSize)
 })
-watch(()=>setting.风雷达组网地图相关.particles,()=>{
+watch(() => setting.风雷达组网地图相关.particles, () => {
   customLayer.setParticles(setting.风雷达组网地图相关.particles)
 })
-let prevDate:any;
+let prevDate: any;
 watch(
     () => setting.now,
-    (newVal:any) => {
+    (newVal: any) => {
       if (newVal == undefined) {
         newVal = Date.now();
       }
@@ -422,10 +425,10 @@ const clickFunc = (e) => {
         //   });
         station.active = bus.风雷达组网地图相关雷达站点信息[i].no;
         station.currentStation = bus.风雷达组网地图相关雷达站点信息[i];
-        points.data.features.forEach(item=>{
+        points.data.features.forEach(item => {
           if (item.properties.radar_id == station.active) {
             item.properties.activedOpacity = 1.0
-          }else{
+          } else {
             item.properties.activedOpacity = 0.0
           }
         })
@@ -620,74 +623,74 @@ let customLayer: any;
 const loadFunc = async () => {
   await addFeatherImages(map, isDark.value ? '#fff' : '#000');
   await addArrowImages(map, isDark.value ? "#fff" : "#000");
-  await loadImage2Map(map,aimSvg,20,20,{
-    aim:{
+  await loadImage2Map(map, aimSvg, 20, 20, {
+    aim: {
       style: 'stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
     }
   })
 
-  await loadImage2Map(map,未知SVG,12,12,{
-    未知SVG:{
+  await loadImage2Map(map, 未知SVG, 12, 12, {
+    未知SVG: {
       style: 'fill:#f00;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
     }
   })
-  await loadImage2Map(map,镭测SVG,14,14,{
-    镭测SVG_缺失:{
+  await loadImage2Map(map, 镭测SVG, 14, 14, {
+    镭测SVG_缺失: {
       style: 'fill:#F56C6C;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
     }
   })
-  await loadImage2Map(map,镭测SVG,14,14,{
-    镭测SVG_延迟:{
+  await loadImage2Map(map, 镭测SVG, 14, 14, {
+    镭测SVG_延迟: {
       style: 'fill:#E8CB1A;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
     }
   })
-  await loadImage2Map(map,镭测SVG,14,14,{
-    镭测SVG_正常:{
+  await loadImage2Map(map, 镭测SVG, 14, 14, {
+    镭测SVG_正常: {
       style: 'fill:#3AC8A5;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
     }
   })
-  await loadImage2Map(map,镭测SVG,14,14,{
-    镭测SVG_未知:{
+  await loadImage2Map(map, 镭测SVG, 14, 14, {
+    镭测SVG_未知: {
       style: 'fill:#909399;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
     }
   })
-  await loadImage2Map(map,华航SVG,10,10,{
-    华航SVG_缺失:{
+  await loadImage2Map(map, 华航SVG, 10, 10, {
+    华航SVG_缺失: {
       style: 'fill:#F56C6C;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
     }
   })
-  await loadImage2Map(map,华航SVG,10,10,{
-    华航SVG_延迟:{
+  await loadImage2Map(map, 华航SVG, 10, 10, {
+    华航SVG_延迟: {
       style: 'fill:#E8CB1A;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
     }
   })
-  await loadImage2Map(map,华航SVG,10,10,{
-    华航SVG_正常:{
+  await loadImage2Map(map, 华航SVG, 10, 10, {
+    华航SVG_正常: {
       style: 'fill:#3AC8A5;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
     }
   })
-  await loadImage2Map(map,华航SVG,10,10,{
-    华航SVG_未知:{
+  await loadImage2Map(map, 华航SVG, 10, 10, {
+    华航SVG_未知: {
       style: 'fill:#909399;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
     }
   })
-  await loadImage2Map(map,西物SVG,10,10,{
-    西物SVG_缺失:{
+  await loadImage2Map(map, 西物SVG, 10, 10, {
+    西物SVG_缺失: {
       style: 'fill:#F56C6C;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
     }
   })
-  await loadImage2Map(map,西物SVG,10,10,{
-    西物SVG_延迟:{
+  await loadImage2Map(map, 西物SVG, 10, 10, {
+    西物SVG_延迟: {
       style: 'fill:#E8CB1A;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
     }
   })
-  await loadImage2Map(map,西物SVG,10,10,{
-    西物SVG_正常:{
+  await loadImage2Map(map, 西物SVG, 10, 10, {
+    西物SVG_正常: {
       style: 'fill:#3AC8A5;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
     }
   })
-  await loadImage2Map(map,西物SVG,10,10,{
-    西物SVG_未知:{
+  await loadImage2Map(map, 西物SVG, 10, 10, {
+    西物SVG_未知: {
       style: 'fill:#909399;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;stroke:black;stroke-width:1px;',
     }
   })
@@ -794,12 +797,11 @@ const loadFunc = async () => {
     id: "stationLayer",
     source: "point",
     type: "symbol",
-    paint: {
-    },
+    paint: {},
     filter: ["==", ["get", "type"], "站点"],
     layout: {
-      "icon-image": ['get','状态图标'],
-      "icon-allow-overlap":true,
+      "icon-image": ['get', '状态图标'],
+      "icon-allow-overlap": true,
       visibility: setting.station ? "visible" : "none",
     },
   });
@@ -811,11 +813,11 @@ const loadFunc = async () => {
     layout: {
       "icon-image": 'aim',
       "icon-anchor": "bottom",
-      "icon-allow-overlap":true,
-      "icon-offset":[0,3],
+      "icon-allow-overlap": true,
+      "icon-offset": [0, 3],
     },
     paint: {
-      "icon-opacity": ['get','activedOpacity'],
+      "icon-opacity": ['get', 'activedOpacity'],
     }
   });
   map.addLayer({
@@ -1145,10 +1147,10 @@ const flyTo = (item) => {
     for (let i = 0; i < bus.风雷达组网地图相关雷达站点信息.length; i++) {
       if (bus.风雷达组网地图相关雷达站点信息[i].no == item.no) {
         station.active = bus.风雷达组网地图相关雷达站点信息[i].no;
-        points.data.features.forEach(item=>{
+        points.data.features.forEach(item => {
           if (item.properties.radar_id == station.active) {
             item.properties.activedOpacity = 1.0
-          }else{
+          } else {
             item.properties.activedOpacity = 0.0
           }
         })
@@ -1183,7 +1185,7 @@ let res: any
 //得到雷达设备数据
 const 雷达数据 = (data: any) => {
   res = data
-  setting.风雷达组网地图相关.currentTime = moment(Math.floor(Date.now()/(1000*60*10))*1000*60*10).format('YYYYMMDDHHmmss')
+  setting.风雷达组网地图相关.currentTime = moment(Math.floor(Date.now() / (1000 * 60 * 10)) * 1000 * 60 * 10).format('YYYYMMDDHHmmss')
   updateData(setting.风雷达组网地图相关.altitudeHeight)
 }
 
@@ -1418,7 +1420,7 @@ async function updateData(altitude: number) {
   }
   // mapboxgl.clearStorage();
   removeLayerAndSource(map, 'null-island')
-  customLayer = new CustomLayer(json, cvs.toDataURL(), setting.风雷达组网地图相关.流线,setting.风雷达组网地图相关.particles)
+  customLayer = new CustomLayer(json, cvs.toDataURL(), setting.风雷达组网地图相关.流线, setting.风雷达组网地图相关.particles)
   customLayer.setPointSize(setting.风雷达组网地图相关.particlesSize)
   map.addLayer(customLayer as any)
 
@@ -1439,13 +1441,13 @@ async function updateData(altitude: number) {
         fetch最近风廓线数据()
       }
       let position = [Item.longitude, Item.latitude]
-      const getStatusImage=(status:number)=>{
-        if(Item.manufacturer.includes('华航')){
-          return status == 1 ? '华航SVG_正常' : status == 2? '华航SVG_延迟' : status == 3? '华航SVG_缺失' : '华航SVG_未知'
-        }else if(Item.manufacturer.includes('镭测')){
-          return status == 1 ? '镭测SVG_正常' : status == 2? '镭测SVG_延迟' : status == 3? '镭测SVG_缺失' : '镭测SVG_未知'
-        }else if(Item.manufacturer.includes('西物')){
-          return status == 1 ? '西物SVG_正常' : status == 2? '西物SVG_延迟' : status == 3? '西物SVG_缺失' : '西物SVG_未知'
+      const getStatusImage = (status: number) => {
+        if (Item.manufacturer.includes('华航')) {
+          return status == 1 ? '华航SVG_正常' : status == 2 ? '华航SVG_延迟' : status == 3 ? '华航SVG_缺失' : '华航SVG_未知'
+        } else if (Item.manufacturer.includes('镭测')) {
+          return status == 1 ? '镭测SVG_正常' : status == 2 ? '镭测SVG_延迟' : status == 3 ? '镭测SVG_缺失' : '镭测SVG_未知'
+        } else if (Item.manufacturer.includes('西物')) {
+          return status == 1 ? '西物SVG_正常' : status == 2 ? '西物SVG_延迟' : status == 3 ? '西物SVG_缺失' : '西物SVG_未知'
         }
         return '未知SVG'
       }
@@ -1469,8 +1471,8 @@ async function updateData(altitude: number) {
           external_temperature: 25,
           external_humidity: 0.6,
           image: "feather" + getFeather(0),
-          状态图标:getStatusImage(Item.status),
-          activedOpacity:Item.no==station.active?1.0:0.0,
+          状态图标: getStatusImage(Item.status),
+          activedOpacity: Item.no == station.active ? 1.0 : 0.0,
         },
         geometry: {
           type: "Point",
@@ -2623,7 +2625,7 @@ $page-left-right-height: calc(100% - 2 * $page-grid);
   position: absolute;
   top: $page-grid;
   left: calc($page-left-width + 2 * $page-grid);
-   max-width: $page-center-width;
+  max-width: $page-center-width;
 
 }
 

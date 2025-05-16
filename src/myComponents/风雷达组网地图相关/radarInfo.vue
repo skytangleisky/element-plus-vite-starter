@@ -5,14 +5,14 @@
           - {{ deviceInfo.device_name }}
         </span></span>
       <span @click="showTags = !showTags" class="map-module-top-icon">
-                <el-icon v-show="showTags"><ArrowUpBold/></el-icon>
-                <el-icon v-show="!showTags"><ArrowDownBold/></el-icon>
+                <el-icon v-show="showTags"><ArrowUp/></el-icon>
+                <el-icon v-show="!showTags"><ArrowDown/></el-icon>
             </span>
     </div>
     <div class="map-module-bottom" v-show="showTags">
       <el-empty description="暂无数据" v-if="!deviceInfo.radar_id" :image-size="64"/>
-      <el-scrollbar height="234px" v-else>
-      <div class="content" >
+<!--      <el-scrollbar max-height="480px" >-->
+      <div class="content" v-else>
         <el-collapse v-model="collapseActNames" accordion @change="collapseChange">
           <el-collapse-item title="主控板传感器数据" name="1">
             <div class="item-box">
@@ -277,22 +277,22 @@
 
         </el-collapse>
       </div>
-      </el-scrollbar>
+<!--      </el-scrollbar>-->
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import {reactive, ref, watch} from 'vue'
-import {ArrowDownBold, ArrowUpBold} from "@element-plus/icons-vue";
+import {ArrowDown, ArrowUp} from "@element-plus/icons-vue";
 import type {CollapseModelValue} from 'element-plus'
 import {querySensorData} from "~/api/重庆"
 import {useBus} from "~/myComponents/bus";
 import {useStationStore} from "~/stores/station";
 import {useSettingStore} from "~/stores/setting";
 
-const station = useStationStore();
 const setting = useSettingStore();
+const station = useStationStore();
 // 折叠面板展示的数据
 let collapseActNames = ref([])
 // 控制整个模块折叠显示效果
@@ -365,11 +365,7 @@ function format(val: any) {
 
 <style scoped lang="scss">
 .radarInfo {
-.map-module-top{
-  height: 40px;
-  line-height: 40px;
-  padding: 0 24px 0 36px;
-}
+
   .map-module-bottom{
     background: var(--bg-color-overlay-opacity-8);
     border:1px solid #B5D5E5;

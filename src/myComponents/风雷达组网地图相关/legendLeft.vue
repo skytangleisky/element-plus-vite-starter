@@ -1,77 +1,37 @@
 <template>
-  <div class="legend-right">
-    <div class="module-box">
-      <div class="module-title">站点状态</div>
-      <div class="module-content site-status">
-        <div
-            class="item-box"
-            v-for="item in statusData"
-            :key="item.value"
-        >
-          <div>{{ item.label }}</div>
-          <div
-              class="item-status"
-              :class="`status-${item.value}`"
-          >
-            <div class="point"></div>
-          </div>
-        </div>
+  
+    <div class="legend-left map-module-box">
+      <div class="map-module-top">
+        <span>气象产品图例</span>
+        <span @click="showBottom = !showBottom" class="map-module-top-icon">
+                <el-icon v-show="showBottom"><ArrowUp/></el-icon>
+                <el-icon v-show="!showBottom"><ArrowDown/></el-icon>
+            </span>
       </div>
-    </div>
-    <div class="divider-line"></div>
-    <div class="module-box">
-      <div class="module-title">厂商</div>
-      <div class="module-content manufacturer-box">
-        <div
-            class="item-box"
-            v-for="item in manufacturerData"
-            :key="item.value"
-        >
-          <div>{{ item.label }}</div>
-          <div
-              class="item-status"
-              :class="`status-${item.value}`"
-          >
-            <div class="point"></div>
-          </div>
-        </div>
-      </div>
-    </div>
+      <div class="map-module-bottom" v-show="showBottom">
+        <color title="风速(m/s)" demo="风速"></color>
+        <div class="divider-line"></div>
+        <features title="要素填图"></features>
 
-  </div>
+      </div>
+    </div>
 </template>
 
 <script setup lang="ts">
+import {ref, watch} from 'vue';
 import color from "./color.vue";
 import features from "./features.vue";
+import {useSettingStore} from "~/stores/setting";
+import {ArrowDown, ArrowUp} from "@element-plus/icons-vue";
 
-const statusData = [
-  {
-    value: 0,
-    label: "未知"
-  }, {
-    value: 1,
-    label: "正常"
-  }, {
-    value: 2,
-    label: "延迟"
-  }, {
-    value: 3,
-    label: "缺失"
-  },
-]
-const manufacturerData = [
-  {
-    value: 0,
-    label: "华航"
-  }, {
-    value: 1,
-    label: "西物"
-  }, {
-    value: 2,
-    label: "雷测"
-  },
-]
+const setting = useSettingStore();
+
+// 控制整个模块折叠显示效果
+let showBottom = ref(true)
+showBottom.value = setting.风雷达组网.监控.isFoldSingle
+watch(()=>setting.风雷达组网.监控.isFoldSingle,newVal=>{
+  showBottom.value =newVal
+})
 </script>
 
 <style lang="scss">
