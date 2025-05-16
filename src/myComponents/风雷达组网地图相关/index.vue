@@ -330,8 +330,11 @@ import Legend from "./legend.vue";
 import style from "./streets-v11.js";
 import moment from "moment";
 import {wgs84togcj02} from "../map/workers/mapUtil.js";
-watch(()=>setting.风雷达组网地图相关.particles,(particles)=>{
-  customLayer.setParticles(particles)
+watch(()=>setting.风雷达组网地图相关.particlesSize,()=>{
+  customLayer.setPointSize(setting.风雷达组网地图相关.particlesSize)
+})
+watch(()=>setting.风雷达组网地图相关.particles,()=>{
+  customLayer.setParticles(setting.风雷达组网地图相关.particles)
 })
 let prevDate:any;
 watch(
@@ -1216,6 +1219,7 @@ async function updateData(altitude: number) {
     let convert = wgs84togcj02(sixty2Float(item.lng), sixty2Float(item.lat))
     //模拟开始
     // item.wind = {}
+    // item.status = 1
     // item.wind.WindSpeed = 5*Math.random()
     // item.wind.WindDirection=360*Math.random()
     // item.wind.ZWind=(Math.random()-0.5)*4
@@ -1415,6 +1419,7 @@ async function updateData(altitude: number) {
   // mapboxgl.clearStorage();
   removeLayerAndSource(map, 'null-island')
   customLayer = new CustomLayer(json, cvs.toDataURL(), setting.风雷达组网地图相关.流线,setting.风雷达组网地图相关.particles)
+  customLayer.setPointSize(setting.风雷达组网地图相关.particlesSize)
   map.addLayer(customLayer as any)
 
   bus.风雷达组网地图相关雷达站点信息 = res.data[0].map((item: any) => {
@@ -1955,7 +1960,6 @@ watch(isDark, () => {
     map.setPaintProperty('风速图层', 'text-halo-color', 'black')
     map.setPaintProperty('时间图层', 'text-color', 'white')
     map.setPaintProperty('时间图层', 'text-halo-color', 'black')
-    map.setPaintProperty('stationLayer', 'circle-stroke-color', 'white')
     map.setPaintProperty('districtLineBase', 'line-color', '#fff')
     map.setPaintProperty('districtOutlineBase', 'line-color', '#fff')
     points.data.features.forEach(feature => {
@@ -1981,7 +1985,6 @@ watch(isDark, () => {
     map.setPaintProperty('风速图层', 'text-halo-color', 'white')
     map.setPaintProperty('时间图层', 'text-color', 'black')
     map.setPaintProperty('时间图层', 'text-halo-color', 'white')
-    map.setPaintProperty('stationLayer', 'circle-stroke-color', '#A2BECC')
     map.setPaintProperty('districtLineBase', 'line-color', '#000')
     map.setPaintProperty('districtOutlineBase', 'line-color', '#000')
     points.data.features.forEach(feature => {

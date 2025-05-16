@@ -11,10 +11,10 @@ export default class WindGL{
 	constructor(gl,opt) {
 		this.gl = gl;
 
-		this.fadeOpacity = 0.90;// how fast the particle trails fade on each frame
-		this.speedFactor = 2; // how fast the particles move
+		this.fadeOpacity = 0.98;// how fast the particle trails fade on each frame
+		this.speedFactor = 3; // how fast the particles move
 		this.dropRate = 0.003; // how often the particles move to a random place
-		this.dropRateBump = 0.01; // drop rate increase relative to individual particle speed
+		this.dropRateBump = 0.001; // drop rate increase relative to individual particle speed
 
 		this.drawProgram = util.createProgram(gl, drawVert, drawFrag);
 		this.screenProgram = util.createProgram(gl, quadVert, screenFrag);
@@ -23,8 +23,7 @@ export default class WindGL{
 		this.quadBuffer = util.createBuffer(gl, new Float32Array([0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1]));
 		this.framebuffer = gl.createFramebuffer();
 		this.boundaries = opt.boundaries || [-180,180,-LAT,LAT];
-
-
+		this.pointSize = opt.pointSize || 1;
 		this.defaultRampColors = {
 			0.0: '#3288bd',
 			0.1: '#66c2a5',
@@ -56,14 +55,33 @@ export default class WindGL{
 		const particleRes = this.particleStateResolution = numParticles;
 		this._numParticles = particleRes * particleRes;
 
-		const particleState = new Uint8Array(this._numParticles * 4);
-		for (let i = 0; i < particleState.length; i++) {
-				particleState[i] = Math.floor(Math.random() * 256); // randomize the initial particle positions
+
+		// 保留原始的 particleState 数据
+		if (!this.particleState) {
+			this.particleState = new Uint8Array(this._numParticles * 4);
+			for (let i = 0; i < this.particleState.length; i++) {
+				this.particleState[i] = Math.floor(Math.random() * 256);// randomize the initial particle positions
+			}
+		} else {
+			const oldLength = this.particleState.length;
+			const newLength = this._numParticles * 4;
+
+			if (newLength > oldLength) {
+				// 扩展数组并随机填充新部分
+				const newState = new Uint8Array(newLength);
+				newState.set(this.particleState);
+				for (let i = oldLength; i < newLength; i++) {
+					newState[i] = Math.floor(Math.random() * 256);
+				}
+				this.particleState = newState;
+			} else if (newLength < oldLength) {
+				// 截断数组
+				this.particleState = this.particleState.slice(0, newLength);
+			}
 		}
 		// textures to hold the particle state for the current and the next frame
-		this.particleStateTexture0 = util.createTexture(gl, gl.NEAREST, particleState, particleRes, particleRes);
-		this.particleStateTexture1 = util.createTexture(gl, gl.NEAREST, particleState, particleRes, particleRes);
-
+		this.particleStateTexture0 = util.createTexture(gl, gl.NEAREST, this.particleState, particleRes, particleRes);
+		this.particleStateTexture1 = util.createTexture(gl, gl.NEAREST, this.particleState, particleRes, particleRes);
 		const particleIndices = new Float32Array(this._numParticles);
 		for (let i = 0; i < this._numParticles; i++) particleIndices[i] = i;
 		this.particleIndexBuffer = util.createBuffer(gl, particleIndices);
@@ -134,6 +152,7 @@ export default class WindGL{
 		gl.uniform1i(program.u_color_ramp, 2);
 
 		gl.uniform1f(program.u_particles_res, this.particleStateResolution);
+		gl.uniform1f(program.u_point_size, this.pointSize);
 		gl.uniform2f(program.u_wind_min, this.windData.uMin, this.windData.vMin);
 		gl.uniform2f(program.u_wind_max, this.windData.uMax, this.windData.vMax);
 		gl.uniform4f(program.u_boundaries, ...this.boundaries);

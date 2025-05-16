@@ -155,7 +155,7 @@ import {useSettingStore} from "~/stores/setting";
 const setting = useSettingStore()
 import {reactive, ref, onMounted, watch} from "vue";
 
-const manufacturer = ref(0)
+const manufacturer = ref(1)
 const manfacturerOptions = reactive([
   {value: 0, label: "全部"},
   {value: 1, label: "华航"},
@@ -165,10 +165,10 @@ const manfacturerOptions = reactive([
 const radar_status = ref(-1)
 const radar_statusOptions = reactive([
   {value: -1, label: "全部"},
-  {value: 0, label: "未知"},
   {value: 1, label: "正常"},
   {value: 2, label: "延迟"},
   {value: 3, label: "缺失"},
+  {value: 0, label: "未知"},
 ])
 const selected = ref(['140000'])
 import {useStationStore} from "~/stores/station";
