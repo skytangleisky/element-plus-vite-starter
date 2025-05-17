@@ -501,13 +501,17 @@ export default function DBS() {
         type: 'inside',
         yAxisIndex: [0, 1],
         minSpan: 1,
-        zoomOnMouseWheel:'shift'
+        zoomOnMouseWheel:'shift',
+        startValue:0,
+        endValue:110,
       },
       {
         type: 'slider',
         right: 10,
-        yAxisIndex: [0, 1],
+        yAxisIndex: [0,1],
         show:true,
+        startValue:0,
+        endValue:110,
       }
     ]
   }

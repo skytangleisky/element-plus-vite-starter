@@ -1892,10 +1892,10 @@ onMounted(() => {
     renderWorldCopies: true,
     maxZoom: 17,
     // minZoom: 1,
-    maxBounds: [
-      [104.0, 32.5],
-      [121.0, 42.7],
-    ],
+    // maxBounds: [
+    //   [104.0, 32.5],
+    //   [121.0, 42.7],
+    // ],
     // zoom: 18,
     // center: [148.9819, -35.3981],
     // pitch: 60,
@@ -2410,7 +2410,7 @@ watch(
     }
 );
 watch(
-    () => setting.feather,
+    () => setting.风雷达组网地图相关.feather,
     (newVal) => {
       if (newVal) {
         map.setPaintProperty("featherLayer", "icon-opacity", 1);

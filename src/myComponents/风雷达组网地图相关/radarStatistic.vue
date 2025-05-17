@@ -104,9 +104,8 @@
         <div class="subitem">
           <span>水平风</span>
           <el-switch
-            v-model="setting.feather"
+            v-model="setting.风雷达组网地图相关.feather"
             inline-prompt
-            
             size="small"
           />
         </div>

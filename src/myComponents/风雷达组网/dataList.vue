@@ -1,7 +1,7 @@
 <template>
   <div
-    class="h-100% box-border"
-    style="border-radius: 10px; overflow: auto"
+    class="h-full w-full box-border"
+    style="border-radius: 10px;overflow: auto;"
     v-loading="loading"
   >
     <el-tree
@@ -71,7 +71,7 @@ const loadNode = (node: Node, resolve: (data: Tree[]) => void) => {
         }
       })
       loading.value=false
-      return resolve(paths)
+      return resolve(paths.slice().reverse())
     });
   }else{
     let path = node.data.id.replaceAll(/\/$/g,'')
@@ -99,7 +99,7 @@ const loadNode = (node: Node, resolve: (data: Tree[]) => void) => {
           }
         }
       })
-      return resolve(paths)
+      return resolve(paths.slice().reverse())
     });
   }
 }
@@ -123,3 +123,8 @@ const renderContent = (
 const treeRef = ref(null);
 
 </script>
+<style lang="scss" scoped>
+.myTree {
+  height: 100%;
+}
+</style>

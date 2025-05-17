@@ -269,9 +269,9 @@ watch(()=>settingStore.风雷达组网地图相关.地区,newVal=>{
 })
 watch(activeIndex, (newVal, oldVal) => {
   if(newVal == 1){
-    settingStore.风雷达组网.监控.isFoldSingle = true
-  }else{
     settingStore.风雷达组网.监控.isFoldSingle = false
+  }else{
+    settingStore.风雷达组网.监控.isFoldSingle = true
   }
 },{immediate:true})
 </script>

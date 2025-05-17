@@ -9,30 +9,33 @@
             </span>
       </div>
       <div class="map-module-bottom" v-show="showBottom">
-        <color title="水平风速(m/s)" demo="风速"></color>
-        <color title="流线(m/s)" demo="流线"></color>
-        <color title="等值线(m/s)" demo="等值线"></color>
-        <div class="divider-line"></div>
-        <features title="要素填图"></features>
-
+        <color v-if="判断是否显示水平风速色标" title="水平风速(m/s)" demo="风速"></color>
+        <color v-if="判断是否显示流线色标" title="流线(m/s)" demo="流线"></color>
+        <color v-if="判断是否显示等值线色标" title="等值线(m/s)" demo="等值线"></color>
+        <div v-if="是否显示分割线" class="divider-line"></div>
+        <features v-if="判断是否显示要素填图" title="要素填图"></features>
       </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import {ref, watch} from 'vue';
+import {ref, watch, computed } from 'vue';
 import color from "./color.vue";
 import features from "./features.vue";
 import {useSettingStore} from "~/stores/setting";
 import {ArrowDown, ArrowUp} from "@element-plus/icons-vue";
-
+const 判断是否显示水平风速色标 = computed(()=>setting.风雷达组网地图相关.风场||setting.风雷达组网地图相关.feather)
+const 判断是否显示流线色标 = computed(()=>setting.风雷达组网地图相关.流线)
+const 判断是否显示等值线色标 = computed(()=>setting.风雷达组网地图相关.等值线||setting.风雷达组网地图相关.等值带)
+const 判断是否显示要素填图 = computed(()=>setting.风雷达组网地图相关.站号||setting.风雷达组网地图相关.站名||setting.风雷达组网地图相关.feather||setting.风雷达组网地图相关.垂直气流)
+const 是否显示分割线 = computed(()=>(判断是否显示水平风速色标.value||判断是否显示流线色标.value||判断是否显示等值线色标.value)&&判断是否显示要素填图.value)
 const setting = useSettingStore();
 
 // 控制整个模块折叠显示效果
 let showBottom = ref(true)
 showBottom.value = setting.风雷达组网.监控.isFoldSingle
 watch(()=>setting.风雷达组网.监控.isFoldSingle,newVal=>{
-  showBottom.value =newVal
+  // showBottom.value =newVal
 })
 </script>
 

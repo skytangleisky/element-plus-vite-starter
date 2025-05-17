@@ -58,6 +58,7 @@ export const useSettingStore = defineStore({
       relativeHeight:1,
       风场数据:"不显示",
       反演风场:"不显示",
+      feather:true,
       站名:true,
       站号:false,
       高度:false,

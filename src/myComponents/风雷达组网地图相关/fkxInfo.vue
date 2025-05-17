@@ -68,7 +68,7 @@ const setting = useSettingStore();
 const router = useRouter()
 const station = useStationStore();
 
-let isShowBottom = ref(true)
+let isShowBottom = ref(false)
 const showFkxHandle = () => {
   isShowBottom.value = !isShowBottom.value;
   setting.disappear = isShowBottom.value;

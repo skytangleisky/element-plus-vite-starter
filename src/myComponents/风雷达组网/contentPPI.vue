@@ -91,6 +91,7 @@ function handleNodeClick_DBS(arg:string){
   ::v-deep(.ep-tabs__content){
     width: 240px;
     padding:0;
+    overflow: auto;
     flex:1;
     box-sizing: border-box;
     ::v-deep(.ep-tab-pane){

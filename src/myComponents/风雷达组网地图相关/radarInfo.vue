@@ -297,7 +297,7 @@ const station = useStationStore();
 let collapseActNames = ref([])
 // 控制整个模块折叠显示效果
 let showTags = ref(true)
-showTags.value = !setting.风雷达组网.监控.isFoldSingle
+showTags.value = setting.风雷达组网.监控.isFoldSingle
 let sensorData = reactive({})
 const bus = useBus();
 // 雷达信息
@@ -308,7 +308,7 @@ const deviceInfo = reactive({
 });
 
 watch(()=>setting.风雷达组网.监控.isFoldSingle,newVal=>{
-  showTags.value =!newVal
+  // showTags.value =newVal
 })
 watch([() => bus.avgWindData_重庆, () => station.active], ([avgWindData, active]) => {
   if (avgWindData.data) {
