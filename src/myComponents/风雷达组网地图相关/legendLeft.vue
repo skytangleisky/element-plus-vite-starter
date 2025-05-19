@@ -50,102 +50,102 @@ watch(()=>setting.风雷达组网.监控.isFoldSingle,newVal=>{
 }
 </style>
 <style scoped lang="scss">
-.module-box {
-  .module-content {
-    display: flex;
-    justify-content:space-around;
-  }
+// .module-box {
+//   .module-content {
+//     display: flex;
+//     justify-content:space-around;
+//   }
 
-  .site-status {
+//   .site-status {
 
-    .point {
-      height: 14px;
-      width: 14px;
-      border-radius: 14px;
-      background-color: var(--ep-color-info);
-      border: 0.01rem solid #fff;
-    }
+//     .point {
+//       height: 14px;
+//       width: 14px;
+//       border-radius: 14px;
+//       background-color: var(--ep-color-info);
+//       border: 0.01rem solid #fff;
+//     }
 
-    .item-status {
-      margin-left: 8px;
-      height: 24px;
-      width: 24px;
-      border-radius: 24px;
-      background-color: var(--ep-color-info-light-7);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+//     .item-status {
+//       margin-left: 8px;
+//       height: 24px;
+//       width: 24px;
+//       border-radius: 24px;
+//       background-color: var(--ep-color-info-light-7);
+//       display: flex;
+//       justify-content: center;
+//       align-items: center;
+//     }
 
-    .status-1 {
-      background-color: var(--ep-color-success-light-7);
+//     .status-1 {
+//       background-color: var(--ep-color-success-light-7);
 
-      .point {
-        background-color: var(--ep-color-success);
-      }
-    }
+//       .point {
+//         background-color: var(--ep-color-success);
+//       }
+//     }
 
-    .status-2 {
-      background-color: var(--ep-color-warning-light-7);
+//     .status-2 {
+//       background-color: var(--ep-color-warning-light-7);
 
-      .point {
-        background-color: var(--ep-color-warning);
-      }
-    }
+//       .point {
+//         background-color: var(--ep-color-warning);
+//       }
+//     }
 
-    .status-3 {
-      background-color: var(--ep-color-danger-light-7);
+//     .status-3 {
+//       background-color: var(--ep-color-danger-light-7);
 
-      .point {
-        background-color: var(--ep-color-danger);
-      }
-    }
-  }
+//       .point {
+//         background-color: var(--ep-color-danger);
+//       }
+//     }
+//   }
 
-  .item-box {
-    display: flex;
-    align-items: center;
-    color: var(--el-text-color-primary);
+//   .item-box {
+//     display: flex;
+//     align-items: center;
+//     color: var(--el-text-color-primary);
 
-    &:not(:last-child) {
-      margin-right: 16px;
-    }
+//     &:not(:last-child) {
+//       margin-right: 16px;
+//     }
 
 
-  }
+//   }
 
-  .manufacturer-box {
-    .item-status {
-      margin-left: 8px;
-      width: 12px;
-      height: 12px;
-      border:1px solid var(--border-color);
-      background-color:var(--border-color);
-    }
+//   .manufacturer-box {
+//     .item-status {
+//       margin-left: 8px;
+//       width: 12px;
+//       height: 12px;
+//       border:1px solid var(--border-color);
+//       background-color:var(--border-color);
+//     }
 
-    .status-0 {
+//     .status-0 {
 
-      border-radius:50%;
+//       border-radius:50%;
 
-    }
+//     }
 
-    .status-1 {
-      width: 0;
-      height: 0;
-      border-top:none;
-      border-left: 8px solid transparent;
-      border-right: 8px solid transparent;
-      border-bottom: 12px solid var(--border-color);
-      background-color:transparent;
-    }
+//     .status-1 {
+//       width: 0;
+//       height: 0;
+//       border-top:none;
+//       border-left: 8px solid transparent;
+//       border-right: 8px solid transparent;
+//       border-bottom: 12px solid var(--border-color);
+//       background-color:transparent;
+//     }
 
-    .status-2 {
-      width: 10px;
-      height: 10px;
-      transform: rotate(45deg);
-    }
-  }
-}
+//     .status-2 {
+//       width: 10px;
+//       height: 10px;
+//       transform: rotate(45deg);
+//     }
+//   }
+// }
 
 .divider-line {
   border-bottom: 1px solid var(--border-color);

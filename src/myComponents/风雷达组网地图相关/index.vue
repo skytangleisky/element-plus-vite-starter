@@ -57,7 +57,7 @@
     </el-scrollbar>
     <el-scrollbar class="page-right">
       <currentStatusInfo></currentStatusInfo>
-      <baseModule title="雷达图例">
+      <baseModule title="图例">
         <legend-right></legend-right>
       </baseModule>
       <radar-info></radar-info>
@@ -104,8 +104,6 @@
     </el-scrollbar>
     <div class="page-center-top">
       <Dialog></Dialog>
-      <legend-left style="width:320px;"></legend-left>
-
     </div>
     <div class="page-center-bottom">
       <fkx-info></fkx-info>
@@ -166,7 +164,6 @@ import fkxInfo from './fkxInfo.vue'
 import radarInfo from './radarInfo.vue'
 import baseModule from './baseModule.vue'
 import legendRight from './legendRight.vue'
-import legendLeft from './legendLeft.vue'
 import currentStatusInfo from './currentStatusInfo.vue'
 import uvUrl from "../mapbox/data/06040808.000?url";
 import CustomLayer from './CustomLayer.js'//绘制流线

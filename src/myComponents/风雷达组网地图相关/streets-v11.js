@@ -272,14 +272,18 @@ export default {
 	// 		]
 	// },
 	"sources": {
-		"district":{
+		"山西省区划":{
 			"type":"geojson",
 			// "data": window.location.origin+"/resources/100000_full.json"
 			"data": window.location.origin+"/resources/山西省区划.geojson"
 		},
-		"districtOutline":{
+		"山西省":{
 			"type":"geojson",
 			"data": window.location.origin+"/resources/山西省.geojson"
+		},
+		"山西省Outside":{
+			"type":"geojson",
+			"data": window.location.origin+"/resources/山西省Outside.geojson"
 		},
 		"composite": {
 				"url_origin": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2",
@@ -347,7 +351,7 @@ export default {
 			{
 				'id': 'districtLineBase',
 				'type': 'line',
-				'source': 'district',
+				'source': '山西省区划',
 				'layout': {
 					'visibility':setting.district?'visible':'none',
 					'line-join':'round',
@@ -362,17 +366,28 @@ export default {
 			{
 				'id': 'districtOutlineBase',
 				'type': 'line',
-				'source': 'districtOutline',
+				'source': '山西省',
 				'layout': {
 					'visibility':setting.district?'visible':'none',
 					'line-join':'round',
 					'line-cap':'round'
 				},
 				'paint': {
-					'line-color': isDark.value?'#fff':'#A2BECC',
-					'line-width': 2,
+					'line-color': isDark.value?'#fff':'#000',
+					'line-width': 4,
+					'fill-outline-color':'transparent'
 				}
 			},
+			{
+				id: 'outside-region',
+				type: 'fill',
+				source: '山西省Outside',
+				paint: {
+					'fill-color': '#000',
+					'fill-opacity': 0.5,
+					'fill-outline-color':'transparent'
+				}
+			}
 	],
 	"created": "2023-11-07T03:38:34.435Z",
 	"modified": "2023-11-14T11:53:57.549Z",

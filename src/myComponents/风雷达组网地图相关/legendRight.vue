@@ -1,25 +1,6 @@
 <template>
   <div class="legend-right">
     <div class="module-box">
-      <div class="module-title">站点状态</div>
-      <div class="module-content site-status">
-        <div
-            class="item-box"
-            v-for="item in statusData"
-            :key="item.value"
-        >
-          <div>{{ item.label }}</div>
-          <div
-              class="item-status"
-              :class="`status-${item.value}`"
-          >
-            <div class="point"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="divider-line"></div>
-    <div class="module-box">
       <div class="module-title">厂商</div>
       <div class="module-content manufacturer-box">
         <div
@@ -37,11 +18,37 @@
         </div>
       </div>
     </div>
-
+    <div class="divider-line"></div>
+    <div class="module-box">
+      <div class="module-title">站点状态</div>
+      <div class="module-content site-status">
+        <div
+            class="item-box"
+            v-for="item in statusData"
+            :key="item.value"
+        >
+          <div>{{ item.label }}</div>
+          <div
+              class="item-status"
+              :class="`status-${item.value}`"
+          >
+            <div class="point"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-if="是否显示分割线1" class="divider-line"></div>
+    <color v-if="判断是否显示水平风速色标" title="水平风速(m/s)" demo="风速"></color>
+    <color v-if="判断是否显示流线色标" title="流线(m/s)" demo="流线"></color>
+    <color v-if="判断是否显示等值线色标" title="等值线(m/s)" demo="等值线"></color>
+    <div v-if="是否显示分割线2" class="divider-line"></div>
+    <features v-if="判断是否显示要素填图" title="要素填图"></features>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useSettingStore } from '~/stores/setting';
+import {computed} from 'vue'
 import color from "./color.vue";
 import features from "./features.vue";
 
@@ -72,6 +79,13 @@ const manufacturerData = [
     label: "镭测"
   },
 ]
+const setting = useSettingStore();
+const 判断是否显示水平风速色标 = computed(()=>setting.风雷达组网地图相关.风场||setting.风雷达组网地图相关.feather)
+const 判断是否显示流线色标 = computed(()=>setting.风雷达组网地图相关.流线)
+const 判断是否显示等值线色标 = computed(()=>setting.风雷达组网地图相关.等值线||setting.风雷达组网地图相关.等值带)
+const 判断是否显示要素填图 = computed(()=>setting.风雷达组网地图相关.站号||setting.风雷达组网地图相关.站名||setting.风雷达组网地图相关.feather||setting.风雷达组网地图相关.垂直气流)
+const 是否显示分割线1 = computed(()=>(判断是否显示水平风速色标.value||判断是否显示流线色标.value||判断是否显示等值线色标.value))
+const 是否显示分割线2 = computed(()=>(判断是否显示要素填图.value))
 </script>
 
 <style lang="scss">

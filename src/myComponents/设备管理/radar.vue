@@ -1,33 +1,94 @@
 <template>
-  <datatable
-    style="padding: 10px"
-    :database="databaseRaw2"
-    table="device"
-    :headerOption="headerOption"
-  ></datatable>
+  <div class="main-container">
+    <el-table :data="radars" style="width: 100%" stripe>
+      <el-table-column prop="city" label="市" width="180" />
+      <el-table-column prop="district" label="区县" width="180" />
+      <el-table-column prop="no" label="编号" />
+      <el-table-column prop="device_name" label="设备名称">
+        <template #default="{row}">
+          <div class="color-cyan-7 dark:color-cyan-3">
+            {{row.device_name}}
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="device_type" label="设备类型" />
+      <el-table-column prop="device_model" label="设备型号" />
+      <el-table-column prop="manufacturer_short" label="厂商简称" />
+      <el-table-column prop="status" label="设备状态">
+        <template #default="{row}">
+          <el-tag :type="row.status==1?'success':'danger'">{{row.status==1?'在线':'离线'}}</el-tag>
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-pagination
+      background
+      layout="prev, pager, next,jumper"
+      :total="paginationOption.total"
+      :page-size="paginationOption.pageSize"
+      v-model:current-page="paginationOption.currentPage"
+    />
+  </div>
 </template>
+
 <script lang="ts" setup>
+import { ref,reactive,watch } from "vue";
+import { exec } from "~/api/index.js";
 import { databaseRaw2 } from "~/api/重庆";
-import { reactive } from "vue";
-import datatable from "~/myComponents/datatable/index.vue";
-const headerOption = reactive({
-  // id: { label: "主键" },
-  // createtime: { label: "添加时间" },
-  // updatetime: { label: "更新时间" },
-  // uuid: { label: "唯一标识" },
-  // username: { label: "用户名" },
-  // introduction: { label: "描述" },
-  // nickname: { label: "昵称" },
-  // login_type: { label: "登录方式" },
-  // email: { label: "电子邮箱" },
-  // email_verified_at: { label: "电子邮箱确认时间" },
-  // password: { label: "密码" },
-  // two_factor_secret: { label: "谷歌双因子认证秘钥" },
-  // two_factor_recovery_codes: { label: "谷歌双因子认证恢复码" },
-  // remember_token: { label: "记录token" },
-  // avatar: { label: "头像地址" },
-  // user_path: { label: "相对路径" },
-  // debug_enable: { label: "是否允许调试" },
-  // roles: { label: "角色" },
-});
+const paginationOption = reactive({
+  pageSize:100,
+  currentPage:1,
+  total:0,
+})
+const radars = ref<Radar[]>([])
+type Radar = {
+  "id": number,
+  "uuid": string|null,
+  "province": string,
+  "city": string,
+  "district": string,
+  "adcode": string,
+  "no": string,
+  "device_no": null|string,
+  "device_name": string,
+  "device_short_name": string,
+  "device_type": string,
+  "device_model": string,
+  "address": string,
+  "manufacturer": string,
+  "manufacturer_short": string,
+  "lng": string,
+  "lat": string,
+  "altitude": string,
+  "height": null|string,
+  "data_path": null|string,
+  "color": null|string,
+  "speed": null|string,
+  "hide": null|string,
+  "orientation": null|string,
+  "data_overtime": number,
+  "status": number,
+  "createtime": string,
+  "updatetime": string
+}
+watch(paginationOption,()=>{
+  exec({
+    database:databaseRaw2,
+    query:{
+      sqls:[
+        `select count(*) count from (select * from \`device\`) tmp`,
+        `select * from \`device\` limit ${(paginationOption.currentPage-1)*paginationOption.pageSize},${paginationOption.pageSize}`
+      ]
+    }
+  }).then((res)=>{
+    paginationOption.total = res.data[0][0].count
+    radars.value = res.data[1]
+  })
+},{immediate:true})
 </script>
+<style lang="scss" scoped>
+  .main-container {
+    position: absolute;
+    inset: 0;
+    overflow: auto;
+  }
+</style>

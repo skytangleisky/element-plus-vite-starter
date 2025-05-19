@@ -141,6 +141,14 @@ export default {
           }
         }
       ]
+    },
+    {
+      name: 'f46f5690-75ab-40a4-a578-da2b61c3ed95',
+      checked:true,
+      meta:{
+        label: '图表',
+        roles:['cq']
+      }
     }
   ]
 }

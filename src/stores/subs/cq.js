@@ -8,7 +8,6 @@ export default {
     label:'山西测风雷达组网系统',
     roles:['admin','cq','device']
   },
-
   children:[
     {
       path:'synthesis',
