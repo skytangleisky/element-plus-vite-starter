@@ -69,7 +69,7 @@ const manufacturerData = [
     label: "西物"
   }, {
     value: 2,
-    label: "雷测"
+    label: "镭测"
   },
 ]
 </script>

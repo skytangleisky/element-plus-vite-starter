@@ -294,7 +294,7 @@ import {useSettingStore} from "~/stores/setting";
 const setting = useSettingStore();
 const station = useStationStore();
 // 折叠面板展示的数据
-let collapseActNames = ref([])
+let collapseActNames = ref(["1"])
 // 控制整个模块折叠显示效果
 let showTags = ref(true)
 showTags.value = setting.风雷达组网.监控.isFoldSingle
