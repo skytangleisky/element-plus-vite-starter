@@ -1,7 +1,6 @@
 <template>
   <div class="baseLayer">
     <div class="layer-top">
-
       <div
           v-for="(x, xi) in dataList"
           class="btn map-btn"
@@ -13,7 +12,7 @@
       </div>
 
     </div>
-    <div class="layer-bottom">
+    <div class="layer-bottom" v-if="hasPermission(['f46f5690-75ab-40a4-a578-da2b61c3ed95'])">
       <div class="charts-box" v-if="activeIndex==0">
         <base-echarts :key="1" title="雷达状态分布" height="240px" :options="basePie"></base-echarts>
         <base-echarts :key="2" title="各厂商雷达状态" height="240px" :options="baseBar"></base-echarts>
@@ -26,6 +25,7 @@
 </template>
 
 <script setup lang="ts">
+import { hasPermission } from '~/tools';
 import {ref, reactive, watch} from 'vue';
 import radarStatistic from "./radarStatistic.vue";
 import baseEcharts from "./baseEcharts.vue";
