@@ -46,10 +46,8 @@ import color from "./color.vue";
 import features from "./features.vue";
 
 const statusData = [
+
   {
-    value: 0,
-    label: "未知"
-  }, {
     value: 1,
     label: "正常"
   }, {

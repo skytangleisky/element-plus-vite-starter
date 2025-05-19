@@ -325,16 +325,17 @@ export function querySensorData(radar_id:string){
  * @author yhl 2025-05-12 17:41:56
  * @description 获取雷达状态统计
  * @param adcode-行政区划
- * @param grade-级别 1：省 2：市 3：县
+ * @param manufacturer-厂商
  */
 
-export function queryRadarStatus(adcode:string,grade:number){
+export function queryRadarStatus(adcode:string,manufacturer:string){
+
   return request({
     url:'/python/api/device/statistics/status',
     method: 'post',
     data:{
       adcode,
-      grade,
+      manufacturer,
     },
     headers:{
       'content-type':'application/json'
@@ -346,16 +347,17 @@ export function queryRadarStatus(adcode:string,grade:number){
  * @author yhl 2025-05-13 14:35:02
  * @description 获取统计厂商状态数据
  * @param adcode-行政区划
- * @param grade-级别 1：省 2：市 3：县
+ * @param manufacturer-厂商
  */
 
-export function queryRadarFactStatus(adcode:string,grade:number){
+export function queryRadarFactStatus(adcode:string,manufacturer:string){
+
   return request({
     url:'/python/api/device/statistics/manufacturer_status',
     method: 'post',
     data:{
       adcode ,
-      grade ,
+      manufacturer ,
     },
     headers:{
       'content-type':'application/json'

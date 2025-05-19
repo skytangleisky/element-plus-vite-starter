@@ -34,10 +34,11 @@ import iconChart from "~/assets/layerIcon/icon-chart.png";
 import iconLayer from "~/assets/layerIcon/icon-layer.png";
 import {queryRadarStatus, queryRadarFactStatus} from '~/api/重庆'
 import {useSettingStore} from "~/stores/setting"
-let settingStore = useSettingStore();
+
+let setting = useSettingStore();
 
 let activeIndex = ref(0);
-let adcode = ref("140100")
+
 const dataList = [
   {
     icon: iconChart,
@@ -100,14 +101,13 @@ let basePie = reactive({
       },
       //数据项
       data: [
-        {value: 0, name: "未知"},
+
         {value: 0, name: "正常"},
         {value: 0, name: "延迟"},
         {value: 0, name: "缺失"},
       ],
       // 全局调色盘。
       color: [
-        "#909399",
         "#3AC8A5",
         "#e8cb1a",
         "#F56c6c",
@@ -166,21 +166,7 @@ let baseBar = reactive({
     },
   ],
   series: [
-    {
-      name: "未知",
-      type: "bar",
-      data: [],
-      barWidth: "15%",
-      itemStyle: {
-        borderRadius: [4, 4, 0, 0],
-      },
-      label: {
-        show: true,
-        color: "inherit",
-        position: "top",
-      },
-      color: "#909399",
-    }, {
+   {
       name: "正常",
       type: "bar",
       data: [],
@@ -229,24 +215,29 @@ let baseBar = reactive({
 });
 
 const getRadarStatus = () => {
+  const adcode = setting.风雷达组网地图相关.地区.adcodes[setting.风雷达组网地图相关.地区.adcodes.length - 1]
+  let manufacturer:string
+  setting.风雷达组网地图相关.manufacturer == "全部" ? manufacturer = "" : manufacturer = setting.风雷达组网地图相关.manufacturer
+
   // 雷达状态分布数据
-  queryRadarStatus(adcode.value).then((res) => {
+  queryRadarStatus(adcode, manufacturer).then((res) => {
     if (res.data.code == 200) {
       const data = res.data.data
       data.forEach(item => {
-        basePie.series[0].data[item.status].value = item.cnt
+        basePie.series[0].data[item.status-1].value = item.cnt
       })
     }
   })
   // 各厂商雷达状态
-  queryRadarFactStatus(adcode.value).then((res) => {
+  queryRadarFactStatus(adcode, manufacturer).then((res) => {
     if (res.data.code == 200) {
       const data = res.data.data
+
       baseBar.xAxis[0].data = data.manufacturers
-      baseBar.series[0].data = data.status_0
-      baseBar.series[1].data = data.status_1
-      baseBar.series[2].data = data.status_2
-      baseBar.series[3].data = data.status_3
+
+      baseBar.series[0].data = data.status_1
+      baseBar.series[1].data = data.status_2
+      baseBar.series[2].data = data.status_3
     }
   })
 }
@@ -263,17 +254,17 @@ const changeTab = (index: number) => {
   activeIndex.value = index
 
 }
-watch(()=>settingStore.风雷达组网地图相关.地区,newVal=>{
-  adcode.value=newVal.adcodes[newVal.adcodes.length-1]
+watch([() => setting.风雷达组网地图相关.地区, () => setting.风雷达组网地图相关.manufacturer], () => {
+
   getRadarStatus()
 })
 watch(activeIndex, (newVal, oldVal) => {
-  if(newVal == 1){
-    settingStore.风雷达组网.监控.isFoldSingle = false
-  }else{
-    settingStore.风雷达组网.监控.isFoldSingle = true
+  if (newVal == 1) {
+    setting.风雷达组网.监控.isFoldSingle = false
+  } else {
+    setting.风雷达组网.监控.isFoldSingle = true
   }
-},{immediate:true})
+}, {immediate: true})
 </script>
 
 <style scoped lang="scss">
