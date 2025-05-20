@@ -1989,8 +1989,9 @@ watch(isDark, () => {
     map.setPaintProperty('风速图层', 'text-halo-color', 'black')
     map.setPaintProperty('时间图层', 'text-color', 'white')
     map.setPaintProperty('时间图层', 'text-halo-color', 'black')
-    map.setPaintProperty('districtLineBase', 'line-color', '#fff')
-    map.setPaintProperty('districtOutlineBase', 'line-color', '#fff')
+    map.setPaintProperty('districtLineBase', 'line-color', '#66BFF8')
+    map.setPaintProperty('districtOutlineBase', 'line-color', '#0082c4')
+    map.setPaintProperty('outside-region', 'fill-color', '#051332')
     points.data.features.forEach(feature => {
       if (feature.properties.color == '#000') {
         feature.properties.color = '#fff'
@@ -2014,8 +2015,9 @@ watch(isDark, () => {
     map.setPaintProperty('风速图层', 'text-halo-color', 'white')
     map.setPaintProperty('时间图层', 'text-color', 'black')
     map.setPaintProperty('时间图层', 'text-halo-color', 'white')
-    map.setPaintProperty('districtLineBase', 'line-color', '#000')
-    map.setPaintProperty('districtOutlineBase', 'line-color', '#000')
+    map.setPaintProperty('districtLineBase', 'line-color', '#A2BECC')
+    map.setPaintProperty('districtOutlineBase', 'line-color', '#798E99')
+    map.setPaintProperty('outside-region', 'fill-color', '#F4FBFF')
     points.data.features.forEach(feature => {
       if (feature.properties.color == '#fff') {
         feature.properties.color = '#000'
@@ -2614,12 +2616,9 @@ watch(
 }
 
 .map {
-  background-color: #F4FBFF;
+  background-color: var(--map-color);
 }
 
-.dark .map {
-  background-color: #2b2b2b;
-}
 
 $page-grid: 20px;
 $page-left-width: 300px;

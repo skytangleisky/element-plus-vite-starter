@@ -359,7 +359,7 @@ export default {
 					'line-cap':'round'
 				},
 				'paint': {
-					'line-color': isDark.value?'#fff':'#A2BECC',
+					'line-color': isDark.value?'#66BFF8':'#A2BECC',
 					'line-width': 1,
 					'line-opacity':0.4
 				}
@@ -374,7 +374,7 @@ export default {
 					'line-cap':'round'
 				},
 				'paint': {
-					'line-color': isDark.value?'#fff':'#000',
+					'line-color': isDark.value?'#0082c4':'#A2BECC',
 					'line-width': 4,
 					'fill-outline-color':'transparent'
 				}
@@ -384,8 +384,8 @@ export default {
 				type: 'fill',
 				source: '山西省Outside',
 				paint: {
-					'fill-color': '#000',
-					'fill-opacity': 0.7,
+					'fill-color': isDark.value?'#051332':'#F4FBFF',
+					'fill-opacity': 1,
 					'fill-outline-color':'transparent'
 				}
 			}
