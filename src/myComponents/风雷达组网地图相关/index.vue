@@ -56,13 +56,11 @@
       <baseLayer></baseLayer>
     </el-scrollbar>
     <el-scrollbar class="page-right">
-      <currentStatusInfo></currentStatusInfo>
-      <baseModule title="图例">
+      <currentStatusInfo v-if="hasPermission(['36b3e515-351e-4d19-bc53-9c885e59dfa9'])"></currentStatusInfo>
+      <baseModule title="图例" v-if="hasPermission(['4e98b05a-d317-45d1-b3e5-b12dacabc7e8'])">
         <legend-right></legend-right>
       </baseModule>
-      <radar-info></radar-info>
-
-
+      <radar-info v-if="hasPermission(['41caf125-b812-477c-8719-61b96c473488'])"></radar-info>
       <div style="display: none">
         <!--      <div style="display:flex;flex-direction: column;overflow: auto; scroll-snap-type: none;height: 100%;">-->
         <!--        <chart-info></chart-info>-->
@@ -103,8 +101,8 @@
 
     </el-scrollbar>
     <div class="page-center-bottom">
-      <fkx-info></fkx-info>
-      <TimeStep @change="TimeStepChange"></TimeStep>
+      <fkx-info v-if="hasPermission(['c4f37908-bd83-46ff-a712-0d93eec212a0'])"></fkx-info>
+      <TimeStep v-if="hasPermission(['e44f37e1-f642-4aaf-83ca-052313b217f5'])" @change="TimeStepChange"></TimeStep>
     </div>
 
     <time-line
@@ -207,7 +205,7 @@ const setting = useSettingStore();
 let map: mapboxgl.Map;
 watch(()=>setting.风雷达组网地图相关.地区,()=>{
   const adcode = setting.风雷达组网地图相关.地区.adcodes.slice(-1)[0];
-  if(adcode.endsWith('00')){
+  if(adcode==undefined||adcode.endsWith('00')){
     (map as any).getSource('山西省区划').setData(`/backend/region/${adcode}_full.json`);
   }
   (map as any).getSource('山西省').setData(`/backend/region/${adcode}.json`);
@@ -889,7 +887,7 @@ const loadFunc = async () => {
       "text-offset": [0, -1.5],
       "text-ignore-placement": true,
       "text-allow-overlap": true,
-      "text-rotation-alignment": "map",
+      // "text-rotation-alignment": "map",
       "text-max-width": 400,
     },
     paint: {

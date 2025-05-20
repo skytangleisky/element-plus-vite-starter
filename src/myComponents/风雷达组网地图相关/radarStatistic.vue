@@ -21,7 +21,7 @@
         </div>
       </collapse-card>
     </div> -->
-    <div class="item">
+    <div class="item" v-if="hasPermission(['e75b5833-04f8-4504-844e-9ff4857b15c0'])">
       <collapse-card title="雷达设备" v-model:show="show2" :show-collapse="true">
         <div class="subitem">
           <span>站名</span>
@@ -55,7 +55,7 @@
         </template>
       </collapse-card>
     </div>
-    <div class="item">
+    <div class="item" v-if="hasPermission(['9e659895-f520-40e9-aa8a-a6103eff5d9c'])">
       <collapse-card title="风廓线" v-model:show="showDBS" :show-collapse="true">
         <!-- <div class="subitem">
           <span class="whitespace-nowrap">相对高度层</span>
@@ -155,7 +155,7 @@
         </div> -->
       </collapse-card>
     </div>
-    <div class="item">
+    <div class="item" v-if="hasPermission(['e2c7295c-4e04-45ce-a58e-3e547ba25b25'])">
       <collapse-card title="数据融合" v-model:show="showDataFusion" :show-collapse="true">
         <div class="subitem" v-if="hasPermission(['5dd862f4-112f-46cf-a843-11c3f5aba1cf'])">
           <span>水平风场</span>
@@ -221,7 +221,7 @@
         </div>
       </collapse-card>
     </div>
-    <div class="item" v-if="hasPermission(['da4ce7c7-3aa9-4b9b-8d8b-ce44241794d5'])">
+    <div class="item" v-if="hasPermission(['1b186065-deea-409f-8e78-fb32d50b3df0'])">
       <collapse-card title="PPI" v-model:show="showPPI" :show-collapse="true">
         <div class="subitem">
           <span class="whitespace-nowrap">风场透明度</span>
@@ -268,7 +268,7 @@
         </div>
       </collapse-card>
     </div>
-    <div class="item">
+    <div class="item" v-if="hasPermission(['e9b2ee62-7cb2-4dc3-99a0-f422b704fdb7'])">
       <collapse-card
         title="图层管理" v-model:show="showMapSetting" :show-collapse="true">
         <div class="subitem">
@@ -309,7 +309,7 @@
             size="small"
           />
         </div>
-        <div class="subitem" v-if="hasPermission(['da4ce7c7-3aa9-4b9b-8d8b-ce44241794d5'])">
+        <div class="subitem">
           <span>等距环</span>
           <el-switch
             v-model="setting.风雷达组网地图相关.等距环"

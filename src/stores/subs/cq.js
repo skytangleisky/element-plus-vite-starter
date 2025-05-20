@@ -11,7 +11,7 @@ export default {
   children:[
     {
       path:'synthesis',
-      name:'8f316b61-96ed-e4ad-6f96-2899833db3b8',
+      name:'8f316b61-96ed-e4ff-6f96-2899833de3b8',
       component:'/src/myComponents/风雷达组网地图相关/index.vue',
       hide:false,
       svg:'ec24142a-78ac-4b58-9e4d-44d3e6c07835',

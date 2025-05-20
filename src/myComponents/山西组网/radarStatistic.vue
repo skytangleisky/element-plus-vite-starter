@@ -146,7 +146,7 @@
         </div> -->
       </collapse-card>
     </div>
-    <div class="item" v-if="hasPermission(['da4ce7c7-3aa9-4b9b-8d8b-ce44241794d5'])">
+    <div class="item">
       <collapse-card title="PPI" v-model:show="showPPI" :show-collapse="true">
         <div class="subitem">
           <span class="whitespace-nowrap">风场透明度</span>

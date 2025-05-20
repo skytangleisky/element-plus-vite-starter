@@ -293,7 +293,7 @@ export class View{
   }
 }
 let cvs = document.createElement('canvas')
-let ctx = cvs.getContext('2d') as unknown as CanvasRenderingContext2D
+let ctx = cvs.getContext('2d',{willReadFrequently:true}) as unknown as CanvasRenderingContext2D
 export async function loadImage2Map(map:any,url:string,width:number,height:number,options:any){
   let result = await loadImage(url, width, height, options) as {[key:string]:any};
   for(let k in result){

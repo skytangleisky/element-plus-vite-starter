@@ -375,8 +375,7 @@ export default {
 				},
 				'paint': {
 					'line-color': isDark.value?'#0082c4':'#A2BECC',
-					'line-width': 4,
-					'fill-outline-color':'transparent'
+					'line-width': 4
 				}
 			},
 			{

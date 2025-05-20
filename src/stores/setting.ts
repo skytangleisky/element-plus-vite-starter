@@ -685,13 +685,23 @@ export const useSettingStore = defineStore({
         }
       },
       {
-        path:'cq_synthesis',
-        name:'b7ef7b88-5e6a-0c62-12aa-a0a18980cd11',
-        component:'/src/myComponents/风雷达组网地图相关/index.vue',
+        path:'sx_synthesis',
+        name:'b7ef7b88-5e6a-0c62-12aa-f0a18980cd11',
+        component:'/src/myComponents/fragment/气象预报员.vue',
         hide:true,
         svg:'0ca86c9c-7cf8-4ffa-8b38-82bf6771c25f',
         meta:{
-          label:'首页'
+          label:'组网观测(预报员)'
+        }
+      },
+      {
+        path:'sx_synthesis_device',
+        name:'8f316b61-96ed-e4ad-6f96-2899833da3b8',
+        component:'/src/myComponents/fragment/设备管理员.vue',
+        hide:false,
+        svg:'ec24142a-78ac-4b58-9e4d-44d3e6c07835',
+        meta:{
+          label:'组网观测(设备管理员)'
         }
       },
       {

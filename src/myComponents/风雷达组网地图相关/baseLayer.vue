@@ -1,6 +1,6 @@
 <template>
   <div class="baseLayer">
-    <div class="layer-top">
+    <!-- <div class="layer-top">
       <div
           v-for="(x, xi) in dataList"
           class="btn map-btn"
@@ -10,22 +10,23 @@
         <img :src="x.icon" alt=""/>
         <div class="btn-title">{{ x.title }}</div>
       </div>
-
     </div>
-    <div class="layer-bottom" v-if="hasPermission(['f46f5690-75ab-40a4-a578-da2b61c3ed95'])">
+    <div class="layer-bottom">
       <div class="charts-box" v-if="activeIndex==0">
         <base-echarts :key="1" title="雷达状态分布" height="240px" :options="basePie"></base-echarts>
         <base-echarts :key="2" title="各厂商雷达状态" height="240px" :options="baseBar"></base-echarts>
       </div>
       <radar-statistic v-if="activeIndex==1"></radar-statistic>
+    </div> -->
 
-    </div>
+    <base-echarts :key="1" title="雷达状态分布" height="240px" :options="basePie" v-if="hasPermission(['be8f429f-32c6-3755-72de-49911acfbf27'])"></base-echarts>
+    <base-echarts :key="2" title="各厂商雷达状态" height="240px" :options="baseBar" v-if="hasPermission(['e75b5831-04f8-4504-844e-9ff4857b15c0'])"></base-echarts>
+    <radar-statistic></radar-statistic>
 
   </div>
 </template>
 
 <script setup lang="ts">
-import { hasPermission } from '~/tools';
 import {ref, reactive, watch} from 'vue';
 import radarStatistic from "./radarStatistic.vue";
 import baseEcharts from "./baseEcharts.vue";
@@ -34,6 +35,7 @@ import iconChart from "~/assets/layerIcon/icon-chart.png";
 import iconLayer from "~/assets/layerIcon/icon-layer.png";
 import {queryRadarStatus, queryRadarFactStatus} from '~/api/重庆'
 import {useSettingStore} from "~/stores/setting"
+import { hasPermission } from '~/tools';
 
 let setting = useSettingStore();
 
