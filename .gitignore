@@ -7,7 +7,7 @@ uploads
 dist-ssr
 *.local
 lib
-
+/src/components.d.ts
 # lock
 yarn.lock
 package-lock.json

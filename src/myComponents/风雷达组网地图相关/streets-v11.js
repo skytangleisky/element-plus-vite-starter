@@ -275,11 +275,12 @@ export default {
 		"山西省区划":{
 			"type":"geojson",
 			// "data": window.location.origin+"/resources/100000_full.json"
-			"data": window.location.origin+"/resources/山西省区划.geojson"
+			"data": "/backend/region/140000_full.json"
 		},
 		"山西省":{
 			"type":"geojson",
-			"data": window.location.origin+"/resources/山西省.geojson"
+			// "data": window.location.origin+"/resources/山西省.geojson"
+			data: "/backend/region/140000.json"
 		},
 		"山西省Outside":{
 			"type":"geojson",
@@ -384,7 +385,7 @@ export default {
 				source: '山西省Outside',
 				paint: {
 					'fill-color': '#000',
-					'fill-opacity': 0.5,
+					'fill-opacity': 0.7,
 					'fill-outline-color':'transparent'
 				}
 			}
