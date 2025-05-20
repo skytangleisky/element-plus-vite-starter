@@ -438,10 +438,9 @@ const toggleCollapse = () => {
   display: flex;
   flex-direction: column;
   padding: 12px;
-  //background: url("~/assets/theme-img/map-module-bg.png") no-repeat;
-  //background-size: 100% 100%;
+
   background: var(--bg-color-overlay-opacity-8);
-  border: 1px solid #B5D5E5;
+  border: 1px solid var(--border-color);
 
   .dragDialog-top {
     display: flex;
@@ -449,7 +448,7 @@ const toggleCollapse = () => {
     justify-content: space-between;
 
     .ep-icon {
-      color: var(--module-title-text-color);
+      color: var(--ep-text-color-regular);
     }
 
     .top-left {
@@ -474,7 +473,7 @@ const toggleCollapse = () => {
         }
         .item-label{
           margin-right:4px;
-          color:var(--module-title-text-color-secondary);
+          color:var(--ep-text-color-regular-secondary);
         }
       }
     }

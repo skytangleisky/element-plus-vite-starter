@@ -167,11 +167,12 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
+
 .fkx-info {
   width: 100%;
   display: grid;
   grid-template-rows:40px 1fr;
-  color: var(--module-title-text-color);
+  color: var(--ep-text-color-regular);
   margin-bottom:12px;
   .fkx-top {
     display: flex;
@@ -180,7 +181,7 @@ onBeforeUnmount(() => {
     //background-color: var(--bg-color-overlay-opacity-8);
     //height: 40px;
     //line-height: 40px;
-    background: url("~/assets/theme-img/dialog-title-bg.png") no-repeat;
+    background: url("~/assets/theme-img/light/dialog-title-bg.png") no-repeat;
     background-size: 34% 100%;
     transform: translateY(4px);
     padding: 0 24px 0 36px;
@@ -195,10 +196,10 @@ onBeforeUnmount(() => {
   }
 
   .fkx-bottom {
-    background: url("~/assets/theme-img/dialog-content-bg.png") no-repeat;
+    background: url("~/assets/theme-img/light/dialog-content-bg.png") no-repeat;
     background-size: 100% 100%;
     //background: var(--bg-color-overlay-opacity-8);
-    //border: 1px solid #B5D5E5;
+    //border: 1px solid var(--border-color);
     padding: 20px 12px;
     height:320px;
     position: relative;
@@ -234,6 +235,16 @@ onBeforeUnmount(() => {
       height:290px;
     }
 
+  }
+}
+.dark .fkx-info{
+  .fkx-top{
+    background: url("~/assets/theme-img/dark/dialog-title-bg.png") no-repeat;
+    background-size: 34% 100%;
+  }
+  .fkx-bottom{
+    background: url("~/assets/theme-img/dark/dialog-content-bg.png") no-repeat;
+    background-size: 100% 100%;
   }
 }
 </style>

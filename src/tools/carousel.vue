@@ -136,9 +136,7 @@ import { nextTick, onBeforeUnmount, onMounted,reactive,ref,watch } from 'vue';
   })
 </script>
 <style lang="scss">
-.dark .my-carousel{
-  background:#80808080;
-}
+
 .my-carousel{
   display: flex;
   height: 32px;

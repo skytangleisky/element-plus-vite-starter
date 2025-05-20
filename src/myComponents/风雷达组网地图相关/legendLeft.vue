@@ -46,7 +46,7 @@ watch(()=>setting.风雷达组网.监控.isFoldSingle,newVal=>{
   margin-bottom: 10px;
   text-align: left;
   padding-left: 10px;
-  color: var(--module-title-text-color);
+  color: var(--ep-text-color-regular);
 }
 </style>
 <style scoped lang="scss">

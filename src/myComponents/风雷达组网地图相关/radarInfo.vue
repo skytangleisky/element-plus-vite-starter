@@ -1,7 +1,7 @@
 <template>
   <div class="radarInfo map-module-box">
     <div class="map-module-top">
-      <span>雷达基础信息 <span v-show="deviceInfo.device_name"  >
+      <span>雷达基础信息 <span v-show="deviceInfo.device_name">
           - {{ deviceInfo.device_name }}
         </span></span>
       <span @click="showTags = !showTags" class="map-module-top-icon">
@@ -10,8 +10,8 @@
             </span>
     </div>
     <div class="map-module-bottom" v-show="showTags">
-      <el-empty description="暂无数据" v-if="!deviceInfo.radar_id" :image-size="64"/>
-<!--      <el-scrollbar max-height="480px" >-->
+      <el-empty description="暂无数据" v-if="!showSensor" :image-size="64"/>
+      <!--      <el-scrollbar max-height="480px" >-->
       <div class="content" v-else>
         <el-collapse v-model="collapseActNames" accordion @change="collapseChange">
           <el-collapse-item title="主控板传感器数据" name="1">
@@ -45,12 +45,14 @@
             </div>
             <div class="item-box">
               <div class="item-label">主控板测量的外部气压</div>
-              <div class="item-value">{{ format(sensorData.MCOuterAirPressure) }}<span class="item-unit">hPa</span></div>
+              <div class="item-value">{{ format(sensorData.MCOuterAirPressure) }}<span class="item-unit">hPa</span>
+              </div>
             </div>
             <div class="item-box">
-<!--              正值表示外部压力大-->
+              <!--              正值表示外部压力大-->
               <div class="item-label">主控板测量的外内压差</div>
-              <div class="item-value">{{ format(sensorData.MCOuterRelPressure) }}<span class="item-unit">hPa</span></div>
+              <div class="item-value">{{ format(sensorData.MCOuterRelPressure) }}<span class="item-unit">hPa</span>
+              </div>
             </div>
             <div class="item-box">
               <div class="item-label">计数10ms</div>
@@ -60,11 +62,11 @@
           <el-collapse-item title="电压电流" name="2">
             <div class="item-box">
               <div class="item-label">系统电压</div>
-              <div class="item-value">{{ format(sensorData.SysVoltage) }}<span class="item-unit">V</span></div>
+              <div class="item-value">{{ format(sensorData.SysVoltage) || "无"}} <span class="item-unit">V</span></div>
             </div>
             <div class="item-box">
               <div class="item-label">系统电流</div>
-              <div class="item-value">{{ format(sensorData.SysCurrent) }}<span class="item-unit">A</span></div>
+              <div class="item-value">{{ format(sensorData.SysCurrent) || "无"}}<span class="item-unit">A</span></div>
             </div>
           </el-collapse-item>
           <el-collapse-item title="六要素" name="3">
@@ -277,7 +279,7 @@
 
         </el-collapse>
       </div>
-<!--      </el-scrollbar>-->
+      <!--      </el-scrollbar>-->
     </div>
   </div>
 </template>
@@ -290,6 +292,7 @@ import {querySensorData} from "~/api/重庆"
 import {useBus} from "~/myComponents/bus";
 import {useStationStore} from "~/stores/station";
 import {useSettingStore} from "~/stores/setting";
+import moment from "moment";
 
 const setting = useSettingStore();
 const station = useStationStore();
@@ -297,6 +300,7 @@ const station = useStationStore();
 let collapseActNames = ref(["1"])
 // 控制整个模块折叠显示效果
 let showTags = ref(true)
+let showSensor = ref(false)
 showTags.value = setting.风雷达组网.监控.isFoldSingle
 let sensorData = reactive({})
 const bus = useBus();
@@ -306,9 +310,8 @@ const deviceInfo = reactive({
   device_name: '',
   data_time: '',
 });
-
-watch(()=>setting.风雷达组网地图相关.currentTime,newVal=>{
-  getSensorData(deviceInfo.radar_id,newVal)
+watch([() => station.active,()=>setting.风雷达组网地图相关.currentTime], ([radar_id,currentTime]) => {
+  getSensorData(radar_id, currentTime)
 })
 watch([() => bus.avgWindData_重庆, () => station.active], ([avgWindData, active]) => {
   if (avgWindData.data) {
@@ -320,7 +323,6 @@ watch([() => bus.avgWindData_重庆, () => station.active], ([avgWindData, activ
             deviceInfo.radar_id = v.no
             deviceInfo.device_name = v.device_name
             // item.data_time = moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
-            getSensorData(deviceInfo.radar_id,setting.风雷达组网地图相关.currentTime)
           }
 
         })
@@ -335,13 +337,14 @@ watch([() => bus.avgWindData_重庆, () => station.active], ([avgWindData, activ
  * @param radarId-雷达ID
  */
 
-const getSensorData = (radarId: string,dateTime:string) => {
-const time =`${dateTime.slice(0,4)}-${dateTime.slice(4,6)}-${dateTime.slice(6,8)} ${dateTime.slice(8,10)}:${dateTime.slice(10,12)}:${dateTime.slice(12,14)}`
-  console.log("getSensorData",radarId,time);
-  querySensorData(radarId,time).then(res => {
-    sensorData = res.data.results[0]
-    console.log("getSensorData11", sensorData)
-    // collapseActNames.value=["1"]
+const getSensorData = (radarId: string, dateTime: string) => {
+  sensorData = {}
+  showSensor.value = false
+  querySensorData(radarId, moment(dateTime,'YYYYMMDDHHmmss').format('YYYY-MM-DD HH:mm:ss')).then(res => {
+    if (res.data.code == 200) {
+      sensorData = res.data.data
+      showSensor.value = true
+    }
   })
 }
 
@@ -369,49 +372,54 @@ function format(val: any) {
 <style scoped lang="scss">
 .radarInfo {
 
-  .map-module-bottom{
+  .map-module-bottom {
     background: var(--bg-color-overlay-opacity-8);
-    border:1px solid #B5D5E5;
+    border: 1px solid var(--border-color);
     //max-height:256px;
     //overflow-y: auto;
   }
+
   .content {
     .device-info {
       font-size: 16px;
       border-left: 3px solid var(--ep-color-primary);
       padding-left: 8px;
       margin-bottom: 10px;
-      color:var(--ep-color-primary);
+      color: var(--ep-color-primary);
     }
 
     .ep-collapse {
       //border-color: var(--border-color);
       :deep(.ep-collapse-item__header) {
-        background-color: var(--ep-color-primary-light-9);
+        background-color: var(--bg-color-overlay-opacity-8);
         border-color: var(--border-color);
         height: 32px;
         padding-left: 8px;
       }
 
       :deep(.ep-collapse-item__wrap) {
-        background-color: var(--ep-color-primary-light-9);
-        padding:8px 16px;
+        background-color: var(--bg-color-overlay-opacity-8);
+        padding: 8px 16px;
         border-color: var(--border-color);
 
       }
-      :deep(.ep-collapse-item__content){
-        padding-bottom:0;
+
+      :deep(.ep-collapse-item__content) {
+        padding-bottom: 0;
       }
     }
-    .item-box{
+
+    .item-box {
       display: flex;
-      .item-label{
+
+      .item-label {
         margin-right: 8px;
-        color:var(--module-title-text-color-secondary);
+        color: var(--ep-text-color-regular-secondary);
       }
-      .item-value{
+
+      .item-value {
         display: flex;
-        color: var(--module-title-text-color);
+        color: var(--ep-text-color-regular);
         word-wrap: anywhere;
         max-width: 50%;
       }

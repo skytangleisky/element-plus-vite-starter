@@ -786,23 +786,23 @@ onBeforeUnmount(() => {
     }
   }
 }
-.dark {
-  .btn {
-    &:active {
-      color: #2b2b2b;
-    }
-  }
-  .currentTime {
-    div {
-      background-color: #646464;
-      color: white;
-      &::before {
-        border-color: black transparent transparent transparent;
-      }
-      &::after {
-        border-color: #646464 transparent transparent transparent;
-      }
-    }
-  }
-}
+//.dark {
+//  .btn {
+//    &:active {
+//      color: #2b2b2b;
+//    }
+//  }
+//  .currentTime {
+//    div {
+//      background-color: #646464;
+//      color: white;
+//      &::before {
+//        border-color: black transparent transparent transparent;
+//      }
+//      &::after {
+//        border-color: #646464 transparent transparent transparent;
+//      }
+//    }
+//  }
+//}
 </style>

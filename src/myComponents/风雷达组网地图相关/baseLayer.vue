@@ -305,7 +305,7 @@ $layer-box-max-width: 250px;
       border-radius: 4px;
       background-color: var(--bg-color-overlay-opacity-8);
       border: 1px solid transparent;
-      color: var(--module-title-text-color);
+      color: var(--ep-text-color-regular);
 
       &:hover {
         border-color: var(--ep-color-primary);

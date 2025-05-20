@@ -1,7 +1,7 @@
 <template>
-  <div class="collapse-card">
+  <div class="collapse-card map-module-box">
     <div
-      class="card-top"
+      class="card-top map-module-top"
       @click="click"
     >
       <div class="card-title">{{ title }}</div>
@@ -38,7 +38,7 @@
       </el-icon>
     </div>
     <el-collapse-transition>
-      <div v-show="show" class="card-bottom" >
+      <div v-show="show" class="card-bottom map-module-bottom" >
         <slot></slot>
       </div>
     </el-collapse-transition>
@@ -85,27 +85,12 @@ const select = computed({
 .collapse-card{
   border-radius: 8px;
   .card-top{
-    height: 32px;
-    line-height: 32px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 16px 0 20px;
-    margin-bottom: 2px;
-    border-radius: 0;
-    background: url("~/assets/theme-img/map-module-title.png") no-repeat;
-    background-size: 100% 100%;
-    .card-title,
-    .ep-icon{
-      color:var(--module-title-text-color);
-    }
 
+    align-items: center;
 
   }
   .card-bottom{
-    padding: 12px;
-    background: url("~/assets/theme-img/map-module-bg.png") no-repeat;
-    background-size: 100% 100%;
+
     .ep-icon{
       color: var(--ep-color-primary);
       &:hover{

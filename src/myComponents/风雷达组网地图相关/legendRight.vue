@@ -93,7 +93,7 @@ const 是否显示分割线2 = computed(()=>(判断是否显示要素填图.valu
   margin-bottom: 10px;
   text-align: left;
   padding-left: 10px;
-  color: var(--module-title-text-color);
+  color: var(--ep-text-color-regular);
 }
 </style>
 <style scoped lang="scss">

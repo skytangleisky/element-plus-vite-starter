@@ -5,12 +5,14 @@
 </template>
 <script setup lang="ts">
   import * as echarts from "echarts";
-  import { ref, watch, reactive, onMounted, onBeforeUnmount } from "vue";
+  import { ref, watch, reactive, onMounted, onBeforeUnmount,nextTick } from "vue";
   import { useBus } from "../bus";
+  import { isDark } from "~/theme"
   const bus = useBus();
   const chartDom = ref<HTMLElement>();
-  const colors = ['#5470C6', '#EE6666'];
+  const colors = ['#975CE4', '#F56c6c'];
   let option = {
+    backgroundColor: "transparent",
     animation:false,
     color: colors,
     tooltip: {
@@ -40,7 +42,7 @@
         },
         axisPointer: {
           label: {
-            formatter: function (params) {
+            formatter: function (params:any) {
               return (
                 '水平风速  ' +
                 params.value.toFixed(2) + 'm/s' +
@@ -63,7 +65,7 @@
         },
         axisPointer: {
           label: {
-            formatter: function (params) {
+            formatter: function (params:any) {
               return (
                 '垂直气流  ' +
                 params.value.toFixed(2) + 'm/s' +
@@ -167,9 +169,19 @@
     ]
   };
   let myChart:any;
-  onMounted(()=>{
-    myChart = echarts.init(chartDom.value!);
+  watch(isDark, async(newVal) => {
+    await nextTick();
+    if(myChart){
+      myChart.dispose();
+    }
+    if (newVal) {
+      myChart = echarts.init(chartDom.value!, "dark");
+    } else {
+      myChart = echarts.init(chartDom.value!);
+    }
     myChart.setOption(option)
+  },{
+    immediate:true
   })
   let globalData:any;
   watch(()=>bus.avgWindData_重庆,()=>{
@@ -194,6 +206,9 @@
   function resize(){
     myChart && myChart.resize()
   }
+  onBeforeUnmount(()=>{
+    myChart && myChart.dispose()
+  })
 </script>
 <style scoped>
 .echarts-container{

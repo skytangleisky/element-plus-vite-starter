@@ -103,13 +103,13 @@ onBeforeUnmount(() => {
 })
 </script>
 <style lang="scss">
-.dark .my-carousel {
-  .item {
-    &.currentItem {
-      background: #4c7cc8;
-    }
-  }
-}
+//.dark .my-carousel {
+//  .item {
+//    &.currentItem {
+//      background: #4c7cc8;
+//    }
+//  }
+//}
 
 .my-carousel {
   .item {
@@ -154,10 +154,10 @@ onBeforeUnmount(() => {
   }
 }
 
-.dark .timestep-container .btn {
-  background: #80808080;
-  border: 1px solid black;
-}
+//.dark .timestep-container .btn {
+//  background: #80808080;
+//  border: 1px solid black;
+//}
 
 .timestep-container {
   display: flex;

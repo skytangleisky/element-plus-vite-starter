@@ -1,22 +1,22 @@
 $--colors: (
-  "primary": (
-    "base": #55B8F7,
-  ),
-  "success": (
-    "base": #3AC8A5,
-  ),
-  "warning": (
-    "base": #e8cb1a,
-  ),
-  "danger": (
-    "base": #F56c6c,
-  ),
-  "error": (
-    "base": #F56c6c,
-  ),
-  //"info": (
-  //  "base": #42b8dd,
-  //),
+        "primary": (
+                "base": #55B8F7,
+        ),
+        "success": (
+                "base": #3AC8A5,
+        ),
+        "warning": (
+                "base": #e8cb1a,
+        ),
+        "danger": (
+                "base": #F56c6c,
+        ),
+        "error": (
+                "base": #F56c6c,
+        ),
+        "info": (
+                "base": #caedff,
+        )
 );
 
 // we can add this to custom namespace, default is 'el'
@@ -29,6 +29,19 @@ $--colors: (
 @forward "element-plus/theme-chalk/src/common/var.scss" with (
   // do not use same name, it will override.
   $colors: $--colors,
+  $bg-color: (
+         "page": #F4FBFF,
+         "": #DFF4FF,
+         "overlay": #D5F1FF, //rgba(213, 241,255,1);
+    ),
+    $text-color: (
+        "primary": #23516d,
+        "regular": #23516d,
+         "secondary": #798E99,
+    ),
+    $border-color: (
+         "": #A2BECC,
+    ),
   $button-padding-horizontal: ("default": 50px)
 );
 
@@ -39,14 +52,9 @@ $--colors: (
 // @debug $--colors;
 
 
-
-
 // custom dark variables
 @use "./dark.scss";
-:root{
-  --bg-color-overlay-opacity-8:rgba(213, 241,255,.8);
-  --module-title-text-color:#23516d;
-  --module-title-text-color-secondary:#798E99;
-
+:root {
+  --bg-color-overlay-opacity-8: rgba(213, 241, 255, .8);
   --border-color: #A2BECC;
 }

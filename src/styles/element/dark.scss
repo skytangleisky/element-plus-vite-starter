@@ -1,104 +1,106 @@
-// only scss variables
+// 深色模式主题色修改
 
-$--colors: (
-  "primary": (
-    "base": #589ef8,
-  ),
-);
+// element-ui 定义的变量名
+html.dark {
+  color-scheme: dark;
+  --el-color-primary:#55B8F7; //rgba(85, 184, 247, 1)
+  --el-color-primary-light-3:#4CA5DE;
+  --el-color-primary-light-5:#4493C6;
+  --el-color-primary-light-7: #3C81AD;
+  --el-color-primary-light-8: #336E94;
+  --el-color-primary-light-9: #2A5C7B;
+  --el-color-primary-dark-2: #66BFF8;
+  --el-color-success: #3AC8A5;//rgba(58, 200, 165, 1)
+  --el-color-success-light-3:#34B494;
+  --el-color-success-light-5: #2EA084;
+  --el-color-success-light-7:#298C74;
+  --el-color-success-light-8: #237863;
+  --el-color-success-light-9: #1D6452;
+  --el-color-success-dark-2: #4ECEAE;
+  --el-color-warning: #FF8E59; //rgba(255, 142, 89, 1)
+  --el-color-warning-light-3: #E58050;
+  --el-color-warning-light-5: #CC7247;
+  --el-color-warning-light-7:#B3643E;
+  --el-color-warning-light-8: #995535;
+  --el-color-warning-light-9: #7F472C;
+  --el-color-warning-dark-2: #FF9A6A;
+  --el-color-danger: #F46E70; //rgba(244, 110, 112, 1)
+  --el-color-danger-light-3: #DB6365;
+  --el-color-danger-light-5: #C3585A;
+  --el-color-danger-light-7: #AB4D4F;
+  --el-color-danger-light-8: #924243;
+  --el-color-danger-light-9: #7A3738;
+  --el-color-danger-dark-2: #F57D7F;
+  --el-color-error: #F46E70; //rgba(244, 110, 112, 1)
+  --el-color-error-light-3:#DB6365;
+  --el-color-error-light-5:#C3585A;
+  --el-color-error-light-7:#AB4D4F;
+  --el-color-error-light-8:#924243;
+  --el-color-error-light-9:#7A3738;
+  --el-color-error-dark-2: #F57D7F;
+  --el-color-info: #096FAA; //rgba(9, 111, 170, 1)
+  --el-color-info-light-3: #086499;
+  --el-color-info-light-5: #075988;
+  --el-color-info-light-7: #064E77;
+  --el-color-info-light-8: #054366;
+  --el-color-info-light-9: #043755;
+  --el-color-info-dark-2: #227EB3;
+  // --el-box-shadow: 0px 12px 32px 4px rgba(0, 0, 0, 0.36),
+  //     0px 8px 20px rgba(0, 0, 0, 0.72);
+  // --el-box-shadow-light: 0px 0px 12px rgba(0, 0, 0, 0.72);
+  // --el-box-shadow-lighter: 0px 0px 6px rgba(0, 0, 0, 0.72);
+  // --el-box-shadow-dark: 0px 16px 48px 16px rgba(0, 0, 0, 0.72),
+  //     0px 12px 32px #000000, 0px 8px 16px -8px #000000;
+  --el-bg-color-page:#051332;
+  --el-bg-color:#0d224b; //rgba(13,34,75,1)
+  --el-bg-color-overlay: #0F2859;//rgba(15, 40, 89,1);
 
-@forward "element-plus/theme-chalk/src/dark/var.scss" with (
-  $colors: $--colors
-);
+  --el-text-color-primary: #B2E3FF; //rgba(178,227,255,1)
+  --ep-text-color-regular: #4493C6;
+  --el-text-color-secondary: #096FAA;
+  --el-text-color-placeholder: #075988;
+  --el-text-color-disabled: #054366;
+  // --el-border-color-darker: #636466;
+  // --el-border-color-dark: #58585b;
+  --el-border-color: #0082c4;
+  --el-border-color-light: #005F8F;
+  --el-border-color-lighter: #034668;
+  --el-border-color-extra-light: #053852;
+  --el-fill-color-darker: #3768CC; //rgba(55, 104, 204, 1)
+  --el-fill-color-dark: #2151B2; //rgba(33, 81, 178, 1)
+  --el-fill-color:#1B4393;// rgba(27, 67, 147, 1)
+  --el-fill-color-light: #16387A; //rgba(22, 56, 122, 1)
+  --el-fill-color-lighter: #122F66; //rgba(18, 47, 102, 1)
+  --el-fill-color-extra-light: #0F2857;//rgba(15, 40, 87, 1)
+  // --el-fill-color-blank: transparent;
+  // --el-mask-color: rgba(0, 0, 0, 0.8);
+  // --el-mask-color-extra-light: rgba(0, 0, 0, 0.3);
 
-// html.dark {
-//   color-scheme: dark;
-//   --el-color-primary: #409eff;
-//   --el-color-primary-light-3: #3375b9;
-//   --el-color-primary-light-5: #2a598a;
-//   --el-color-primary-light-7: #213d5b;
-//   --el-color-primary-light-8: #1d3043;
-//   --el-color-primary-light-9: #18222c;
-//   --el-color-primary-dark-2: #66b1ff;
-//   --el-color-success: #67c23a;
-//   --el-color-success-light-3: #4e8e2f;
-//   --el-color-success-light-5: #3e6b27;
-//   --el-color-success-light-7: #2d481f;
-//   --el-color-success-light-8: #25371c;
-//   --el-color-success-light-9: #1c2518;
-//   --el-color-success-dark-2: #85ce61;
-//   --el-color-warning: #e6a23c;
-//   --el-color-warning-light-3: #a77730;
-//   --el-color-warning-light-5: #7d5b28;
-//   --el-color-warning-light-7: #533f20;
-//   --el-color-warning-light-8: #3e301c;
-//   --el-color-warning-light-9: #292218;
-//   --el-color-warning-dark-2: #ebb563;
-//   --el-color-danger: #f56c6c;
-//   --el-color-danger-light-3: #b25252;
-//   --el-color-danger-light-5: #854040;
-//   --el-color-danger-light-7: #582e2e;
-//   --el-color-danger-light-8: #412626;
-//   --el-color-danger-light-9: #2b1d1d;
-//   --el-color-danger-dark-2: #f78989;
-//   --el-color-error: #f56c6c;
-//   --el-color-error-light-3: #b25252;
-//   --el-color-error-light-5: #854040;
-//   --el-color-error-light-7: #582e2e;
-//   --el-color-error-light-8: #412626;
-//   --el-color-error-light-9: #2b1d1d;
-//   --el-color-error-dark-2: #f78989;
-//   --el-color-info: #909399;
-//   --el-color-info-light-3: #6b6d71;
-//   --el-color-info-light-5: #525457;
-//   --el-color-info-light-7: #393a3c;
-//   --el-color-info-light-8: #2d2d2f;
-//   --el-color-info-light-9: #202121;
-//   --el-color-info-dark-2: #a6a9ad;
-//   --el-box-shadow: 0px 12px 32px 4px rgba(0, 0, 0, 0.36),
-//     0px 8px 20px rgba(0, 0, 0, 0.72);
-//   --el-box-shadow-light: 0px 0px 12px rgba(0, 0, 0, 0.72);
-//   --el-box-shadow-lighter: 0px 0px 6px rgba(0, 0, 0, 0.72);
-//   --el-box-shadow-dark: 0px 16px 48px 16px rgba(0, 0, 0, 0.72),
-//     0px 12px 32px #000000, 0px 8px 16px -8px #000000;
-//   --el-bg-color-page: #0a0a0a;
-//   --el-bg-color: #141414;
-//   --el-bg-color-overlay: #1d1e1f;
-//   --el-text-color-primary: #e5eaf3;
-//   --el-text-color-regular: #cfd3dc;
-//   --el-text-color-secondary: #a3a6ad;
-//   --el-text-color-placeholder: #8d9095;
-//   --el-text-color-disabled: #6c6e72;
-//   --el-border-color-darker: #636466;
-//   --el-border-color-dark: #58585b;
-//   --el-border-color: #4c4d4f;
-//   --el-border-color-light: #414243;
-//   --el-border-color-lighter: #363637;
-//   --el-border-color-extra-light: #2b2b2c;
-//   --el-fill-color-darker: #424243;
-//   --el-fill-color-dark: #39393a;
-//   --el-fill-color: #303030;
-//   --el-fill-color-light: #262727;
-//   --el-fill-color-lighter: #1d1d1d;
-//   --el-fill-color-extra-light: #191919;
-//   --el-fill-color-blank: transparent;
-//   --el-mask-color: rgba(0, 0, 0, 0.8);
-//   --el-mask-color-extra-light: rgba(0, 0, 0, 0.3);
-// }
+  .el-switch{
+    --el-switch-off-color:#16387A;
+  }
+
+}
+// 自定义变量名
+html.dark{
+  --bg-color-overlay-opacity-8: rgba(15, 40, 89,.8);
+  --border-color: #0082c4;
+}
 // html.dark .el-button {
-//   --el-button-disabled-text-color: rgba(255, 255, 255, 0.5);
+//     --el-button-disabled-text-color: rgba(255, 255, 255, 0.5);
 // }
 // html.dark .el-card {
-//   --el-card-bg-color: var(--el-bg-color-overlay);
+//     --el-card-bg-color: var(--el-bg-color-overlay);
 // }
 // html.dark .el-empty {
-//   --el-empty-fill-color-0: var(--el-color-black);
-//   --el-empty-fill-color-1: #4b4b52;
-//   --el-empty-fill-color-2: #36383d;
-//   --el-empty-fill-color-3: #1e1e20;
-//   --el-empty-fill-color-4: #262629;
-//   --el-empty-fill-color-5: #202124;
-//   --el-empty-fill-color-6: #212224;
-//   --el-empty-fill-color-7: #1b1c1f;
-//   --el-empty-fill-color-8: #1c1d1f;
-//   --el-empty-fill-color-9: #18181a;
+//     --el-empty-fill-color-0: var(--el-color-black);
+//     --el-empty-fill-color-1: #4b4b52;
+//     --el-empty-fill-color-2: #36383d;
+//     --el-empty-fill-color-3: #1e1e20;
+//     --el-empty-fill-color-4: #262629;
+//     --el-empty-fill-color-5: #202124;
+//     --el-empty-fill-color-6: #212224;
+//     --el-empty-fill-color-7: #1b1c1f;
+//     --el-empty-fill-color-8: #1c1d1f;
+//     --el-empty-fill-color-9: #18181a;
 // }

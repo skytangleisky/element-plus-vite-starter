@@ -564,23 +564,5 @@ onBeforeUnmount(() => {
     width: 0;
   }
 }
-.dark .radarStatistic {
-  .item {
-    & > div:not(:first-child) {
-      border-top: 1px solid rgba(0, 0, 0, 0.27);
-    }
-    .subitem {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      &:first-of-type {
-        border-top: 1px solid #00000044;
-      }
-      &:not(:last-child) {
-        border-bottom: 1px solid #00000044;
-      }
-    }
-  }
-}
+
 </style>

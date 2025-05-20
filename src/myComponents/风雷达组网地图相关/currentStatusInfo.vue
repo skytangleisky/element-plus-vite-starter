@@ -29,13 +29,12 @@ import moment from "moment";
 
 <style scoped lang="scss">
 .currentStatusInfo {
-  //background: url("~/assets/theme-img/map-module-bg.png") no-repeat;
-  //background-size: 100% 100%;
+
   background: var(--bg-color-overlay-opacity-8);
-  border:1px solid #B5D5E5;
+  border:1px solid var(--border-color);
   padding: 12px;
   margin-bottom: 12px;
-  color: var(--module-title-text-color);
+  color: var(--ep-text-color-regular);
 
   .time {
     font-size: 20px;
@@ -50,6 +49,7 @@ import moment from "moment";
     display: flex;
     align-items: center;
     font-size: 16px;
+    margin-bottom: 12px;
   .ep-icon{
     font-size: 18px;
   }
