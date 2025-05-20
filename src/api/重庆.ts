@@ -298,25 +298,24 @@ export function 通过code获取雷达(code:string = ''){
     }
   })
 }
-//通过雷达ID获取传感器数据
-export function querySensorData(radar_id:string){
+/**
+ * @author yhl 2025-05-20 10:29:08
+ * @description 通过雷达ID与时间获取传感器数据
+ * @param radar_id-雷达id
+ * @param dateTime-时间 YYYY-MM-DD HH:mm:ss
+ */
+
+export function querySensorData(radar_id:string,dateTime:string){
   return request({
-    url: 'backend/db/sensor?'+databaseRaw2,
+    url: '/python/api//weather/get_last_one_sensor',
     method: 'post',
     data:{
-      select:['*'],
-      where:[
-        {
-          relation:'and',
-          field:'Device',
-          relationship:'=',
-          condition:radar_id
-        }
-      ],
-      order_by:[],
-      limit:0,
-      offset:0
-    }
+      radar_id,
+      dateTime,
+    },
+    headers:{
+      'content-type':'application/json'
+    },
   })
 }
 

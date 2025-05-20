@@ -307,8 +307,8 @@ const deviceInfo = reactive({
   data_time: '',
 });
 
-watch(()=>setting.风雷达组网.监控.isFoldSingle,newVal=>{
-  // showTags.value =newVal
+watch(()=>setting.风雷达组网地图相关.currentTime,newVal=>{
+  getSensorData(deviceInfo.radar_id,newVal)
 })
 watch([() => bus.avgWindData_重庆, () => station.active], ([avgWindData, active]) => {
   if (avgWindData.data) {
@@ -320,7 +320,7 @@ watch([() => bus.avgWindData_重庆, () => station.active], ([avgWindData, activ
             deviceInfo.radar_id = v.no
             deviceInfo.device_name = v.device_name
             // item.data_time = moment(radial.Date_time,'YYYYMMDD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
-            getSensorData(v.no)
+            getSensorData(deviceInfo.radar_id,setting.风雷达组网地图相关.currentTime)
           }
 
         })
@@ -335,9 +335,12 @@ watch([() => bus.avgWindData_重庆, () => station.active], ([avgWindData, activ
  * @param radarId-雷达ID
  */
 
-const getSensorData = (radarId: string) => {
-  querySensorData(radarId).then(res => {
+const getSensorData = (radarId: string,dateTime:string) => {
+const time =`${dateTime.slice(0,4)}-${dateTime.slice(4,6)}-${dateTime.slice(6,8)} ${dateTime.slice(8,10)}:${dateTime.slice(10,12)}:${dateTime.slice(12,14)}`
+  console.log("getSensorData",radarId,time);
+  querySensorData(radarId,time).then(res => {
     sensorData = res.data.results[0]
+    console.log("getSensorData11", sensorData)
     // collapseActNames.value=["1"]
   })
 }
