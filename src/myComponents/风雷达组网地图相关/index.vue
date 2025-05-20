@@ -102,9 +102,6 @@
       </div>
 
     </el-scrollbar>
-    <div class="page-center-top">
-      <Dialog></Dialog>
-    </div>
     <div class="page-center-bottom">
       <fkx-info></fkx-info>
       <TimeStep @change="TimeStepChange"></TimeStep>
@@ -195,20 +192,52 @@ import {
   calculateCirclePoints,
   removeLayerAndSource
 } from "~/tools";
-
+import axios from 'axios';
 const decoder = new TextDecoder('utf-8')
 const encoder = new TextEncoder()
 const stationMenuRef = ref<HTMLDivElement>();
 let stationMenu: HTMLDivElement;
 import {destinationPoint} from "~/myComponents/map/js/core.js";
 import {watch, ref, onMounted, onBeforeUnmount, reactive, nextTick} from "vue";
-
 const showHistory = ref(false)
 import {useBus} from "~/myComponents/bus";
-import Dialog from "./dialog.vue";
 import {useSettingStore} from "~/stores/setting";
 
 const setting = useSettingStore();
+let map: mapboxgl.Map;
+watch(()=>setting.风雷达组网地图相关.地区,()=>{
+  const adcode = setting.风雷达组网地图相关.地区.adcodes.slice(-1)[0];
+  if(adcode.endsWith('00')){
+    (map as any).getSource('山西省区划').setData(`/backend/region/${adcode}_full.json`);
+  }
+  (map as any).getSource('山西省').setData(`/backend/region/${adcode}.json`);
+
+  axios.get('/backend/region/'+adcode+'.json').then(res=>{
+
+
+
+
+
+    const bounds = new mapboxgl.LngLatBounds();
+    res.data.features.forEach((feature:any) => {
+      const coordinates = feature.geometry.coordinates.flat(Infinity);
+      for (let i = 0; i < coordinates.length; i += 2) {
+        bounds.extend([coordinates[i], coordinates[i + 1]]);
+      }
+    });
+    map.fitBounds(bounds, {
+      padding: 20, // 可根据需求调整内边距
+      duration: 1000 // 动画时长（毫秒）
+    });
+
+
+
+    const data = res.data;
+    data.features[0].geometry.coordinates[0].unshift([[-180,-90],[-180,90],[180,90],[180,-90],[-180,-90]]);
+    (map as any).getSource('山西省Outside').setData(data);
+  })
+})
+
 import {eventbus} from "~/eventbus";
 //信噪比
 const chromatographyOption = reactive<{ arr: Array<number> }>({
@@ -366,7 +395,6 @@ const popup_closer = ref(null);
 const disappear = (e) => {
   setting.disappear = !setting.disappear;
 };
-let map: mapboxgl.Map;
 let mock;
 let speed = 20;
 const points = {
@@ -800,6 +828,7 @@ const loadFunc = async () => {
       "icon-image": ['get', '状态图标'],
       "icon-allow-overlap": true,
       visibility: setting.station ? "visible" : "none",
+      "icon-size": 0.7,
     },
   });
   map.addLayer({
@@ -833,7 +862,7 @@ const loadFunc = async () => {
       "text-offset": [0, -1.5],
       "text-ignore-placement": true,
       "text-allow-overlap": true,
-      "text-rotation-alignment": "map",
+      // "text-rotation-alignment": "map",
       "text-max-width": 400,
     },
     paint: {
@@ -1066,7 +1095,7 @@ const loadFunc = async () => {
       // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
       "icon-anchor": ["match", ["get", "风速"], 0, "center", "bottom-left"],
       "icon-image": ["get", "image"],
-      "icon-size": 0.7,
+      "icon-size": 0.8,
       "icon-rotate": ["get", "风向"],
       "icon-rotation-alignment": "map",
       "icon-allow-overlap": true,
@@ -1439,11 +1468,11 @@ async function updateData(altitude: number) {
       }
       let position = [Item.longitude, Item.latitude]
       const getStatusImage = (status: number) => {
-        if (Item.manufacturer.includes('华航')) {
+        if (Item.manufacturer_short.includes('华航')) {
           return status == 1 ? '华航SVG_正常' : status == 2 ? '华航SVG_延迟' : status == 3 ? '华航SVG_缺失' : '华航SVG_未知'
-        } else if (Item.manufacturer.includes('镭测')) {
+        } else if (Item.manufacturer_short.includes('镭测')) {
           return status == 1 ? '镭测SVG_正常' : status == 2 ? '镭测SVG_延迟' : status == 3 ? '镭测SVG_缺失' : '镭测SVG_未知'
-        } else if (Item.manufacturer.includes('西物')) {
+        } else if (Item.manufacturer_short.includes('西物')) {
           return status == 1 ? '西物SVG_正常' : status == 2 ? '西物SVG_延迟' : status == 3 ? '西物SVG_缺失' : '西物SVG_未知'
         }
         return '未知SVG'
@@ -2618,15 +2647,6 @@ $page-left-right-height: calc(100% - 2 * $page-grid);
   overflow-x: hidden;
   //background-color: blue;
 }
-
-.page-center-top {
-  position: absolute;
-  top: $page-grid;
-  left: calc($page-left-width + 2 * $page-grid);
-  max-width: $page-center-width;
-
-}
-
 .page-center-bottom {
   position: absolute;
   bottom: $page-grid;

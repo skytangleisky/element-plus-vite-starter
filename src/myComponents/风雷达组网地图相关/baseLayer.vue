@@ -101,7 +101,6 @@ let basePie = reactive({
       },
       //数据项
       data: [
-
         {value: 0, name: "正常"},
         {value: 0, name: "延迟"},
         {value: 0, name: "缺失"},
@@ -166,7 +165,7 @@ let baseBar = reactive({
     },
   ],
   series: [
-   {
+    {
       name: "正常",
       type: "bar",
       data: [],

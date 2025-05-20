@@ -2,7 +2,7 @@
   <div class="h-full flex flex-col">
     <div class="w-full box-border relative flex" style="height: 100%">
       <div class="p-10px h-full box-border flex flex-col">
-        <div class="title">{{ station.currentStation.device_name }}({{ station.active }})</div>
+        <div class="title dark:bg-#252948 bg-white">{{ station.currentStation.device_name }}({{ station.active }})</div>
         <el-tabs type="border-card" class="myTabs dark:bg-#252948" v-model="tabsData" style="border-radius:10px;overflow: hidden;">
           <el-tab-pane label="DBS" name="DBS">
             <DataList v-model:radar_time="radar_time_DBS" type="DBS" @handleNodeClick="handleNodeClick_DBS"></DataList>
@@ -80,7 +80,6 @@ function handleNodeClick_DBS(arg:string){
   position: relative;
   padding:10px;
   border-radius:10px;
-  background:white;
   border:1px solid var(--ep-border-color);
   margin-bottom:10px;
 }

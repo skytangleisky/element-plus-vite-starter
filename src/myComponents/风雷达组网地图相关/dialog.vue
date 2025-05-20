@@ -15,7 +15,7 @@
                   :clearable="true"
                   size="small"
 
-                  placeholder="请选择区划"
+                  placeholder="山西省"
               >
               </el-cascader>
             </div>
@@ -101,9 +101,9 @@
               <td>{{ v.altitude }}</td>
               <!-- <td>{{ (setting.风雷达组网地图相关.altitudeHeight-v.altitude).toFixed(1) }}</td> -->
               <!-- <td>{{ v.time }}</td> -->
-              <td :class="v.status==0 ? '未知' : v.status == 1 ? 'color-#3AC8A5' : v.status == 2 ? 'color-#e8cb1a' : v.status == 3 ? 'color-#F56c6c' : 'color-inherit'">
+              <td :class="v.status == 1 ? 'color-#3AC8A5' : v.status == 2 ? 'color-#e8cb1a' : v.status == 3 ? 'color-#F56c6c' : 'color-inherit'">
                 {{
-                  v.status == 0 ? '未知' : v.status == 1 ? '正常' : v.status == 2 ? '延迟' : v.status == 3 ? '缺失' : v.status
+                  v.status == 1 ? '正常' : v.status == 2 ? '延迟' : v.status == 3 ? '缺失' : v.status
                 }}
               </td>
             </tr>
@@ -168,7 +168,6 @@ const radar_statusOptions = reactive([
   {value: 1, label: "正常"},
   {value: 2, label: "延迟"},
   {value: 3, label: "缺失"},
-  {value: 0, label: "未知"},
 ])
 const selected = ref(['140000'])
 import {useStationStore} from "~/stores/station";
@@ -272,13 +271,13 @@ watch(
       setting.风雷达组网地图相关.manufacturer = '全部'
       if (manufacturer.value == 1) {
         setting.风雷达组网地图相关.manufacturer = '华航'
-        manufacturerCondition = " and manufacturer like '%华航%'"
+        manufacturerCondition = " and manufacturer_short like '%华航%'"
       } else if (manufacturer.value == 2) {
         setting.风雷达组网地图相关.manufacturer = '西物'
-        manufacturerCondition = " and manufacturer like '%西物%'"
+        manufacturerCondition = " and manufacturer_short like '%西物%'"
       } else if (manufacturer.value == 3) {
         setting.风雷达组网地图相关.manufacturer = '镭测'
-        manufacturerCondition = " and manufacturer like '%镭测%'"
+        manufacturerCondition = " and manufacturer_short like '%镭测%'"
       }
       let code = ''
       if (selected.value == undefined || JSON.stringify(selected.value) == JSON.stringify(['140000'])) {
@@ -297,7 +296,7 @@ watch(
       const result = await exec({
         database: databaseRaw2,
         query: {
-          sqls: ["select * from `device` where (hide != 'true' or hide is NULL) and (device_name is not NULL and adcode like '" + code + "%') and (device_name like '%" + value + "%' or no like '%" + value + "%')" + manufacturerCondition + status],
+          sqls: ["select * from `device` where (hide != 'true' or hide is NULL) and (device_name is not NULL) and (adcode like '" + code + "%') and (device_name like '%" + value + "%' or no like '%" + value + "%')" + manufacturerCondition + status],
         },
       })
       options.list = result.data[0]
@@ -419,20 +418,20 @@ const toggleCollapse = () => {
 //}
 
 
-.dark .operation_filter {
-  &::-webkit-input-placeholder {
-    color: #999;
-  }
+// .dark .operation_filter {
+//   &::-webkit-input-placeholder {
+//     color: #999;
+//   }
 
-  background-color: #2b2b2b;
-  border: 0 solid #c1ccd3;
+//   background-color: #2b2b2b;
+//   border: 0 solid #c1ccd3;
 
-  &:focus {
-    color: #fff;
-    background-color: #4b4b4b;
-    border-color: #4d90fe;
-  }
-}
+//   &:focus {
+//     color: #fff;
+//     background-color: #4b4b4b;
+//     border-color: #4d90fe;
+//   }
+// }
 
 .dragDialog {
   width: 300px;
@@ -546,33 +545,33 @@ const toggleCollapse = () => {
   }
 }
 
-.dark .dragDialog {
-  background: var(--ep-bg-color-overlay);
+// .dark .dragDialog {
+//   background: var(--ep-bg-color-overlay);
 
-  table {
-    tbody {
-      tr {
-        &:hover {
-          background: #ffffff22;
-        }
+//   table {
+//     tbody {
+//       tr {
+//         &:hover {
+//           background: #ffffff22;
+//         }
 
-        cursor: pointer;
-      }
+//         cursor: pointer;
+//       }
 
-      tr.selected {
-        background: #ffffff66;
-      }
-    }
+//       tr.selected {
+//         background: #ffffff66;
+//       }
+//     }
 
-    th, td {
-      text-align: left;
-      border: 1px solid var(--ep-border-color);
-    }
+//     th, td {
+//       text-align: left;
+//       border: 1px solid var(--ep-border-color);
+//     }
 
-    td {
-      border-top: 0;
-    }
-  }
-}
+//     td {
+//       border-top: 0;
+//     }
+//   }
+// }
 
 </style>

@@ -15,12 +15,13 @@
         <span class="item-value">{{ setting.风雷达组网地图相关.manufacturer }}</span>
       </div>
     </div>
-
+    <Dialog></Dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useSettingStore } from "~/stores/setting";
+import Dialog from './dialog.vue'
 const setting = useSettingStore()
 import {Place,OfficeBuilding} from "@element-plus/icons-vue";
 import moment from "moment";
