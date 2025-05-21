@@ -8,7 +8,6 @@
         </el-input>
       </div>
       <el-button type="primary" @click="handleSearch">搜索</el-button>
-      <el-button type="primary" >新增</el-button>
       <el-button type="danger" :disabled="!selectedDevice.length" @click="handleDelete">删除</el-button>
       <el-button type="success" @click="getData">刷新</el-button>
     </div>
@@ -51,7 +50,7 @@
         <el-table-column prop="create_time" label="创建时间" width="200" />
         <el-table-column label="操作">
           <template  #default="scope">
-            <el-button type="primary" size="small" @click="scope">编辑</el-button>
+            <el-button type="primary" size="small" @click="scope">查看</el-button>
           </template>
         </el-table-column>
       </el-table>
