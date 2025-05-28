@@ -1,12 +1,9 @@
 import request from '../utils/request'
 import moment from 'moment';
-// export const databaseRaw = 'host=127.0.0.1&port=3306&user=root&password=tanglei&database=weatherservice';
 // export const databaseRaw = 'host=tanglei.top&port=3306&user=root&password=tanglei&database=union';
-export const databaseRaw = 'host=192.168.0.240&port=3306&user=root&password=mysql&database=weatherservice';
-// export const databaseRaw = 'host=127.0.0.1&port=3306&user=admin&password=EkWM76Z8IJbfviCr&database=weatherservice';
-
-
-export const databaseRaw2 = 'host=192.168.0.240&port=3306&user=root&password=mysql&database=shanxi_weatherservice';
+// export const databaseRaw = 'host=192.168.0.240&port=3306&user=root&password=mysql&database=weatherservice';//本地
+// export const databaseRaw = 'host=127.0.0.1&port=3306&user=admin&password=EkWM76Z8IJbfviCr&database=weatherservice';//重庆
+export const databaseRaw = 'host=10.56.5.231&port=3306&user=root&password=1q2w3e4r&database=shanxi_weatherservice';//山西
 
 export function getDataList(query:{radar_id:string,path:string,type:string}){
   let url = '/python/api/weather/ppi/file/path';
@@ -254,7 +251,7 @@ export function getDisk(){
 
 export function 通过code获取子级(code:number){
   return request({
-    url: 'backend/db/map_border_info?'+databaseRaw2,
+    url: 'backend/db/map_border_info?'+databaseRaw,
     method: 'post',
     data:{
       select:['adcode','name'],
@@ -274,7 +271,7 @@ export function 通过code获取子级(code:number){
 }
 export function 通过code获取雷达(code:string = ''){
   return request({
-    url: 'backend/db/device?'+databaseRaw2,
+    url: 'backend/db/device?'+databaseRaw,
     method: 'post',
     data:{
       select:['adcode','device_name','no'],

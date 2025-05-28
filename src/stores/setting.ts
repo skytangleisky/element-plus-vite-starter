@@ -1,10 +1,10 @@
 import { defineStore, acceptHMRUpdate } from "pinia"
 import moment from 'moment'
+import sx from "./subs/shanxi.js"
 import ry from "./subs/ry.js";
 import jx from "./subs/jx.js";
 import dev from "./subs/dev.js";
 import zh from "./subs/zh.js";
-import cq from "./subs/cq.js";
 import cq_permission from "./permission/cq.js"
 import { useCesiumStore } from "./cesium.js";
 export const useSettingStore = defineStore({
@@ -58,7 +58,7 @@ export const useSettingStore = defineStore({
       relativeHeight:1,
       风场数据:"不显示",
       反演风场:"不显示",
-      feather:true,
+      feather:false,
       站名:true,
       站号:false,
       高度:false,
@@ -617,11 +617,11 @@ export const useSettingStore = defineStore({
       },
     ],
     routes:[
+      sx,
       dev,
       zh,
       ry,
       jx,
-      cq,
       {
         path: 'sx',
         name: 'c4961e05-e574-0e1f-ae23-94f157b15abe',
@@ -698,7 +698,7 @@ export const useSettingStore = defineStore({
         path:'sx_synthesis_device',
         name:'8f316b61-96ed-e4ad-6f96-2899833da3b8',
         component:'/src/myComponents/fragment/设备管理员.vue',
-        hide:false,
+        hide:true,
         svg:'ec24142a-78ac-4b58-9e4d-44d3e6c07835',
         meta:{
           label:'组网观测(设备管理员)'
@@ -801,7 +801,7 @@ export const useSettingStore = defineStore({
       {
         path: '',
         name: '99961e04-e574-0e1f-2e23-94f157b14b55',
-        redirect: '/cq/synthesis',
+        redirect: '/cq/sx_synthesis_forecast',
         hide:true,
         meta:{
           label:'重庆组网',
@@ -837,6 +837,26 @@ export const useSettingStore = defineStore({
         meta:{
           label:'重庆组网',
           roles:['device']
+        }
+      },
+      {
+        path: '',
+        name: '19961a04-e574-0e1f-3e24-94f157b14a43',
+        redirect: '/shanxi/shanxi_device',
+        hide:true,
+        meta:{
+          label:'山西组网',
+          roles:['shanxi_device']
+        }
+      },
+      {
+        path: '',
+        name: '19961a04-e574-0e1f-3e24-84f157b14a43',
+        redirect: '/shanxi/shanxi_forecast',
+        hide:true,
+        meta:{
+          label:'山西组网',
+          roles:['shanxi_forecast']
         }
       },
       {

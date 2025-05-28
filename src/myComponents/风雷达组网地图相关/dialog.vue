@@ -175,7 +175,7 @@ import {eventbus} from "~/eventbus";
 
 const station = useStationStore();
 import {useBus} from "~/myComponents/bus";
-import {通过code获取子级, 通过code获取雷达, databaseRaw2} from "~/api/重庆";
+import {通过code获取子级, 通过code获取雷达, databaseRaw} from "~/api/重庆";
 import {exec} from "~/api/index.js";
 
 const bus = useBus();
@@ -192,7 +192,7 @@ onMounted(async () => {
     $(".menuUl").css({display: "none"});
   });
   exec({
-    database: databaseRaw2,
+    database: databaseRaw,
     query: {
       sqls: [
         `select distinct a.parent_adcode as adcode, b.name
@@ -217,7 +217,7 @@ onMounted(async () => {
       }
       cascaderOptions.push(item as never)
       exec({
-        database: databaseRaw2,
+        database: databaseRaw,
         query: {
           sqls: [
             `select distinct a.adcode, b.name
@@ -294,7 +294,7 @@ watch(
         status = ` and status = ${radar_status.value}`
       }
       const result = await exec({
-        database: databaseRaw2,
+        database: databaseRaw,
         query: {
           sqls: ["select * from `device` where (hide != 'true' or hide is NULL) and (device_name is not NULL) and (adcode like '" + code + "%') and (device_name like '%" + value + "%' or no like '%" + value + "%')" + manufacturerCondition + status],
         },

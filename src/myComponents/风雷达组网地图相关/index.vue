@@ -57,10 +57,10 @@
     </el-scrollbar>
     <el-scrollbar class="page-right">
       <currentStatusInfo v-if="hasPermission(['36b3e515-351e-4d19-bc53-9c885e59dfa9'])"></currentStatusInfo>
+      <radar-info v-if="hasPermission(['41caf125-b812-477c-8719-61b96c473488'])"></radar-info>
       <baseModule title="图例" v-if="hasPermission(['4e98b05a-d317-45d1-b3e5-b12dacabc7e8'])">
         <legend-right></legend-right>
       </baseModule>
-      <radar-info v-if="hasPermission(['41caf125-b812-477c-8719-61b96c473488'])"></radar-info>
       <div style="display: none">
         <!--      <div style="display:flex;flex-direction: column;overflow: auto; scroll-snap-type: none;height: 100%;">-->
         <!--        <chart-info></chart-info>-->
@@ -1112,7 +1112,7 @@ const loadFunc = async () => {
       // "text-rotation-alignment": "map",
     },
     paint: {
-      "icon-opacity": setting.feather ? 1 : 0,
+      "icon-opacity": setting.风雷达组网地图相关.feather ? 1 : 0,
     },
   });
   map.addLayer({
@@ -1202,7 +1202,7 @@ const resize = (entry) => {
   map && map.resize();
 };
 var marker: Marker;
-import {databaseRaw, getPPIData, databaseRaw2} from '~/api/重庆'
+import {databaseRaw, getPPIData} from '~/api/重庆'
 import interpolate from "~/tools/idw.js";
 
 let res: any
@@ -1213,13 +1213,9 @@ const 雷达数据 = (data: any) => {
   updateData(setting.风雷达组网地图相关.altitudeHeight)
 }
 
-function work() {
-  updateData(setting.风雷达组网地图相关.altitudeHeight)
-}
-
 function TimeStepChange(timeString: string) {
   setting.风雷达组网地图相关.currentTime = moment(timeString, 'YYYY-MM-DD HH:mm:ss').format('YYYYMMDDHHmmss')
-  work()
+  updateData(setting.风雷达组网地图相关.altitudeHeight)
 }
 
 async function updateData(altitude: number) {
@@ -1405,8 +1401,8 @@ async function updateData(altitude: number) {
         },
       })
     }
-  }
-  (map.getSource('风场数据') as any)?.setData(风场数据.data)
+  };
+  (map.getSource('风场数据') as any)?.setData(风场数据.data);
 
   const uMin = Math.min(...us);
   let uMax = Math.max(...us);
@@ -2023,8 +2019,6 @@ watch(isDark, () => {
     })
   }
   (map.getSource("point") as any).setData(points.data);
-  // bus.avgWindData_重庆={}
-  // work()
 })
 watch(() => setting.风雷达组网地图相关.风场数据, 风场数据 => {
   switch (风场数据) {

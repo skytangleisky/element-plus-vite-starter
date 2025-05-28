@@ -3,6 +3,7 @@ import { isDark } from "~/theme"
 import data from "./satellite.js"
 let url = URL.createObjectURL(new File([JSON.stringify(data)],"satellite.json",{type:"application/json"}))
 import { useSettingStore } from '~/stores/setting';
+import { Visibility } from "cesium";
 const setting = useSettingStore()
 export default {
 	"version": 8,

@@ -32,17 +32,10 @@ export default {
           }
         },
         {
-          name: '9e659895-f520-40e9-aa8a-a6103eff5d9c',
-          checked:false,
-          meta:{
-            label: '风廓线',
-          }
-        },
-        {
           name: 'e2c7295c-4e04-45ce-a58e-3e547ba25b25',
           checked:false,
           meta:{
-            label: '数据融合',
+            label: '组网产品',
           }
         },
         {
@@ -106,28 +99,28 @@ export default {
           name: '5dd862f4-112f-46cf-a843-98c3f5aba1cf',
           checked:false,
           meta:{
-            label: '重庆组网界面-数据融合-格点',
+            label: '重庆组网界面-组网产品-格点',
           }
         },
         {
           name: '5dd862f4-112f-46cf-a843-11c3f5aba1cf',
-          checked:true,
+          checked:false,
           meta:{
-            label: '重庆组网界面-数据融合-风场',
+            label: '重庆组网界面-组网产品-风场',
           }
         },
         {
           name: 'df127f84-1983-42c1-b718-a0d04fc92720',
           checked:true,
           meta:{
-            label: '重庆组网界面-数据融合-等值线',
+            label: '重庆组网界面-组网产品-等值线',
           }
         },
         {
           name: '182392d2-6928-4add-b006-784e9fde0213',
           checked:true,
           meta:{
-            label: '重庆组网界面-数据融合-等值线填充',
+            label: '重庆组网界面-组网产品-等值线填充',
           }
         },
       ]

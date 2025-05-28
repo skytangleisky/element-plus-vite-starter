@@ -418,15 +418,17 @@ export default function DBS() {
       symbol: function(value) {
         const obj = value[3]
         if (obj.fHSpeed === '-' || obj.fHSpeed <= 0||obj.fHSpeed == 999) { return 'path://' }
-        if (showType === '风羽') {
-          return 'path://' + feathers[getFeather(obj.fHSpeed)]
-        } else {
+        if (showType === '风矢') {
           return 'path://' + arrows[getFeather(obj.fHSpeed)]
+        } else {
+          return 'path://' + feathers[getFeather(obj.fHSpeed)]
         }
       },
       symbolSize(value) {
         const obj = value[3]
-        if (showType === '风羽') {
+        if (showType === '风矢') {
+          return [8.15, height(obj.fHSpeed)]
+        } else {
           if (getFeather(obj.fHSpeed) === 0) {
             return [10, 10]
           } else if (getFeather(obj.fHSpeed) === 1) {
@@ -436,8 +438,6 @@ export default function DBS() {
           } else {
             return [15, 30]
           }
-        } else {
-          return [8.15, height(obj.fHSpeed)]
         }
       },
       symbolOffset: function(value) {
@@ -445,7 +445,9 @@ export default function DBS() {
         const symbolRotate = -(obj.fHAngle === undefined ? 330 : obj.fHAngle)
         const cos = Math.cos(symbolRotate / 180 * Math.PI)
         const sin = Math.sin(symbolRotate / 180 * Math.PI)
-        if (showType === '风羽') {
+        if (showType === '风矢') {
+          return [height(obj.fHSpeed) / 2 * sin, height(obj.fHSpeed) / 2 * cos]
+        } else {
           if (getFeather(obj.fHSpeed === 0)) {
             return [0, 0]
           } else if (getFeather(obj.fHSpeed) === 1) {
@@ -455,8 +457,6 @@ export default function DBS() {
           } else {
             return [7.5 * cos - 15 * sin, -7.5 * sin - 15 * cos]
           }
-        } else {
-          return [height(obj.fHSpeed) / 2 * sin, height(obj.fHSpeed) / 2 * cos]
         }
       },
       symbolRotate: function(value) {

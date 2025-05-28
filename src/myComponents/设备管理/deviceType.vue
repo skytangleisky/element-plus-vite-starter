@@ -97,7 +97,7 @@ import {
   deleteData,
 } from "~/api/index.js";
 
-import { databaseRaw2 } from "~/api/重庆";
+import { databaseRaw } from "~/api/重庆";
 
 onMounted(() => {
   getData();
@@ -150,7 +150,7 @@ function handleDelete() {
         instance.confirmButtonText = "删除中...";
         setTimeout(() => {
           deleteData({
-            database:databaseRaw2,
+            database:databaseRaw,
             table:"device_type",
             query: selectedDevice.value,
           })
@@ -219,7 +219,7 @@ async function submitDeviceType() {
     edit.is_active = formDataInput.is_active ? 1 : 0;
     edit.modified_time = getNow();
     saveData({ 
-      database:databaseRaw2,
+      database:databaseRaw,
       table:"device_type",
       query: [edit] })
       .then((res) => {
@@ -248,7 +248,7 @@ async function submitDeviceType() {
     edit.created_time = getNow();
     edit.modified_time = getNow();
     saveData({ 
-      database:databaseRaw2,
+      database:databaseRaw,
       table:"device_type",
       query: [edit] })
       .then((res) => {
@@ -316,7 +316,7 @@ function getData() {
       });
     }
     fetchList({
-      database:databaseRaw2,
+      database:databaseRaw,
       table:"device_type",
       query: {
             limit: pageSize,
@@ -352,7 +352,7 @@ watch(
   [() => paginationOptions.currentPage, () => paginationOptions.pageSize],
   ([currentPage, pageSize]) => {
     fetchList({
-      database:databaseRaw2,
+      database:databaseRaw,
       table:"device_type",
       query: {
         limit: pageSize,
@@ -383,6 +383,9 @@ watch(
 );
 </script>
 <style scoped lang="scss">
+.dark .mainContainer{
+  background-color: #303133;
+}
 .mainContainer {
   box-sizing: border-box;
   position: absolute;

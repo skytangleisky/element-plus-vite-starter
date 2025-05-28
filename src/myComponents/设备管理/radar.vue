@@ -225,7 +225,7 @@ import {
   deleteData,
 } from "~/api/index.js";
 
-import { databaseRaw2 } from "~/api/重庆";
+import { databaseRaw } from "~/api/重庆";
 import cityData from "~/myComponents/设备管理/json/pca-code.json";
 
 onMounted(() => {
@@ -278,7 +278,7 @@ const device = reactive(new Array<device>());
 
 //设备数据
 interface device_type{
-  created_time:string, 
+  created_time:string,
   modified_time:string,
   creator:any,
   id:number,
@@ -291,7 +291,7 @@ const selectDeviceType = ref("");
 function getDeviceType() {
   return new Promise((resolve, reject) => {
     fetchList({
-      database:databaseRaw2,
+      database:databaseRaw,
       table:"device_type",
       query: {
             limit: 100,
@@ -429,7 +429,7 @@ function handleDelete() {
         instance.confirmButtonText = "删除中...";
         setTimeout(() => {
           deleteData({
-            database:databaseRaw2,
+            database:databaseRaw,
             table:"device",
             query: selectedDevice.value,
           })
@@ -484,7 +484,7 @@ function getData() {
       });
     }
     fetchList({
-      database:databaseRaw2,
+      database:databaseRaw,
       table:"device",
       query: {
             limit: pageSize,
@@ -521,7 +521,7 @@ watch(
   [() => paginationOptions.currentPage, () => paginationOptions.pageSize],
   ([currentPage, pageSize]) => {
     fetchList({
-      database:databaseRaw2,
+      database:databaseRaw,
       table:"device",
       query: {
         limit: pageSize,
@@ -552,6 +552,9 @@ watch(
 );
 </script>
 <style scoped lang="scss">
+.dark .mainContainer{
+  background-color: #303133;
+}
 .mainContainer {
   box-sizing: border-box;
   position: absolute;

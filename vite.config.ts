@@ -11,6 +11,7 @@ import wasm from 'vite-plugin-wasm';
 import compression from 'vite-plugin-compression';
 import cesium from 'vite-plugin-cesium'
 import vueJsx from "@vitejs/plugin-vue-jsx";
+import { HttpProxyAgent } from 'http-proxy-agent'
 import {
   presetAttributify,
   presetIcons,
@@ -137,7 +138,12 @@ export default defineConfig({
         changeOrigin:true,
       },
       '/backend':{
-        target:'http://backend.tanglei.top',//替换的服务端地址
+        // configure(proxyServer){
+        //   proxyServer.on('proxyReq', (proxyReq, req, res) => {
+        //       proxyReq.agent = new HttpProxyAgent('http://123.57.209.17:1122')
+        //   })
+        // },
+        target:'http://10.56.5.231:3000',//替换的服务端地址
         secure:false,
         changeOrigin:true,
         // rewrite:path=>path.replace(/^\/backend/,''), // 设置重写的路径
@@ -164,14 +170,13 @@ export default defineConfig({
         changeOrigin:true,
       },
       '/qt':{
-        // target:'http://192.168.0.135:9090',//替换的服务端地址
         target:'http://qt.tanglei.top',//替换的服务端地址
         changeOrigin:true,
         rewrite:path=>path.replace(/^\/qt/,'') // 设置重写的路径
       },
       '/amap':{
-        target:'http://tanglei.top:8000',//替换的服务端地址
-        // target:'http://192.168.0.133:8000',//替换的服务端地址
+        // target:'http://tanglei.top:8000',//替换的服务端地址
+        target:'http://10.56.5.231:8001',//替换的服务端地址
         changeOrigin:true,
         rewrite:path=>path.replace(/^\/amap/,'') // 设置重写的路径
       },
@@ -183,7 +188,7 @@ export default defineConfig({
         ws:true,
       },
       '/python':{
-        target:'http://192.168.0.135:8002',
+        target:'http://10.56.5.231:8002',
         rewrite:path=>path.replace(/^\/python/,''), // 设置重写的路径
         secure:false,
         changeOrigin:true,

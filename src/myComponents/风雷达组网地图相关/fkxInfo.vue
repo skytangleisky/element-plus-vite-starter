@@ -29,11 +29,17 @@
                     />
                   </el-select>
                 </el-form-item>
-                <el-form-item label="叠加">
+                <el-form-item>
+                  <label>
+                    <el-checkbox
+                      label="叠加"
+                      v-model="check"
+                    ></el-checkbox>
+                  </label>
                   <el-select
                       v-model="searchForm.key2"
                       placeholder="请选择叠加"
-                      clearable
+                      :clearable="false"
                   >
                     <el-option
                         v-for="item in key2Dict"
@@ -112,7 +118,7 @@ watch([() => bus.avgWindData_重庆, () => station.active], ([avgWindData, activ
 
 const searchForm = reactive({
   key1: "水平风",
-  key2: "无",
+  key2: "风羽",
 });
 let key1Dict = [
   {
@@ -126,9 +132,6 @@ let key1Dict = [
 ];
 let key2Dict = [
   {
-    value: "无",
-    label: "无",
-  }, {
     value: "风羽",
     label: "风羽",
   },
@@ -151,13 +154,7 @@ onMounted(() => {
   // fetchDataList(moment().format("YYYYMMDD"));
   eventbus.on('处理实时风廓线数据', process)
 });
-watch([() => searchForm.key1, () => searchForm.key2], ([v1, v2]) => {
-  let newCheck
-  if (v2 == "无") {
-    check.value = false;
-  } else {
-    check.value = true;
-  }
+watch([() => searchForm.key1, () => searchForm.key2,check], ([v1, v2]) => {
   console.log('watch', check.value, v1, searchForm.key2)
   eventbus.emit("重庆地图界面-处理风廓线数据", 风廓线数据, v1, check.value, v2);
 });

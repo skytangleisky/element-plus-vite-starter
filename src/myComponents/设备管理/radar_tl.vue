@@ -33,7 +33,7 @@
 <script lang="ts" setup>
 import { ref,reactive,watch } from "vue";
 import { exec } from "~/api/index.js";
-import { databaseRaw2 } from "~/api/重庆";
+import { databaseRaw } from "~/api/重庆";
 const paginationOption = reactive({
   pageSize:100,
   currentPage:1,
@@ -72,7 +72,7 @@ type Radar = {
 }
 watch(paginationOption,()=>{
   exec({
-    database:databaseRaw2,
+    database:databaseRaw,
     query:{
       sqls:[
         `select count(*) count from (select * from \`device\`) tmp`,

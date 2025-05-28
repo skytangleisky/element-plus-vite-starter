@@ -45,6 +45,7 @@
     "gl-matrix": "^3.4.3",
     "gsap": "^3.11.5",
     "hls.js": "^1.5.17",
+    "http-proxy-agent": "^7.0.2",
     "jquery": "^3.7.1",
     "jsonwebtoken": "^9.0.2",
     "less": "^4.2.0",

@@ -83,7 +83,7 @@
             <svg t="1721356236932" class="icon hover:color-red active:color-inherit rotate-180deg" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M600.064 119.68l342.336 730.24a64 64 0 0 1-88.064 83.584L544 768l-340.288 170.112a64 64 0 0 1-85.824-85.824l367.04-734.08a64 64 0 0 1 115.2 1.472z"></path></svg>
           </el-icon>
         </div>
-        <div class="subitem">
+        <div class="subitem" v-if="false">
           <span>水平风</span>
           <el-switch
             v-model="setting.feather"

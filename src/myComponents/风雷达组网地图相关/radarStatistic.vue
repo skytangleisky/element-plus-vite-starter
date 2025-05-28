@@ -55,8 +55,8 @@
         </template>
       </collapse-card>
     </div>
-    <div class="item" v-if="hasPermission(['9e659895-f520-40e9-aa8a-a6103eff5d9c'])">
-      <collapse-card title="风廓线" v-model:show="showDBS" :show-collapse="true">
+    <div class="item" v-if="hasPermission(['e2c7295c-4e04-45ce-a58e-3e547ba25b25'])">
+      <collapse-card title="组网产品" v-model:show="showDataFusion" :show-collapse="true">
         <!-- <div class="subitem">
           <span class="whitespace-nowrap">相对高度层</span>
           <el-select
@@ -153,10 +153,6 @@
             size="small"
           />
         </div> -->
-      </collapse-card>
-    </div>
-    <div class="item" v-if="hasPermission(['e2c7295c-4e04-45ce-a58e-3e547ba25b25'])">
-      <collapse-card title="数据融合" v-model:show="showDataFusion" :show-collapse="true">
         <div class="subitem" v-if="hasPermission(['5dd862f4-112f-46cf-a843-11c3f5aba1cf'])">
           <span>水平风场</span>
           <el-switch
@@ -407,9 +403,8 @@ watch(()=>setting.风雷达组网地图相关.站号,val=>{
 })
 const show2 = ref(true);
 const showPPI = ref(true);
-const showDBS = ref(true);
 const showDataFusion = ref(true);
-const showMapSetting = ref(true);
+const showMapSetting = ref(false);
 const resetLocation = () => {
   setting.$resetFields("风雷达组网地图相关.center");
   setting.$resetFields("风雷达组网地图相关.zoom");

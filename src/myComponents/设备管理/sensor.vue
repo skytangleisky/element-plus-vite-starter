@@ -138,7 +138,7 @@ import {
   deleteData,
 } from "~/api/index.js";
 
-import { databaseRaw2 } from "~/api/重庆";
+import { databaseRaw } from "~/api/重庆";
 
 onMounted(() => {
   getData();
@@ -311,7 +311,7 @@ function handleDelete() {
         instance.confirmButtonText = "删除中...";
         setTimeout(() => {
           deleteData({
-            database:databaseRaw2,
+            database:databaseRaw,
             table:"sensor",
             query: selectedDevice.value,
           })
@@ -366,7 +366,7 @@ function getData() {
       });
     }
     fetchList({
-      database:databaseRaw2,
+      database:databaseRaw,
       table:"sensor",
       query: {
             limit: pageSize,
@@ -404,7 +404,7 @@ watch(
   [() => paginationOptions.currentPage, () => paginationOptions.pageSize],
   ([currentPage, pageSize]) => {
     fetchList({
-      database:databaseRaw2,
+      database:databaseRaw,
       table:"sensor",
       query: {
         limit: pageSize,
@@ -435,6 +435,9 @@ watch(
 );
 </script>
 <style scoped lang="scss">
+.dark .mainContainer{
+  background-color: #303133;
+}
 .mainContainer {
   box-sizing: border-box;
   position: absolute;

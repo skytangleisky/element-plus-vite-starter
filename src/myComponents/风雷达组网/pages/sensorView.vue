@@ -61,37 +61,6 @@
             </div>
           </fieldset>
           <fieldset>
-            <legend>六要素</legend>
-            <div class="w-full flex h-40px items-center p-4px box-border">
-              <div class="whitespace-nowrap">环境温度，单位℃</div>
-              <div class="sensor-properties">{{ format(formData.Temperature) }}</div>
-            </div>
-            <div class="w-full flex h-40px items-center p-4px box-border">
-              <div class="whitespace-nowrap">湿度，单位%</div>
-              <div class="sensor-properties">{{ format(formData.Humidity) }}</div>
-            </div>
-            <div class="w-full flex h-40px items-center p-4px box-border">
-              <div class="whitespace-nowrap">气压，单位hPa</div>
-              <div class="sensor-properties">{{ format(formData.Pressure) }}</div>
-            </div>
-            <div class="w-full flex h-40px items-center p-4px box-border">
-              <div class="whitespace-nowrap">降雨强度，单位mm/min</div>
-              <div class="sensor-properties">{{ format(formData.RainSpeed) }}</div>
-            </div>
-            <div class="w-full flex h-40px items-center p-4px box-border">
-              <div class="whitespace-nowrap">降雨量，单位mm</div>
-              <div class="sensor-properties">{{ format(formData.RainLevel) }}</div>
-            </div>
-            <div class="w-full flex h-40px items-center p-4px box-border">
-              <div class="whitespace-nowrap">风速，单位m/s</div>
-              <div class="sensor-properties">{{ format(formData.LandWindSpeed) }}</div>
-            </div>
-            <div class="w-full flex h-40px items-center p-4px box-border">
-              <div class="whitespace-nowrap">风向，单位°</div>
-              <div class="sensor-properties">{{ format(formData.LandWindDir) }}</div>
-            </div>
-          </fieldset>
-          <fieldset>
             <legend>伺服</legend>
             <div class="w-full flex h-40px items-center p-4px box-border">
               <div class="whitespace-nowrap">伺服状态</div>
@@ -269,6 +238,37 @@
             <div class="w-full flex h-40px items-center p-4px box-border">
               <div class="whitespace-nowrap">激光器告警代码 ，仅法国激光器</div>
               <div class="sensor-properties">{{ formData.AlarmCode }}</div>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>六要素</legend>
+            <div class="w-full flex h-40px items-center p-4px box-border">
+              <div class="whitespace-nowrap">环境温度，单位℃</div>
+              <div class="sensor-properties">{{ format(formData.Temperature) }}</div>
+            </div>
+            <div class="w-full flex h-40px items-center p-4px box-border">
+              <div class="whitespace-nowrap">湿度，单位%</div>
+              <div class="sensor-properties">{{ format(formData.Humidity) }}</div>
+            </div>
+            <div class="w-full flex h-40px items-center p-4px box-border">
+              <div class="whitespace-nowrap">气压，单位hPa</div>
+              <div class="sensor-properties">{{ format(formData.Pressure) }}</div>
+            </div>
+            <div class="w-full flex h-40px items-center p-4px box-border">
+              <div class="whitespace-nowrap">降雨强度，单位mm/min</div>
+              <div class="sensor-properties">{{ format(formData.RainSpeed) }}</div>
+            </div>
+            <div class="w-full flex h-40px items-center p-4px box-border">
+              <div class="whitespace-nowrap">降雨量，单位mm</div>
+              <div class="sensor-properties">{{ format(formData.RainLevel) }}</div>
+            </div>
+            <div class="w-full flex h-40px items-center p-4px box-border">
+              <div class="whitespace-nowrap">风速，单位m/s</div>
+              <div class="sensor-properties">{{ format(formData.LandWindSpeed) }}</div>
+            </div>
+            <div class="w-full flex h-40px items-center p-4px box-border">
+              <div class="whitespace-nowrap">风向，单位°</div>
+              <div class="sensor-properties">{{ format(formData.LandWindDir) }}</div>
             </div>
           </fieldset>
         </div>
