@@ -12,6 +12,7 @@ import compression from 'vite-plugin-compression';
 import cesium from 'vite-plugin-cesium'
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import { HttpProxyAgent } from 'http-proxy-agent'
+import { SocksProxyAgent } from 'socks-proxy-agent'
 import {
   presetAttributify,
   presetIcons,
@@ -19,7 +20,9 @@ import {
   transformerDirectives,
   transformerVariantGroup,
 } from 'unocss'
-
+// const agent = new SocksProxyAgent("socks://127.0.0.1:5555")
+// const agent = new HttpProxyAgent("http://127.0.0.1:1122")
+const agent = null
 // https://vitejs.dev/config/
 export default defineConfig({
   // build: {
@@ -138,12 +141,9 @@ export default defineConfig({
         changeOrigin:true,
       },
       '/backend':{
-        // configure(proxyServer){
-        //   proxyServer.on('proxyReq', (proxyReq, req, res) => {
-        //       proxyReq.agent = new HttpProxyAgent('http://123.57.209.17:1122')
-        //   })
-        // },
-        target:'http://10.56.5.231:3000',//替换的服务端地址
+        agent,
+        // target:'http://10.56.5.231:3000',
+        target:'http://192.168.0.114:3000',
         secure:false,
         changeOrigin:true,
         // rewrite:path=>path.replace(/^\/backend/,''), // 设置重写的路径
@@ -175,10 +175,11 @@ export default defineConfig({
         rewrite:path=>path.replace(/^\/qt/,'') // 设置重写的路径
       },
       '/amap':{
-        // target:'http://tanglei.top:8000',//替换的服务端地址
-        target:'http://10.56.5.231:8001',//替换的服务端地址
+        agent,
+        // target:'http://10.56.5.231:8001',
+        target:'http://192.168.0.135:8088',
         changeOrigin:true,
-        rewrite:path=>path.replace(/^\/amap/,'') // 设置重写的路径
+        rewrite:path=>path.replace(/^\/amap/,''), // 设置重写的路径
       },
       '/ry_api':{//人影接口
         target:'http://tanglei.top:8080',
@@ -188,15 +189,10 @@ export default defineConfig({
         ws:true,
       },
       '/python':{
-        target:'http://10.56.5.231:8002',
+        agent,
+        // target:'http://10.56.5.231:8002',
+        target:'http://192.168.0.135:8002',
         rewrite:path=>path.replace(/^\/python/,''), // 设置重写的路径
-        secure:false,
-        changeOrigin:true,
-        ws:true,
-      },
-      '/tianditu':{
-        target:'http://t0.tianditu.com',
-        rewrite:path=>path.replace(/^\/tianditu/,''), // 设置重写的路径
         secure:false,
         changeOrigin:true,
         ws:true,
