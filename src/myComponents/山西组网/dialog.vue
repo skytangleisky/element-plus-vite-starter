@@ -205,7 +205,7 @@ const toggleCollapse = () => {
         width: 20px;
         height: 20px;
         pointer-events: none;
-        filter: drop-shadow(var(--ep-text-color-primary) 0 60px);
+        filter: drop-shadow(var(--el-text-color-primary) 0 60px);
         transform: translateY(-60px);
       }
       vertical-align: middle;
@@ -330,7 +330,7 @@ const toggleCollapse = () => {
 .dark .radarDragDialog {
   backdrop-filter:blur(8px);
   background:#00000088;
-  // background: var(--ep-bg-color-overlay);
+  // background: var(--el-bg-color-overlay);
   table {
     tbody{
       tr {

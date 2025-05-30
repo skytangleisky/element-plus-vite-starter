@@ -92,9 +92,9 @@ const select = computed({
   .card-bottom{
 
     .ep-icon{
-      color: var(--ep-color-primary);
+      color: var(--el-color-primary);
       &:hover{
-        color: var(--ep-color-primary-dark-2);
+        color: var(--el-color-primary-dark-2);
       }
     }
   }

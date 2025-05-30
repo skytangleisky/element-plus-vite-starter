@@ -78,7 +78,7 @@ onMounted(()=>{
   justify-content: space-around;
   align-items: end;
   .cpu-usage,.mem-usage,.disk-usage {
-    --ep-fill-color-light:#ddd;
+    --el-fill-color-light:#ddd;
     color:white;
   }
   .cpu-usage{

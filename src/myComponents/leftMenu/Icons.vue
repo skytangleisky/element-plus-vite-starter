@@ -13,7 +13,7 @@
           <div class="relative p-5px">
             <el-icon
               :class="`svgPath cursor-pointer p-5px candidate ${v.uuid == props.svg?'selected':''}`"
-              style="font-size: 2em;  color: var(--ep-text-color-primary);"
+              style="font-size: 2em;  color: var(--el-text-color-primary);"
               v-dompurify-html="v.svg"
               @click="click(v.uuid)"
             />
@@ -37,7 +37,7 @@
           <div class="relative p-5px">
             <el-icon
               :class="`cursor-pointer p-5px candidate`"
-              style="font-size: 2em;  color: var(--ep-text-color-primary);"
+              style="font-size: 2em;  color: var(--el-text-color-primary);"
               @click="click('')"
             >
               <svg t="1725350248538" class="icon" viewBox="0 0 1349 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M325.818182 279.272727m-93.090909 0a93.090909 93.090909 0 1 0 186.181818 0 93.090909 93.090909 0 1 0-186.181818 0Z" p-id="5336"></path><path d="M873.658182 429.149091L791.272727 346.763636l-418.909091 418.909091L442.181818 605.090909 325.818182 486.4l-232.727273 232.727273V93.090909h930.909091v282.530909a334.196364 334.196364 0 0 1 93.090909 0V46.545455a46.545455 46.545455 0 0 0-46.545454-46.545455H46.545455a46.545455 46.545455 0 0 0-46.545455 46.545455v837.818181a46.545455 46.545455 0 0 0 46.545455 46.545455h701.905454a372.363636 372.363636 0 0 1 125.207273-501.76z" p-id="5337"></path><path d="M1070.545455 465.454545a279.272727 279.272727 0 1 0 279.272727 279.272728 279.272727 279.272727 0 0 0-279.272727-279.272728z m139.636363 314.181819h-104.727273V884.363636h-69.818181v-104.727272H930.909091v-69.818182h104.727273V605.090909h69.818181v104.727273H1210.181818z" p-id="5338"></path></svg>

@@ -26,7 +26,7 @@ function toggleDark() {
     <el-menu-item h="full" @click="toggleDark()">
       <button
         class="border-none w-full bg-transparent cursor-pointer"
-        style="height: var(--ep-menu-item-height)"
+        style="height: var(--el-menu-item-height)"
       >
         <i inline-flex i="dark:ep-moon ep-sunny"></i>
       </button>

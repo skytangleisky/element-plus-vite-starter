@@ -696,7 +696,7 @@ const allChange = (val: CheckboxValueType) => {
   .svg {
     padding: 4px;
     font-size: 1.5rem;
-    color: ar(--ep-text-color-primary);
+    color: ar(--el-text-color-primary);
   }
   .listContainer {
     .draggable {

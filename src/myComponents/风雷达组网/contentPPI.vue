@@ -80,7 +80,7 @@ function handleNodeClick_DBS(arg:string){
   position: relative;
   padding:10px;
   border-radius:10px;
-  border:1px solid var(--ep-border-color);
+  border:1px solid var(--el-border-color);
   margin-bottom:10px;
 }
 .myTabs{

@@ -119,8 +119,8 @@ onBeforeUnmount(() => {
     font-size: 14px;
 
     &.currentItem {
-      background: var(--ep-color-primary-light-5);
-      //border:1px solid var(--ep-border-color);
+      background: var(--el-color-primary-light-5);
+      //border:1px solid var(--el-border-color);
 
     }
   }

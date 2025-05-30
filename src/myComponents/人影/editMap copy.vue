@@ -2377,7 +2377,7 @@ watch(
   background: #ffffff88;
   border-radius: 10px;
   border-top-left-radius: 4px;
-  border: 1px solid var(--ep-border-color);
+  border: 1px solid var(--el-border-color);
   ul {
     cursor: default;
     display: flex;

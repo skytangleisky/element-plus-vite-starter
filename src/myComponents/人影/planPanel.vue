@@ -345,8 +345,8 @@ const 完成 = (item: planDataType) => {
 .planPanel{
   opacity: 0.9;
   .ep-tabs.ep-tabs--border-card {
-    --ep-border-color: gray;
-    --ep-border-color-light: gray;
+    --el-border-color: gray;
+    --el-border-color-light: gray;
     margin-top: 0;
     & > .ep-tabs__header {
       border-bottom: 0;
@@ -358,15 +358,15 @@ const 完成 = (item: planDataType) => {
       &.is-active {
         border-radius: 6px 6px 0 0;
         margin-top: 0;
-        border-top: 1px solid var(--ep-border-color);
-        border-left: 1px solid var(--ep-border-color);
+        border-top: 1px solid var(--el-border-color);
+        border-left: 1px solid var(--el-border-color);
       }
       &:first-child {
         margin-left: 0;
       }
     }
     & > .ep-tabs__content {
-      border: 1px solid var(--ep-border-color);
+      border: 1px solid var(--el-border-color);
       padding: 0;
       height: 400px;
       display: flex;

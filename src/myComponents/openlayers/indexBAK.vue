@@ -1275,7 +1275,7 @@ onMounted(() => {
     top: 6px;
     right: 8px;
     &:after {
-      color: var(--ep-color-primary);
+      color: var(--el-color-primary);
       content: "✖";
     }
   }

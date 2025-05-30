@@ -79,11 +79,11 @@ const mouseup = (e: any, item: any, k: any) => {
 </script>
 <style>
 .leftImg {
-  filter: drop-shadow(var(--ep-text-color-primary) 0 60px);
+  filter: drop-shadow(var(--el-text-color-primary) 0 60px);
   transform: translateY(-60px);
 }
 .rightImg {
-  filter: drop-shadow(var(--ep-text-color-primary) 0 60px);
+  filter: drop-shadow(var(--el-text-color-primary) 0 60px);
   transform: translateY(-60px);
 }
 .devide {

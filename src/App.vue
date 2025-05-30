@@ -1,5 +1,5 @@
 <template>
-  <el-config-provider namespace="ep" :locale="user.locale" :message="{ max: Infinity }">
+  <el-config-provider namespace="el" :locale="user.locale" :message="{ max: Infinity }">
     <router-view v-slot="{ Component }">
       <keep-alive :exclude="exclude">
         <component :is="Component" />

@@ -125,6 +125,6 @@ const data = [
 </script>
 <style lang="scss" scoped>
 .institutionTree {
-  background: var(--ep-fill-color-light);
+  background: var(--el-fill-color-light);
 }
 </style>

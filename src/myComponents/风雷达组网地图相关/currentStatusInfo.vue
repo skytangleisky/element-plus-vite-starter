@@ -34,7 +34,7 @@ import moment from "moment";
   border:1px solid var(--border-color);
   padding: 12px;
   margin-bottom: 12px;
-  color: var(--ep-text-color-regular);
+  color: var(--el-text-color-regular);
 
   .time {
     font-size: 20px;

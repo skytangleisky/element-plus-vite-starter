@@ -2468,7 +2468,7 @@ watch(
       padding: 2px;
 
       &:hover {
-        color: var(--ep-color-primary);
+        color: var(--el-color-primary);
       }
 
       &:active {
@@ -2546,7 +2546,7 @@ watch(
     right: 8px;
 
     &:after {
-      color: var(--ep-color-primary);
+      color: var(--el-color-primary);
       content: "✖";
     }
   }

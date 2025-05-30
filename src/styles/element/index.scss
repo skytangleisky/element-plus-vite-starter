@@ -1,27 +1,28 @@
+
 $--colors: (
-        "primary": (
-                "base": #55B8F7,
-        ),
-        "success": (
-                "base": #3AC8A5,
-        ),
-        "warning": (
-                "base": #e8cb1a,
-        ),
-        "danger": (
-                "base": #F56c6c,
-        ),
-        "error": (
-                "base": #F56c6c,
-        ),
-        "info": (
-                "base": #caedff,
-        )
+  "primary": (
+    "base": #55B8F7,
+  ),
+  "success": (
+    "base": #3AC8A5,
+  ),
+  "warning": (
+    "base": #e8cb1a,
+  ),
+  "danger": (
+    "base": #F56c6c,
+  ),
+  "error": (
+    "base": #F56c6c,
+  ),
+  "info": (
+    "base": #caedff,
+  )
 );
 
 // we can add this to custom namespace, default is 'el'
 @forward "element-plus/theme-chalk/src/mixins/config.scss" with (
-  $namespace: "ep"
+  $namespace: "el"
 );
 
 // You should use them in scss, because we calculate it by sass.
@@ -30,18 +31,18 @@ $--colors: (
   // do not use same name, it will override.
   $colors: $--colors,
   $bg-color: (
-         "page": #F4FBFF,
-         "": #DFF4FF,
-         "overlay": #D5F1FF, //rgba(213, 241,255,1);
-    ),
-    $text-color: (
-        "primary": #23516d,
-        "regular": #23516d,
-         "secondary": #798E99,
-    ),
-    $border-color: (
-         "": #A2BECC,
-    ),
+    "page": #F4FBFF,
+    "": #DFF4FF,
+    "overlay": #D5F1FF, //rgba(213, 241,255,1);
+  ),
+  $text-color: (
+    "primary": #23516d,
+    "regular": #23516d,
+    "secondary": #798E99,
+  ),
+  $border-color: (
+    "": #A2BECC,
+  ),
   $button-padding-horizontal: ("default": 50px)
 );
 
@@ -54,8 +55,3 @@ $--colors: (
 
 // custom dark variables
 @use "./dark.scss";
-:root {
-  --bg-color-overlay-opacity-8: rgba(213, 241, 255, .8);
-  --border-color: #A2BECC;
-  --map-color:#CDECFF;
-}

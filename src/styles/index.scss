@@ -1,18 +1,17 @@
-// import dark theme
-@use "element-plus/theme-chalk/src/dark/css-vars.scss" as *;
-
-// :root {
-//   --ep-color-primary: red;
-// }
+:root {
+  --bg-color-overlay-opacity-8: rgba(213, 241, 255, .8);
+  --border-color: #A2BECC;
+  --map-color:#CDECFF;
+}
 a {
-  color: var(--ep-color-primary);
+  color: var(--el-color-primary);
 }
 
 code {
   border-radius: 2px;
   padding: 2px 4px;
-  background-color: var(--ep-color-primary-light-9);
-  color: var(--ep-color-primary);
+  background-color: var(--el-color-primary-light-9);
+  color: var(--el-color-primary);
 }
 
 /* 滚动条样式 */
@@ -46,9 +45,9 @@ code {
     line-height: 40px;
     display: flex;
     justify-content: space-between;
-    color: var(--ep-text-color-regular);
+    color: var(--el-text-color-regular);
 
-    text-shadow: 0 0 8rem var(--ep-color-primary);
+    text-shadow: 0 0 8rem var(--el-color-primary);
     padding: 0 24px 0 32px;
     margin-bottom: 2px;
     border-radius: 0;

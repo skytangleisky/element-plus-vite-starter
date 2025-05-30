@@ -175,7 +175,7 @@ import { nextTick, onBeforeUnmount, onMounted,reactive,ref,watch } from 'vue';
         align-items: center;
         font-size: 16px;
         &:hover{
-         color: var(--ep-color-primary);
+         color: var(--el-color-primary);
         }
       }
     }

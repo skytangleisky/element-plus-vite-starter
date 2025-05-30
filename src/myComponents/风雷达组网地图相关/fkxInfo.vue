@@ -169,7 +169,7 @@ onBeforeUnmount(() => {
   width: 100%;
   display: grid;
   grid-template-rows:40px 1fr;
-  color: var(--ep-text-color-regular);
+  color: var(--el-text-color-regular);
   margin-bottom:12px;
   .fkx-top {
     display: flex;
@@ -186,7 +186,7 @@ onBeforeUnmount(() => {
     .top-left {
       font-size: 16px;
       &:hover{
-        color:var(--ep-color-primary);
+        color:var(--el-color-primary);
       }
     }
 
@@ -206,7 +206,7 @@ onBeforeUnmount(() => {
       top: 4px;
       font-size: 16px;
       &:hover{
-        color: var(--ep-color-error);
+        color: var(--el-color-error);
       }
     }
     .ep-form {

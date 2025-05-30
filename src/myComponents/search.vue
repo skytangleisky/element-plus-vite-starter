@@ -342,7 +342,7 @@ onMounted(() => {
     justify-content: center;
     align-items: center;
     flex-direction: row;
-    color: var(--ep-text-color-primary);
+    color: var(--el-text-color-primary);
     font-size: 16px;
     background: rgba(0, 0, 0, 0.02);
     border: 1px solid rgba(0, 0, 0, 0.05);
@@ -379,7 +379,7 @@ onMounted(() => {
       margin: 0;
       height: 100%;
       width: 100%;
-      color: var(--ep-text-color-primary);
+      color: var(--el-text-color-primary);
       font-size: 16px;
       border-radius: 10px 0 0 10px;
       &::-webkit-input-placeholder {
@@ -446,7 +446,7 @@ onMounted(() => {
       box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
       background-color: #fff;
       display: none;
-      color: var(--ep-text-color-primary);
+      color: var(--el-text-color-primary);
       & > li {
         padding-left: 36px;
         background-position: 10px center;

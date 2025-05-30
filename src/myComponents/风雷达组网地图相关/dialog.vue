@@ -387,7 +387,7 @@ const toggleCollapse = () => {
         width: 20px;
         height: 20px;
         pointer-events: none;
-        filter: drop-shadow(var(--ep-text-color-primary) 0 60px);
+        filter: drop-shadow(var(--el-text-color-primary) 0 60px);
         transform: translateY(-60px);
       }
 
@@ -448,7 +448,7 @@ const toggleCollapse = () => {
     justify-content: space-between;
 
     .ep-icon {
-      color: var(--ep-text-color-regular);
+      color: var(--el-text-color-regular);
     }
 
     .top-left {
@@ -473,7 +473,7 @@ const toggleCollapse = () => {
         }
         .item-label{
           margin-right:4px;
-          color:var(--ep-text-color-regular-secondary);
+          color:var(--el-text-color-regular-secondary);
         }
       }
     }
@@ -514,14 +514,14 @@ const toggleCollapse = () => {
     tbody {
       tr {
         &:hover {
-          background: var(--ep-color-primary-light-7);
+          background: var(--el-color-primary-light-7);
         }
 
         cursor: pointer;
       }
 
       tr.selected {
-        background: var(--ep-color-primary-light-5);
+        background: var(--el-color-primary-light-5);
       }
 
       td:first-child {
@@ -545,7 +545,7 @@ const toggleCollapse = () => {
 }
 
 // .dark .dragDialog {
-//   background: var(--ep-bg-color-overlay);
+//   background: var(--el-bg-color-overlay);
 
 //   table {
 //     tbody {
@@ -564,7 +564,7 @@ const toggleCollapse = () => {
 
 //     th, td {
 //       text-align: left;
-//       border: 1px solid var(--ep-border-color);
+//       border: 1px solid var(--el-border-color);
 //     }
 
 //     td {

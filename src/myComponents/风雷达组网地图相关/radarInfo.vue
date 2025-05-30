@@ -382,10 +382,10 @@ function format(val: any) {
   .content {
     .device-info {
       font-size: 16px;
-      border-left: 3px solid var(--ep-color-primary);
+      border-left: 3px solid var(--el-color-primary);
       padding-left: 8px;
       margin-bottom: 10px;
-      color: var(--ep-color-primary);
+      color: var(--el-color-primary);
     }
 
     .ep-collapse {
@@ -414,12 +414,12 @@ function format(val: any) {
 
       .item-label {
         margin-right: 8px;
-        color: var(--ep-text-color-regular-secondary);
+        color: var(--el-text-color-regular-secondary);
       }
 
       .item-value {
         display: flex;
-        color: var(--ep-text-color-regular);
+        color: var(--el-text-color-regular);
         word-wrap: anywhere;
         max-width: 50%;
       }

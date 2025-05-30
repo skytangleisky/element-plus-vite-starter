@@ -307,17 +307,17 @@ $layer-box-max-width: 250px;
       border-radius: 4px;
       background-color: var(--bg-color-overlay-opacity-8);
       border: 1px solid transparent;
-      color: var(--ep-text-color-regular);
+      color: var(--el-text-color-regular);
 
       &:hover {
-        border-color: var(--ep-color-primary);
+        border-color: var(--el-color-primary);
       }
     }
 
     .map-btn.active {
-      background-color: var(--ep-color-primary-light-7);
-      border-color: var(--ep-color-primary);
-      color: var(--ep-text-color-primary);
+      background-color: var(--el-color-primary-light-7);
+      border-color: var(--el-color-primary);
+      color: var(--el-text-color-primary);
     }
   }
 }

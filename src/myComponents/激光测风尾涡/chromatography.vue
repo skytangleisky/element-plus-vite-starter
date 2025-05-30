@@ -103,7 +103,7 @@ defineExpose({
       outline: 2px solid lightgray;
     }
     .division {
-      color: var(--ep-text-color-primary);
+      color: var(--el-text-color-primary);
       top: 0;
       position: absolute;
       left: calc(100% + 4px);
@@ -111,7 +111,7 @@ defineExpose({
     }
   }
   .division {
-    color: var(--ep-text-color-primary);
+    color: var(--el-text-color-primary);
     top: 100%;
     transform: translateY(-50%);
     position: absolute;

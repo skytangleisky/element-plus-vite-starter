@@ -46,7 +46,7 @@ watch(()=>setting.风雷达组网.监控.isFoldSingle,newVal=>{
   margin-bottom: 10px;
   text-align: left;
   padding-left: 10px;
-  color: var(--ep-text-color-regular);
+  color: var(--el-text-color-regular);
 }
 </style>
 <style scoped lang="scss">
@@ -62,7 +62,7 @@ watch(()=>setting.风雷达组网.监控.isFoldSingle,newVal=>{
 //       height: 14px;
 //       width: 14px;
 //       border-radius: 14px;
-//       background-color: var(--ep-color-info);
+//       background-color: var(--el-color-info);
 //       border: 0.01rem solid #fff;
 //     }
 
@@ -71,33 +71,33 @@ watch(()=>setting.风雷达组网.监控.isFoldSingle,newVal=>{
 //       height: 24px;
 //       width: 24px;
 //       border-radius: 24px;
-//       background-color: var(--ep-color-info-light-7);
+//       background-color: var(--el-color-info-light-7);
 //       display: flex;
 //       justify-content: center;
 //       align-items: center;
 //     }
 
 //     .status-1 {
-//       background-color: var(--ep-color-success-light-7);
+//       background-color: var(--el-color-success-light-7);
 
 //       .point {
-//         background-color: var(--ep-color-success);
+//         background-color: var(--el-color-success);
 //       }
 //     }
 
 //     .status-2 {
-//       background-color: var(--ep-color-warning-light-7);
+//       background-color: var(--el-color-warning-light-7);
 
 //       .point {
-//         background-color: var(--ep-color-warning);
+//         background-color: var(--el-color-warning);
 //       }
 //     }
 
 //     .status-3 {
-//       background-color: var(--ep-color-danger-light-7);
+//       background-color: var(--el-color-danger-light-7);
 
 //       .point {
-//         background-color: var(--ep-color-danger);
+//         background-color: var(--el-color-danger);
 //       }
 //     }
 //   }
