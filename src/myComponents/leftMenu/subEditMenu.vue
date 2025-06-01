@@ -13,21 +13,21 @@
           </svg>
         </div>
       </el-icon>
-      <div class="dd-handle w-full h-full relative" :style="`border-radius: 10px;display: flex;align-items: center;opacity: ${!item.meta.roles||intersection(setting.targetRoles,item.meta.roles)?'1':'0.5'};`">
+      <div class="dd-handle" :style="`border-radius: 10px;display: flex;align-items: center;opacity: ${!item.meta.roles||intersection(setting.targetRoles,item.meta.roles)?'1':'0.5'};width:100%;height:100%;position:relative`">
         <!-- <el-checkbox style="height: fit-content;" v-model="item.hide"></el-checkbox> -->
         <el-icon @click="item.hide=!item.hide" style="cursor:pointer;font-size: large;">
           <Hide v-if="item.hide"/>
           <View v-else/>
         </el-icon>
-        <div class="b-var(--text-primary-color) b-1px p-2px " style="height: 100%;display: flex;align-items: center;border-style: solid;position:relative">
+        <div style="height: 100%;display: flex;align-items: center;border-style: solid;position:relative;border:1px solid var(--text-primary-color);padding:2px;">
           <Icons v-model:svg="item.svg"></Icons>
           {{ item.meta?.label }}
         </div>
         {{ item.meta.roles }}
         <div style="position: absolute;right:0">
-          <el-icon v-dompurify-html="format('d6a8e59f-f348-40ab-a9e5-3d80da39b23d')" style="font-size: large" @click="browse(item)"></el-icon>
-          <el-icon v-dompurify-html="format('8ce6fb28-177a-4874-a77e-2917edd852b1')" style="font-size: large" @click="remove(item)"</el-icon>
-          <el-icon v-dompurify-html="format('271fa7c1-e1ae-4081-9efe-fb8ae1d41f69')" style="font-size: large" </el-icon>
+          <el-icon v-dompurify-html="format('d6a8e59f-f348-40ab-a9e5-3d80da39b23d')" style="font-size: large" @click="browse(item)"/>
+          <el-icon v-dompurify-html="format('8ce6fb28-177a-4874-a77e-2917edd852b1')" style="font-size: large" @click="remove(item)"/>
+          <el-icon v-dompurify-html="format('271fa7c1-e1ae-4081-9efe-fb8ae1d41f69')" style="font-size: large"/>
         </div>
       </div>
     </div>

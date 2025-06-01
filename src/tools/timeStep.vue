@@ -4,13 +4,13 @@
               @change="change">
       <template #default="{data,currentIndex}">
         <div
-            :class="`item w-full h-full flex items-center relative justify-center flex-col ${data.index==currentIndex?'currentItem':''}`">
-          <div v-if="data.index == currentIndex" class="day absolute top-4px font-size-12px line-height-12px">
+            :class="`item ${data.index==currentIndex?'currentItem':''}`" style="width: 100%;height: 100%;display: flex;align-items: center;position: relative;justify-content: center;flex-direction: column;">
+          <div v-if="data.index == currentIndex" class="day" style="position: absolute;top:4px;font-size: 12px;line-height: 12px;">
             {{ getDay(data) }}D
           </div>
-          <!-- <div class="day absolute top-0px font-size-12px line-height-12px">{{ data.index }}</div> -->
+          <!-- <div class="day" style="position: absolute;top:0;font-size: 12px;line-height: 12px;">{{ data.index }}</div> -->
           {{ format(data) }}
-          <div v-if="data.index == currentIndex" class="absolute bottom--8px font-size-12px line-height-12px cursor-pointer">
+          <div v-if="data.index == currentIndex" style="position: absolute;bottom:-8px;font-size: 12px;line-height: 12px;cursor:pointer;">
             <el-date-picker
                 :modelValue="getDate(data)"
                 @update:modelValue="setDate($event,data)"
@@ -34,10 +34,9 @@
 </template>
 <script setup lang="ts">
 import Carousel from "./carousel.vue";
-import rightSvg from "~/assets/right.svg?raw";
 import playSvg from "~/assets/play.svg?raw";
 import pauseSvg from "~/assets/pause.svg?raw";
-import {nextTick, onBeforeUnmount, onMounted, ref, watch} from 'vue'
+import {onBeforeUnmount, onMounted, ref, watch} from 'vue'
 import moment from "moment";
 
 const increment = 10 * 60 * 1000

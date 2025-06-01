@@ -1,82 +1,77 @@
 <template>
   <div class="page color-white">
-    <Header class="z-1" @alarm="settingShow = true" @edit-user="editUserShow = true" v-model:menuIndex="menuIndex"></Header>
+    <Header @alarm="settingShow = true" @edit-user="editUserShow = true" v-model:menuIndex="menuIndex" style="z-index:1"></Header>
     <Alarm v-if="settingShow" v-model:show="settingShow"></Alarm>
     <ChangePassword v-if="editUserShow" v-model:show="editUserShow"></ChangePassword>
     <SensorView v-if="sensorViewShow" v-model:show="sensorViewShow" :device="device"></SensorView>
-    <div ref="mapChart" style="position:absolute;width:100%;height:100%;"/>
+    <div ref="mapChart" style="position:absolute;width:100%;height:100%;"></div>
     <border-box-11 ref="dvBorder11" :color="['#8aaafb','transparent']" title="山西测风雷达组网" :title-width="400" :animate="true" style="width:100%;height:100%;pointer-events: none;">
-      <div v-show="menuIndex==2" class="absolute flex w-full h-full justify-around box-border p-20px p-t-60px">
+      <div v-show="menuIndex==2" style="position: absolute;display: flex;width: 100%;height: 100%;justify-content: space-around;box-sizing: border-box;padding:20px;padding-top:60px;">
         <div class="left">
           <border-box-7 :color="['#0154be', '#03f7fc']" style="height:calc(30% - 5px);box-sizing: border-box;backdrop-filter:blur(20px);">
-            <div class="w-full h-full place-items-center p-10px box-border" style="display:grid;grid-template-rows: auto 1fr;grid-template-columns: 1fr 1fr;">
-              <div class="flex flex-row justify-around row-start-1 row-span-1 col-start-1 col-span-2">
-                <div class="m-r-20px font-size-18px">雷达状态分布</div>
-                <div class="online font-bold line-height-18px flex items-center">正常</div>
-                <div class="offline font-bold line-height-18px flex items-center">异常</div>
+            <div style="display:grid;grid-template-rows: auto 1fr;grid-template-columns: 1fr 1fr;width: 100%;height: 100%;place-items: center;padding:10px;box-sizing: border-box;">
+              <div style="display: flex;flex-direction: row;justify-content: space-around;grid-row-start: 1;grid-row:span 1 / span 1;grid-column-start: 1;grid-column: span 2 / span 2;">
+                <div style="margin-right: 20px;font-size: 18px;">雷达状态分布</div>
+                <div class="online" style="font-weight: bold;line-height: 18px;display: flex;align-items: center;">正常</div>
+                <div class="offline" style="font-weight: bold;line-height: 18px;display: flex;align-items: center;">异常</div>
               </div>
-              <div ref="pieChart1"  class="row-start-2 row-span-1 col-start-1 col-span-1 w-full h-full"></div>
-              <div class="percents grid grid-cols-2 grid-rows-3 items-center col-start-2 col-span-1 row-start-2 row-span-1 h-80px font-size-20px flex flex-col justify-between">
-                <div class="flex w-full"><div class="online">正常</div>{{(radars.filter((item:any)=>item.status==1).length/radars.length*100).toFixed()}}%</div>
-                <div class="flex" w-full><div class="offline">异常</div>{{(radars.filter((item:any)=>item.status!=1).length/radars.length*100).toFixed()}}%</div>
+              <div ref="pieChart1" style="grid-row-start: 2;grid-row:span 1 / span 1;grid-column-start: 1;grid-column: span 1 / span 1;width: 100%;height: 100%;"></div>
+              <div class="percents"
+              style="display: grid;grid-template-rows: 3;grid-template-columns: 2;align-items: center;grid-column-start: 2;grid-column: span 1 / span 1;grid-row-start: 2;grid-row:span 1 / span 1;height: 80px;font-size: 20px;display: flex;flex-direction: column;justify-content: space-between;">
+                <div style="display: flex;width:100%;"><div class="online">正常</div>{{(radars.filter((item:any)=>item.status==1).length/radars.length*100).toFixed()}}%</div>
+                <div style="display: flex;width:100%;"><div class="offline">异常</div>{{(radars.filter((item:any)=>item.status!=1).length/radars.length*100).toFixed()}}%</div>
               </div>
             </div>
           </border-box-7>
           <border-box-7 :color="['#0154be', '#03f7fc']" style="height: calc(70% - 5px);box-sizing: border-box;backdrop-filter:blur(20px);">
             <!-- <District></District> -->
-            <div class="flex justify-center"><strong style="line-height: 40px;font-size: 20px;">雷达当天每小时传感器数据获取量</strong></div>
-            <div class="w-full grid cols-2 rows-3 place-items-center grid-gap-10px p-10px box-border" style="height:calc(100% - 40px)">
-              <div ref="th1" class="row-start-1 row-start-1 col-start-1 col-span-1 w-full h-full"></div>
-              <div ref="th2" class="row-start-1 row-start-1 col-start-2 col-span-1 w-full h-full"></div>
-              <div ref="th3" class="row-start-2 row-start-1 col-start-1 col-span-1 w-full h-full"></div>
-              <div ref="th4" class="row-start-2 row-start-1 col-start-2 col-span-1 w-full h-full"></div>
-              <div ref="th5" class="row-start-3 row-start-1 col-start-1 col-span-1 w-full h-full"></div>
-              <div ref="th6" class="row-start-3 row-start-1 col-start-2 col-span-1 w-full h-full"></div>
+            <div style="display: flex;justify-content: center;"><strong style="line-height: 40px;font-size: 20px;">雷达当天每小时传感器数据获取量</strong></div>
+            <div style="height:calc(100% - 40px);width:100%;display: grid;grid-template-rows: 3;grid-template-columns: 2;place-items: center;gap:10px;padding:10px;box-sizing: border-box;">
+              <div ref="th1" style="grid-row-start: 1;grid-row:span 1 / span 1;grid-column-start: 1;grid-column: span 1 / span 1;width: 100%;height: 100%;"></div>
+              <div ref="th2" style="grid-row-start: 1;grid-row:span 1 / span 1;grid-column-start: 2;grid-column: span 1 / span 1;width:100%;height: 100%;"></div>
+              <div ref="th3" style="grid-row-start: 1;grid-row: span 1 / span 1;width: 100%;height: 100%;"></div>
+              <div ref="th4" style="grid-row-start: 1;grid-row:span 1 / span 1;grid-column-start: 2;grid-column: span 1 / span 1;width: 100%;height: 100%;"></div>
+              <div ref="th5" style="grid-row-start: 3;grid-row: span 1 / span 1;grid-column-start: 1;grid-column: span 1 / span 1;width:100%;height: 100%;"></div>
+              <div ref="th6" style="grid-row-start: 3;grid-row: span 1 / span 1; grid-column-start: 2;grid-column: span 1 / span 1;width:100%;height: 100%;"></div>
             </div>
           </border-box-7>
         </div>
         <div class="center">
-            <div class="w-full h-full box-border flex flex-col color-white">
+            <div style="width:100%;height: 100%;box-sizing: border-box;display: flex;color-white;">
               <border-box-1 :color="['#0154be', '#03f7fc']" style="height: 200px; box-sizing: border-box;backdrop-filter:blur(20px);pointer-events: auto;">
-                <div class="w-full h-full p-20px box-border grid-gap-10px" style="display: grid;grid-template-columns: repeat(3,minmax(0,1fr)); grid-template-rows: 1fr auto;">
-                    <decoration-9 class="w-full h-full col-start-1 col-span-1 row-start-1 row-span-1">
+                <div style="display: grid;grid-template-columns: repeat(3,minmax(0,1fr)); grid-template-rows: 1fr auto;width: 100%;height: 100%;box-sizing: border-box;display: flex;color:white;">
+                    <decoration-9 style="width: 100%;height: 100%;grid-column-start: 1;grid-column: span 1 / span 1;grid-row-start: 1;grid-row:span 1 / span 1;">
                       <div color-white font-600 style="font-size:20px;text-shadow: 0 0 3px #7acaec;text-decoration:underline;">
                         {{ radars.length }}台
                       </div>
                     </decoration-9>
-                    <div class="w-full h-full col-start-1 col-span-1 row-start-2 row-span-1">雷达总数</div>
-                    <decoration-9 class="w-full h-full col-start-2 col-span-1 row-start-1 row-span-1">
+                    <div style="width: 100%;height: 100%;grid-column-start: 1;grid-column: span 1 / span 1;grid-row-start: 2;grid-row:span 1 / span 1;">雷达总数</div>
+                    <decoration-9 style="width: 100%;height: 100%;grid-column-start: 1;grid-column: span 1 / span 1;grid-row-start: 1;grid-row:span 1 / span 1;">
                       <div color-green font-600 style="font-size:20px;text-shadow: 0 0 3px #7acaec;">
                         {{ radars.filter((item:any)=>item.status==1).length }}台
                       </div>
                     </decoration-9>
-                    <div class="w-full h-full col-start-2 col-span-1 row-start-2 row-span-1">正常雷达</div>
-                    <decoration-9 class="w-full h-full col-start-3 col-span-1 row-start-1 row-span-1">
-                      <div :class="`${radars.filter((item:any)=>item.status!=1).length>0?'color-#f00':'color-gray'}`+' font-600'" style="font-size:20px;text-shadow: 0 0 3px #7acaec;">
+                    <div style="width: 100%;height: 100%;grid-column-start: 2;grid-column: span 1 / span 1;grid-row-start: 2;grid-row:span 1 / span 1">正常雷达</div>
+                    <decoration-9 style="width: 100%;height: 100%;grid-column-start: 3;grid-column: span 1 / span 1;grid-row-start: 1;grid-row:span 1 / span 1;">
+                      <div :style="`font-size:20px;text-shadow: 0 0 3px #7acaec;font-weight: 600;color:${radars.filter((item:any)=>item.status!=1).length>0?'#f00':'gray'}`">
                         {{ radars.filter((item:any)=>item.status!=1).length }}台
                       </div>
                     </decoration-9>
-                    <div class="w-full h-full col-start-3 col-span-1 row-start-2 row-span-1">异常雷达</div>
-                    <!-- <decoration-9 class="w-full h-full col-start-4 col-span-1 row-start-1 row-span-1">
-                      <div color-yellow font-600 style="font-size:20px;text-shadow: 0 0 3px #7acaec;">
-                        0台
-                      </div>
-                    </decoration-9>
-                    <div class="w-full col-start-4 col-span-1 row-start-2 row-span-1">故障雷达</div> -->
+                    <div style="width: 100%;height: 100%;grid-column-start: 3;grid-column: span 1 / span 1;grid-row-start: 2;grid-row: span 1 / span 1;">异常雷达</div>
                 </div>
               </border-box-1>
             </div>
         </div>
         <div class="right">
           <border-box-7 :color="['#0154be', '#03f7fc']" style="box-sizing: border-box;backdrop-filter:blur(20px);pointer-events: auto;height: calc(70% - 5px);">
-            <div class="flex justify-center"><strong style="line-height: 40px;font-size: 20px;">雷达当天每小时10分钟平均风廓线数据获取量</strong></div>
-            <div class="w-full grid grid-rows-3 grid-cols-2 place-items-center grid-gap-10px p-10px box-border" style="height: calc(100% - 40px);">
-              <div ref="dataTrend1" class="row-start-1 row-span-1 col-start-1 col-span-1 w-full h-full"/>
-              <div ref="dataTrend2" class="row-start-1 row-span-1 col-start-2 col-span-1 w-full h-full"/>
-              <div ref="dataTrend3" class="row-start-2 row-span-1 col-start-1 col-span-1 w-full h-full"/>
-              <div ref="dataTrend4" class="row-start-2 row-span-1 col-start-2 col-span-1 w-full h-full"/>
-              <div ref="dataTrend5" class="row-start-3 row-span-1 col-start-1 col-span-1 w-full h-full"/>
-              <div ref="dataTrend6" class="row-start-3 row-span-1 col-start-2 col-span-1 w-full h-full"/>
+            <div style="display: flex;justify-content: center;"><strong style="line-height: 40px;font-size: 20px;">雷达当天每小时10分钟平均风廓线数据获取量</strong></div>
+            <div style="height: calc(100% - 40px);width:100%;display: grid;grid-template-rows: 3;grid-template-columns: 2;place-items: center;gap:10px;padding:10px;box-sizing: border-box;">
+              <div ref="dataTrend1" style="grid-row-start: 1;grid-row: span 1 / span 1;grid-column-start: 1;grid-column: span 1 / span 1;width:100%;height: 100%;"></div>
+              <div ref="dataTrend2" style="grid-row-start: 1;grid-row:span 1 / span 1;grid-column-start: 2;grid-column: span 1 / span 1;width:100%;height: 100%;"></div>
+              <div ref="dataTrend3" style="grid-row-start: 2;grid-row:span 1 / span 1;grid-column-start: 1;grid-column: span 1 / span 1;width:100%;height: 100%;"></div>
+              <div ref="dataTrend4" style="grid-row-start: 2;grid-row:span 1 / span 1;grid-column-start: 2;grid-column: span 1 / span 1;width:100%;height: 100%;"></div>
+              <div ref="dataTrend5" style="grid-row-start: 3;grid-row:span 1 / span 1;grid-column-start: 1;grid-column: span 1 / span 1;width:100%;height: 100%;"></div>
+              <div ref="dataTrend6" style="grid-row-start: 3;grid-row:span 1 / span 1;grid-column-start: 2;grid-column: span 1 / span 1;width:100%;height: 100%;"></div>
             </div>
           </border-box-7>
           <border-box-7 :color="['#0154be', '#03f7fc']" style="box-sizing: border-box;backdrop-filter:blur(20px);pointer-events: auto;height: calc(30% - 5px);">

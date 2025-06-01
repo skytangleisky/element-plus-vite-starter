@@ -13,7 +13,7 @@
       <div style="color: rgb(78, 129, 184); font-size: 20px">距离信噪比曲线</div>
       <div style="color: grey">{{ currentTime }}</div>
     </div>
-    <div v-resize="resize" ref="thContainer" class="w-full h-full flex-1"></div>
+    <div v-resize="resize" ref="thContainer" style="width:100%;height: 100%;flex:1;"></div>
   </div>
 </template>
 <script lang="ts" setup>

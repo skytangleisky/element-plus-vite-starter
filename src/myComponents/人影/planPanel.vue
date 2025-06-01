@@ -22,40 +22,44 @@
             @mousedown.stop
           >
             <div
-              class="h-full w-90px flex items-center justify-left"
               style="
+                height: 100%;
+                width:90px;
+                display: flex;
+                align-items: center;
+                justify-content: left;
                 border: 1px solid grey;
                 box-sizing: border-box;
                 border-radius: 4px 0 0 4px;
               "
             >
-              <div class="flex flex-col">
+              <div class="flex flex-col" style="display: flex;flex-direction: column;">
                 {{ moment(item.tmBeginApply).format("HH:mm:ss") }}
                 <span>{{ item.strZydID }}</span>
-                <span class="font-size-14px font-extrabold">{{ item.strName }}</span>
+                <span sytle="font-size:14px;font-weight:bold">{{ item.strName }}</span>
               </div>
             </div>
-            <div class="flex flex-col w-full">
-              <div class="flex">
-                <div class="flex flex-col" style="border: 1px solid grey">
+            <div style="display: flex;flex-direction: column;width:100%;">
+              <div style="display: flex;">
+                <div style="border: 1px solid grey;display: flex;flex-direction: column;">
                   <div>作业状态</div>
                   <div :style="`font-weight: bolder; font-size: 16px;color:${工作状态格式化(item.ubyStatus)=='作业开始'?'red':'inherit'}`">
                     {{ 工作状态格式化(item.ubyStatus) }}
                   </div>
                 </div>
-                <div class="flex flex-col" style="border: 1px solid grey">
+                <div class="flex flex-col" style="border: 1px solid grey;display: flex;flex-direction: column;">
                   <div>发送状态</div>
                   <div style="font-weight: bolder; font-size: 16px">
                     {{ 发送状态格式化(item.ubySendStatus) }}
                   </div>
                 </div>
-                <div class="flex flex-col" style="border: 1px solid grey">
+                <div style="border: 1px solid grey;display: flex;flex-direction: column;">
                   <div>作业点代码</div>
                   <div style="font-weight: bolder; font-size: 16px">
                     {{ item.strCode }}
                   </div>
                 </div>
-                <div class="flex flex-col" style="border: 1px solid grey">
+                <div style="border: 1px solid grey;display: flex;flex-direction: column;">
                   <template v-if="!item.bAnswerAccept">
                     <div>申请时间</div>
                     <div style="font-weight: bolder; font-size: 16px">
@@ -69,7 +73,7 @@
                     </div>
                   </template>
                 </div>
-                <div class="flex flex-col" style="border: 1px solid grey">
+                <div style="border: 1px solid grey;display: flex;flex-direction: column;">
                   <template v-if="!item.bAnswerAccept">
                     <div>申请时长</div>
                     <div style="font-weight: bolder; font-size: 16px">
@@ -83,19 +87,14 @@
                     </div>
                   </template>
                 </div>
-                <div class="flex flex-col" style="border: 1px solid grey">
+                <div style="border: 1px solid grey;display: flex;flex-direction: column;">
                   <div>空域状态</div>
                   <div :class="`${获取空域状态(item)=='未使用'?'notuse-warning':''}`" style="font-weight: bolder; font-size: 16px">
                     {{ 获取空域状态(item) }}
                   </div>
                 </div>
                 <div
-                  class="flex-1 flex flex-col"
-                  style="
-                    border: 1px solid grey;
-                    white-space: nowrap;
-                    border-radius: 0 4px 0 0;
-                  "
+                  style="border: 1px solid grey;white-space: nowrap;border-radius: 0 4px 0 0;flex:1;display: flex;flex-direction: column;"
                 >
                   <div>上报单位</div>
                   <div style="font-weight: bolder; font-size: 16px">
@@ -104,16 +103,16 @@
                   </div>
                 </div>
               </div>
-              <div class="flex h-full">
+              <div class="flex h-full" style="display: flex;height: 100%;">
                 <div
-                  :class="`flex justify-center items-center ${申请(item)}`"
-                  style="border: 1px solid grey; font-weight: bolder"
+                  :class="`${申请(item)}`"
+                  style="border: 1px solid grey; font-weight: bolder;display: flex;justify-content: center;align-items: center;"
                 >
                   申请({{ moment(item.tmBeginApply).format("HH:mm") }})
                 </div>
                 <div
-                  :class="`flex-1 flex justify-center items-center ${批复(item)}`"
-                  style="border: 1px solid grey; font-weight: bolder"
+                  :class="`${批复(item)}`"
+                  style="border: 1px solid grey; font-weight: bolder;flex:1;display: flex;justify-content: center;align-items: center;"
                 >
                   <template v-if="!item.bAnswerAccept">
                     批复
@@ -123,14 +122,14 @@
                   </template>
                 </div>
                 <div
-                  :class="`flex-1 flex justify-center items-center ${开始(item)}`"
-                  style="border: 1px solid grey; font-weight: bolder"
+                  :class="`${开始(item)}`"
+                  style="border: 1px solid grey; font-weight: bolder;flex:1;display: flex;justify-content: center;align-items: center;"
                 >
                   {{ beginText(item) }}
                 </div>
                 <div
-                  :class="`flex-1 flex justify-center items-center ${结束(item)}`"
-                  style="border: 1px solid grey; font-weight: bolder"
+                  :class="`${结束(item)}`"
+                  style="border: 1px solid grey; font-weight: bolder;flex:1;display: flex;justify-content: center;align-items: center;"
                 >
                   <template v-if="工作状态格式化(item.ubyStatus)=='作业开始'">
                     (<div :class="`${endSeconds(item)<10?'color-#f00':'color-inherit'}`">
@@ -142,11 +141,15 @@
                   </template>
                 </div>
                 <div
-                  :class="`flex-1 flex justify-center items-center ${完成(item)}`"
+                  :class="`${完成(item)}`"
                   style="
                     border: 1px solid grey;
                     font-weight: bolder;
                     border-radius: 0 0 4px 0;
+                    flex:1;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
                   "
                 >
                   完成

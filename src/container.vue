@@ -3,10 +3,7 @@
   <div class="flex flex-col" style="width: 100%; height: 100%">
     <my-header @editUser="editUserShow=true"></my-header>
     <ChangePassword class="z-5" v-if="editUserShow" v-model:show="editUserShow"></ChangePassword>
-    <div
-      class="relative w-full h-full b-solid b-red b-0px box-border"
-      style="overflow: visible"
-    >
+    <div style="overflow: visible;position: relative;width: 100%;">
       <router-view v-slot="{ Component }">
         <keep-alive>
           <component :key="$route.identify" :is="Component"/>

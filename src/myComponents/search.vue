@@ -104,9 +104,9 @@
           :name="item.name"
         >
           <div
-            class="grid grid-flow-row sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-16 place-items-center p-10"
+            style="display: grid;grid-auto-flow: row;gap:16px;place-items: center;padding:10px"
           >
-            <!-- <a v-for="(item,key) in data.result.results" :href="'/tanglei/'+item.product_root+item.product_url" target="_blank" class="w-full h-full">
+            <!-- <a v-for="(item,key) in data.result.results" :href="'/tanglei/'+item.product_root+item.product_url" target="_blank" style="width:100%;height:100%">
           </a> -->
             <pen-item v-for="(item, key) in data.result.results" :item="item"></pen-item>
           </div>

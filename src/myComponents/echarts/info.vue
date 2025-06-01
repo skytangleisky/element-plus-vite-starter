@@ -18,14 +18,14 @@
       <div @click="click" style="position: relative">{{ item?.name }}</div>
       <span style="font-size: small; color: grey; right: 0">{{ item?.status.data_time }}</span>
     </div>
-    <div class="grid grid-cols-3 grid-rows-4 w-full h-auto">
+    <div style="display: grid;grid-template-columns: 3;grid-template-rows: 4;width:100%;height: auto;">
       <div class="info_item" style="grid-column: 1/3">
         <span>序列号:</span><span>{{ item?.status.sn_code }}</span>
       </div>
       <div style="grid-column: 3/4">
         <div
           v-if="item?.type.name == '塔式'"
-          class="w-full h-full flex items-center"
+          style="width:100%;height:100%;display: flex;align-items: center;"
         >
           蓄电池电量百分比:
           <div ref="batteryRef" class="battery" style="margin: 0 4px">
@@ -41,19 +41,16 @@
       <div class="info_item" style="grid-column: 1/2">
         <span>在线状态:</span>
         <div
-          :class="`${item?.is_online ? 'bg-green' : 'bg-red'}`"
-          style="border-radius: 50%; width: 1rem; height: 1rem"
+          :style="`border-radius: 50%; width: 1rem; height: 1rem;background-color:${item?.is_online? '#00ff00' : '#ff0000'}`"
         ></div>
       </div>
       <hr
-        class="dark:b-#00000044 b-gray-1 b-b-1px b-0px b-solid w-full"
-        style="grid-column: 1/4"
+        style="grid-column: 1/4;width:100%;border-bottom:1px solid #00000044"
       />
       <div class="info_item" style="grid-column: 1/2">
         <span>控制板状态:</span>
         <div
-          :class="`${item?.status.control_plate_status ? 'bg-green' : 'bg-red'}`"
-          style="border-radius: 50%; width: 1rem; height: 1rem"
+          :style="`border-radius: 50%; width: 1rem; height: 1rem;background-color:${item?.status.control_plate_status ? '#00ff00' : '#ff0000'}`"
         ></div>
       </div>
       <div class="info_item" style="grid-column: 1/2">
@@ -64,14 +61,12 @@
       </div>
 
       <hr
-        class="dark:b-#00000044 b-gray-1 b-b-1px b-0px b-solid w-full"
-        style="grid-column: 1/4"
+        style="grid-column: 1/4;width:100%;border-bottom:#00000044"
       />
       <div class="info_item" style="grid-column: 1/2">
         <span>舱内温湿度状态:</span>
         <div
-          :class="`${item?.status.internal_status ? 'bg-green' : 'bg-red'}`"
-          style="border-radius: 50%; width: 1rem; height: 1rem"
+          :style="`border-radius: 50%; width: 1rem; height: 1rem;background-color:${item?.status.internal_status ? '#00ff00' : '#ff0000'}`"
         ></div>
       </div>
       <div class="info_item" style="grid-column: 1/2">
@@ -85,14 +80,12 @@
       </div>
 
       <hr
-        class="dark:b-#00000044 b-gray-1 b-b-1px b-0px b-solid w-full"
-        style="grid-column: 1/4"
+        style="grid-column: 1/4;width:100%;border-bottom:#00000044"
       />
       <div class="info_item" style="grid-column: 1/2">
         <span>舱外温湿度状态:</span>
         <div
-          :class="`${item?.status.external_status ? 'bg-green' : 'bg-red'}`"
-          style="border-radius: 50%; width: 1rem; height: 1rem"
+          :style="`border-radius: 50%; width: 1rem; height: 1rem;background-color:${item?.status.external_status ? '#00ff00' : '#ff0000'}`"
         ></div>
       </div>
       <div class="info_item" style="grid-column: 1/2">
@@ -103,14 +96,12 @@
       </div>
 
       <hr
-        class="dark:b-#00000044 b-gray-1 b-b-1px b-0px b-solid w-full"
-        style="grid-column: 1/4"
+        style="grid-column: 1/4;width:100%;border-bottom:1px solid #00000044"
       />
       <div class="info_item" style="grid-column: 1/2">
         <span>EDFA状态:</span>
         <div
-          :class="`${item?.status.edfa_status ? 'bg-green' : 'bg-red'}`"
-          style="border-radius: 50%; width: 1rem; height: 1rem"
+          :style="`border-radius: 50%; width: 1rem; height: 1rem;background-color:${item?.status.edfa_status ? '#00ff00' : '#ff0000'}`"
         ></div>
       </div>
       <div class="info_item" style="grid-column: 1/2">
@@ -121,14 +112,12 @@
       </div>
 
       <hr
-        class="dark:b-#00000044 b-gray-1 b-b-1px b-0px b-solid w-full"
-        style="grid-column: 1/4"
+        style="grid-column: 1/4;border-bottom:1px solid #00000044"
       />
       <div class="info_item" style="grid-column: 1/2">
         <span>采集卡状态:</span>
         <div
-          :class="`${item?.status.grabber_status ? 'bg-green' : 'bg-red'}`"
-          style="border-radius: 50%; width: 1rem; height: 1rem"
+          :style="`border-radius: 50%; width: 1rem; height: 1rem;background-color:${item?.status.grabber_status ? '#00ff00' : '#ff0000'}`"
         ></div>
       </div>
       <div class="info_item" style="grid-column: 1/2">
@@ -136,14 +125,12 @@
       </div>
 
       <hr
-        class="dark:b-#00000044 b-gray-1 b-b-1px b-0px b-solid w-full"
-        style="grid-column: 1/4"
+        style="grid-column: 1/4;width: 100%;border-bottom: 1px solid #00000044;"
       />
       <div class="info_item" style="grid-column: 1/2">
         <span>电子罗盘状态:</span>
         <div
-          :class="`${item?.status.compass_status ? 'bg-green' : 'bg-red'}`"
-          style="border-radius: 50%; width: 1rem; height: 1rem"
+          :style="`border-radius: 50%; width: 1rem; height: 1rem;background-color:${item?.status.compass_status ? '#00ff00' : '#ff0000'}`"
         ></div>
       </div>
       <div class="info_item" style="grid-column: 1/2">
@@ -157,14 +144,12 @@
       </div>
 
       <hr
-        class="dark:b-#00000044 b-gray-1 b-b-1px b-0px b-solid w-full"
-        style="grid-column: 1/4"
+        style="grid-column: 1/4;width: 100%;border-bottom: 1px solid #00000044;"
       />
       <div class="info_item" style="grid-column: 1/2">
         <span>GPS状态:</span>
         <div
-          :class="`${item?.status.gps_status ? 'bg-green' : 'bg-red'}`"
-          style="border-radius: 50%; width: 1rem; height: 1rem"
+          :style="`border-radius: 50%; width: 1rem; height: 1rem;background-color:${item?.status.gps_status ? '#00ff00' : '#ff0000'}`"
         ></div>
       </div>
       <div class="info_item" style="grid-column: 1/2">

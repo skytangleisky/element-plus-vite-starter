@@ -13,7 +13,7 @@
       <div style="font-size: 20px; color: rgb(78, 129, 184)">水平风</div>
       <div style="color: grey">{{ currentTime }}</div>
     </div>
-    <div ref="fkxContainer" class="w-full flex-1"></div>
+    <div ref="fkxContainer" style="width:100%;flex:1;"></div>
   </div>
 </template>
 <script lang="ts" setup>

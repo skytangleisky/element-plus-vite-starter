@@ -1,9 +1,9 @@
 <template>
-  <div class="h-full flex flex-col">
-    <div class="w-full box-border relative flex" style="height: 100%">
-      <div class="p-10px h-full box-border flex flex-col">
-        <div class="title dark:bg-#252948 bg-white">{{ station.currentStation.device_name }}({{ station.active }})</div>
-        <el-tabs type="border-card" class="myTabs dark:bg-#252948" v-model="tabsData" style="border-radius:10px;overflow: hidden;">
+  <div style="height: 100%;display: flex;flex-direction: column;">
+    <div style="height: 100%;width: 100%;box-sizing: border-box; position: relative;display: flex;">
+      <div style="padding:10px;height: 100%;box-sizing: border-box;display: flex;flex-direction: column;">
+        <div class="title" style="background: white;">{{ station.currentStation.device_name }}({{ station.active }})</div>
+        <el-tabs type="border-card" class="myTabs" v-model="tabsData" style="border-radius:10px;overflow: hidden;background: #252948;">
           <el-tab-pane label="DBS" name="DBS">
             <DataList v-model:radar_time="radar_time_DBS" type="DBS" @handleNodeClick="handleNodeClick_DBS"></DataList>
           </el-tab-pane>
@@ -12,11 +12,10 @@
           </el-tab-pane>
         </el-tabs>
       </div>
-      <div class="w-full p-10px">
+      <div style="width: 100%;padding:10px">
         <div
           v-show="tabsData=='PPI'"
-          class="bg-white dark:bg-#252948 box-border h-full w-full b-1px b-solid b-gray relative overflow-clip"
-          style="border-radius: 10px"
+          style="border-radius: 10px;background: white;box-sizing: border-box;height: 100%;width: 100%;border: 1px solid gray;position: relative;overflow: clip;"
         >
           <radar
             :radar_time="radar_time"
@@ -25,7 +24,7 @@
             :PPIval="value1"
             :isDark="isDark"
           />
-          <div class="flex w-full flex-row items-center justify-left p-10px box-border absolute left-0 top-0">
+          <div style="display: flex;width: 100%;flex-direction: row;align-items: center;justify-content: left;padding:10px;box-sizing: border-box;position: absolute;left:0;top:0;;">
             主显示区:
             <el-select v-model="value1" placeholder="" style="width: 120px">
               <el-option
@@ -39,8 +38,7 @@
         </div>
         <div
           v-show="tabsData=='DBS'"
-          class="bg-white dark:bg-#252948 box-border h-full w-full b-1px b-solid b-gray relative overflow-clip flex flex-col"
-          style="border-radius: 10px"
+          style="border-radius: 10px;background-color: white;box-sizing: border-box;width: 100%;height: 100%;border:1px solid gray;position: relative;overflow: clip;display: flex;flex-direction: column;"
         >
         <FKX :radar_time="radar_time_DBS"/>
         </div>

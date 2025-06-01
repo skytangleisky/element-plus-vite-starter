@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center justify-center h-full w-full bg-#666">
+  <div style="display: flex;align-items: center;justify-content: center;height: 100%;width: 100%;background-color: #666;">
     <el-transfer
       v-model="value"
       :titles="['可用的 组', '选中的 组']"

@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-full" style="background: #2b2b2b">
+  <div style="background: #2b2b2b;width: 100%;height: 100%;">
     <canvas v-resize="resize" class="timeShaft" ref="timeShaft"></canvas>
     <div style="padding: 0 30px">
       <el-slider v-model="value" :min="1" :max="100" :step="1" @input="input"></el-slider>

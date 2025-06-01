@@ -148,7 +148,7 @@ function getLabelsByValue(values: string[], options: any) {
   return labels;
 }
 
-const cascaderProps = { /*multiple: true,*/ checkStrictly: true, value: 'value', label: 'label', children: 'children'}
+const cascaderProps = { /*multiple: true,*/ checkStrictly: true, value: 'value', label: 'label', children: 'children' }
 const cascaderOptions = reactive([])
 import {useSettingStore} from "~/stores/setting";
 

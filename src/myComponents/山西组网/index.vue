@@ -12,8 +12,8 @@
         height: 100%;
         line-height: 1;
         outline: none;
-      "
-    />
+      ">
+    </div>
     <decoration-12 style="width:150px;height:150px;position:absolute;right:0;top:100px;" />
     <div ref="popup" class="ol-popup" style="display: none">
       <div
@@ -52,16 +52,17 @@
       </div>
       <div ref="popup_closer" class="ol-popup-closer"></div>
     </div>
-    <Dialog class="absolute" style="left: 250px; top: 70px;width:400px"></Dialog>
+    <Dialog style="left: 250px; top: 70px;width:400px;display: absolute;"></Dialog>
     <div style="position: absolute;top:60px;left:10px;width:200px;height: 500px;box-sizing: border-box">
       <!-- <BorderBox8/> -->
-      <radar-statistic class="w-full h-full"></radar-statistic>
+      <radar-statistic style="width:100%;height: 100%;"></radar-statistic>
     </div>
     <Legend class="legend" style="z-index: 1;"></Legend>
     <div
       :class="`right-drawer ${
         setting.disappear ? 'disappear' : ''
-      } b-solid b-0 b-l-1px dark:b-color-#888`"
+      }`"
+      style="border-left:1px solid #888"
     >
       <div style="display:flex;flex-direction: column;overflow: auto; scroll-snap-type: none;height: 100%;">
         <chart-info></chart-info>
@@ -73,8 +74,11 @@
         <chart-th></chart-th>
       </div>
       <el-icon
-        class="left--29px z-999 bg-#eee dark:bg-#304156 dark:color-#888"
         style="
+          left:-29px;
+          z-index: 999;
+          background-color: #eee;
+          color:#888;
           font-size: 28px;
           position: absolute;
           border-bottom-left-radius: 50%;

@@ -2,7 +2,6 @@
   <div class="mainContainer">
     <div class="effect"></div>
     <div
-      class="absolute left-0 top-0 bg-white w-full h-full p-40px"
       style="
         display: flex;
         min-height: 100%;
@@ -10,6 +9,13 @@
         width: fit-content;
         min-width: 100%;
         box-sizing: border-box;
+        position: absolute;
+        left:0;
+        top:0;
+        background-color: white;
+        width: 100%;
+        height: 100%;
+        padding:40px;
       "
     >
       <catalogue></catalogue>

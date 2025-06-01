@@ -10,7 +10,7 @@
     >
       &emsp;{{ title }}
     </div>
-    <div class="w-full h-full flex justify-center">
+    <div style="width: 100%;height: 100%;display: flex;justify-content: center;">
       <div style="position: relative; width: 80px; height: 80px; overflow: hidden">
         <img src="/feathers/12.svg" class="imgClass" />
         <canvas

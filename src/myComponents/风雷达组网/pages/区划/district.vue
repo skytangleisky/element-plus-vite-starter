@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute top-0px left-0 h-full w-full pointer-events-auto overflow-auto">
+  <div style="position: absolute;top:0;left:0;height: 100%;width: 100%;pointer-events: auto;overflow:auto;">
     <el-tree class="districtTree" node-key="adcode" style="background-color: transparent;" :expand-on-click-node="false" :props="{label: 'name',children: 'zones',isLeaf: 'leaf'}" :load="loadNode" lazy highlight-current empty-text="" :default-expanded-keys="[500000]" :current-node-key="500000">
       <template #default="{ node, data }">
         <span>{{ node.label }}</span>

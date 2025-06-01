@@ -1,9 +1,6 @@
 <template>
   <div class="main-container">
-    <div
-      class="bg-#e1eeff dark:bg-black relative w-full h-full"
-      style="border-radius: 10px; border: 1px solid black; box-sizing: border-box"
-    >
+    <div style="border-radius: 10px; border: 1px solid black; box-sizing: border-box;background-color: #e1e1e1;position: relative;width: 100%;height: 100%;">
       <contentDBS></contentDBS>
     </div>
   </div>

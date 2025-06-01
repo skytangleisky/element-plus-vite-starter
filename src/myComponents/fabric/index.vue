@@ -1,6 +1,6 @@
 <template>
   <div v-resize="resize" ref="canvasContainer" class="canvasContainer bg-#2b2b2b">
-    <canvas id="gradient" class="w-full h-full"></canvas>
+    <canvas id="gradient" style="width:100%;height: 100%;"></canvas>
     <div class="button confirm" @click.native="confirm">确认</div>
     <div class="button cancel" @click.native="cancel">取消</div>
     <div class="button palette">添加到色板</div>

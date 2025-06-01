@@ -1,11 +1,11 @@
 <template>
-  <div class="absolute inset-0 bg-#000000aa z-1" @mousedown="mousedownFunc">
+  <div style="position: absolute;inset:0;background-color: #000000aa;z-index: 1;" @mousedown="mousedownFunc">
     <div class="changePassword_dialog">
       <BorderBox class="box-border" style="backdrop-filter: blur(10px);">
         <div class="rightPlane">
           <el-form
             ref="formEl"
-            class="w-full h-full flex flex-col justify-center"
+            style="width: 100%;height: 100%;display: flex;flex-direction: column;justify-content: center;"
             :model="numberValidateForm"
             label-position="left"
           >
@@ -28,7 +28,7 @@
               <el-input v-model="numberValidateForm.repeatPassword" type="password" autocomplete="new-password" placeholder="" />
             </el-form-item>
             <el-form-item>
-              <div class="w-full flex justify-around">
+              <div style="width: 100%;display: flex;justify-content: space-around;">
                 <el-button style="width: 100px;" type="primary" :loading="loading" @click="submitForm(formEl)">确认</el-button>
                 <el-button style="width: 100px;" @click="hideFunc">取消</el-button>
               </div>

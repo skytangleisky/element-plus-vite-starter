@@ -13,7 +13,8 @@
         <img
           v-if="v.leftImgSrc"
           src="/src/assets/checked.svg"
-          class="leftImg w-full h-full"
+          class="leftImg"
+          style="width:100%;height: 100%;"
         />
       </el-icon>
       <span style="flex-grow: 1; display: flex; justify-content: left">{{ v.name }}</span>
@@ -21,7 +22,8 @@
         <img
           v-if="v.children"
           src="/src/assets/caretRight.svg"
-          class="rightImg w-full h-full"
+          class="rightImg"
+          style="width:100%;height: 100%;"
         />
       </el-icon>
       <ol class="ol_list" v-if="v.children">

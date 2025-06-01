@@ -1,9 +1,9 @@
 <template>
-  <!-- <img class="w-full h-full" :src="'/tanglei/'+item.product_root+item.product_image"> -->
+  <!-- <img style="width:100%;height:100%;" :src="'/tanglei/'+item.product_root+item.product_image"> -->
   <article class="pen-item">
     <div class="iframe-wrap">
       <img
-        class="absolute w-full h-full top-0 left-0"
+        style="position: absolute;width: 100%;height: 100%;top:0;left:0;"
         :src="'/tanglei/' + item.product_root + item.product_image"
       />
       <!-- <iframe

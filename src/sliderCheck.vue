@@ -1,7 +1,6 @@
 <template>
   <div
-    class="flex items-center justify-center w-full bg-#aaaaaa44"
-    style="color: white; border-radius: 4px"
+    style="color: white; border-radius: 4px;display: flex;align-items: center;justify-content: center;background-color: #aaaaaa44;"
   >
     <div ref="maskRef" class="mask">
       {{ props.sliderStatus }}

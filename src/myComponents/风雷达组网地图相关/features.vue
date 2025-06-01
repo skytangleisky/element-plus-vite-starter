@@ -1,7 +1,7 @@
 <template>
   <div class="color">
     <div class="module-title" >{{ title }}</div>
-    <div class="w-full h-full flex justify-center">
+    <div style="width:100%;height: 100%;display: flex;justify-content: center;">
       <div style="position: relative; width: 100%; height: 80px; overflow: hidden">
         <img src="/feathers/12.svg" class="imgClass" />
         <canvas
@@ -15,7 +15,7 @@
 </template>
 <script lang="ts" setup>
 import { isDark } from "~/theme"
-import { ref, onMounted, onBeforeUnmount, watch } from "vue";
+import { ref, onMounted, watch } from "vue";
 watch(isDark, () => {
   draw(canvas, isDark.value);
 });

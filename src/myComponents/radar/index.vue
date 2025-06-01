@@ -1,9 +1,9 @@
 <template>
   <div class="radarContainer">
-    <div class="w-full h-40px flex justify-center items-center">
+    <div style="width:100%;height: 40px;display: flex;justify-content: center;align-items: center;">
       RHI(100) 径向风速 UTC 2022-09-30 16:01:19 to 16:01:36
     </div>
-    <div class="w-full h-full relative">
+    <div style="width:100%;height: 100%;position: relative;">
       <canvas v-resize="resize" ref="paintCanvasRef" class="paintCanvas"></canvas>
       <div class="radar_hover_tip" ref="tipRef"></div>
       <chromatography :arr="options.values" ref="chromatographyRef"></chromatography>

@@ -1,7 +1,6 @@
 <template>
   <div
-    class="h-full w-full box-border"
-    style="border-radius: 10px;overflow: auto;"
+    style="border-radius: 10px;overflow: auto;width:100%;height: 100%;box-sizing: border-box;"
     v-loading="loading"
   >
     <el-tree

@@ -1,5 +1,5 @@
 <template>
-  <canvas ref="canvasRef" class="w-full h-full" v-resize="resize"></canvas>
+  <canvas ref="canvasRef" v-resize="resize" style="width: 100%;height: 100%;"></canvas>
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from "vue";

@@ -5,7 +5,7 @@
       <div></div>
 <!--      <div style="color: grey ;margin-top: 4px">{{ currentTime }}</div>-->
     </div>
-    <div ref="fkxContainer" class="w-full flex-1 h-full"></div>
+    <div ref="fkxContainer" style="width: 100%;flex:1;height: 100%;"></div>
   </div>
 </template>
 <script lang="ts" setup>

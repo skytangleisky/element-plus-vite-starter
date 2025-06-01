@@ -1,5 +1,5 @@
 <template>
-  <div ref="mapRef" class="w-full h-full bg-white"></div>
+  <div ref="mapRef" style="width:100%;height:100%;background: white;"></div>
   <control-pane style="position: absolute;top:100px" :list="list"></control-pane>
 </template>
 <script lang="ts" setup>

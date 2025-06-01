@@ -21,7 +21,7 @@
       ></el-option>
     </el-select>
   </div>
-  <chart-fkx class="w-full p-10px box-border flex-1"></chart-fkx>
+  <chart-fkx style="width: 100%;padding:10px;box-sizing: border-box;flex:1;"></chart-fkx>
 </template>
 <script lang="ts" setup>
 const props = withDefaults(defineProps<{radar_time:string}>(),{radar_time:''})

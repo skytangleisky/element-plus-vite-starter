@@ -1,6 +1,6 @@
 <template>
   <div style="height: 100%;scroll-snap-align: start;scroll-snap-stop: always;position: relative;">
-    <div class="absolute flex left-100px top-27px">
+    <div style="position: absolute;display: flex;left:100px;top:27px;">
       <el-select v-model="value1" placeholder="" style="width: 120px">
         <el-option
           v-for="(v, k) in options1"
@@ -22,7 +22,7 @@
         ></el-option>
       </el-select>
     </div>
-    <chart-fkx class="w-full p-10px box-border" style="height: 100%;"></chart-fkx>
+    <chart-fkx style="height: 100%;width: 100%;padding:10px;box-sizing: border-box;"></chart-fkx>
   </div>
 </template>
 <script lang="ts" setup>

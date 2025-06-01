@@ -33,7 +33,7 @@
         />
       </el-select>
     </div>
-    <div ref="chartDom" class="w-full flex-1" v-resize="resize"></div>
+    <div ref="chartDom" style="width:100%;flex:1" v-resize="resize"></div>
   </div>
 </template>
 <script setup>

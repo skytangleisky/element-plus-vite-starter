@@ -1,54 +1,54 @@
 <template>
   <div class="page">
-    <Header class="z-1"></Header>
+    <Header style="z-index: 1;"></Header>
     <border-box-11 ref="dvBorder11" :color="['#8aaafb','transparent']" title="山西测风雷达组网" :title-width="400" :animate="true" style="width:100%;height:100%;">
-    <div class="absolute flex w-full h-full justify-around box-border p-20px p-t-60px">
+    <div style="position: absolute;display: flex;width: 100%;height: 100%;justify-content: space-around;box-sizing: border-box;padding:20px;padding-top:60px;">
       <div class="left">
         <border-box-7 :color="['#0154be', '#03f7fc']" style="height:calc(50% - 5px);box-sizing: border-box;backdrop-filter:blur(8px);">
-          <div class="w-full h-full grid rows-2 cols-2 place-items-center grid-gap-10px p-10px box-border">
-            <div ref="professionConstruct" id="professionConstruct" class="row-start-1 row-span-1 col-start-1 col-span-1 w-full h-full"></div>
-            <div ref="bigCategory" id="bigCategory" class="row-start-1 row-span-1 col-start-2 col-span-1 w-full h-full"></div>
-            <div ref="income" id="income" class="row-start-2 row-span-1 col-start-1 col-span-1 w-full h-full"></div>
-            <div ref="facultyFunding" id="facultyFunding" class="row-start-2 row-span-1 col-start-2 col-span-1 w-full h-full"></div>
+          <div style="width: 100%;height: 100%;display: grid;grid-template-columns: 2;grid-template-rows: 2;place-items:center;gap: 10px;padding:10px;box-sizing: border-box;">
+            <div ref="professionConstruct" id="professionConstruct" style="grid-row-start: 1;grid-row:span 1 / span 1;grid-column-start: 1;grid-column: span 1 / span 1;width: 100%;height: 100%;"></div>
+            <div ref="bigCategory" id="bigCategory" style="grid-row-start:1;grid-row:span 1 / span 1;grid-column-start:2;grid-column:span 1 / span 1;width:100%;height:100%;"></div>
+            <div ref="income" id="income" style="grid-row-start: 2;grid-row: span 1 / span 1;grid-column-start: 1;grid-column: span 1 / span 1;width: 100%;height: 100%;"></div>
+            <div ref="facultyFunding" id="facultyFunding" style="grid-row-start: 2;grid-row: span 1 / span 1;grid-column-start:2;grid-column: span 1 / span 1;width: 100%;height: 100%;"></div>
           </div>
         </border-box-7>
         <border-box-7 :color="['#0154be', '#03f7fc']" style="height: calc(50% - 5px);box-sizing: border-box;backdrop-filter:blur(8px);">
-          <div class="w-full h-full grid grid-rows-2 grid-cols-2 place-items-center grid-gap-10px p-10px box-border">
-            <div ref="timeTrend" id="timeTrend" class="row-start-1 row-span-1 col-start-1 col-span-1 w-full h-full"/>
-            <div ref="partTimePeriods" id="partTimePeriods" class="row-start-1 row-span-1 col-start-2 col-span-1 w-full h-full"/>
-            <div ref="liquidfill" id="liquidfill" class="row-start-2 row-span-1 col-start-1 col-span-2 h-100px w-full"/>
+          <div style="width: 100%;height: 100%;display: grid;grid-template-rows: 2;grid-template-columns: 2;place-items:center;gap:10px;padding:10px;box-sizing: border-box;">
+            <div ref="timeTrend" id="timeTrend" style="grid-row-start: 1;grid-row: span 1 / span 1;grid-column-start: 1;grid-column:span 1 / span 1;width: 100%;height:100%;"></div>
+            <div ref="partTimePeriods" id="partTimePeriods" style="grid-row-start: 1;grid-row: span 1 / span 1;grid-column-start: 2;grid-column: span 1 / span 1;width:100%;height:100%;"></div>
+            <div ref="liquidfill" id="liquidfill" style="grid-row-start: 2;grid-row:span 1 / span 1;grid-column-start: 1;grid-column: span 2 / span 2;height:100px;width:100%;"></div>
           </div>
         </border-box-7>
       </div>
       <div class="center">
-          <div class="w-full h-full box-border flex flex-col">
+          <div style="width:100%;height: 100%;box-sizing: border-box;display: flex;flex-direction: column;">
             <border-box-1 :color="['#0154be', '#03f7fc']" style="height: 200px; box-sizing: border-box;backdrop-filter:blur(8px);pointer-events: auto;">
-              <div class="w-full h-full flex flex-row justify-around items-center overflow-auto position-relative">
-                <div class="flex flex-col justify-center items-center">
+              <div style="width: 100%;height: 100%;display: flex;flex-direction: row;justify-content: space-around;align-items: center;overflow: auto;position: relative;">
+                <div style="display: flex;flex-direction: column;justify-content: center;align-items: center;">
                   <decoration-9 :dur="3" style="width:100px;height:100px;position: relative;">
-                    <div color-green font-600 style="font-size:20px;text-shadow: 0 0 3px #7acaec;text-decoration:underline;">
+                    <div style="color:#00ff00;font-weight: 600;font-size:20px;text-shadow: 0 0 3px #7acaec;text-decoration:underline;">
                       6台
                     </div>
                   </decoration-9>
                   全部雷达
                 </div>
-                <div class="flex flex-col justify-center items-center">
+                <div style="display: flex;flex-direction: column;justify-content: center;align-items: center;">
                   <decoration-9 style="width:100px;height:100px;position: relative;">
-                    <div color-green font-600 style="font-size:20px;text-shadow: 0 0 3px #7acaec;">
+                    <div style="color:#00ff00;font-weight: 600;font-size:20px;text-shadow: 0 0 3px #7acaec;">
                       6台
                     </div>
                   </decoration-9>
                   在线雷达
                 </div>
-                <div class="flex flex-col justify-center items-center">
+                <div style="display: flex;flex-direction: column;justify-content: center;align-items: center;">
                   <decoration-9 style="width:100px;height:100px;position: relative;">
-                    <div color-gray font-600 style="font-size:20px;text-shadow: 0 0 3px #7acaec;">
+                    <div style="color:gray;font-weight: 600;font-size:20px;text-shadow: 0 0 3px #7acaec;">
                       0台
                     </div>
                   </decoration-9>
                   离线雷达
                 </div>
-                <div class="flex flex-col justify-center items-center">
+                <div style="display: flex;flex-direction: column;justify-content: center;align-items: center;">
                   <decoration-9 style="width:100px;height:100px;position: relative;">
                     <div color-yellow font-600 style="font-size:20px;text-shadow: 0 0 3px #7acaec;">
                       0台
@@ -59,21 +59,21 @@
               </div>
             </border-box-1>
             <border-box-7 :color="['#0154be', '#03f7fc']" style="box-sizing: border-box;backdrop-filter:blur(8px);height: 100%;">
-              <div ref="mapChart" id="mapChart" class="row-start-2 row-span-1 col-start-1 col-span-2 h-full w-full"/>
+              <div ref="mapChart" id="mapChart" style="grid-row-start:2;grid-row:span 1 / span 1;grid-column-start: 1;grid-column: span 2 / span 2;width:100%;height:100%;"></div>
             </border-box-7>
           </div>
       </div>
       <div class="right">
         <border-box-7 :color="['#0154be', '#03f7fc']" style="box-sizing: border-box;backdrop-filter:blur(8px);">
-          <div class="w-full h-full grid cols-2 rows-4 place-items-center grid-gap-10px p-10px box-border">
-            <div ref="vocational" id="vocational" class="row-start-1 row-span-1 col-start-1 col-span-1 w-full h-full"></div>
-            <div ref="bl" id="bl" class="row-start-1 row-start-1 col-start-2 col-span-1 w-full h-full"></div>
-            <div ref="professionalCertificate" id="professionalCertificate" class="row-start-2 row-start-1 col-start-1 col-span-1 w-full h-full"></div>
-            <div ref="national" id="national" class="row-start-2 row-start-1 col-start-2 col-span-1 w-full h-full"></div>
-            <div ref="employmentCounterpart" id="employmentCounterpart" class="row-start-3 row-start-1 col-start-1 col-span-1 w-full h-full"></div>
-            <div ref="employmentNum" id="employmentNum" class="row-start-3 row-start-1 col-start-2 col-span-1 w-full h-full"></div>
-            <div ref="practiceBase" id="practiceBase" class="row-start-4 row-start-1 col-start-1 col-span-1 w-full h-full"></div>
-            <div ref="skill" id="skill" class="row-start-4 row-start-1 col-start-2 col-span-1 w-full h-full"></div>
+          <div style="width:100%;height:100%;display: grid;grid-template-columns: 2;grid-template-rows:4;place-items:center;gap:10px;padding:10px;box-sizing: border-box;">
+            <div ref="vocational" id="vocational" style="grid-row-start: 1;grid-row:span 1 / span 1;grid-column-start: 1;column-span: span 1 / span 1;width:100%;height:100%;"></div>
+            <div ref="bl" id="bl" style="grid-row-start: 1;grid-row: span 1 / span 1;grid-column-start: 2;grid-column: span 1 / span 1;width:100%;height:100%;"></div>
+            <div ref="professionalCertificate" id="professionalCertificate" style="grid-row-start: 2;grid-row:span 1 / span 1;grid-column-start: 1;grid-column: span 1 / span 1;width:100%;height:100%;"></div>
+            <div ref="national" id="national" style="grid-row-start: 2;grid-row: span 1 / span 1;grid-column-start: 2;grid-column:span 1 / span 1;width:100%;height:100%"></div>
+            <div ref="employmentCounterpart" id="employmentCounterpart" style="grid-row-start: 3;grid-row:span 1 / span 1;grid-column-start: 1;grid-column: span 1 / span 1;width:100%;height:100%;"></div>
+            <div ref="employmentNum" id="employmentNum" style="grid-row-start: 3;grid-row:span 1 / span 1;grid-column-start: 2;grid-column: span 1 / span 1;width:100%;height: 100%;"></div>
+            <div ref="practiceBase" id="practiceBase" style="grid-row-start: 4;grid-row: span 1 / span 1;grid-column-start: 1;grid-column: span 1 / span 1; width:100%;height: 100%;"></div>
+            <div ref="skill" id="skill" style="grid-row-start: 4;grid-row:span 1 / span 1;grid-column-start: 2;grid-column: span 1 / span 1;width:100%;height: 100%;"></div>
           </div>
         </border-box-7>
       </div>

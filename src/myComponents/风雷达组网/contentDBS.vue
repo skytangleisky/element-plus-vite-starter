@@ -1,10 +1,9 @@
 <template>
-  <div class="h-full flex flex-col">
-    <div class="w-full box-border relative flex" style="height: 100%; overflow: auto">
-      <div class="p-10px">
+  <div style="height: 100%;display: flex;flex-direction: column;">
+    <div style="height: 100%; overflow: auto;width: 100%;box-sizing: border-box;position: relative;display: flex;;">
+      <div style="padding:10px">
         <div
-          class="w-250px bg-white dark:bg-#252948 h-full b-solid box-border b-1px b-gray"
-          style="border-radius: 10px; overflow: auto"
+          style="border-radius: 10px; overflow: auto;width: 250px;background-color: white;height: 100%;box-sizing: border-box;border:1px solid gray;"
           v-loading="loading"
         >
           <el-tree
@@ -22,7 +21,6 @@
           />
         </div>
       </div>
-      
     </div>
   </div>
 </template>

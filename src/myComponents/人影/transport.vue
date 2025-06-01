@@ -8,11 +8,10 @@
       overflow: auto;
     "
   >
-    <table class="w-full">
+    <table style="width:100%;width:100%">
       <thead>
         <tr
-          class="bg-blue z-1"
-          style="box-sizing: border-box; top: 0px; position: sticky"
+          style="box-sizing: border-box; top: 0px; position: sticky;background-color: #60a5fa;z-index: 1;"
         >
           <th>站点名称</th>
           <th>站点ID</th>

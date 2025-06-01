@@ -1,6 +1,6 @@
 <template>
-  <div class="h-full flex flex-col">
-    <div class="flex w-full flex-row items-center justify-left p-10px box-border">
+  <div style="height: 100%;display: flex;flex-direction: column;">
+    <div style="display: flex;width: 100%;flex-direction: row;align-items: center;justify-content: left;padding:10px;box-sizing: border-box;">
       选择日期:<el-date-picker
         v-model="date"
         type="date"
@@ -19,11 +19,10 @@
         ></el-option>
       </el-select>
     </div>
-    <div class="w-full box-border relative flex" style="height: 100%; overflow: auto">
-      <div class="p-10px">
+    <div style="height: 100%; overflow: auto;width: 100%;box-sizing: border-box;position: relative;display: flex;">
+      <div style="padding:10px">
         <div
-          class="w-250px bg-white dark:bg-#252948 h-full b-solid box-border b-1px b-gray"
-          style="border-radius: 10px; overflow: auto"
+          style="border-radius: 10px; overflow: auto;width: 250px;background-color: white;height: 100%;border:1px solid gray;box-sizing: border-box;"
           v-loading="loading"
         >
           <el-tree
@@ -39,10 +38,9 @@
           />
         </div>
       </div>
-      <div class="w-full p-10px">
+      <div style="width: 100%;padding:10px;">
         <div
-          class="bg-white dark:bg-#252948 box-border h-full w-full b-1px b-solid b-gray"
-          style="border-radius: 10px"
+          style="border-radius: 10px;background-color: white;box-sizing: border-box;height: 100%;width: 100%;border:1px solid gray;"
         >
           <radar
             :radar_time="radar_time"

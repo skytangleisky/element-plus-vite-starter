@@ -1,7 +1,8 @@
 import request from '../../utils/request'
 const user_id = '1e2ef8820806421eb849ed2dead33bff'
+import moment from 'moment'
 // const time = '20231026'
-const time = new Date().Format('yyyyMMdd')
+const time = moment().format('YYYYMMDD')
 export function 雷达统计接口(query){
   if(!query.user_id){
     query.user_id = user_id

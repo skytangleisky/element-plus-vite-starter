@@ -15,7 +15,7 @@
       <div style="font-size: 20px; color: rgb(78, 129, 184)">风廓线</div>
       <div style="color: grey">{{ currentTime }}</div>
     </div>
-    <div ref="fkxContainer" class="w-full h-full"></div>
+    <div ref="fkxContainer" style="width:100%;height:100%"></div>
   </div>
 </template>
 <script lang="ts" setup>

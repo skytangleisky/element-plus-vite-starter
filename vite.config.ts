@@ -6,20 +6,20 @@ import fs from 'fs'
 import Components from 'unplugin-vue-components/vite'
 import vueSetupExtend from 'unplugin-vue-setup-extend-plus/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
-import Unocss from 'unocss/vite'
 import wasm from 'vite-plugin-wasm';
 import compression from 'vite-plugin-compression';
 import cesium from 'vite-plugin-cesium'
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import { HttpProxyAgent } from 'http-proxy-agent'
 import { SocksProxyAgent } from 'socks-proxy-agent'
-import {
-  presetAttributify,
-  presetIcons,
-  presetUno,
-  transformerDirectives,
-  transformerVariantGroup,
-} from 'unocss'
+// import Unocss from 'unocss/vite'
+// import {
+//   presetAttributify,
+//   presetIcons,
+//   presetUno,
+//   transformerDirectives,
+//   transformerVariantGroup,
+// } from 'unocss'
 // const agent = new SocksProxyAgent("socks://127.0.0.1:5555")
 // const agent = new HttpProxyAgent("http://127.0.0.1:1122")
 const agent = null
@@ -61,7 +61,7 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `@use "~/styles/element/index.scss" as *;`,
+        // additionalData: `@use "~/styles/element/index.scss" as *;`,
       },
     },
   },
@@ -99,20 +99,20 @@ export default defineConfig({
 
     // https://github.com/antfu/unocss
     // see unocss.config.ts for config
-    Unocss({
-      presets: [
-        presetUno(),
-        presetAttributify(),
-        presetIcons({
-          scale: 1,
-          warn: true,
-        }),
-      ],
-      transformers: [
-        transformerDirectives(),
-        transformerVariantGroup(),
-      ]
-    }),
+    // Unocss({
+    //   presets: [
+    //     presetUno(),
+    //     presetAttributify(),
+    //     presetIcons({
+    //       scale: 1,
+    //       warn: true,
+    //     }),
+    //   ],
+    //   transformers: [
+    //     transformerDirectives(),
+    //     transformerVariantGroup(),
+    //   ]
+    // }),
     process.env.npm_lifecycle_event === 'report'? visualizer({ open: true, brotliSize: true, filename: 'report.html' }): null
   ],
   preview:{

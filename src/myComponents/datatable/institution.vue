@@ -1,5 +1,5 @@
 <template>
-  <div class="institutionTree absolute w-full h-full flex items-center justify-center;">
+  <div class="institutionTree" style="position: absolute;width:100%;height: 100%;display: flex;align-items: center;justify-content: center;">
     <el-tree
       style="max-width: 600px"
       :allow-drop="allowDrop"

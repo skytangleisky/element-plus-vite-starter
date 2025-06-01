@@ -1,8 +1,8 @@
 <template>
-  <div class="absolute left-0 top-0 w-full h-30px flex items-center justify-between">
-    <div class="flex">
+  <div style="position: absolute;left:0;top:0;width: 100%;height: 30px;display: flex;align-items: center;justify-content: space-between;">
+    <div style="display: flex;">
       <el-icon style="color:#00f3ff;font-size: 20px;margin-left:10px;" v-html="userSvg"/>
-      <div class="font-size-16px m-l-10px"><strong>{{ user.username }}</strong>,欢迎您！</div>
+      <div style="font-size: 16px;margin-left: 10px;"><strong>{{ user.username }}</strong>,欢迎您！</div>
     </div>
     <div>
       <el-icon v-html="settingSvg" style="font-size:20px; color:#00f3ff;margin-right:10px"/>

@@ -35,7 +35,7 @@
             <template #suffix>
               <div
                 @click="hide = !hide"
-                class="w-full h-full pl-8px pr-8px flex items-center cursor-pointer"
+                style="width: 100%;height:100%;padding-left:8px;padding-right: 8px; display: flex;align-items: center;cursor:pointer;"
               >
                 <View v-show="!hide" style="width: 1em; height: 1em"></View>
                 <Hide v-show="hide" style="width: 1em; height: 1em"></Hide>
@@ -47,7 +47,7 @@
           <el-button
             type="primary"
             :loading="loading"
-            class="w-full"
+            style="width: 100%;"
             @click="submitForm(formEl)"
             >登录</el-button
           >
