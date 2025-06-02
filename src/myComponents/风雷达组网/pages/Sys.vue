@@ -2,7 +2,7 @@
   <div class="group">
     <el-progress type="dashboard" :percentage="sys.cpu_percent" class="cpu-usage" :stroke-width="20" :width="150" :color="colors">
       <template #default="{ percentage }">
-        <div class="flex flex-col">
+        <div style="display: flex;flex-direction: column;">
           <span class="value">{{ percentage }}%</span>
           <span class="label">处理器</span>
         </div>
@@ -10,7 +10,7 @@
     </el-progress>
     <el-progress type="dashboard" :percentage="sys.memory.percent" class="mem-usage" :stroke-width="20" :width="200" :color="colors">
       <template #default="{ percentage }">
-        <div class="flex flex-col">
+        <div style="display: flex;flex-direction: column;">
           <span class="value">{{ percentage }}%</span>
           <span class="label">{{ sys.memory.used }}G/{{ sys.memory.total }}G</span>
         </div>
@@ -18,7 +18,7 @@
     </el-progress>
     <el-progress type="dashboard" :percentage="sys.disk.percent" class="disk-usage" :stroke-width="20" :width="150" :color="colors">
       <template #default="{ percentage }">
-        <div class="flex flex-col">
+        <div style="display: flex;flex-direction: column;">
           <span class="value">{{ percentage }}%</span>
           <span class="label">{{ sys.disk.used }}G/{{ sys.disk.total }}G</span>
         </div>

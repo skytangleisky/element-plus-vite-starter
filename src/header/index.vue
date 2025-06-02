@@ -1,10 +1,10 @@
 <template>
   <div ref="navRef" class="nav">
-    <div class="flex">
+    <div style="display: flex;">
       <div class="title">
         {{ router.currentRoute.value.matched[0].meta.label }}
       </div>
-      <div style="line-height: 56px;padding-left: 40px;" class="flex items-center z-0">
+      <div style="line-height: 56px;padding-left: 40px;display: flex;align-items: center;z-index: 0">
         <el-icon
           v-html="setting.isCollapse ? openSvg : collapseSvg"
           style="font-size: 25px; padding: 0 10px"
@@ -14,20 +14,20 @@
       </div>
     </div>
     <!-- <span class="title inline-block color-black p-0 m-0 dark:color-white md:block hidden">北京人影演示系统</span> -->
-    <div class="items-center flex z-0">
+    <div style="align-items: center;display: flex;z-index: 0;">
       <div
         v-if="user.logined"
-        class="color-black dark:color-white"
-        style="display: flex; align-items: center; white-space: nowrap"
+        class="loginInfo"
+        style="display: flex; align-items: center; white-space: nowrap;"
       >
         <!-- <div v-else @click="login" class="QQ_Login_Button"></div> -->
-        <DigitalClock class="m-r-40px font-size-20px"/>
+        <DigitalClock style="margin-right: 40px;font-size: 20px;"/>
         {{ user.username }}，欢迎您！
         <el-dropdown v-if="user.logined" trigger="click" size="small">
           <el-avatar :size="32" :src="user.avatar" style="margin: 0 8px">
             <!-- <span class="el-dropdown-link"><User style="width:24px;height:24px;"></User></span> -->
           </el-avatar>
-          <img :src="user.avatar" style="width: 24px; height: 24px; border-radius: 50%" />
+          <img :src="user.avatar" style="width: 24px; height: 24px; border-radius: 50%"/>
           <template #dropdown>
             <el-dropdown-menu>
               <!-- <el-dropdown-item @click="login" :icon="Select">登陆</el-dropdown-item> -->
@@ -140,6 +140,9 @@ onMounted(()=>{
 </script>
 <style scoped lang="scss">
 .nav {
+  .loginInfo{
+    color:black;
+  }
   filter:drop-shadow(0px 0px 2px rgba(0,0,0,1));
   position: relative;
   z-index: 5;
@@ -194,6 +197,9 @@ onMounted(()=>{
   }
 }
 .dark .nav{
+  .loginInfo{
+    color:white;
+  }
   background-color: #000;
   &::before{
     filter:hue-rotate(var(--angle));

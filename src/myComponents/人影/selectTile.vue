@@ -4,21 +4,22 @@
     <div style="display: flex; justify-content: flex-start; flex-wrap: wrap">
       <div
         v-for="(v, k) of props.list"
-        class="relative flex flex-col items-center w-50% box-border p-4px"
+        style="position: relative;display: flex;flex-direction: column;align-items: center;width: 50%;box-sizing: border-box;padding:4px;"
         @click="click(v, k, props.list)"
       >
         <img
           :src="v.url"
-          class="dark:b-#888 b-solid b-1px b-#ddd"
           style="
             border-radius: 8px;
             width: 100%;
             box-sizing: border-box;
             -webkit-user-drag: none;
+            background-color: #888;
+            border:1px solid #ddd;
           "
         />
         <el-icon
-          class="checkColor dark:bg-#fff b-solid bg-#000"
+          class="checkColor"
           v-if="v.selected"
           v-html="checkSvg"
           style="
@@ -27,6 +28,7 @@
             right: 5px;
             top: 5px;
             border-radius: 50%;
+            background-color: #000;
           "
         ></el-icon>
         <span>{{ v.name }}</span>

@@ -4,13 +4,14 @@
       name="控制全选"
       v-model="checkAll"
       :indeterminate="isIndeterminate"
-      class="checkAll dark:bg-#2b2b2b bg-white"
+      class="checkAll"
+      style="background-color: white;"
       @change="allChange"
       :style="`
         border-bottom: ${list.length > 0 ? '1px solid grey' : 'none'};`"
       >Check all</el-checkbox
     >
-    <div class="sort-target flex flex-col" style="padding: 0 10px">
+    <div class="sort-target" style="padding: 0 10px;display: flex;flex-direction: column;">
       <el-checkbox
         v-model="item.checked"
         v-for="(item, k) in list"

@@ -1,9 +1,9 @@
 <template>
   <left-menu></left-menu>
-  <div class="flex flex-col" style="width: 100%; height: 100%">
+  <div style="width: 100%; height: 100%;display: flex;flex-direction: column;">
     <my-header @editUser="editUserShow=true"></my-header>
     <ChangePassword class="z-5" v-if="editUserShow" v-model:show="editUserShow"></ChangePassword>
-    <div style="overflow: visible;position: relative;width: 100%;">
+    <div style="overflow: visible;position: relative;width: 100%;height: 100%;">
       <router-view v-slot="{ Component }">
         <keep-alive>
           <component :key="$route.identify" :is="Component"/>

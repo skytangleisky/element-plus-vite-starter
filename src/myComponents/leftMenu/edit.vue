@@ -1,7 +1,6 @@
 <template>
   <div
-    class="flex flex-col dark:bg-#2b2b2b bg-white"
-    style="overflow: auto; width: 100%;height: 100%;position: relative;"
+    style="overflow: auto; width: 100%;height: 100%;position: relative;background-color: white;display: flex;flex-direction: column;"
   >
     <div>
       <el-button type="primary" @click="resetMenu()">reset menu</el-button><el-button type="primary" @click="expandAll()">expandAll</el-button><el-button type="primary" @click="collapseAll()">collapseAll</el-button>

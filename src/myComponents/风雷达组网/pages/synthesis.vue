@@ -21,8 +21,7 @@
       v-model:isobands="setting.风雷达组网.监控.isobands"
     ></edit-map>
     <div
-      class="absolute left-10px top-10px b-solid b-1px dark:b-gray-5 b-gray dark:bg-#2b2b2b bg-white dark:color-white color-black w-150px h-80px flex flex-col justify-between p-10px"
-      style="border-radius: 8px; font-size: 16px; display: none"
+      style="border-radius: 8px; font-size: 16px; display: none;position: absolute;left:10px;height: 10px;border:1px solid gray;color:white;width: 150px;height: 80px;display: flex;flex-direction: column;justify-content: space-between;padding:10px;"
     >
       <span>反制设备 10台</span>
       <span>合作无人机 0架</span>

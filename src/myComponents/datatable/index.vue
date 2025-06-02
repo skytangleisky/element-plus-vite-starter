@@ -9,12 +9,13 @@
         ></el-input
       >
     </div>
-    <div class="flex flex-col relative" style="flex-grow: 1; overflow: auto">
+    <div style="flex-grow: 1; overflow: auto;display:flex;flex-direction: column;position: relative;">
       <div class="flex flex-row z-11">
         <div class="listContainer z-1" tabindex="-1">
           <el-icon v-html="listSvg" class="svg" @click="listSvgClick"></el-icon>
           <draggable
-            class="draggable bg-white dark:bg-#2b2b2b"
+            class="draggable"
+            style="background-color: white;"
             v-model:list="options.thData"
             style="
               position: absolute;
@@ -121,20 +122,18 @@
             }`"
           >
             <div
-              :class="`th dark:bg-#222 bg-#aaa flex flex-col ${
-                addRow ? 'justify-between' : 'justify-end'
-              }`"
-              style="overflow: hidden;"
+              class="th"
+              :style="`overflow: hidden;background:#aaa;display: flex;flex-direction: column;justify-content:${addRow?'justify-between':'justify-end'}`"
             >
               <div
                 @keydown.stop
                 v-if="addRow"
-                class="dark:bg-#3b3b3b bg-#ddd"
                 style="
                   border-right: 0;
                   border-bottom: 1px solid #444;
                   display: flex;
                   align-items: center;
+                  background-color: #ddd;
                 "
               >
                 <el-checkbox
@@ -173,8 +172,8 @@
             </div>
             <div
               v-for="(_, k) in options.tdData"
-              class="cell dark:bg-#3b3b3b bg-#ddd"
-              style="display: flex; flex-direction: row; align-items: center"
+              class="cell"
+              style="display: flex; flex-direction: row; align-items: center;background-color: #ddd;"
             >
               <el-checkbox
                 v-if="key == checkBoxIndex"

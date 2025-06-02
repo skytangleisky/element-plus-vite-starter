@@ -3,7 +3,7 @@
   <div style="display: flex; justify-content: flex-start; flex-wrap: wrap">
     <div
       v-for="(v, k) of props.list"
-      class="relative flex flex-col items-center w-50% box-border p-4px"
+      style="position: relative;display: flex;flex-direction: column;align-items: center;width: 50%;box-sizing: border-box;padding:4px;"
       @click="click(v, k, props.list)"
     >
       <img

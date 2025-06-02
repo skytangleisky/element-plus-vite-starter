@@ -9,8 +9,7 @@
       v-model:zoom="setting.无人机.监控.zoom"
     ></edit-map>
     <div
-      class="absolute left-10px top-10px b-solid b-1px dark:b-gray-5 b-gray dark:bg-#2b2b2b bg-white dark:color-white color-black w-150px h-80px flex flex-col justify-between p-10px"
-      style="border-radius: 8px; font-size: 16px"
+      style="border-radius: 8px; font-size: 16px;position: absolute;left:10px;top:10px;border:1px solid gray;background-color: white;color:black;width: 150px;height: 80px;display: flex;flex-direction: column;justify-content: space-between;padding:10px;"
     >
       <span>反制设备 10台</span>
       <span>合作无人机 0架</span>

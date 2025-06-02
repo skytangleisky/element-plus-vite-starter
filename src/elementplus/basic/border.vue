@@ -1,9 +1,9 @@
 <template>
-  <div class="flex justify-between items-center flex-wrap">
+  <div style="display: flex;justify-content: space-between;align-items: center;flex-wrap: wrap;">
     <div
       v-for="(shadow, i) in shadowGroup"
       :key="i"
-      class="flex flex-col justify-center items-center"
+      style="display: flex;flex-direction: column;justify-content: cneter;align-items: center;"
       m="auto"
       w="46"
     >

@@ -23,8 +23,7 @@
     ></edit-map>
     <el-checkbox v-model="setting.人影.监控.loadmap" style="position: absolute; right:250px"></el-checkbox>
     <div
-      class="absolute left-10px top-10px b-solid b-1px dark:b-gray-5 b-gray dark:bg-#2b2b2b bg-white dark:color-white color-black w-150px h-80px flex flex-col justify-between p-10px"
-      style="border-radius: 8px; font-size: 16px; display: none"
+      style="border-radius: 8px; font-size: 16px; display: none;position: absolute;left:10px;top:10px;border:1px solid gray;background-color: white;color:black;width:150px;height: 80px;display: flex;flex-direction: column;justify-content: space-between;padding:10px;"
     >
       <span>反制设备 10台</span>
       <span>合作无人机 0架</span>
@@ -65,7 +64,7 @@
         </fieldset>
         <fieldset class="b-solid b-1px rounded-lg">
           <legend class="font-size-14px">华北飞行区域 显示风格</legend>
-          <div class="flex flex-col">
+          <div style="display: flex;flex-direction: column;">
             <el-checkbox name="图层显示控制" class="row-start-1 col-span-3" label="图层显示"></el-checkbox>
             <label class="flex"><input type="radio" class="m-0" name="选择颜色" :value="0" v-model="setting.人影.监控.showColorSelector">图层颜色<div :style="`background:rgba(${setting.人影.监控.districtOptions.districtLineColor.r},${setting.人影.监控.districtOptions.districtLineColor.g},${setting.人影.监控.districtOptions.districtLineColor.b},${setting.人影.监控.districtOptions.districtLineColor.a});flex:1;`"></div></label>
             <label class="flex"><input type="radio" class="m-0" name="选择颜色" :value="1" v-model="setting.人影.监控.showColorSelector">填充颜色<div :style="`background:rgba(${setting.人影.监控.districtOptions.districtFillColor.r},${setting.人影.监控.districtOptions.districtFillColor.g},${setting.人影.监控.districtOptions.districtFillColor.b},${setting.人影.监控.districtOptions.districtFillColor.a});flex:1;`"></div></label>

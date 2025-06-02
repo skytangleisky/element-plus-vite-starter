@@ -33,7 +33,7 @@
                 border-radius: 4px 0 0 4px;
               "
             >
-              <div class="flex flex-col" style="display: flex;flex-direction: column;">
+              <div style="display: flex;flex-direction: column;display: flex;flex-direction: column;">
                 {{ moment(item.tmBeginApply).format("HH:mm:ss") }}
                 <span>{{ item.strZydID }}</span>
                 <span sytle="font-size:14px;font-weight:bold">{{ item.strName }}</span>
@@ -47,7 +47,7 @@
                     {{ 工作状态格式化(item.ubyStatus) }}
                   </div>
                 </div>
-                <div class="flex flex-col" style="border: 1px solid grey;display: flex;flex-direction: column;">
+                <div style="border: 1px solid grey;display: flex;flex-direction: column;display: flex;flex-direction: column;">
                   <div>发送状态</div>
                   <div style="font-weight: bolder; font-size: 16px">
                     {{ 发送状态格式化(item.ubySendStatus) }}

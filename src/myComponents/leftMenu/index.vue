@@ -1,12 +1,11 @@
 <template>
-  <div class="relative flex flex-col">
+  <div class="relative" style="display: flex;flex-direction: column;">
     <el-scrollbar
-      class="flex-1"
       ref="scrollbarRef"
       @scroll="handleScroll"
       :style="`height: 100%; background-color: ${isDark ? '#304156' : '#eee'};${
         setting.isCollapse ? '' : 'min-width:210px'
-      }`"
+      };flex:1`"
     >
       <el-menu
         :collapse-transition="false"
