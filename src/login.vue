@@ -215,10 +215,10 @@ watch(
     border:2px solid #185378;
     border-radius: 10px;
     box-sizing: border-box;
-    .ep-input {
-      .ep-input__wrapper {
+    .el-input {
+      .el-input__wrapper {
         background: transparent;
-        .ep-input__inner {
+        .el-input__inner {
           caret-color: white;
           -webkit-text-fill-color: white;
           appearance: none;
@@ -232,18 +232,18 @@ watch(
           }
         }
       }
-      // .ep-input-group__append {
+      // .el-input-group__append {
       //   background: transparent;
       //   color: grey;
       // }
-      // .ep-input-group__append {
+      // .el-input-group__append {
       //   padding: 0;
       // }
     }
   }
 }
-.ep-form {
-  .ep-form-item:last-child {
+.el-form {
+  .el-form-item:last-child {
     margin-bottom: 0;
   }
 }

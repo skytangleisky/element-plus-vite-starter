@@ -1,8 +1,6 @@
 <template>
   <div
-    class="radarStatistic"
-
-  >
+    class="radarStatistic">
     <!-- <div class="item">
       <collapse-card
         v-for="item of setting.风雷达组网地图相关.checks"
@@ -80,7 +78,7 @@
           </el-icon>
         </div> -->
         <div class="subitem">
-          <span class="whitespace-nowrap">海拔高度</span>
+          <span style="white-space: nowrap;">海拔高度</span>
           <el-select
             style="width: 80px"
             v-model="setting.风雷达组网地图相关.altitudeHeight"
@@ -98,7 +96,7 @@
             <svg t="1721356236932"  viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M600.064 119.68l342.336 730.24a64 64 0 0 1-88.064 83.584L544 768l-340.288 170.112a64 64 0 0 1-85.824-85.824l367.04-734.08a64 64 0 0 1 115.2 1.472z"></path></svg>
           </el-icon>
           <el-icon @click="downward2()" >
-            <svg t="1721356236932" class="rotate-180deg" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M600.064 119.68l342.336 730.24a64 64 0 0 1-88.064 83.584L544 768l-340.288 170.112a64 64 0 0 1-85.824-85.824l367.04-734.08a64 64 0 0 1 115.2 1.472z"></path></svg>
+            <svg t="1721356236932" style="transform: rotate(180deg);" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M600.064 119.68l342.336 730.24a64 64 0 0 1-88.064 83.584L544 768l-340.288 170.112a64 64 0 0 1-85.824-85.824l367.04-734.08a64 64 0 0 1 115.2 1.472z"></path></svg>
           </el-icon>
         </div>
         <div class="subitem">
@@ -170,9 +168,9 @@
           />
         </div>
         <div class="subitem">
-          <span class="whitespace-nowrap">流线密度</span>
+          <span style="white-space: nowrap;">流线密度</span>
           <el-slider
-            class="m-l-10px m-r-10px"
+            style="margin-left: 10px;margin-right: 10px;"
             :min="20"
             :max="100"
             :step="1"
@@ -181,9 +179,9 @@
           />
         </div>
         <div class="subitem">
-          <span class="whitespace-nowrap">流线大小</span>
+          <span style="white-space: nowrap;">流线大小</span>
           <el-slider
-            class="m-l-10px m-r-10px"
+            style="margin-left: 10px;margin-right: 10px;"
             :min="1"
             :max="4"
             :step="0.1"
@@ -223,6 +221,7 @@
           <span class="whitespace-nowrap">风场透明度</span>
           <el-slider
             class="m-l-10px m-r-10px"
+            style="margin-left: 10px;margin-right: 10px;"
             :min="0"
             :max="1.0"
             :step="0.01"
@@ -231,7 +230,7 @@
           />
         </div>
         <div class="subitem">
-          <span class="whitespace-nowrap">风场数据</span>
+          <span style="white-space: nowrap;">风场数据</span>
           <el-select
             style="width: 100px"
             v-model="setting.风雷达组网地图相关.风场数据"
@@ -247,7 +246,7 @@
           </el-select>
         </div>
         <div class="subitem">
-          <span class="whitespace-nowrap">反演风场</span>
+          <span style="white-space: nowrap;">反演风场</span>
           <el-select
             style="width: 100px"
             v-model="setting.风雷达组网地图相关.反演风场"
@@ -268,9 +267,9 @@
       <collapse-card
         title="图层管理" v-model:show="showMapSetting" :show-collapse="true">
         <div class="subitem">
-          <span class="whitespace-nowrap">地图透明度</span>
+          <span style="white-space: nowrap;">地图透明度</span>
           <el-slider
-            class="m-l-10px m-r-10px"
+            style="margin-left: 10px;margin-right: 10px;"
             :min="0"
             :max="1.0"
             :step="0.01"
@@ -283,7 +282,6 @@
           <el-switch
             v-model="setting.graticule"
             inline-prompt
-            
             size="small"
           />
         </div> -->
@@ -292,7 +290,6 @@
           <el-switch
             v-model="setting.district"
             inline-prompt
-            
             size="small"
           />
         </div>
@@ -301,7 +298,6 @@
           <el-switch
             v-model="setting.station"
             inline-prompt
-            
             size="small"
           />
         </div>
@@ -310,7 +306,6 @@
           <el-switch
             v-model="setting.风雷达组网地图相关.等距环"
             inline-prompt
-            
             size="small"
           />
         </div>
@@ -523,7 +518,7 @@ onBeforeUnmount(() => {
 });
 </script>
 <style lang="scss">
-.ep-switch__core{
+.el-switch__core{
   background:#ccc;
 }
 .radarStatistic {

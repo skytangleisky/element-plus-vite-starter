@@ -258,7 +258,7 @@ const deleteIcon = (v:any)=>{
 .dark .candidate.selected{
   border:1px solid yellow;
 }
-.uuid .ep-input__inner{
+.uuid .el-input__inner{
   font-family: Menlo,Consolas,Monaco;
 }
 </style>

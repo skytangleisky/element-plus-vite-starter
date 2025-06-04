@@ -53,7 +53,7 @@
     </div>
 
     <el-scrollbar class="page-left">
-      <baseLayer></baseLayer>
+      <baseLayer style="width:300px;"></baseLayer>
     </el-scrollbar>
     <el-scrollbar class="page-right">
       <currentStatusInfo v-if="hasPermission(['36b3e515-351e-4d19-bc53-9c885e59dfa9'])"></currentStatusInfo>
@@ -114,11 +114,12 @@
         v-model:now="setting.now"
         v-model:status="setting.status"
         v-model:level="setting.level"
-        class="timeline absolute bottom-0"
+        class="timeline"
+        style="position: absolute;bottom:0;"
     ></time-line>
     <!-- <graph
       v-if="checkPermission(['admin'])"
-      class="absolute left-0 bottom-30px"
+      style="position:absolute;left:0;bottom:30px"
       v-model:args="graphArgs"
     ></graph> -->
     <!--  色标  -->
@@ -2621,7 +2622,6 @@ $page-left-right-height: calc(100% - 2 * $page-grid);
   position: absolute;
   top: $page-grid;
   left: $page-grid;
-  width: $page-left-width;
   max-height: $page-left-right-height;
   overflow-y: auto;
   overflow-x: hidden;

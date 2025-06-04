@@ -93,10 +93,10 @@ const allChange = (val: CheckboxValueType) => {
 };
 </script>
 <style scoped lang="scss">
-.ep-checkbox__inner {
+.el-checkbox__inner {
   transition: none;
 }
-.ep-checkbox {
+.el-checkbox {
   margin-right: 0;
 }
 

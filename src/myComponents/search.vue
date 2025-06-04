@@ -564,7 +564,7 @@ onMounted(() => {
   background: #2b2b2b;
 }
 
-.ep-tabs__item {
+.el-tabs__item {
   font-size: 12px;
 }
 

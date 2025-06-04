@@ -195,9 +195,9 @@ $time: 1s;
   & > .handle {
     position: absolute;
     transform: translateY(-100%);
-    .ep-badge {
+    .el-badge {
       margin: 0 20px;
-      .ep-icon {
+      .el-icon {
         cursor: pointer;
         filter: drop-shadow(0 0 8px #000);
         font-size: 2rem;
@@ -213,8 +213,8 @@ $time: 1s;
   border-top: 1px solid gray;
   background-color: #2b2b2b;
   & > .handle {
-    .ep-badge {
-      .ep-icon {
+    .el-badge {
+      .el-icon {
         color: #2b2b2b;
         filter: drop-shadow(0 0 8px #fff);
       }
@@ -250,14 +250,14 @@ $time: 1s;
     height: 30px;
     border: 1px solid #ddd;
     border-right: none;
-    & > .ep-icon {
+    & > .el-icon {
       transition: transform $time;
       color: #bbb;
     }
   }
   &.disappear {
     transform: translateX(calc(100%));
-    & > .handle > .ep-icon {
+    & > .handle > .el-icon {
       transform: rotateY(180deg);
     }
   }
@@ -269,7 +269,7 @@ $time: 1s;
     background-color: #2b2b2b;
     border: 1px solid grey;
     border-right: none;
-    & > .ep-icon {
+    & > .el-icon {
       color: #ddd;
     }
   }

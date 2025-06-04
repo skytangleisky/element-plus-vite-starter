@@ -136,24 +136,24 @@ const select = (id: string) => {
 };
 </script>
 <style lang="scss">
-.ep-menu {
+.el-menu {
   --el-menu-icon-width: 20px;
 }
 .dark {
   .submenu-title-noDropdown,
-  .ep-sub-menu__title {
+  .el-sub-menu__title {
     &:hover {
       background-color: #263445 !important;
     }
   }
 
-  .is-active > .ep-submenu__title {
+  .is-active > .el-submenu__title {
     color: #f4f4f5 !important;
   }
-  .ep-sub-menu {
-    .ep-menu {
+  .el-sub-menu {
+    .el-menu {
       background-color: #1f2d3d !important;
-      .ep-menu-item:hover {
+      .el-menu-item:hover {
         background-color: #001528 !important;
       }
     }

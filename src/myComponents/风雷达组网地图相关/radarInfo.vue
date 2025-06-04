@@ -388,23 +388,23 @@ function format(val: any) {
       color: var(--el-color-primary);
     }
 
-    .ep-collapse {
+    .el-collapse {
       //border-color: var(--border-color);
-      :deep(.ep-collapse-item__header) {
+      :deep(.el-collapse-item__header) {
         background-color: var(--bg-color-overlay-opacity-8);
         border-color: var(--border-color);
         height: 32px;
         padding-left: 8px;
       }
 
-      :deep(.ep-collapse-item__wrap) {
+      :deep(.el-collapse-item__wrap) {
         background-color: var(--bg-color-overlay-opacity-8);
         padding: 8px 16px;
         border-color: var(--border-color);
 
       }
 
-      :deep(.ep-collapse-item__content) {
+      :deep(.el-collapse-item__content) {
         padding-bottom: 0;
       }
     }

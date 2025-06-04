@@ -75,7 +75,7 @@
           <tr
               class="bg-#409eff"
           >
-            <th style="width:20px">序号</th>
+            <th>序号</th>
             <th>编号</th>
             <th style="width:60px">名称</th>
             <th>海高</th>
@@ -447,7 +447,7 @@ const toggleCollapse = () => {
     align-items: center;
     justify-content: space-between;
 
-    .ep-icon {
+    .el-icon {
       color: var(--el-text-color-regular);
     }
 
@@ -456,7 +456,7 @@ const toggleCollapse = () => {
       .top-left-bottom {
         display: flex;
 
-        :deep(.ep-input) {
+        :deep(.el-input) {
           width: 120px
         }
       }

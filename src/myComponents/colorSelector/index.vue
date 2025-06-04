@@ -1,6 +1,6 @@
 <template>
   <div class="ColorSelector" v-dialogDrag>
-    <div class="palette">调色板</div>
+    <div class="title">调色板</div>
     <div style="position: relative;;width:100%;height:100%" tabindex="-1" @mousedown.stop>
       <div id="cssquareselector"><canvas id="cssquare" width="256" height="256"></canvas><svg id="cssquarecursor" height="268" width="268"><circle cx="7" cy="7" r="5" stroke="black" stroke-width="1" fill="none" /></svg></div>
       <label style="position: absolute;left:10px;top:300px;display: flex;align-items: center;"><input type="checkbox" name="cspalette1" value="0">只有Web颜色</label>
@@ -19,22 +19,22 @@
           </div>
         </div></div>
       </div>
-      <div style="grid-template-columns: 35px auto auto;position: absolute;left:310px;top:155px;display: grid;grid-template-rows: 3;grid-template-columns: 3;row-gap: 1px;">
+      <div style="position: absolute;left:310px;top:155px;display: grid;grid-template-rows: repeat(3, 1fr);grid-template-columns: 35px auto auto;row-gap: 4px;">
         <label class="first-col" style="display: flex;justify-content: space-between;align-items: center;"><input type="radio" name="channel" value="3" v-model="setting.channel">H:</label><input autocomplete="off" style="width:32px;height:15px" id="inHSB_H" type="text" maxlength="3" size="3">度
         <label class="first-col" style="display: flex;justify-content: space-between;align-items: center;"><input type="radio" name="channel" value="4" v-model="setting.channel">S:</label><input autocomplete="off" style="width:32px;height:15px" id="inHSB_S" type="text" maxlength="3" size="3">%
         <label class="first-col" style="display: flex;justify-content: space-between;align-items: center;"><input type="radio" name="channel" value="5" v-model="setting.channel">V:</label><input autocomplete="off" style="width:32px;height:15px" id="inHSB_B" type="text" maxlength="3" size="3">%
       </div>
-      <div style="grid-template-columns: 35px auto;position: absolute;left:410px;top:155px;display: grid;grid-template-rows: 3;grid-template-columns: 2;row-gap:4px;">
+      <div style="position: absolute;left:410px;top:155px;display: grid;grid-template-rows: repeat(3, 1fr);grid-template-columns: 35px auto;row-gap:4px;">
         <label class="first-col" style="display: flex;justify-content: space-between;align-items: center;"><input type="radio" name="channel" value="6" v-model="setting.channel">L:</label><input autocomplete="off" style="width: 32px;height: 15px;" id="inLab_L" type="text" maxlength="3" size="4">
         <label class="first-col" style="display: flex;justify-content: space-between;align-items: center;"><input type="radio" name="channel" value="7" v-model="setting.channel">a:</label><input autocomplete="off" style="width: 32px;height: 15px;" id="inLab_a" type="text" maxlength="4" size="4">
         <label class="first-col" style="display: flex;justify-content: space-between;align-items: center;"><input type="radio" name="channel" value="8" v-model="setting.channel">b:</label><input autocomplete="off" style="width: 32px;height: 15px;" id="inLab_b" type="text" maxlength="4" size="4">
       </div>
-      <div style="grid-template-columns: 35px auto;position: absolute;left:310px;top:235px;display: grid;grid-template-rows: 3;grid-template-columns: 2;row-gap:4px;">
+      <div style="position: absolute;left:310px;top:235px;display: grid;grid-template-rows: repeat(3, 1fr);grid-template-columns: 35px auto;row-gap:4px;">
         <label class="first-col" style="display: flex;justify-content: space-between;align-items: center;"><input type="radio" name="channel" value="0" v-model="setting.channel">R:</label><input autocomplete="off" style="width:32px;height: 15px;" id="inRGB_R" type="text" maxlength="3" size="3">
         <label class="first-col" style="display: flex;justify-content: space-between;align-items: center;"><input type="radio" name="channel" value="1" v-model="setting.channel">G:</label><input autocomplete="off" style="width: 32px;height: 15px;" id="inRGB_G" type="text" maxlength="3" size="3">
         <label class="first-col" style="display: flex;justify-content: space-between;align-items: center;"><input type="radio" name="channel" value="2" v-model="setting.channel">B:</label><input autocomplete="off" style="width: 32px;height: 15px;" id="inRGB_B" type="text" maxlength="3" size="3">
       </div>
-      <div style="grid-template-columns: 55px auto;place-items: center;justify-items: end;position: absolute;left:430px;top:235px;display: grid;grid-template-columns: 2;grid-template-rows: 3;row-gap:4px;">
+      <div style="place-items: center;justify-items: end;position: absolute;left:430px;top:235px;display: grid;grid-template-rows: repeat(3, 1fr);grid-template-columns: 55px auto;row-gap:4px;">
         <label style="display: flex;justify-content: space-between;align-items: center;">C:<input autocomplete="off" class="w-32px h-15px" id="inCMYK_C" type="text" maxlength="3" size="3"></label>%
         <label style="display: flex;justify-content: space-between;align-items: center;">M:<input autocomplete="off" class="w-32px h-15px" id="inCMYK_M" type="text" maxlength="3" size="3"></label>%
         <label style="display: flex;justify-content: space-between;align-items: center;">Y:<input autocomplete="off" class="w-32px h-15px" id="inCMYK_Y" type="text" maxlength="3" size="3"></label>%
@@ -43,7 +43,7 @@
       <div id="cscolorzone">
         <div id="cscolor"><div style="position:absolute;top:-50%;transform: translateX(-50%);left:50%">新的</div></div>
         <div id="csactive"><div style="position:absolute;bottom:-50%;left:50%;transform: translateX(-50%);">当前</div></div>
-        <div id="cshtmlcolor" class="hidden"></div>
+        <div id="cshtmlcolor" style="display: none;"></div>
       </div>
       <div style="position: absolute;left:310px;top:310px;"><label for="inHEX"># </label><input autocomplete="off" style="font-family: menlo;width: 82px;height: 15px;" id="inHEX" type="text" maxlength="7" size="7"></div>
       <div style="position: absolute;top:0;display: none;"><label for="outHTML">HTML Color Name: </label><input id="outHTML" type="text" maxlength="20" size="15"></div>
@@ -109,6 +109,9 @@ onBeforeUnmount(()=>{
   .palette{
     background-color: #333;
   }
+  .title{
+    background-color: #333;
+  }
 }
 .ColorSelector {
   background-color: white;
@@ -125,7 +128,7 @@ onBeforeUnmount(()=>{
   border-radius: 10px;
   box-shadow: 0 0 0 1px #757575, 0 0 0 2px #010201;
   overflow: hidden;
-  .palette{
+  .title{
     box-sizing: border-box;
     border:1px solid #000;
     display: flex;

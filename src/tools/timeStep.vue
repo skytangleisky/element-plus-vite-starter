@@ -4,7 +4,7 @@
               @change="change">
       <template #default="{data,currentIndex}">
         <div
-            :class="`item ${data.index==currentIndex?'currentItem':''}`" style="width: 100%;height: 100%;display: flex;align-items: center;position: relative;justify-content: center;flex-direction: column;">
+            :class="`item ${data.index==currentIndex?'currentItem':''}`">
           <div v-if="data.index == currentIndex" class="day" style="position: absolute;top:4px;font-size: 12px;line-height: 12px;">
             {{ getDay(data) }}D
           </div>
@@ -112,11 +112,16 @@ onBeforeUnmount(() => {
 
 .my-carousel {
   .item {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    position: relative;
+    justify-content: center;
+    flex-direction: column;
     border-radius: 4px;
     height: 48px;
-
     font-size: 14px;
-
     &.currentItem {
       background: var(--el-color-primary-light-5);
       //border:1px solid var(--el-border-color);
@@ -124,14 +129,14 @@ onBeforeUnmount(() => {
     }
   }
 
-  .ep-input__wrapper {
+  .el-input__wrapper {
     height: 12px;
     line-height: 12px;
     box-shadow: none;
     font-size: 12px;
     background-color: transparent;
 
-    .ep-input__inner {
+    .el-input__inner {
       color: inherit;
     }
 
@@ -139,7 +144,7 @@ onBeforeUnmount(() => {
       box-shadow: none;
     }
 
-    .ep-input__prefix {
+    .el-input__prefix {
       display: none;
     }
 
@@ -147,7 +152,7 @@ onBeforeUnmount(() => {
       text-align: center;
     }
 
-    .ep-input__suffix {
+    .el-input__suffix {
       display: none;
     }
   }

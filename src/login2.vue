@@ -163,10 +163,10 @@ const resetForm = (formEl: FormInstance | undefined) => {
     justify-content: center;
     align-items: center;
     background-color: #ffffff88;
-    .ep-input {
-      .ep-input__wrapper {
+    .el-input {
+      .el-input__wrapper {
         background: transparent;
-        .ep-input__inner {
+        .el-input__inner {
           caret-color: black;
           -webkit-text-fill-color: grey;
           appearance: none;
@@ -175,11 +175,11 @@ const resetForm = (formEl: FormInstance | undefined) => {
           background-clip: content-box;
         }
       }
-      .ep-input-group__append {
+      .el-input-group__append {
         background: transparent;
         color: grey;
       }
-      .ep-input-group__append {
+      .el-input-group__append {
         padding: 0;
       }
     }

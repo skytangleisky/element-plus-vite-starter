@@ -2432,7 +2432,7 @@ watch(
   left: auto !important;
   right: 10px !important;
 }
-.dark .select .ep-select__wrapper {
+.dark .select .el-select__wrapper {
   background-color: #2b2b2b;
 }
 .deviceStation_人影 {

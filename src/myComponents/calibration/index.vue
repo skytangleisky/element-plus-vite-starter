@@ -275,7 +275,7 @@ const click = (v: any) => {
     text-align: center;
     vertical-align: middle;
   }
-  .ep-progress-circle {
+  .el-progress-circle {
     width: 30px !important;
     height: 30px !important;
   }

@@ -60,13 +60,13 @@ const loadNode = (node: Node,resolve: (data: Tree[]) => void,reject: () => void)
     height: 100px;
     border:1px solid red;
   }
-  .ep-tree-node.is-current > .ep-tree-node__content{
+  .el-tree-node.is-current > .el-tree-node__content{
     box-sizing:border-box;
     border:1px solid lightgray;
     color: inherit; /* 激活文字颜色 */
     border-radius:4px;
   }
-  .ep-tree-node:not(.is-current) > .ep-tree-node__content:hover{
+  .el-tree-node:not(.is-current) > .el-tree-node__content:hover{
     box-sizing:border-box;
     border:1px solid gray;
     border-radius:4px;

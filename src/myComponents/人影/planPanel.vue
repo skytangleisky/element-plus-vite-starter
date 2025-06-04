@@ -347,15 +347,15 @@ const 完成 = (item: planDataType) => {
 <style lang="scss">
 .planPanel{
   opacity: 0.9;
-  .ep-tabs.ep-tabs--border-card {
+  .el-tabs.el-tabs--border-card {
     --el-border-color: gray;
     --el-border-color-light: gray;
     margin-top: 0;
-    & > .ep-tabs__header {
+    & > .el-tabs__header {
       border-bottom: 0;
       background-color: transparent;
     }
-    & > .ep-tabs__header .ep-tabs__item {
+    & > .el-tabs__header .el-tabs__item {
       transition-duration: 0s;
       margin-top: 0;
       &.is-active {
@@ -368,23 +368,23 @@ const 完成 = (item: planDataType) => {
         margin-left: 0;
       }
     }
-    & > .ep-tabs__content {
+    & > .el-tabs__content {
       border: 1px solid var(--el-border-color);
       padding: 0;
       height: 400px;
       display: flex;
       border-radius: 0 6px 6px 6px;
-      .ep-tab-pane {
+      .el-tab-pane {
         width: 100%;
       }
     }
   }
 }
-.dark .planPanel .ep-tabs.ep-tabs--border-card {
-  .ep-tabs__item.is-active {
+.dark .planPanel .el-tabs.el-tabs--border-card {
+  .el-tabs__item.is-active {
     background: #304156;
   }
-  .ep-tab-pane {
+  .el-tab-pane {
     background: #304156;
   }
 }

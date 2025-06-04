@@ -138,7 +138,7 @@ onBeforeUnmount(() => {
   white-space: nowrap;
   display: flex;
   align-items: center;
-  .ep-icon {
+  .el-icon {
     font-size: 1.4rem;
     padding: 4px;
     border: 1px solid #ddd;

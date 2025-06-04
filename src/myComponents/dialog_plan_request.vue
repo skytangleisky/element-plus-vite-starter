@@ -252,7 +252,7 @@ onBeforeUnmount(()=>{
     padding:10px;
     border-radius: 10px;
     box-shadow: 0 0 0 1px #757575, 0 0 0 2px #010201;
-    .ep-row {
+    .el-row {
       padding: 5px;
     }
   }

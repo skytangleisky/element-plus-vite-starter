@@ -85,19 +85,19 @@ function handleNodeClick_DBS(arg:string){
   display: flex;
   flex-direction: column;
   flex:1;
-  ::v-deep(.ep-tabs__content){
+  ::v-deep(.el-tabs__content){
     width: 240px;
     padding:0;
     overflow: auto;
     flex:1;
     box-sizing: border-box;
-    ::v-deep(.ep-tab-pane){
+    ::v-deep(.el-tab-pane){
       height: 100%;
     }
   }
 }
 
-.dark .myTabs.ep-tabs--border-card > .ep-tabs__header .ep-tabs__item.is-active{
+.dark .myTabs.el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active{
   background:#252948;
 }
 </style>

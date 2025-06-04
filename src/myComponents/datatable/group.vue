@@ -37,7 +37,7 @@ const data = ref<Option[]>(generateData());
 const value = ref([]);
 </script>
 <style lang="scss">
-.ep-transfer-panel__filter .ep-input__inner {
+.el-transfer-panel__filter .el-input__inner {
   padding: 0 2px;
 }
 </style>

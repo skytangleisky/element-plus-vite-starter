@@ -139,7 +139,7 @@ const cancel = () => {
 </script>
 <style lang="scss">
 .dragDialog {
-  .ep-row {
+  .el-row {
     padding: 5px;
   }
 }

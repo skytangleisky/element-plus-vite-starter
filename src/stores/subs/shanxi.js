@@ -118,16 +118,6 @@ export default {
             label: '设备管理',
           }
         },
-        {
-          path: 'device2',
-          name: 'da20fee1-5ad7-51e1-2768-ee0933011b11',
-          component: '/src/myComponents/风雷达组网/pages/设备管理新.vue',
-          svg:'2e27a8c4-17b8-4fe3-bfd5-afdc95a38741',
-          meta:{
-            label: '设备管理新',
-            roles:['admin']
-          }
-        },
         // {
         //   path: 'status',
         //   name: 'da20fee1-5ad7-51e1-2754-fe0933011a11',

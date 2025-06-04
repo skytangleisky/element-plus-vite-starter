@@ -65,7 +65,7 @@
         v-model:current-page="paginationOptions.currentPage"
         v-model:page-size="paginationOptions.pageSize"
         :page-sizes="[10, 20, 30, 40, 50, 60, 70, 80, 90, 100]"
-        :small="true"
+        size="small"
         :disabled="false"
         :background="false"
         layout="total, sizes, prev, pager, next, jumper"

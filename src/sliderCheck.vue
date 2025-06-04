@@ -1,6 +1,6 @@
 <template>
   <div
-    style="color: white; border-radius: 4px;display: flex;align-items: center;justify-content: center;background-color: #aaaaaa44;"
+    style="color: white; border-radius: 4px;display: flex;align-items: center;justify-content: center;background-color: #aaaaaa44;width: 100%;"
   >
     <div ref="maskRef" class="mask">
       {{ props.sliderStatus }}

@@ -18,8 +18,7 @@
       />
       <el-icon
         v-show="showCollapse"
-        :class="`${show ? 'rotate-180deg' : 'rotate-0eg'}`"
-        style="transition: all 300ms"
+        :style="`transition: all 300ms;transform: ${show?'rotate(180deg)':'rotate(0deg)'};`"
       >
         <svg
           t="1692335429583"
@@ -38,7 +37,7 @@
       </el-icon>
     </div>
     <el-collapse-transition>
-      <div v-show="show" class="card-bottom map-module-bottom" >
+      <div v-show="show" class="card-bottom map-module-bottom">
         <slot></slot>
       </div>
     </el-collapse-transition>
@@ -91,7 +90,7 @@ const select = computed({
   }
   .card-bottom{
 
-    .ep-icon{
+    .el-icon{
       color: var(--el-color-primary);
       &:hover{
         color: var(--el-color-primary-dark-2);

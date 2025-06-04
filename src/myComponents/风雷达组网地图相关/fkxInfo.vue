@@ -209,13 +209,13 @@ onBeforeUnmount(() => {
         color: var(--el-color-error);
       }
     }
-    .ep-form {
-      .ep-select {
+    .el-form {
+      .el-select {
         width: 90px;
       }
 
-      .ep-form-item--small,
-      .ep-form--inline .ep-form-item {
+      .el-form-item--small,
+      .el-form--inline .el-form-item {
         margin-bottom: 0;
 
         &:last-child {

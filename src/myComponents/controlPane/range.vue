@@ -1,7 +1,7 @@
 <template>
   <div class="range">
     <span class="label">{{modelValue.label}}</span>
-    <div class="w-150px h-full flex items-center">
+    <div style="width:150px; height:100%;display: flex;align-items: center;">
       <div ref="rangerRef" class="ranger" style="margin:3px 3px 3px 4px">
         <div class="track">
           <div class="progress"></div>

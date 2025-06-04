@@ -15,9 +15,9 @@
           <el-icon v-html="listSvg" class="svg" @click="listSvgClick"></el-icon>
           <draggable
             class="draggable"
-            style="background-color: white;"
             v-model:list="options.thData"
             style="
+              background-color: white;
               position: absolute;
               left: 0;
               top: 100%;
@@ -205,7 +205,7 @@
         v-model:current-page="paginationOptions.currentPage"
         v-model:page-size="paginationOptions.pageSize"
         :page-sizes="[10, 20, 30, 40, 50, 60, 70, 80, 90, 100]"
-        :small="true"
+        size="small"
         :disabled="false"
         :background="false"
         layout="total, sizes, prev, pager, next, jumper"
@@ -758,7 +758,7 @@ const allChange = (val: CheckboxValueType) => {
 }
 </style>
 <style>
-.ep-overlay-message-box {
+.el-overlay-message-box {
   z-index: 5;
 }
 </style>

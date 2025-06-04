@@ -50,7 +50,7 @@ import moment from "moment";
     align-items: center;
     font-size: 16px;
     margin-bottom: 12px;
-  .ep-icon{
+  .el-icon{
     font-size: 18px;
   }
     .item-value {
